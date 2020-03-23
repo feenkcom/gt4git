@@ -10,5 +10,5 @@ BaselineOfGToolkit4Git >> baseline: spec [
 	spec
 		for: #common do: [
 			spec
-				package: 'GToolkit-Iceberg' ]
+				package: 'GToolkit4Git' ]
 ]
