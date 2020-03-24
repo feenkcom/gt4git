@@ -11,6 +11,35 @@ IceLibgitRepository >> gtActionFetchFor: anAction [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceLibgitRepository >> gtActionRefreshFor: anAction [
+	<gtAction>
+	self isMissing ifTrue: [ ^ anAction ].
+	^ anAction button
+		label: 'Refresh';
+		action: [ 
+		
+			"Aim to only recalculate the dirty flag for packages that are marked as dirty.
+			We skip packages that are not marked as dirty."
+
+			| icebergRepository diff dirtyPackages |
+			icebergRepository := self.
+			icebergRepository isModified ifFalse: [ 
+				"If the repository is not marked as modified no action is needed here"
+				^ self ]. 
+
+			"We compite the diff but only recalculate the status for dirty packages"
+			diff := IceDiff new
+				sourceVersion: icebergRepository workingCopy;
+				targetVersion: icebergRepository workingCopy referenceCommit;
+				buildFull.
+		
+			dirtyPackages:= icebergRepository loadedPackages 
+				select: [ :each | each isDirty ].
+			dirtyPackages do: [ :each |
+				each beDirty: (diff includesPackageNamed: each name) ]]
+]
+
+{ #category : #'*GToolkit4Git' }
 IceLibgitRepository >> gtLocalBranchesFor: aView [
 	self isMissing ifTrue: [ ^ aView ].
 	^ super gtLocalBranchesFor: aView
