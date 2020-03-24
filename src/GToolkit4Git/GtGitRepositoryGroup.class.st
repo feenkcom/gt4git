@@ -10,6 +10,7 @@ Class {
 { #category : #accessing }
 GtGitRepositoryGroup >> gtRepositoriesFor: aView [
 	<gtView>
+    aView updateWhen: IceRepositoryAnnouncement in: Iceberg announcer.
 	^ aView columnedList
 		title: 'Repositories' translated;
 		priority: 50;
@@ -24,22 +25,6 @@ GtGitRepositoryGroup >> gtRepositoriesFor: aView [
 		description ] width: 200;
 		column: 'Branch' translated format: [ :each | each headDescription ] width: 200;
 		column: 'Status' translated format: [ :each | (IceTipRepositoryModel on: each) status ] width: 200.
-]
-
-{ #category : #accessing }
-GtGitRepositoryGroup >> initialize [
-    Iceberg announcer weak 
-        when: IceRepositoryAnnouncement 
-        send: #refreshWhenRepository: 
-        to: self
-]
-
-{ #category : #accessing }
-GtGitRepositoryGroup >> refreshWhenRepository: aIceRepositoryAnnouncement [
-	repos detect: [:r | r = aIceRepositoryAnnouncement repository] ifFound: [
-	
-	].
-	
 ]
 
 { #category : #accessing }
