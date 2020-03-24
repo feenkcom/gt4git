@@ -10,7 +10,7 @@ Class {
 { #category : #accessing }
 GtGitRepositoryGroup >> gtRepositoriesFor: aView [
 	<gtView>
-    aView updateWhen: IceRepositoryModified in: Iceberg announcer.
+    aView updateWhen: IceRepositoryModified in: Iceberg announcer weak.
 	^ aView columnedList
 		title: 'Repositories' translated;
 		priority: 50;
