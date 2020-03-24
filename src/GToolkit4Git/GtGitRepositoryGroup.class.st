@@ -27,6 +27,22 @@ GtGitRepositoryGroup >> gtRepositoriesFor: aView [
 ]
 
 { #category : #accessing }
+GtGitRepositoryGroup >> initialize [
+    Iceberg announcer weak 
+        when: IceRepositoryAnnouncement 
+        send: #refreshWhenRepository: 
+        to: self
+]
+
+{ #category : #accessing }
+GtGitRepositoryGroup >> refreshWhenRepository: aIceRepositoryAnnouncement [
+	repos detect: [:r | r = aIceRepositoryAnnouncement repository] ifFound: [
+	
+	].
+	
+]
+
+{ #category : #accessing }
 GtGitRepositoryGroup >> repositories [
 	^ repos
 ]
