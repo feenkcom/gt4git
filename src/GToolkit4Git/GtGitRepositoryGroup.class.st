@@ -21,6 +21,7 @@ GtGitRepositoryGroup >> gtRepositoriesFor: aView [
 		|description|
 		description := each name asRopedText.
 	
+	
 		each isModified ifTrue: [ 
 			description := ('*', description asString) asRopedText.
 			description attributes: {BlTextForegroundAttribute paint: (Color r: 0 g: 0.5 b: 0)} ].
