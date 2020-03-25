@@ -10,10 +10,12 @@ Class {
 { #category : #accessing }
 GtGitRepositoryGroup >> gtRepositoriesFor: aView [
 	<gtView>
+    
     "aView updateWhen: IceRepositoryModified in: Iceberg announcer weak."
-    Iceberg announcer weak
+    Iceberg announcer
     when: IceRepositoryModified
     do: [:e | aView asElementDo: [ :el | el phlow update ]].
+    
 	^ aView columnedList
 		title: 'Repositories' translated;
 		priority: 50;
