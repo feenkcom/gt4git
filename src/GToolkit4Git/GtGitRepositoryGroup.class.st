@@ -10,19 +10,17 @@ Class {
 { #category : #accessing }
 GtGitRepositoryGroup >> gtRepositoriesFor: aView [
 	<gtView>
+    |result|
     
-    "aView updateWhen: IceRepositoryModified in: Iceberg announcer weak."
-    Iceberg announcer
-    when: IceRepositoryModified
-    do: [:e | aView asElementDo: [ :el | el phlow update ]].
-    
-	^ aView columnedList
+	result := aView columnedList
 		title: 'Repositories' translated;
 		priority: 50;
+		updateWhen: IceRepositoryModified in: [Iceberg announcer];
 		items: [ self repositories];
 		column: 'Repository' translated format: [ :each | 
 		|description|
 		description := each name asRopedText.
+	
 	
 		each isModified ifTrue: [ 
 			description := ('*', description asString) asRopedText.
@@ -30,6 +28,7 @@ GtGitRepositoryGroup >> gtRepositoriesFor: aView [
 		description ] width: 200;
 		column: 'Branch' translated format: [ :each | each headDescription ] width: 200;
 		column: 'Status' translated format: [ :each | (IceTipRepositoryModel on: each) status ] width: 200.
+	^ result
 ]
 
 { #category : #accessing }

@@ -25,6 +25,12 @@ IceDiff >> gtViewInspectorDiffFor: aView [
 					c vertical fitContent ];
 				margin: (BlInsets all: 3);
 				constraintsDo: [ :c | c vertical fitContent ];
+				look:
+					(BrGlamorousWithContextMenuLook
+						content: [ BrGlamorousSimpleContextMenuContent new
+								display:
+									{('Change to blue' -> [ :e | self revertChanges ])};
+								yourself ]);
 				addChild: ((anIceNode value icon asElement)
 					constraintsDo: [ :c |
 						c linear horizontal alignCenter ]);
@@ -33,5 +39,8 @@ IceDiff >> gtViewInspectorDiffFor: aView [
 					padding: (BlInsets top: 3 left: 6 bottom: 0 right: 3);
 					constraintsDo: [ :c |
 						c linear horizontal alignCenter ]) ]
+						
+						
+
 		
 ]
