@@ -46,7 +46,7 @@ IceRepository >> gtTagsFor: aView [
 
 { #category : #'*GToolkit4Git' }
 IceRepository >> gtViewDiffToReferenceCommitFor: aView [
-	<gtView>
+	"<gtView>"
 	^ self workingCopy 
 		ifNil: [ aView ]
 		ifNotNil: [ self workingCopy gtViewDiffToReferenceCommitFor: aView ]

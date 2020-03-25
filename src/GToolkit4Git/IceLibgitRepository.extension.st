@@ -65,3 +65,42 @@ IceLibgitRepository >> gtTagsFor: aView [
 	self isMissing ifTrue: [ ^ aView ].
 	^ super gtTagsFor: aView
 ]
+
+{ #category : #'*GToolkit4Git' }
+IceLibgitRepository >> gtViewInspectorDiffFor: aView [
+	<gtView>
+	^ self workingCopy 
+		ifNil: [ aView ]
+		ifNotNil: [
+		aView tree
+			title: 'Changes';
+			items: [ self workingCopy diffToReferenceCommit treeToShow children ];
+			updateWhen: IceRepositoryModified in: Iceberg announcer;
+			children: #children;
+			itemStencil: [ :anIceNode | 
+				BlElement new
+					layout: BlLinearLayout horizontal;
+					constraintsDo: [ :c |
+						c horizontal matchParent.
+						c vertical fitContent ];
+					margin: (BlInsets all: 3);
+					constraintsDo: [ :c | c vertical fitContent ];
+					look:
+						(BrGlamorousWithContextMenuLook
+							content: [ BrGlamorousSimpleContextMenuContent new
+									display:
+										{('Revert changes' -> [ :e | self workingCopy diffToReferenceCommit revertChanges: anIceNode ])};
+									yourself ]);
+					addChild: ((anIceNode value icon asElement)
+						constraintsDo: [ :c |
+							c linear horizontal alignCenter ]);
+					addChild: (BlTextElement new 
+						text: anIceNode key asString asRopedText;
+						padding: (BlInsets top: 3 left: 6 bottom: 0 right: 3);
+						constraintsDo: [ :c |
+							c linear horizontal alignCenter ]) ]]
+						
+						
+
+		
+]
