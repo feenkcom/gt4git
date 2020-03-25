@@ -11,12 +11,11 @@ Class {
 GtGitRepositoryGroup >> gtRepositoriesFor: aView [
 	<gtView>
     |result|
-    "aView updateWhen: IceRepositoryModified in: Iceberg announcer weak."
-    
     
 	result := aView columnedList
 		title: 'Repositories' translated;
 		priority: 50;
+		updateWhen: IceRepositoryModified in: [Iceberg announcer];
 		items: [ self repositories];
 		column: 'Repository' translated format: [ :each | 
 		|description|
@@ -28,11 +27,6 @@ GtGitRepositoryGroup >> gtRepositoriesFor: aView [
 		description ] width: 200;
 		column: 'Branch' translated format: [ :each | each headDescription ] width: 200;
 		column: 'Status' translated format: [ :each | (IceTipRepositoryModel on: each) status ] width: 200.
-		
-	Iceberg announcer
-    when: IceRepositoryModified
-    do: [:e |  result phlow update ].
-
 	^ result
 ]
 
