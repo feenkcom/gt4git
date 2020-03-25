@@ -45,3 +45,11 @@ IceDiff >> gtViewInspectorDiffFor: aView [
 
 		
 ]
+
+{ #category : #'*GToolkit4Git' }
+IceDiff >> revertChanges: aNode [
+	self canRevertChanges ifTrue: [
+		source discardChanges: aNode.
+		Iceberg announcer announce: (IceRepositoryModified for: source repository)].
+	
+]
