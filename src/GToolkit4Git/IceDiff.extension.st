@@ -16,6 +16,7 @@ IceDiff >> gtViewInspectorDiffFor: aView [
 	^ aView tree
 		title: 'Changes';
 		items: [ self treeToShow children ];
+		updateWhen: IceRepositoryModified in: Iceberg announcer;
 		children: #children;
 		itemStencil: [ :anIceNode | 
 			BlElement new
@@ -29,7 +30,7 @@ IceDiff >> gtViewInspectorDiffFor: aView [
 					(BrGlamorousWithContextMenuLook
 						content: [ BrGlamorousSimpleContextMenuContent new
 								display:
-									{('Change to blue' -> [ :e | self revertChanges ])};
+									{('Revert changes' -> [ :e | self revertChanges: anIceNode ])};
 								yourself ]);
 				addChild: ((anIceNode value icon asElement)
 					constraintsDo: [ :c |
@@ -43,4 +44,12 @@ IceDiff >> gtViewInspectorDiffFor: aView [
 						
 
 		
+]
+
+{ #category : #'*GToolkit4Git' }
+IceDiff >> revertChanges: aNode [
+	self canRevertChanges ifTrue: [
+		source discardChanges: aNode.
+		Iceberg announcer announce: (IceRepositoryModified for: source repository)].
+	
 ]
