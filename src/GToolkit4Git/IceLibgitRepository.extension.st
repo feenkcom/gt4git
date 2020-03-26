@@ -11,6 +11,26 @@ IceLibgitRepository >> gtActionFetchFor: anAction [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceLibgitRepository >> gtActionPullFor: anAction [
+	<gtAction>
+	self isMissing ifTrue: [ ^ anAction ].
+	^ anAction button
+		label: 'Pull';
+		action: [ :aButton | 
+			self pull ]
+]
+
+{ #category : #'*GToolkit4Git' }
+IceLibgitRepository >> gtActionPushFor: anAction [
+	<gtAction>
+	self isMissing ifTrue: [ ^ anAction ].
+	^ anAction button
+		label: 'Push';
+		action: [ :aButton | 
+			self push ]
+]
+
+{ #category : #'*GToolkit4Git' }
 IceLibgitRepository >> gtActionRefreshFor: anAction [
 	<gtAction>
 	self isMissing ifTrue: [ ^ anAction ].
