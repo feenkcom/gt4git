@@ -15,6 +15,7 @@ IceLibgitRepository >> gtActionFetchFor: anAction [
 IceLibgitRepository >> gtActionPullFor: anAction [
 	<gtAction>
 	self isMissing ifTrue: [ ^ anAction ].
+	(IceTipRepositoryModel on:self) isDetached ifTrue: [ ^ anAction ].
 	^ anAction button
 		label: 'Pull';
 		action: [ :aButton | 
@@ -26,6 +27,7 @@ IceLibgitRepository >> gtActionPullFor: anAction [
 IceLibgitRepository >> gtActionPushFor: anAction [
 	<gtAction>
 	self isMissing ifTrue: [ ^ anAction ].
+	(IceTipRepositoryModel on:self) isDetached ifTrue: [ ^ anAction ].
 	^ anAction button
 		label: 'Push';
 		action: [ :aButton | 
