@@ -7,7 +7,32 @@ IceLibgitRepository >> gtActionFetchFor: anAction [
 	^ anAction button
 		label: 'Fetch';
 		action: [ 
-			(IceTipRepositoryModel on: self) fetch ]
+			(IceTipRepositoryModel on: self) fetch.
+				Iceberg announcer announce: (IceRepositoryModified for: self) ]
+]
+
+{ #category : #'*GToolkit4Git' }
+IceLibgitRepository >> gtActionPullFor: anAction [
+	<gtAction>
+	self isMissing ifTrue: [ ^ anAction ].
+	(IceTipRepositoryModel on:self) isDetached ifTrue: [ ^ anAction ].
+	^ anAction button
+		label: 'Pull';
+		action: [ :aButton | 
+			self pull.
+			Iceberg announcer announce: (IceRepositoryModified for: self) ]
+]
+
+{ #category : #'*GToolkit4Git' }
+IceLibgitRepository >> gtActionPushFor: anAction [
+	<gtAction>
+	self isMissing ifTrue: [ ^ anAction ].
+	(IceTipRepositoryModel on:self) isDetached ifTrue: [ ^ anAction ].
+	^ anAction button
+		label: 'Push';
+		action: [ :aButton | 
+			self push.
+			Iceberg announcer announce: (IceRepositoryModified for: self) ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -36,7 +61,8 @@ IceLibgitRepository >> gtActionRefreshFor: anAction [
 			dirtyPackages:= icebergRepository loadedPackages 
 				select: [ :each | each isDirty ].
 			dirtyPackages do: [ :each |
-				each beDirty: (diff includesPackageNamed: each name) ]]
+				each beDirty: (diff includesPackageNamed: each name) ].
+				Iceberg announcer announce: (IceRepositoryModified for: self)]
 ]
 
 { #category : #'*GToolkit4Git' }
