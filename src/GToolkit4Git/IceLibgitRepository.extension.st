@@ -1,6 +1,17 @@
 Extension { #name : #IceLibgitRepository }
 
 { #category : #'*GToolkit4Git' }
+IceLibgitRepository >> executeCommit: aCommitMessage [
+	|diff|
+	diff := self workingCopyDiff.
+	Iceberg announcer announce: (IceRepositoryModified for: self).
+	self workingCopy 
+		commitChanges: diff
+		withMessage: aCommitMessage
+		force: false.
+]
+
+{ #category : #'*GToolkit4Git' }
 IceLibgitRepository >> gtActionFetchFor: anAction [
 	<gtAction>
 	self isMissing ifTrue: [ ^ anAction ].
