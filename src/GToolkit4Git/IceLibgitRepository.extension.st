@@ -135,7 +135,25 @@ IceLibgitRepository >> gtViewInspectorDiffFor: aView [
 						text: anIceNode key asString asRopedText;
 						padding: (BlInsets top: 3 left: 6 bottom: 0 right: 3);
 						constraintsDo: [ :c |
-							c linear horizontal alignCenter ]) ]]
+							c linear horizontal alignCenter ]) ];
+							
+				actionDropdownButtonIcon: nil 
+					label: 'Commit...' 
+					content: [ :b | 
+									| editor button |
+									editor := BrEditor new look: BrGlamorousCodeEditorLook.
+									button := (BrButton new look: BrGlamorousButtonWithIconLook; icon: BrGlamorousIcons accept asElement; label: 'Commit...'; action: [
+										self executeCommit:  (editor editor text asString).]).
+									button disable.
+									editor editor when: BrTextEditorModifiedEvent do: [ :anEvent | ((anEvent text asString) isEmpty) ifTrue: [button disable]; ifFalse: [button enable].  ].
+									BlElement new
+										constraintsDo: [:c | c horizontal exact: 400. c vertical fitContent];
+										layout: BlLinearLayout vertical;
+										padding: (BlInsets all: 10);
+										addChild: editor;
+										addChild: button].
+										 
+											 ]
 						
 						
 
