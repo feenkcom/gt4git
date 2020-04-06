@@ -144,8 +144,9 @@ IceLibgitRepository >> gtViewInspectorDiffFor: aView [
 					content: [ :b |
 									| editor button |
 									editor := BrEditor new look: BrGlamorousCodeEditorLook.
-									button := (BrButton new look: BrGlamorousButtonWithIconLook; icon: BrGlamorousIcons accept asElement; label: 'Commit...'; action: [
-										self executeCommit:  (editor editor text asString).]).
+									button := BrButton new look: BrGlamorousButtonWithIconLook; icon: BrGlamorousIcons accept asElement; label: 'Commit...'.
+									button action: [
+										self executeCommit:  (editor editor text asString).button disable.].
 									button disable.
 									editor editor when: BrTextEditorModifiedEvent do: [ :anEvent | ((anEvent text asString) isEmpty) ifTrue: [button disable]; ifFalse: [((self workingCopy diffToReferenceCommit treeToShow children) size = 0) ifFalse: [button enable]].  ].
 									BlElement new
