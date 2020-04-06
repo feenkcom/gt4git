@@ -109,6 +109,7 @@ IceLibgitRepository >> gtViewInspectorDiffFor: aView [
 	^ self workingCopy 
 		ifNil: [ aView ]
 		ifNotNil: [
+		((self workingCopy diffToReferenceCommit treeToShow children) size = 0) ifTrue: [aView] ifFalse:[
 		aView tree
 			title: 'Changes';
 			items: [ self workingCopy diffToReferenceCommit treeToShow children ];
@@ -151,9 +152,7 @@ IceLibgitRepository >> gtViewInspectorDiffFor: aView [
 										layout: BlLinearLayout vertical;
 										padding: (BlInsets all: 10);
 										addChild: editor;
-										addChild: button].
-										 
-											 ]
+										addChild: button]]]
 						
 						
 
