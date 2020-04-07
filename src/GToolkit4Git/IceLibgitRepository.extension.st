@@ -77,34 +77,7 @@ IceLibgitRepository >> gtActionRefreshFor: anAction [
 ]
 
 { #category : #'*GToolkit4Git' }
-IceLibgitRepository >> gtLocalBranchesFor: aView [
-	self isMissing ifTrue: [ ^ aView ].
-	^ super gtLocalBranchesFor: aView
-]
-
-{ #category : #'*GToolkit4Git' }
-IceLibgitRepository >> gtRemoteBranchesFor: aView [
-	self isMissing ifTrue: [ ^ aView ].
-	^ super gtRemoteBranchesFor: aView
-]
-
-{ #category : #'*GToolkit4Git' }
-IceLibgitRepository >> gtRepositoryDirectoryFor: aView [
-	<gtView>
-	self isMissing ifTrue: [ ^ aView ].
-	^ (self repositoryDirectory gtItemsFor: aView)
-		title: 'Repository directory' translated;
-		priority: 35
-]
-
-{ #category : #'*GToolkit4Git' }
-IceLibgitRepository >> gtTagsFor: aView [
-	self isMissing ifTrue: [ ^ aView ].
-	^ super gtTagsFor: aView
-]
-
-{ #category : #'*GToolkit4Git' }
-IceLibgitRepository >> gtViewInspectorDiffFor: aView [
+IceLibgitRepository >> gtChangesFor: aView [
 	<gtView>
 	^ self workingCopy 
 		ifNil: [ aView ]
@@ -113,8 +86,10 @@ IceLibgitRepository >> gtViewInspectorDiffFor: aView [
 		aView tree
 			title: 'Changes';
 			items: [ self workingCopy diffToReferenceCommit treeToShow children ];
+			
 			updateWhen: IceRepositoryModified in: Iceberg announcer;
 			children: #children;
+			expandUpTo: 3;
 			itemStencil: [ :anIceNode | 
 				BlElement new
 					layout: BlLinearLayout horizontal;
@@ -140,13 +115,14 @@ IceLibgitRepository >> gtViewInspectorDiffFor: aView [
 							
 				actionDropdownButtonIcon: nil 
 					label: 'Commit...' 
-					content: [ :b | 
+					content: [ :b |
 									| editor button |
 									editor := BrEditor new look: BrGlamorousCodeEditorLook.
-									button := (BrButton new look: BrGlamorousButtonWithIconLook; icon: BrGlamorousIcons accept asElement; label: 'Commit...'; action: [
-										self executeCommit:  (editor editor text asString).]).
+									button := BrButton new look: BrGlamorousButtonWithIconLook; icon: BrGlamorousIcons accept asElement; label: 'Commit...'.
+									button action: [
+										self executeCommit:  (editor editor text asString).button disable.].
 									button disable.
-									editor editor when: BrTextEditorModifiedEvent do: [ :anEvent | ((anEvent text asString) isEmpty) ifTrue: [button disable]; ifFalse: [button enable].  ].
+									editor editor when: BrTextEditorModifiedEvent do: [ :anEvent | ((anEvent text asString) isEmpty) ifTrue: [button disable]; ifFalse: [((self workingCopy diffToReferenceCommit treeToShow children) size = 0) ifFalse: [button enable]].  ].
 									BlElement new
 										constraintsDo: [:c | c horizontal exact: 400. c vertical fitContent];
 										layout: BlLinearLayout vertical;
@@ -157,4 +133,31 @@ IceLibgitRepository >> gtViewInspectorDiffFor: aView [
 						
 
 		
+]
+
+{ #category : #'*GToolkit4Git' }
+IceLibgitRepository >> gtLocalBranchesFor: aView [
+	self isMissing ifTrue: [ ^ aView ].
+	^ super gtLocalBranchesFor: aView
+]
+
+{ #category : #'*GToolkit4Git' }
+IceLibgitRepository >> gtRemoteBranchesFor: aView [
+	self isMissing ifTrue: [ ^ aView ].
+	^ super gtRemoteBranchesFor: aView
+]
+
+{ #category : #'*GToolkit4Git' }
+IceLibgitRepository >> gtRepositoryDirectoryFor: aView [
+	<gtView>
+	self isMissing ifTrue: [ ^ aView ].
+	^ (self repositoryDirectory gtItemsFor: aView)
+		title: 'Repository directory' translated;
+		priority: 35
+]
+
+{ #category : #'*GToolkit4Git' }
+IceLibgitRepository >> gtTagsFor: aView [
+	self isMissing ifTrue: [ ^ aView ].
+	^ super gtTagsFor: aView
 ]
