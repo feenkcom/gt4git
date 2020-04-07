@@ -1,18 +1,6 @@
 Extension { #name : #IceTag }
 
 { #category : #'*GToolkit4Git' }
-IceTag >> gtAsSemanticVersionNumber [
-	|tokens semanticVersionNumber| 
-	tokens := self name allButFirst findTokens: '.'. 
-	semanticVersionNumber := GtRlSemanticVersionNumber 
-		major: tokens first asInteger
-		minor: tokens second asInteger
-		patch: tokens third asInteger.
-	semanticVersionNumber tag: self.
-	^ semanticVersionNumber 
-]
-
-{ #category : #'*GToolkit4Git' }
 IceTag >> gtCommitAncestorsFor: aView [
 	<gtView>
 	^ (self commit
@@ -36,9 +24,4 @@ IceTag >> gtCommitsFor: aView [
 IceTag >> gtHeadCommitDetailsFor: aView [
 	<gtView>
 	^ self commit gtDetailsFor: aView
-]
-
-{ #category : #'*GToolkit4Git' }
-IceTag >> gtIsSemanticVersion [
-	^ self name matchesRegex: 'v[0-9]+\.[0-9]+\.[0-9]+'
 ]

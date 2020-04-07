@@ -29,11 +29,6 @@ IceRepository >> gtRemoteBranchesFor: aView [
 ]
 
 { #category : #'*GToolkit4Git' }
-IceRepository >> gtSemanticVersionsTags [
-	^ self tags select: #gtIsSemanticVersion
-]
-
-{ #category : #'*GToolkit4Git' }
 IceRepository >> gtTagsFor: aView [
 	<gtView>
 	^ aView list 
