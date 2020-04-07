@@ -15,7 +15,7 @@ GtGitRepositoryGroup >> gtRepositoriesFor: aView [
 	result := aView columnedList
 		title: 'Repositories' translated;
 		priority: 50;
-		updateWhen: IceRepositoryModified in: [Iceberg announcer];
+		updateWhen: IceRepositoryAnnouncement if: [:event | self repositories includes: event repository ] in: [Iceberg announcer];
 		items: [ self repositories];
 		column: 'Repository' translated format: [ :each | 
 		|description|
