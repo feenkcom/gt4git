@@ -38,5 +38,5 @@ GtGitRepositoryGroup >> repositories [
 
 { #category : #accessing }
 GtGitRepositoryGroup >> repositories: aListOfRepositories [
-	repos := aListOfRepositories
+	repos := aListOfRepositories copyFrom: 1 to: aListOfRepositories size.
 ]
