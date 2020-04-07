@@ -89,6 +89,7 @@ IceLibgitRepository >> gtChangesFor: aView [
 			
 			updateWhen: IceRepositoryModified in: Iceberg announcer;
 			children: #children;
+			expandUpTo: 3;
 			itemStencil: [ :anIceNode | 
 				BlElement new
 					layout: BlLinearLayout horizontal;
