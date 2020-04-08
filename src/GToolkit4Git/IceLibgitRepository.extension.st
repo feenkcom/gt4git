@@ -4,11 +4,11 @@ Extension { #name : #IceLibgitRepository }
 IceLibgitRepository >> executeCommit: aCommitMessage [
 	|diff|
 	diff := self workingCopyDiff.
-	Iceberg announcer announce: (IceRepositoryModified for: self).
 	self workingCopy 
 		commitChanges: diff
 		withMessage: aCommitMessage
 		force: false.
+	Iceberg announcer announce: (IceRepositoryModified for: self).
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -106,17 +106,18 @@ IceLibgitRepository >> gtChangesFor: aView [
 					addChild: ((anIceNode value icon asElement)
 						constraintsDo: [ :c |
 							c linear horizontal alignCenter ]);
-					addChild: (BlTextElement new 
+					addChild: (BrLabel new 
+						look: BrGlamorousLabelLook;
 						text: anIceNode key asString asRopedText;
-						padding: (BlInsets top: 3 left: 6 bottom: 0 right: 3);
+						padding: (BlInsets top: 0 left: 6 bottom: 0 right: 3);
 						constraintsDo: [ :c |
 							c linear horizontal alignCenter ]) ];
 							
 				actionDropdownButtonIcon: nil 
-					label: 'Commit...' 
+					label: 'Commit' 
 					content: [ :b |
 						| editor button |
-						editor := BrEditor new look: BrGlamorousCodeEditorLook.
+						editor := BrEditor new look: BrGlamorousRegularEditorLook.
 						button := BrButton new look: BrGlamorousButtonWithIconLook; icon: BrGlamorousIcons accept asElement; label: 'Commit'.
 						button action: [
 							self executeCommit:  (editor editor text asString).button disable.].
