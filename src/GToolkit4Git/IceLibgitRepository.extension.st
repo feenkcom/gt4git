@@ -4,11 +4,11 @@ Extension { #name : #IceLibgitRepository }
 IceLibgitRepository >> executeCommit: aCommitMessage [
 	|diff|
 	diff := self workingCopyDiff.
-	Iceberg announcer announce: (IceRepositoryModified for: self).
 	self workingCopy 
 		commitChanges: diff
 		withMessage: aCommitMessage
 		force: false.
+	Iceberg announcer announce: (IceRepositoryModified for: self).
 ]
 
 { #category : #'*GToolkit4Git' }
