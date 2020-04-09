@@ -8,9 +8,64 @@ Class {
 }
 
 { #category : #accessing }
-GtGitRepositoryGroup >> gtRepositoriesFor: aView [
-	<gtView>
-    |result|
+GtGitRepositoryGroup >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
+	|label repositoriesU repositoriesI repositoriesO repositoriesD repositoriesH|
+	aButtonsContainer removeChildren.
+	aButtonsContainer addChild: (BrButton new 
+		look: BrGlamorousButtonWithLabelLook; beSmall; 
+		label: 'All';
+		action: [ anElement children second items: (self repositories) ]).
+	repositoriesU := (self repositories select: 
+				[:r | [r isModified] on: Error do:[false] ]).
+	label :=  repositoriesU size asString, ' Uncommited'.
+	aButtonsContainer addChild: (BrButton new 
+		look: BrGlamorousButtonWithLabelLook; beSmall; 
+		label: label;
+		action: [ anElement children second items: 
+			repositoriesU ]).
+	
+	repositoriesI := (self repositories select: 
+				[:r | [(IceTipRepositoryModel on: r) incomingCommits size > 0] 
+					on: Error do:[false] ]). 
+	label := repositoriesI size asString, ' Incoming'.
+	aButtonsContainer addChild: (BrButton new 
+		look: BrGlamorousButtonWithLabelLook; beSmall; 
+		label: label;
+		action: [ anElement children second items: repositoriesI]).
+	
+	repositoriesO := (self repositories select: 
+				[:r | [(IceTipRepositoryModel on: r) outgoingCommits size > 0] 
+					on: Error do:[false] ]). 
+	label := repositoriesO size asString, ' Outgoing'.
+	aButtonsContainer addChild: (BrButton new 
+		look: BrGlamorousButtonWithLabelLook; beSmall; 
+		label: label;
+		action: [ anElement children second items: repositoriesO]).
+	
+	
+	repositoriesD := (self repositories select: 
+				[:r | r workingCopy isDetached]).
+	label := repositoriesD size asString, ' Detached Working Copy'.
+	aButtonsContainer addChild: (BrButton new 
+		look: BrGlamorousButtonWithLabelLook; beSmall; 
+		label: label;
+		action: [ anElement children second items: repositoriesD ]).
+	
+	repositoriesH := (self repositories select: 
+				[:r | [r head isDetached] 
+					on: Error do:[false]]).
+	label := repositoriesH size asString, ' Detached HEAD'.
+	
+	aButtonsContainer addChild: (BrButton new 
+		look: BrGlamorousButtonWithLabelLook; beSmall; 
+		label: label;
+		action: [ anElement children second items: repositoriesH]).
+	
+]
+
+{ #category : #accessing }
+GtGitRepositoryGroup >> buildListViewFor: aView [
+|result|
     
 	result := aView columnedList
 		title: 'Repositories' translated;
@@ -29,7 +84,39 @@ GtGitRepositoryGroup >> gtRepositoriesFor: aView [
 		column: 'Branch' translated format: [ :each | each headDescription ] width: 200;
 		column: 'Status' translated format: [ :each | (IceTipRepositoryModel on: each) status ] width: 200;
 		actionButtonLabel: 'Fetch All' action: [self repositories collect: [:r | r fetch]].
-	^ result
+		^ result
+]
+
+{ #category : #accessing }
+GtGitRepositoryGroup >> gtRepositoriesFor: aView [
+	<gtView>
+	^ aView explicit
+		title: 'Repositories';
+		priority: 11;
+		updateWhen: IceRepositoryAnnouncement if: [:event | self repositories includes: event repository ] in: [Iceberg announcer];
+		stencil: [ | aContainer aButtonsContainer aListView |
+			aContainer := BlElement new
+				layout: BlLinearLayout vertical;
+				constraintsDo: [ :c | 
+					c padding: (BlInsets all: 3).
+					c horizontal matchParent.
+					c vertical matchParent ].
+			aButtonsContainer := BlElement new
+				layout: (BlLinearLayout horizontal cellSpacing: 3);
+				constraintsDo: [ :c | 
+					c padding: (BlInsets all: 3).
+					c horizontal fitContent.
+					c vertical fitContent.
+					c linear horizontal alignCenter ].
+			aContainer addChild: aButtonsContainer.
+			aListView := self buildListViewFor: aView.
+			aListView
+				asElementDo: [ :anElement |
+					aContainer addChild: anElement.
+					self
+						buildButtonsContainer: aButtonsContainer
+						listWidget: anElement ].
+			aContainer ]
 ]
 
 { #category : #accessing }
