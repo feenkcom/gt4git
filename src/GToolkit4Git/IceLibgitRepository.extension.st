@@ -117,7 +117,7 @@ IceLibgitRepository >> gtChangesFor: aView [
 					content: [ :b |
 						| editor button |
 						editor := BrEditor new look: BrGlamorousCodeEditorLook.
-						button := BrButton new look: BrGlamorousButtonWithIconLook; icon: BrGlamorousIcons accept asElement; label: 'Commit'.
+						button := BrButton new look: BrGlamorousButtonWithIconLook; icon: BrGlamorousVectorIcons accept; label: 'Commit'.
 						button action: [
 							self executeCommit:  (editor editor text asString).button disable.].
 							button disable.
