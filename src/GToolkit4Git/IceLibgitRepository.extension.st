@@ -113,16 +113,19 @@ IceLibgitRepository >> gtChangesFor: aView [
 						constraintsDo: [ :c |
 							c linear horizontal alignCenter ]) ];
 							
-				actionDropdownButtonIcon: nil 
+			actionDropdownButtonIcon: nil 
 					label: 'Commit' 
 					content: [ :b |
 						| editor button |
 						editor := BrEditor new look: BrGlamorousRegularEditorLook.
 						button := BrButton new look: BrGlamorousButtonWithIconLook; icon: BrGlamorousVectorIcons accept; label: 'Commit'.
+						
 						button action: [
-							self executeCommit:  (editor editor text asString).button disable.].
-							button disable.
-							editor editor when: BrTextEditorModifiedEvent do: 
+							self executeCommit:  (editor editor text asString). button disable. 
+							b dispatchEvent: (BrDropdownHideWish new anchor: button)].
+						
+						button disable.
+						editor editor when: BrTextEditorModifiedEvent do: 
 							[ :anEvent | ((anEvent text asString) isEmpty) 
 								ifTrue: [button disable]; 
 								ifFalse: [((self workingCopy diffToReferenceCommit treeToShow children) size = 0) ifFalse: [button enable]]].
