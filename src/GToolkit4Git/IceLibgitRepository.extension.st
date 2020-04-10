@@ -122,7 +122,7 @@ IceLibgitRepository >> gtChangesFor: aView [
 						
 						button action: [
 							self executeCommit:  (editor editor text asString). button disable. 
-							b dispatchEvent: (BrDropdownHideWish new anchor: button)].
+							b dispatchEvent: (BrDropdownHideWish new anchor: b)].
 						
 						button disable.
 						editor editor when: BrTextEditorModifiedEvent do: 
