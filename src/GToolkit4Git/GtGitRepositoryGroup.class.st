@@ -82,8 +82,8 @@ GtGitRepositoryGroup >> buildListViewFor: aView [
 			description attributes: {BlTextForegroundAttribute paint: (Color r: 0 g: 0.5 b: 0)} ].
 		description ] width: 200;
 		column: 'Branch' translated format: [ :each | each headDescription ] width: 200;
-		column: 'Status' translated format: [ :each | (IceTipRepositoryModel on: each) status ] width: 200;
-		actionButtonLabel: 'Fetch All' action: [self repositories collect: [:r | r fetch]].
+		column: 'Status' translated format: [ :each | (IceTipRepositoryModel on: each) status ] width: 200.
+		
 		^ result
 ]
 
@@ -94,6 +94,7 @@ GtGitRepositoryGroup >> gtRepositoriesFor: aView [
 		title: 'Repositories';
 		priority: 11;
 		updateWhen: IceRepositoryAnnouncement if: [:event | self repositories includes: event repository ] in: [Iceberg announcer];
+		actionButtonLabel: 'Fetch All' action: [self repositories collect: [:r | r fetch]];
 		stencil: [ | aContainer aButtonsContainer aListView |
 			aContainer := BlElement new
 				layout: BlLinearLayout vertical;
