@@ -18,6 +18,7 @@ IceDiff >> gtViewInspectorDiffFor: aView [
 		items: [ self treeToShow children ];
 		updateWhen: IceRepositoryModified in: Iceberg announcer;
 		children: #children;
+		expandAll;
 		itemStencil: [ :anIceNode | 
 			BlElement new
 				layout: BlLinearLayout horizontal;
