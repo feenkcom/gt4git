@@ -7,6 +7,7 @@ IceWorkingCopy >> gtPackagesFor: aView [
 		priority: 15;
 		title: 'Packages' translated;
 		items: [ (IceSortingStrategy new first: #modified) sort: self packages ];
+		updateWhen: IceRepositoryModified in: Iceberg announcer;
 		column: 'Name' item: #gtPackageDescription;
 		column: 'Status' item: #gtPackageStatus
 ]

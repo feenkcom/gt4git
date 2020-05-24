@@ -1,6 +1,16 @@
 Extension { #name : #IcePackage }
 
 { #category : #'*GToolkit4Git' }
+IcePackage >> gtActionLoadFor: anAction [
+	<gtAction>
+	^ anAction button
+		label: 'Load';
+		action: [ 
+			self load.
+			Iceberg announcer announce: (IceRepositoryModified for: self repository)]
+]
+
+{ #category : #'*GToolkit4Git' }
 IcePackage >> gtPackageDescription [
 	| description |
 	description := self name asRopedText.
