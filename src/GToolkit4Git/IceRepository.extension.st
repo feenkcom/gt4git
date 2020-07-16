@@ -3,11 +3,11 @@ Extension { #name : #IceRepository }
 { #category : #'*GToolkit4Git' }
 IceRepository >> gtLocalBranchesFor: aView [
 	<gtView>
-	^ aView list  
+	^ aView list
 		title: 'Branches' translated;
 		priority: 20;
 		items: [ self localBranches ];
-		itemFormat: #name
+		itemText: #name
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -21,22 +21,22 @@ IceRepository >> gtPackagesFor: aView [
 { #category : #'*GToolkit4Git' }
 IceRepository >> gtRemoteBranchesFor: aView [
 	<gtView>
-	^ aView list  
+	^ aView list
 		title: 'Remotes' translated;
 		priority: 24;
 		items: [ self remoteTrackedBranches ];
-		itemFormat: #name
+		itemText: #name
 ]
 
 { #category : #'*GToolkit4Git' }
 IceRepository >> gtTagsFor: aView [
 	<gtView>
-	^ aView list 
+	^ aView list
 		title: 'Tags' translated;
 		priority: 30;
 		items: [ self tags ];
-		itemFormat: [ :anIceTag |
-			anIceTag name, ' [', (anIceTag commit id first: 7), ']' ]
+		itemText:
+				[ :anIceTag | anIceTag name , ' [' , (anIceTag commit id first: 7) , ']' ]
 ]
 
 { #category : #'*GToolkit4Git' }
