@@ -19,7 +19,7 @@ IceDiff >> gtViewInspectorDiffFor: aView [
 		updateWhen: IceRepositoryModified in: Iceberg announcer;
 		children: #children;
 		expandAll;
-		itemStencil: [ :anIceNode | 
+		stencil: [ :anIceNode | 
 			BlElement new
 				layout: BlLinearLayout horizontal;
 				constraintsDo: [ :c |
