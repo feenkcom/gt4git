@@ -12,7 +12,7 @@ Gt4Git >> allRepositoriesGroup [
 { #category : #accessing }
 Gt4Git >> repositories [
 	|repos|
-	repos := IceRepository registry copyFrom:1 to: IceRepository registry size.
+	repos := IceRepository registry copyFrom: 1 to: IceRepository registry size.
 	repos := repos sort: [:a :b | 
 	|aM bM result|
 	aM := (IceTipRepositoryModel on: a).
