@@ -79,17 +79,15 @@ IceLibgitRepository >> gtActionRefreshFor: anAction [
 { #category : #'*GToolkit4Git' }
 IceLibgitRepository >> gtChangesFor: aView [
 	<gtView>
-	^ self workingCopy 
-		ifNil: [ aView ]
-		ifNotNil: [
-		((self workingCopy diffToReferenceCommit treeToShow children) size = 0) ifTrue: [aView] ifFalse:[
-		aView tree
+	self workingCopy ifNil: [ ^ aView empty ].
+	self workingCopy diffToReferenceCommit treeToShow children ifEmpty: [ ^ aView empty ].
+	^ aView tree
 			title: 'Changes';
 			items: [ self workingCopy diffToReferenceCommit treeToShow children ];
 			updateWhen: IceRepositoryModified in: Iceberg announcer;
 			children: #children;
 			expandUpTo: 3;
-			itemStencil: [ :anIceNode | 
+			stencil: [ :anIceNode | 
 				BlElement new
 					layout: BlLinearLayout horizontal;
 					constraintsDo: [ :c |
@@ -113,34 +111,30 @@ IceLibgitRepository >> gtChangesFor: aView [
 						constraintsDo: [ :c |
 							c linear horizontal alignCenter ]) ];
 							
-			actionDropdownButtonIcon: nil 
-					label: 'Commit' 
-					content: [ :aDropdown :aTarget |
-						| editor button |
-						editor := BrEditor new look: BrGlamorousRegularEditorLook.
-						button := BrButton new look: BrGlamorousButtonWithIconLook; icon: BrGlamorousVectorIcons accept; label: 'Commit'.
-						
-						button action: [
-							self executeCommit:  (editor editor text asString). 
-							button disable.
-							aDropdown enqueueTask: (BlTaskAction new action: [ 
-								aDropdown dispatchEvent: (BrDropdownHideWish new anchor: aDropdown) ])].
-						
+			actionDropdownButtonLabel: 'Commit'
+				tooltip: 'Commit changes'
+				content: [ :aDropdown :aTarget |
+					| editor button |
+					editor := BrEditor new look: BrGlamorousRegularEditorLook.
+					button := BrButton new look: BrGlamorousButtonWithIconLook; icon: BrGlamorousVectorIcons accept; label: 'Commit'.
+					
+					button action: [
+						self executeCommit:  (editor editor text asString). 
 						button disable.
-						editor editor when: BrTextEditorModifiedEvent do: 
-							[ :anEvent | ((anEvent text asString) isEmpty) 
-								ifTrue: [button disable]; 
-								ifFalse: [((self workingCopy diffToReferenceCommit treeToShow children) size = 0) ifFalse: [button enable]]].
-						BlElement new
-							constraintsDo: [:c | c horizontal exact: 400. c vertical fitContent];
-								layout: BlLinearLayout vertical;
-								padding: (BlInsets all: 10);
-								addChild: editor;
-								addChild: button]]]
-						
-						
-
-		
+						aDropdown enqueueTask: (BlTaskAction new action: [ 
+							aDropdown dispatchEvent: (BrDropdownHideWish new anchor: aDropdown) ])].
+					
+					button disable.
+					editor editor when: BrTextEditorModifiedEvent do: 
+						[ :anEvent | ((anEvent text asString) isEmpty) 
+							ifTrue: [button disable]; 
+							ifFalse: [ self workingCopy diffToReferenceCommit treeToShow children ifEmpty: [button enable]]].
+					BlElement new
+						constraintsDo: [:c | c horizontal exact: 400. c vertical fitContent];
+							layout: BlLinearLayout vertical;
+							padding: (BlInsets all: 10);
+							addChild: editor;
+							addChild: button]
 ]
 
 { #category : #'*GToolkit4Git' }
