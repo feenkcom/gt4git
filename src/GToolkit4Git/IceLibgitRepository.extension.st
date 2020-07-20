@@ -128,7 +128,7 @@ IceLibgitRepository >> gtChangesFor: aView [
 					editor editor when: BrTextEditorModifiedEvent do: 
 						[ :anEvent | ((anEvent text asString) isEmpty) 
 							ifTrue: [button disable]; 
-							ifFalse: [ self workingCopy diffToReferenceCommit treeToShow children ifEmpty: [button enable]]].
+							ifFalse: [ self workingCopy diffToReferenceCommit treeToShow children ifNotEmpty: [button enable]]].
 					BlElement new
 						constraintsDo: [:c | c horizontal exact: 400. c vertical fitContent];
 							layout: BlLinearLayout vertical;
