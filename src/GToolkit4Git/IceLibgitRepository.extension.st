@@ -99,7 +99,7 @@ IceLibgitRepository >> gtChangesFor: aView [
 						(BrGlamorousWithContextMenuLook
 							content: [ BrGlamorousSimpleContextMenuContent new
 									display:
-										{('Revert changes' -> [ :e | self workingCopy diffToReferenceCommit revertChanges: anIceNode ])};
+										{('Revert changes' -> [ self workingCopy diffToReferenceCommit revertChanges: anIceNode ])};
 									yourself ]);
 					addChild: ((anIceNode value icon asElement)
 						constraintsDo: [ :c |
