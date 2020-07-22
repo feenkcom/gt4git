@@ -31,7 +31,7 @@ IceDiff >> gtViewInspectorDiffFor: aView [
 					(BrGlamorousWithContextMenuLook
 						content: [ BrGlamorousSimpleContextMenuContent new
 								display:
-									{('Revert changes' -> [ :e | self revertChanges: anIceNode ])};
+									{('Revert changes' -> [ self revertChanges: anIceNode ])};
 								yourself ]);
 				addChild: ((anIceNode value icon asElement)
 					constraintsDo: [ :c |
