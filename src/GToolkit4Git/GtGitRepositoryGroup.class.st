@@ -16,7 +16,7 @@ GtGitRepositoryGroup >> buildButtonsContainer: aButtonsContainer listWidget: anE
 		label: 'All';
 		action: [ anElement children second items: (self repositories) ]).
 	repositoriesU := (self repositories select: 
-				[:r | [r isModified] on: Error do:[false] ]).
+				[:r | [r isModified] on: Error do:[false] ]) collect: [:r | GtGitRepository fromIcebergRepository: r].
 	label :=  repositoriesU size asString, ' Uncommited'.
 	aButtonsContainer addChild: (BrButton new 
 		look: BrGlamorousButtonWithLabelLook; beSmall; 
@@ -26,7 +26,7 @@ GtGitRepositoryGroup >> buildButtonsContainer: aButtonsContainer listWidget: anE
 	
 	repositoriesI := (self repositories select: 
 				[:r | [(IceTipRepositoryModel on: r) incomingCommits size > 0] 
-					on: Error do:[false] ]). 
+					on: Error do:[false] ]) collect: [:r | GtGitRepository fromIcebergRepository: r]. 
 	label := repositoriesI size asString, ' Incoming'.
 	aButtonsContainer addChild: (BrButton new 
 		look: BrGlamorousButtonWithLabelLook; beSmall; 
@@ -35,7 +35,7 @@ GtGitRepositoryGroup >> buildButtonsContainer: aButtonsContainer listWidget: anE
 	
 	repositoriesO := (self repositories select: 
 				[:r | [(IceTipRepositoryModel on: r) outgoingCommits size > 0] 
-					on: Error do:[false] ]). 
+					on: Error do:[false] ]) collect: [:r | GtGitRepository fromIcebergRepository: r]. 
 	label := repositoriesO size asString, ' Outgoing'.
 	aButtonsContainer addChild: (BrButton new 
 		look: BrGlamorousButtonWithLabelLook; beSmall; 
@@ -44,7 +44,7 @@ GtGitRepositoryGroup >> buildButtonsContainer: aButtonsContainer listWidget: anE
 	
 	
 	repositoriesD := (self repositories select: 
-				[:r | r workingCopy isDetached]).
+				[:r | r workingCopy isDetached]) collect: [:r | GtGitRepository fromIcebergRepository: r].
 	label := repositoriesD size asString, ' Detached Working Copy'.
 	aButtonsContainer addChild: (BrButton new 
 		look: BrGlamorousButtonWithLabelLook; beSmall; 
@@ -53,7 +53,7 @@ GtGitRepositoryGroup >> buildButtonsContainer: aButtonsContainer listWidget: anE
 	
 	repositoriesH := (self repositories select: 
 				[:r | [r head isDetached] 
-					on: Error do:[false]]).
+					on: Error do:[false]]) collect: [:r | GtGitRepository fromIcebergRepository: r].
 	label := repositoriesH size asString, ' Detached HEAD'.
 	
 	aButtonsContainer addChild: (BrButton new 
@@ -69,7 +69,7 @@ GtGitRepositoryGroup >> buildListViewFor: aView [
 	result := aView columnedList
 		title: 'Repositories' translated;
 		priority: 50;
-		send: [ :each | each repository ];
+		send: [ :each | each ];
 		updateWhen: IceRepositoryAnnouncement
 			if: [ :event | self repositories includes: event repository ]
 			in: [ Iceberg announcer ];
