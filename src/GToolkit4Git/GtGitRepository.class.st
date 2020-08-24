@@ -74,9 +74,9 @@ GtGitRepository >> gtActionRefreshFor: anAction [
 
 			| icebergRepository diff dirtyPackages |
 			icebergRepository := self repository.
-			icebergRepository isModified ifFalse: [ 
+			icebergRepository isModified ifTrue: [ 
 				"If the repository is not marked as modified no action is needed here"
-				^ self ]. 
+
 
 			"We compite the diff but only recalculate the status for dirty packages"
 			diff := IceDiff new
@@ -88,7 +88,7 @@ GtGitRepository >> gtActionRefreshFor: anAction [
 				select: [ :each | each isDirty ].
 			dirtyPackages do: [ :each |
 				each beDirty: (diff includesPackageNamed: each name) ].
-				Iceberg announcer announce: (IceRepositoryModified for: self repository)]
+				Iceberg announcer announce: (IceRepositoryModified for: self repository)]]. 
 ]
 
 { #category : #accessing }
