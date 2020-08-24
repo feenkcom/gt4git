@@ -103,7 +103,7 @@ GtGitRepository >> gtChangesFor: aView [
 		updateWhen: IceRepositoryModified in: Iceberg announcer;
 		children: #children;
 		expandUpTo: 3;
-		stencil: [ :anIceNode | 
+		stencil: [ :anIceNode |
 			BlElement new
 				layout: BlLinearLayout horizontal;
 				constraintsDo: [ :c | 
@@ -156,8 +156,7 @@ GtGitRepository >> gtChangesFor: aView [
 				do: [ :anEvent | 
 					anEvent text asString isEmpty
 						ifTrue: [ button disable ];
-						ifFalse: [ self workingCopy diffToReferenceCommit treeToShow children
-									ifNotEmpty: [ button enable ] ] ].
+						ifFalse: [  button enable ] ].
 			BlElement new
 				constraintsDo: [ :c | 
 					c horizontal exact: 400.
