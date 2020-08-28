@@ -57,6 +57,7 @@ GtGitGithubPageFormStencil >> createCloneButton [
 				location: self projectLocation ;
 				createRepository.
 		repo register.
+		Iceberg announcer announce: (IceRepositoryAnnouncement for: repo).
 		aDropdown enqueueTask:
 			(BlTaskAction new
 				action:[ aDropdown dispatchEvent: 
