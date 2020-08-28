@@ -9,14 +9,17 @@ Class {
 
 { #category : #accessing }
 GtGitRepositoryGroup >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
-	|label repositoriesU repositoriesI repositoriesO repositoriesD repositoriesH|
+	|label repositoriesA repositoriesU repositoriesI repositoriesO repositoriesD repositoriesH|
 	aButtonsContainer removeChildren.
+	repositoriesA := (self repositories) collect: [:r | GtGitRepository fromIcebergRepository: r].
 	aButtonsContainer addChild: (BrButton new 
 		look: BrGlamorousButtonWithLabelLook; beSmall; 
 		label: 'All';
-		action: [ anElement children second items: (self repositories) ]).
+		action: [ anElement children second items: repositoriesA ]).
+	
 	repositoriesU := (self repositories select: 
-				[:r | [r isModified] on: Error do:[false] ]) collect: [:r | GtGitRepository fromIcebergRepository: r].
+				[:r | [r isModified] on: Error do:[false] ]) collect: [:r | GtGitRepository fromIcebergRepository: r].				
+				
 	label :=  repositoriesU size asString, ' Uncommited'.
 	aButtonsContainer addChild: (BrButton new 
 		look: BrGlamorousButtonWithLabelLook; beSmall; 
@@ -44,7 +47,7 @@ GtGitRepositoryGroup >> buildButtonsContainer: aButtonsContainer listWidget: anE
 	
 	
 	repositoriesD := (self repositories select: 
-				[:r | r workingCopy isDetached]) collect: [:r | GtGitRepository fromIcebergRepository: r].
+				[:r | r isMissing not and: [r workingCopy isDetached]]) collect: [:r | GtGitRepository fromIcebergRepository: r].
 	label := repositoriesD size asString, ' Detached Working Copy'.
 	aButtonsContainer addChild: (BrButton new 
 		look: BrGlamorousButtonWithLabelLook; beSmall; 
@@ -71,7 +74,6 @@ GtGitRepositoryGroup >> buildListViewFor: aView [
 		priority: 50;
 		send: [ :each | each ];
 		updateWhen: IceRepositoryAnnouncement
-			if: [ :event | self repositories includes: event repository ]
 			in: [ Iceberg announcer ];
 		items: [ self repositories
 			collect: [ :eachIceRepository | (GtGitRepository fromIcebergRepository: eachIceRepository) load ] ];
@@ -98,8 +100,14 @@ GtGitRepositoryGroup >> gtRepositoriesFor: aView [
 	^ aView explicit
 		title: 'Repositories';
 		priority: 11;
-		updateWhen: IceRepositoryAnnouncement if: [:event | self repositories includes: event repository ] in: [Iceberg announcer];
+		updateWhen: IceRepositoryAnnouncement in: [Iceberg announcer];
 		actionButtonLabel: 'Fetch All' action: [self repositories collect: [:r | r fetch]];
+		actionDropdownButtonLabel: '+'
+		tooltip: 'Add Repository'
+		content: [ :aDropdown :aTarget | 
+			| editor button |
+			GtGitAddRepositoryStencil new
+			];
 		stencil: [ | aContainer aButtonsContainer aListView |
 			aContainer := BlElement new
 				layout: BlLinearLayout vertical;
