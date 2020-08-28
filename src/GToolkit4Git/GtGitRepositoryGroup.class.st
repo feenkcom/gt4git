@@ -101,12 +101,15 @@ GtGitRepositoryGroup >> gtRepositoriesFor: aView [
 		title: 'Repositories';
 		priority: 11;
 		updateWhen: IceRepositoryAnnouncement in: [Iceberg announcer];
-		actionButtonLabel: 'Fetch All' action: [self repositories collect: [:r | r fetch]];
+		actionButtonLabel: 'Fetch All' 
+			action: [self repositories collect: [:r | r fetch]];
 		actionDropdownButtonLabel: '+'
-		tooltip: 'Add Repository'
-		content: [ :aDropdown :aTarget | 
-			| editor button |
-			GtGitAddRepositoryStencil new
+			tooltip: 'Add Repository'
+			content: [ :aDropdown :aTarget | 
+			|s|
+			s := GtGitAddRepositoryStencil new.
+			s dropdown: aDropdown.
+			s			
 			];
 		stencil: [ | aContainer aButtonsContainer aListView |
 			aContainer := BlElement new
