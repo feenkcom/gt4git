@@ -3,7 +3,8 @@ Class {
 	#superclass : #BrStencil,
 	#instVars : [
 		'pager',
-		'pagerContainer'
+		'pagerContainer',
+		'dropdown'
 	],
 	#category : #GToolkit4Git
 }
@@ -14,9 +15,16 @@ GtGitAddRepositoryStencil >> create [
 ]
 
 { #category : #accessing }
+GtGitAddRepositoryStencil >> dropdown: aDropdown [ 
+	dropdown := aDropdown
+]
+
+{ #category : #accessing }
 GtGitAddRepositoryStencil >> githubPage [
-	|container button|
-	^ GtGitGithubPageFormStencil new create.
+	|container button stencil|
+	stencil := GtGitGithubPageFormStencil new.
+	stencil dropdown: dropdown.
+	^ stencil create.
 ]
 
 { #category : #accessing }
@@ -41,6 +49,7 @@ GtGitAddRepositoryStencil >> initialPage [
 { #category : #accessing }
 GtGitAddRepositoryStencil >> openGithubPage [
 	"self pager viewModel removePagesAfter: self pager viewModel pages first."
+	self assert: dropdown isNotNil.
 	self pager addPage: self githubPage.
 	self pager smoothScrollToLast.
 ]
@@ -53,11 +62,12 @@ GtGitAddRepositoryStencil >> pager [
 { #category : #accessing }
 GtGitAddRepositoryStencil >> pagerContainer [
 	pagerContainer ifNil: [
+		self assert: dropdown isNotNil.
 		pager := BrPager new.
 		pagerContainer := BlElement new.
 		pagerContainer constraintsDo: 
-			[:c | c horizontal exact: 200. 
-			c vertical exact: 300].
+			[:c | c horizontal exact: 400. 
+			c vertical exact: 100].
 		pagerContainer addChild: pager.
 		pager addPage: self initialPage].
 	^ pagerContainer

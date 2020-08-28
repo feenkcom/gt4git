@@ -3,7 +3,8 @@ Class {
 	#superclass : #BrStencil,
 	#instVars : [
 		'ownerEditor',
-		'projectEditor'
+		'projectEditor',
+		'aDropdown'
 	],
 	#category : #GToolkit4Git
 }
@@ -50,13 +51,16 @@ GtGitGithubPageFormStencil >> createCloneButton [
 	cloneButton look: (BrGlamorousButtonRectangularLook + (BrGlamorousButtonLabelLook new selectedColor: Color black)).
 	cloneButton label: 'Clone'.
 	cloneButton action: [ 
-		|repo|
-		
+		|repo|	
 		repo := IceRepositoryCreator new 
 				remote: (IceGitRemote url: ownerEditor text asString);
 				location: self projectLocation ;
 				createRepository.
-		repo register].
+		repo register.
+		aDropdown enqueueTask:
+			(BlTaskAction new
+				action:[ aDropdown dispatchEvent: 
+					(BrDropdownHideWish new anchor: aDropdown) ])].
 	filler := BlElement new.
 	cloneButton constraintsDo: [:c | c grid vertical alignCenter. c grid horizontal alignRight].
 	^ {filler . cloneButton}
@@ -93,6 +97,11 @@ GtGitGithubPageFormStencil >> createUrl [
 	ownerEditor constraintsDo: [:c | c grid vertical alignCenter].
 	^ {label . ownerEditor}
 	
+]
+
+{ #category : #accessing }
+GtGitGithubPageFormStencil >> dropdown: anObject [ 
+	aDropdown := anObject
 ]
 
 { #category : #accessing }
