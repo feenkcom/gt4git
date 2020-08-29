@@ -168,6 +168,14 @@ GtGitRepository >> gtChangesFor: aView [
 ]
 
 { #category : #accessing }
+GtGitRepository >> gtPackagesFor: aView [
+	<gtView>
+	^ self repository workingCopy 
+		ifNil: [ aView ]
+		ifNotNil: [ self repository workingCopy gtPackagesFor: aView ]
+]
+
+{ #category : #accessing }
 GtGitRepository >> gtViewIncomingCommitsFor: aView [
 	<gtView>
 	| incomingCommits |
