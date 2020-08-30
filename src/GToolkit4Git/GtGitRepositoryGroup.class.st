@@ -8,6 +8,11 @@ Class {
 }
 
 { #category : #accessing }
+GtGitRepositoryGroup >> addRepository: aRepo [
+	repos add: aRepo
+]
+
+{ #category : #accessing }
 GtGitRepositoryGroup >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
 	|label repositoriesA repositoriesU repositoriesI repositoriesO repositoriesD repositoriesH|
 	aButtonsContainer removeChildren.
@@ -109,6 +114,7 @@ GtGitRepositoryGroup >> gtRepositoriesFor: aView [
 			|s|
 			s := GtGitAddRepositoryStencil new.
 			s dropdown: aDropdown.
+			s repoGroup: self.
 			s			
 			];
 		stencil: [ | aContainer aButtonsContainer aListView |

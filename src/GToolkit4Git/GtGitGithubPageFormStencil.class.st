@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'ownerEditor',
 		'projectEditor',
-		'aDropdown'
+		'aDropdown',
+		'repoGroup'
 	],
 	#category : #GToolkit4Git
 }
@@ -57,6 +58,7 @@ GtGitGithubPageFormStencil >> createCloneButton [
 				location: self projectLocation ;
 				createRepository.
 		repo register.
+		repoGroup addRepository: repo.
 		Iceberg announcer announce: (IceRepositoryAnnouncement for: repo).
 		aDropdown enqueueTask:
 			(BlTaskAction new
@@ -116,4 +118,9 @@ GtGitGithubPageFormStencil >> projectLocation [
 	^ IceLibgitRepository repositoriesLocation 
 		/ owner
 		/ project
+]
+
+{ #category : #accessing }
+GtGitGithubPageFormStencil >> repoGroup: aGtGitRepositoryGroup [
+	repoGroup := aGtGitRepositoryGroup
 ]

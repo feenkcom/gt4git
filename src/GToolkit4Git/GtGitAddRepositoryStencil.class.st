@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'pager',
 		'pagerContainer',
-		'dropdown'
+		'dropdown',
+		'repoGroup'
 	],
 	#category : #GToolkit4Git
 }
@@ -24,6 +25,7 @@ GtGitAddRepositoryStencil >> githubPage [
 	|container button stencil|
 	stencil := GtGitGithubPageFormStencil new.
 	stencil dropdown: dropdown.
+	stencil repoGroup: repoGroup.
 	^ stencil create.
 ]
 
@@ -71,4 +73,9 @@ GtGitAddRepositoryStencil >> pagerContainer [
 		pagerContainer addChild: pager.
 		pager addPage: self initialPage].
 	^ pagerContainer
+]
+
+{ #category : #accessing }
+GtGitAddRepositoryStencil >> repoGroup: aGtGitRepositoryGroup [
+	repoGroup := aGtGitRepositoryGroup
 ]
