@@ -28,7 +28,7 @@ IcePackage >> gtPackageStatus [
 	self isLoaded ifFalse: [
 		| loadButton|
 		loadButton := BrButton new.
-		loadButton look: (BrGlamorousButtonRectangularLook + 
+		loadButton look: (BrGlamorousButtonRectangularLook + BrGlamorousButtonExteriorLook + 
 			(BrGlamorousButtonLabelLook new selectedColor: Color black)).
 		loadButton label: 'Load'.
 		loadButton action: [ self load].

@@ -31,7 +31,7 @@ GtGitAddRepositoryStencil >> githubPage [
 
 { #category : #accessing }
 GtGitAddRepositoryStencil >> initialPage [
-	|container button|
+	|container button local|
 	button := BrButton new.
 	button label: 'github'.
 	button look: BrGlamorousButtonWithLabelLook.
@@ -39,10 +39,18 @@ GtGitAddRepositoryStencil >> initialPage [
 	button constraints frame horizontal alignCenter.
 	button constraints frame vertical alignCenter.
 	
+	local := BrButton new.
+	local label: 'local'.
+	local look: BrGlamorousButtonWithLabelLook.
+	local action: [ self openLocalPage ].
+	local constraints frame horizontal alignCenter.
+	local constraints frame vertical alignCenter.
+	
 	container := BlElement new
 		viewModel: BrPagerPageModel new;
 		layout: BlFrameLayout new;
 		look: BrVerticalFlowLook new.
+	
 	container addChild: button.
 	^ container.
 	
