@@ -103,6 +103,7 @@ GtGitRepository >> gtChangesFor: aView [
 		updateWhen: IceRepositoryModified in: Iceberg announcer;
 		children: #children;
 		expandUpTo: 3;
+		priority: 10;
 		stencil: [ :anIceNode |
 			BlElement new
 				layout: BlLinearLayout horizontal;
@@ -173,6 +174,12 @@ GtGitRepository >> gtPackagesFor: aView [
 	^ self repository workingCopy 
 		ifNil: [ aView ]
 		ifNotNil: [ self repository workingCopy gtPackagesFor: aView ]
+]
+
+{ #category : #accessing }
+GtGitRepository >> gtRepositoryDirectoryFor: aView [
+	<gtView>
+	^ (self repository gtRepositoryDirectoryFor: aView) priority: 40
 ]
 
 { #category : #accessing }

@@ -9,7 +9,7 @@ IceWorkingCopy >> gtPackagesFor: aView [
 		items: [ (IceSortingStrategy new first: #modified) sort: self packages ];
 		updateWhen: IceRepositoryModified in: Iceberg announcer;
 		column: 'Name' item: #gtPackageDescription;
-		column: 'Status' item: #gtPackageStatus
+		column: 'Status' icon: #gtPackageStatus width:100
 ]
 
 { #category : #'*GToolkit4Git' }
