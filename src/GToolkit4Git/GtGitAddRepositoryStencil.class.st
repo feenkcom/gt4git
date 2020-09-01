@@ -31,9 +31,13 @@ GtGitAddRepositoryStencil >> githubPage [
 
 { #category : #accessing }
 GtGitAddRepositoryStencil >> initialPage [
-	|container button local|
+	|container button local label|
+	label := BrLabel new.
+	label look: BrGlamorousLabelLook.
+	label text: 'Import Git'.
+	label constraints grid horizontal alignCenter.
 	button := BrButton new.
-	button label: 'github'.
+	button label: 'clone'.
 	button look: BrGlamorousButtonWithLabelLook.
 	button action: [ self openGithubPage ].
 	button constraints grid horizontal alignCenter.
@@ -51,10 +55,11 @@ GtGitAddRepositoryStencil >> initialPage [
 	container constraintsDo: [ :c | 
 		c horizontal matchParent.
 		c vertical fitContent ].
-	
-	button margin: (BlInsets top: 10).
+	label margin: (BlInsets top: 20).
+	button margin: (BlInsets top: 20).
 	local margin: (BlInsets top: 10 bottom: 10).
 	local hExact: 80.
+	container addChild: label.
 	container addChild: button.
 	container addChild: local.
 	^ container.
