@@ -60,26 +60,23 @@ GtGitGithubPageFormStencil >> createCloneButton [
 		repo register.
 		repoGroup addRepository: repo.
 		Iceberg announcer announce: (IceRepositoryAnnouncement for: repo).
-		aDropdown enqueueTask:
-			(BlTaskAction new
-				action:[ aDropdown dispatchEvent: 
-					(BrDropdownHideWish new anchor: aDropdown) ])].
+		aDropdown ifNotNil: [
+			aDropdown enqueueTask:
+				(BlTaskAction new
+					action:[ aDropdown dispatchEvent: 
+						(BrDropdownHideWish new anchor: aDropdown) ])]].
 	filler := BlElement new.
-	cloneButton constraintsDo: [:c | c grid vertical alignCenter. c grid horizontal alignRight].
+	cloneButton constraintsDo: [:c | c grid vertical alignTop. c grid horizontal alignRight].
 	^ {filler . cloneButton}
 ]
 
 { #category : #accessing }
 GtGitGithubPageFormStencil >> createMainContainer [
 	|container|
-	container := BlElement new
-	viewModel: BrPagerPageModel new;
-	layout: (BlGridLayout new columnCount: 2);
-	padding: (BlInsets all: 8).
-	container
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical fitContent ].
+	container := BrPagerPageElement new
+			weight: 1.0;
+			layout: (BlGridLayout new columnCount: 2);
+			padding: (BlInsets all: 8).
 	container addChildren: self createUrl.
 	container addChildren: self createCloneButton.
 	^ container.
@@ -96,6 +93,7 @@ GtGitGithubPageFormStencil >> createUrl [
 		text: ''.
 	ownerEditor switchToEditor.
 	ownerEditor hMatchParent.
+	ownerEditor vExact: 23.
 	label constraintsDo: [:c | c grid vertical alignCenter].
 	ownerEditor constraintsDo: [:c | c grid vertical alignCenter].
 	^ {label . ownerEditor}
