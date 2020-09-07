@@ -33,32 +33,27 @@ GtGitAddRepositoryStencil >> githubPage [
 GtGitAddRepositoryStencil >> initialPage [
 	|container button local label|
 	label := BrLabel new.
-	label look: BrGlamorousLabelLook.
-	label text: 'Import Git'.
-	label constraints grid horizontal alignCenter.
+	label look: BrGlamorousLabelLook; text: 'Import Git'.
+	
 	button := BrButton new.
-	button label: 'clone'.
+	button label: 'clone'; beHuge; hExact: 100.
 	button look: BrGlamorousButtonWithLabelLook.
 	button action: [ self openGithubPage ].
-	button constraints grid horizontal alignCenter.
-	button hExact: 80.
+	
 	
 	local := BrButton new.
-	local label: 'local'.
+	local label: 'local'; beHuge; hExact: 100.
 	local look: BrGlamorousButtonWithLabelLook.
 	local action: [ self openLocalPage ].
-	local constraints grid horizontal alignCenter.
+	
+	container := BrPagerPageElement new.
+	container weight: 1.0;
+		layout: BlLinearLayout vertical alignCenter.
 
-	container := BlElement new
-		viewModel: BrPagerPageModel new;
-		layout:(BlGridLayout new columnCount: 1).
-	container constraintsDo: [ :c | 
-		c horizontal matchParent.
-		c vertical fitContent ].
 	label margin: (BlInsets top: 20).
 	button margin: (BlInsets top: 20).
 	local margin: (BlInsets top: 10 bottom: 10).
-	local hExact: 80.
+
 	container addChild: label.
 	container addChild: button.
 	container addChild: local.
@@ -89,10 +84,11 @@ GtGitAddRepositoryStencil >> localPage [
 			repo register.
 			repoGroup addRepository: repo.
 			Iceberg announcer announce: (IceRepositoryAnnouncement for: repo).
+		dropdown ifNotNil: [
 			dropdown enqueueTask:
 				(BlTaskAction new
 					action:[ dropdown dispatchEvent: 
-						(BrDropdownHideWish new anchor: dropdown) ])].
+						(BrDropdownHideWish new anchor: dropdown) ])]].
 		
 	fileBrowser fileFilterBlock: [:aFileReference | aFileReference isDirectory 
 		and: [(FileSystemDirectoryEntry reference: aFileReference) isHidden not] ].
@@ -104,7 +100,6 @@ GtGitAddRepositoryStencil >> localPage [
 { #category : #accessing }
 GtGitAddRepositoryStencil >> openGithubPage [
 	"self pager viewModel removePagesAfter: self pager viewModel pages first."
-	self assert: dropdown isNotNil.
 	self pager addPage: self githubPage.
 	self pager smoothScrollToLast.
 ]
@@ -112,7 +107,6 @@ GtGitAddRepositoryStencil >> openGithubPage [
 { #category : #accessing }
 GtGitAddRepositoryStencil >> openLocalPage [
 	"self pager viewModel removePagesAfter: self pager viewModel pages first."
-	self assert: dropdown isNotNil.
 	self pager addPage: self localPage.
 	self pager smoothScrollToLast.
 ]
@@ -125,8 +119,8 @@ GtGitAddRepositoryStencil >> pager [
 { #category : #accessing }
 GtGitAddRepositoryStencil >> pagerContainer [
 	pagerContainer ifNil: [
-		self assert: dropdown isNotNil.
 		pager := BrPager new.
+		pager matchParent.
 		pagerContainer := BlElement new.
 		pagerContainer constraintsDo: 
 			[:c | c horizontal exact: 480. 

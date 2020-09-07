@@ -9,7 +9,15 @@ IceWorkingCopy >> gtPackagesFor: aView [
 		items: [ (IceSortingStrategy new first: #modified) sort: self packages ];
 		updateWhen: IceRepositoryModified in: Iceberg announcer;
 		column: 'Name' item: #gtPackageDescription;
-		column: 'Status' icon: #gtPackageStatus width:100
+		column: 'Status' icon: #gtPackageStatus width:100;
+		actionStencil: [ GtSpotterDropdownButtonStencil new
+			object:RPackage organizer packages ;
+			actOn: [ :anActOnEvent :anItem | 
+				self addPackageNamed: anItem name.
+				Iceberg announcer announce: 
+					(IceRepositoryModified new repository: self repository).
+				anActOnEvent beActed ] ]
+		tooltip: 'Add Package'
 ]
 
 { #category : #'*GToolkit4Git' }
