@@ -2,12 +2,14 @@ Extension { #name : #IceLibgitRepository }
 
 { #category : #'*GToolkit4Git' }
 IceLibgitRepository >> gtLocalBranchesFor: aView [
+	<gtView>
 	self isMissing ifTrue: [ ^ aView ].
 	^ super gtLocalBranchesFor: aView
 ]
 
 { #category : #'*GToolkit4Git' }
 IceLibgitRepository >> gtRemoteBranchesFor: aView [
+	<gtView>
 	self isMissing ifTrue: [ ^ aView ].
 	^ super gtRemoteBranchesFor: aView
 ]
@@ -23,6 +25,7 @@ IceLibgitRepository >> gtRepositoryDirectoryFor: aView [
 
 { #category : #'*GToolkit4Git' }
 IceLibgitRepository >> gtTagsFor: aView [
+	<gtView>
 	self isMissing ifTrue: [ ^ aView ].
 	^ super gtTagsFor: aView
 ]
