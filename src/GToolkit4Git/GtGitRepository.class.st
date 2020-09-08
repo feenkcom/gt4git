@@ -92,6 +92,15 @@ GtGitRepository >> gtActionRefreshFor: anAction [
 ]
 
 { #category : #accessing }
+GtGitRepository >> gtActionRepairFor: anAction [
+	<gtAction>
+	self isMissing ifTrue: [ ^ anAction ].
+	^ anAction dropdown
+		label: 'Repair';
+		content: [GtGitRepositoryRepairStencil new repository:repository ].
+]
+
+{ #category : #accessing }
 GtGitRepository >> gtChangesFor: aView [
 	<gtView>
 	self workingCopy ifNil: [ ^ aView empty ].

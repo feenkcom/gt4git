@@ -87,10 +87,7 @@ GtGitRepositoryRepairStencil >> openPageForAction: aGtGitRepairAction [
 	pager addPage: (BrPagerPageElement new
 					layout: BlLinearLayout vertical alignCenter;
 					weight: 1.0;
-					addChild: (BrEditor new
-						look: BrGlamorousRegularEditorLook new;
-						"beEditable;"
-						text: aGtGitRepairAction class iceTipClass help)).
+					addChild: aGtGitRepairAction repairStencil).
 				pager scrollToLast
 ]
 
