@@ -95,9 +95,12 @@ GtGitRepository >> gtActionRefreshFor: anAction [
 GtGitRepository >> gtActionRepairFor: anAction [
 	<gtAction>
 	self isMissing ifTrue: [ ^ anAction ].
+	(GtGitRepairAction subclasses 
+		select: [:sc | sc iceTipClass isAvailableFor: repository]) size = 0 ifTrue: [ ^ anAction ].
 	^ anAction dropdown
 		label: 'Repair';
-		content: [GtGitRepositoryRepairStencil new repository:repository ].
+		content: [:aDropdown | 
+			GtGitRepositoryRepairStencil new repository:repository; dropdown: aDropdown ].
 ]
 
 { #category : #accessing }

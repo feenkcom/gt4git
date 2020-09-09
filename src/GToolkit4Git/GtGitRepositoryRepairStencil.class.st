@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'container',
 		'pager',
-		'repository'
+		'repository',
+		'dropdown'
 	],
 	#category : #GToolkit4Git
 }
@@ -62,13 +63,18 @@ GtGitRepositoryRepairStencil >> createMainContainer [
 GtGitRepositoryRepairStencil >> createRepairButtonsList [
 	| local |
 	^ ((GtGitRepairAction subclasses select: [:sc | sc iceTipClass isAvailableFor: repository]) 
-		collect: [:sc | sc new repository: repository]) 
+		collect: [:sc | sc new repository: repository; dropdown: dropdown]) 
 		collect: [:a | 
 			local := BrButton new.
 			local label: (a class iceTipClass title); beHuge; hFitContent.
 			local look: BrGlamorousButtonWithLabelLook.
 			local action: [ self openPageForAction: a ].
 			local ]
+]
+
+{ #category : #accessing }
+GtGitRepositoryRepairStencil >> dropdown: aDropdown [ 
+	dropdown := aDropdown
 ]
 
 { #category : #accessing }

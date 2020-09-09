@@ -27,7 +27,7 @@ BrFileBrowserSrcSelector >> createSelectButton [
 				look: (BrGlamorousButtonRectangularLook new + BrGlamorousButtonLabelLook new+ BrGlamorousButtonExteriorLook new).
 	selectButton action: [
 		onSrcFolderSelected ifNotNil: [
-			onSrcFolderSelected value: (selectedFolderLabel text asFileReference)
+			onSrcFolderSelected value: (selectedFolderLabel text asString asFileReference)
 		].
 	].
 	container addChild: selectedFolderLabel.

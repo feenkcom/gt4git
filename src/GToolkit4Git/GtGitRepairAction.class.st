@@ -2,7 +2,8 @@ Class {
 	#name : #GtGitRepairAction,
 	#superclass : #GtGitAction,
 	#instVars : [
-		'repository'
+		'repository',
+		'dropdown'
 	],
 	#category : #'GToolkit4Git-Actions'
 }
@@ -10,6 +11,11 @@ Class {
 { #category : #accessing }
 GtGitRepairAction class >> iceTipClass [
 	^ self subclassResponsibility
+]
+
+{ #category : #accessing }
+GtGitRepairAction >> dropdown: aDropdown [
+	dropdown := aDropdown
 ]
 
 { #category : #accessing }
