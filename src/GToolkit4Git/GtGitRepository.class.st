@@ -181,6 +181,11 @@ GtGitRepository >> gtChangesFor: aView [
 ]
 
 { #category : #accessing }
+GtGitRepository >> gtDisplayOn: aStream [
+	aStream nextPutAll: self repository repositoryDirectory pathString
+]
+
+{ #category : #accessing }
 GtGitRepository >> gtPackagesFor: aView [
 	<gtView>
 	^ self repository workingCopy 
