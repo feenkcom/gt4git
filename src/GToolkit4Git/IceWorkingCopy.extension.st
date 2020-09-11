@@ -12,6 +12,8 @@ IceWorkingCopy >> gtPackagesFor: aView [
 		column: 'Status' icon: #gtPackageStatus width:100;
 		actionStencil: [ GtSpotterDropdownButtonStencil new
 			object:RPackage organizer packages ;
+			tooltip: 'Add Package';
+			icon:BrGlamorousVectorIcons add;
 			actOn: [ :anActOnEvent :anItem | 
 				self addPackageNamed: anItem name.
 				Iceberg announcer announce: 
