@@ -15,13 +15,13 @@ GtGitRepairProject >> repairStencil [
 	container := BrVerticalPane new.
 	container matchParent.
 	container padding: (BlInsets all: 10).
-	srcSelector := BrFileBrowserSrcSelector new folder: repository repositoryDirectory.
+	srcSelector := BrFileSelector new folder: repository repositoryDirectory.
 	container addChild:(BrEditor new
 		look: BrGlamorousRegularEditorLook new;
 		vFitContent;
 		text: self class iceTipClass help).
 	container addChild: srcSelector.
-	srcSelector onSrcFolderSelected: [:srcFolder |
+	srcSelector okAction: [:srcFolder |
 		|model|
 		model := IceBasicProject onRepository: repository.
 		model sourceDirectory: (srcFolder relativeTo: (repository repositoryDirectory)) pathString.
