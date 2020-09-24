@@ -11,6 +11,12 @@ IcePackage >> gtActionLoadFor: anAction [
 ]
 
 { #category : #'*GToolkit4Git' }
+IcePackage >> gtDefinedClassesFor: aView [
+	<gtView>
+	^ self name asPackage gtDefinedClassesFor: aView
+]
+
+{ #category : #'*GToolkit4Git' }
 IcePackage >> gtPackageDescription [
 	| description |
 	description := self name asRopedText.
