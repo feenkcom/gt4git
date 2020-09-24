@@ -17,6 +17,17 @@ IcePackage >> gtDefinedClassesFor: aView [
 ]
 
 { #category : #'*GToolkit4Git' }
+IcePackage >> gtPackageBrowse [
+	|loadButton|
+	loadButton := BrButton new.
+	loadButton look: (BrGlamorousButtonRectangularLook + BrGlamorousButtonExteriorLook + 
+		(BrGlamorousButtonIconLook  new)).
+	loadButton icon: BrGlamorousIcons browse.
+	loadButton action: [ (GtCoder forPackage: (self name asPackage)) openInPager].
+	^ loadButton
+]
+
+{ #category : #'*GToolkit4Git' }
 IcePackage >> gtPackageDescription [
 	| description |
 	description := self name asRopedText.
