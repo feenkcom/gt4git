@@ -11,9 +11,11 @@ IcePackage >> gtActionLoadFor: anAction [
 ]
 
 { #category : #'*GToolkit4Git' }
-IcePackage >> gtDefinedClassesFor: aView [
+IcePackage >> gtCoderFor: aView [
 	<gtView>
-	^ self name asPackage gtDefinedClassesFor: aView
+	^ aView explicit
+		title: 'Coder';
+		stencil: [(GtCoder forPackage: (self name asPackage)) beDetailedTool ]
 ]
 
 { #category : #'*GToolkit4Git' }
