@@ -11,20 +11,11 @@ IcePackage >> gtActionLoadFor: anAction [
 ]
 
 { #category : #'*GToolkit4Git' }
-IcePackage >> gtDefinedClassesFor: aView [
+IcePackage >> gtCoderFor: aView [
 	<gtView>
-	^ self name asPackage gtDefinedClassesFor: aView
-]
-
-{ #category : #'*GToolkit4Git' }
-IcePackage >> gtPackageBrowse [
-	|loadButton|
-	loadButton := BrButton new.
-	loadButton look: (BrGlamorousButtonRectangularLook + BrGlamorousButtonExteriorLook + 
-		(BrGlamorousButtonIconLook  new)).
-	loadButton icon: BrGlamorousIcons browse.
-	loadButton action: [ (GtCoder forPackage: (self name asPackage)) openInPager].
-	^ loadButton
+	^ aView explicit
+		title: 'Coder';
+		stencil: [(GtCoder forPackage: (self name asPackage)) beDetailedTool ]
 ]
 
 { #category : #'*GToolkit4Git' }
