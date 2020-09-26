@@ -13,6 +13,9 @@ IcePackage >> gtActionLoadFor: anAction [
 { #category : #'*GToolkit4Git' }
 IcePackage >> gtCoderFor: aView [
 	<gtView>
+	self isLoaded ifFalse: [ 
+		"Ideally this would show a view of the package on disk"
+		^ aView empty ].
 	^ aView explicit
 		title: 'Coder';
 		stencil: [(GtCoder forPackage: (self name asPackage)) beDetailedTool ]
