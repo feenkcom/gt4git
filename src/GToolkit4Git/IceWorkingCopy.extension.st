@@ -10,7 +10,10 @@ IceWorkingCopy >> gtPackagesFor: aView [
 		updateWhen: IceRepositoryModified in: Iceberg announcer;
 		column: 'Name' item: #gtPackageDescription;
 		column: 'Status' icon: #gtPackageStatus width:100;
-		sendTool: [ :aPackage | (GtPackageCoderTool package: (aPackage name asPackage))];
+		sendTool: [ :aPackage | 
+			aPackage isLoaded
+				ifTrue: [ GtPackageCoderTool package: (aPackage name asPackage) ]
+				ifFalse: [ GtInspectorTool forObject: aPackage ] ];
 		actionStencil: [ GtSpotterDropdownButtonStencil new
 			object:RPackage organizer packages ;
 			tooltip: 'Add Package';
