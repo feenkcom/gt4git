@@ -18,7 +18,7 @@ IcePackage >> gtCoderFor: aView [
 		^ aView empty ].
 	^ aView explicit
 		title: 'Coder';
-		stencil: [(GtCoder forPackage: (self name asPackage)) beDetailedTool ]
+		stencil: [(GtCoder forPackage: (self name asPackage)) beDetailedLevel ]
 ]
 
 { #category : #'*GToolkit4Git' }
