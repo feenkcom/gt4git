@@ -12,7 +12,7 @@ IceCommit >> gtCommitAncestorsDominanceTreeFor: aView [
 					| element |
 					element := BlElement new.
 					element 	
-						geometry: BlEllipse new;
+						geometry: BlEllipseGeometry new;
 						border: (BlBorder paint: Color black width: 1);
 						size: 10@10;
 						constraintsDo: [ :constraints | constraints padding: (BlInsets all: 5).
@@ -35,7 +35,7 @@ IceCommit >> gtCommitAncestorsTreeFor: aView [
 					| element |
 					element := BlElement new.
 					element 	
-						geometry: BlEllipse new;
+						geometry: BlEllipseGeometry new;
 						border: (BlBorder paint: Color black width: 1);
 						size: 10@10;
 						constraintsDo: [ :constraints | constraints padding: (BlInsets all: 5).
