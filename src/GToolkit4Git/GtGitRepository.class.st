@@ -174,12 +174,14 @@ GtGitRepository >> gtChangesFor: aView [
 					self recentCommitMessage: editor text asString.
 					self executeCommit: editor editor text asString.
 					button disable.
+					self resetCurrentCommitMessage.
 					aDropdown
 						enqueueTask:
 							(BlTaskAction new
 								action:
 									[ aDropdown dispatchEvent: (BrDropdownHideWish new anchor: aDropdown) ]) ].
-			button disable.
+			editor text ifEmpty: [ 
+				button disable ].
 			editor editor
 				when: BrTextEditorModifiedEvent
 				do: [ :anEvent | 
@@ -306,6 +308,11 @@ GtGitRepository >> reset [
 	status := nil.
 	headDescription := nil.
 	isModified := nil
+]
+
+{ #category : #accessing }
+GtGitRepository >> resetCurrentCommitMessage [
+	currentCommitMessage := nil
 ]
 
 { #category : #accessing }
