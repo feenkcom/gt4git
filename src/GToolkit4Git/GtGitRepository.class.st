@@ -155,6 +155,8 @@ GtGitRepository >> gtChangesFor: aView [
 			| editor button |
 			editor := BrEditor new look: BrGlamorousRegularEditorLook.
 			editor text: self recentCommitMessage.
+			editor selecter all; select.
+			
 			button := BrButton new
 				look: BrGlamorousButtonWithIconLook;
 				icon: BrGlamorousVectorIcons accept;
