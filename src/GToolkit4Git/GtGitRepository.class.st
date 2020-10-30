@@ -7,6 +7,9 @@ Class {
 		'headDescription',
 		'isModified'
 	],
+	#classVars : [
+		'RecentMessage'
+	],
 	#category : #GToolkit4Git
 }
 
@@ -151,12 +154,15 @@ GtGitRepository >> gtChangesFor: aView [
 			content: [ :aDropdown :aTarget | 
 			| editor button |
 			editor := BrEditor new look: BrGlamorousRegularEditorLook.
+			editor text: self recentCommitMessage.
 			button := BrButton new
 				look: BrGlamorousButtonWithIconLook;
 				icon: BrGlamorousVectorIcons accept;
 				label: 'Commit'.
 			button
-				action: [ self executeCommit: editor editor text asString.
+				action: [ 
+					self recentCommitMessage: editor text asString.
+					self executeCommit: editor editor text asString.
 					button disable.
 					aDropdown
 						enqueueTask:
@@ -261,6 +267,16 @@ GtGitRepository >> name [
 
 { #category : #accessing }
 GtGitRepository >> pull [
+]
+
+{ #category : #accessing }
+GtGitRepository >> recentCommitMessage [
+	^ RecentMessage ifNil: [ '' ]
+]
+
+{ #category : #accessing }
+GtGitRepository >> recentCommitMessage: aString [ 
+	RecentMessage := aString asString
 ]
 
 { #category : #accessing }
