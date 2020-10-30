@@ -5,10 +5,11 @@ Class {
 		'repository',
 		'status',
 		'headDescription',
-		'isModified'
+		'isModified',
+		'currentCommitMessage'
 	],
 	#classVars : [
-		'RecentMessage'
+		'RecentCommitMessage'
 	],
 	#category : #GToolkit4Git
 }
@@ -16,6 +17,13 @@ Class {
 { #category : #'instance creation' }
 GtGitRepository class >> fromIcebergRepository: anIceRepository [
 	^ self new repository: anIceRepository
+]
+
+{ #category : #accessing }
+GtGitRepository >> currentCommitMessage [
+	<return: #BlText>
+	^ currentCommitMessage ifNil: [
+		currentCommitMessage := self recentCommitMessage asRopedText ]
 ]
 
 { #category : #accessing }
@@ -154,7 +162,7 @@ GtGitRepository >> gtChangesFor: aView [
 			content: [ :aDropdown :aTarget | 
 			| editor button |
 			editor := BrEditor new look: BrGlamorousRegularEditorLook.
-			editor text: self recentCommitMessage.
+			editor text: self currentCommitMessage.
 			editor selecter all; select.
 			
 			button := BrButton new
@@ -175,7 +183,7 @@ GtGitRepository >> gtChangesFor: aView [
 			editor editor
 				when: BrTextEditorModifiedEvent
 				do: [ :anEvent | 
-					anEvent text asString isEmpty
+					anEvent text isEmpty
 						ifTrue: [ button disable ];
 						ifFalse: [  button enable ] ].
 			BlElement new
@@ -273,12 +281,12 @@ GtGitRepository >> pull [
 
 { #category : #accessing }
 GtGitRepository >> recentCommitMessage [
-	^ RecentMessage ifNil: [ '' ]
+	^ RecentCommitMessage ifNil: [ '' ]
 ]
 
 { #category : #accessing }
 GtGitRepository >> recentCommitMessage: aString [ 
-	RecentMessage := aString asString
+	RecentCommitMessage := aString asString
 ]
 
 { #category : #accessing }
