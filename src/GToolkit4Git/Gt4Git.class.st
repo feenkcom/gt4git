@@ -98,6 +98,7 @@ Gt4Git >> gtRepositoriesFor: aView [
 		title: 'Repositories';
 		priority: 11;
 		updateWhen: IceRepositoryAnnouncement in: [Iceberg announcer];
+		addAutoUpdate: GtPhlowUpdateViewOnAddedToScene;
 		actionButtonLabel: 'Fetch All' 
 			action: [self repositories collect: [:r | r fetch]];
 		actionDropdownButtonLabel: '+'
