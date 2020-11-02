@@ -82,7 +82,6 @@ GtGitAddRepositoryStencil >> localPage [
 			location: filePath;
 			createRepository.
 			repo register.
-			repoGroup addRepository: repo.
 			Iceberg announcer announce: (IceRepositoryAnnouncement for: repo).
 		dropdown ifNotNil: [
 			dropdown enqueueTask:
