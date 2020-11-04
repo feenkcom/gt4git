@@ -35,9 +35,10 @@ IceDiff >> gtViewInspectorDiffFor: aView [
 								yourself ]);
 				addChild: ((anIceNode value icon asElement)
 					constraintsDo: [ :c |
-						c linear horizontal alignCenter ]);
-				addChild: (BlTextElement new 
-					text: anIceNode key asString asRopedText;
+						c linear vertical alignCenter ]);
+				addChild: (BrLabel new 
+					text: anIceNode key asString;
+					look: BrGlamorousLabelLook;
 					padding: (BlInsets top: 3 left: 6 bottom: 0 right: 3);
 					constraintsDo: [ :c |
 						c linear horizontal alignCenter ]) ]
