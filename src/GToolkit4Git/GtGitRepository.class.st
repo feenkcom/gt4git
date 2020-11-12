@@ -222,7 +222,7 @@ GtGitRepository >> gtViewIncomingCommitsFor: aView [
 	<gtView>
 	| incomingCommits |
 	incomingCommits := GtRlIceCommitsGroup forCommits: self repository incomingCommits.
-	incomingCommits commits ifEmpty: [ ^ aView ].
+	incomingCommits commits ifEmpty: [ ^ aView empty ].
 	
 	^ (incomingCommits gtViewCommitsListFor: aView)
 		title: 'Incoming commits' translated;
@@ -242,7 +242,7 @@ GtGitRepository >> gtViewOutgoingCommitsFor: aView [
 	| outgoingCommits |
 	outgoingCommits := GtRlIceCommitsGroup forCommits: self repository outgoingCommits.
 	^ outgoingCommits commits
-		ifEmpty: [ aView ]
+		ifEmpty: [ aView empty ]
 		ifNotEmpty: [ 
 			(outgoingCommits gtViewCommitsListFor: aView)
 				title: 'Outgoing commits';
