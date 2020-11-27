@@ -232,13 +232,14 @@ GtGitRepository >> gtViewIncomingCommitsFor: aView [
 	^ (incomingCommits gtViewCommitsListFor: aView)
 		title: 'Incoming commits' translated;
 		priority: 10;
-		actionButtonLabel: 'Merge' action: [ 
+		actionButtonLabel: 'Merge' action: [ :aButton |
 			| remoteBranch |
 			remoteBranch := self repository branch upstream remote 
 				remoteBranchNamed: self repository branch name 
 				ifAbsent: [ self repository branch ].
 			self repository workingCopy mergeCommit: remoteBranch commit.
-			Iceberg announcer announce: (IceRepositoryModified for: self repository) ]
+			Iceberg announcer announce: (IceRepositoryModified for: self repository).
+			aButton phlow fireUpdateWish ]
 ]
 
 { #category : #accessing }
