@@ -43,9 +43,10 @@ GtGitRepository >> gtActionFetchFor: anAction [
 	self isMissing ifTrue: [ ^ anAction ].
 	^ anAction button
 		label: 'Fetch';
-		action: [ 
+		action: [ :aButton |
 			(IceTipRepositoryModel on: self repository) fetch.
-				Iceberg announcer announce: (IceRepositoryModified for: self repository) ]
+			Iceberg announcer announce: (IceRepositoryModified for: self repository).
+			aButton phlow fireUpdateWish ]
 ]
 
 { #category : #accessing }
@@ -57,7 +58,8 @@ GtGitRepository >> gtActionPullFor: anAction [
 		label: 'Pull';
 		action: [ :aButton | 
 			self repository pull.
-			Iceberg announcer announce: (IceRepositoryModified for: self repository) ]
+			Iceberg announcer announce: (IceRepositoryModified for: self repository).
+			aButton phlow fireUpdateWish ]
 ]
 
 { #category : #accessing }
@@ -69,7 +71,9 @@ GtGitRepository >> gtActionPushFor: anAction [
 		label: 'Push';
 		action: [ :aButton | 
 			self repository push.
-			Iceberg announcer announce: (IceRepositoryModified for: self repository) ]
+			Iceberg announcer announce: (IceRepositoryModified for: self repository).
+			
+			aButton phlow fireUpdateWish ]
 ]
 
 { #category : #accessing }
@@ -78,7 +82,7 @@ GtGitRepository >> gtActionRefreshFor: anAction [
 	self isMissing ifTrue: [ ^ anAction ].
 	^ anAction button
 		label: 'Refresh';
-		action: [ 
+		action: [ :aButton |
 		
 			"Aim to only recalculate the dirty flag for packages that are marked as dirty.
 			We skip packages that are not marked as dirty."
@@ -99,7 +103,9 @@ GtGitRepository >> gtActionRefreshFor: anAction [
 				select: [ :each | each isDirty ].
 			dirtyPackages do: [ :each |
 				each beDirty: (diff includesPackageNamed: each name) ].
-				Iceberg announcer announce: (IceRepositoryModified for: self repository)]]. 
+				Iceberg announcer announce: (IceRepositoryModified for: self repository)]. 
+				
+			aButton phlow fireUpdateWish ]. 
 ]
 
 { #category : #accessing }
@@ -175,11 +181,10 @@ GtGitRepository >> gtChangesFor: aView [
 					self executeCommit: editor editor text asString.
 					button disable.
 					self resetCurrentCommitMessage.
-					aDropdown
-						enqueueTask:
-							(BlTaskAction new
-								action:
-									[ aDropdown dispatchEvent: (BrDropdownHideWish new anchor: aDropdown) ]) ].
+					aDropdown enqueueTask: (BlTaskAction new
+						action: [ 
+							aDropdown dispatchEvent: (BrDropdownHideWish new anchor: aDropdown).
+							aDropdown phlow fireUpdateWish ]) ].
 			editor text ifEmpty: [ 
 				button disable ].
 			editor editor
@@ -227,13 +232,14 @@ GtGitRepository >> gtViewIncomingCommitsFor: aView [
 	^ (incomingCommits gtViewCommitsListFor: aView)
 		title: 'Incoming commits' translated;
 		priority: 10;
-		actionButtonLabel: 'Merge' action: [ 
+		actionButtonLabel: 'Merge' action: [ :aButton |
 			| remoteBranch |
 			remoteBranch := self repository branch upstream remote 
 				remoteBranchNamed: self repository branch name 
 				ifAbsent: [ self repository branch ].
 			self repository workingCopy mergeCommit: remoteBranch commit.
-			Iceberg announcer announce: (IceRepositoryModified for: self repository) ]
+			Iceberg announcer announce: (IceRepositoryModified for: self repository).
+			aButton phlow fireUpdateWish ]
 ]
 
 { #category : #accessing }
