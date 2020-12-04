@@ -14,7 +14,7 @@ Gt4Git >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
 		addChild:
 			(BrButton new
 				look: BrGlamorousButtonWithLabelLook;
-				beSmallSize;
+				beSmall;
 				label: 'All';
 				action: [ anElement children second items: repositoriesA ]).
 	repositoriesU := (self repositories
@@ -28,7 +28,7 @@ Gt4Git >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
 		addChild:
 			(BrButton new
 				look: BrGlamorousButtonWithLabelLook;
-				beSmallSize;
+				beSmall;
 				label: label;
 				action: [ anElement children second items: repositoriesU ]).
 	repositoriesI := (self repositories
@@ -42,7 +42,7 @@ Gt4Git >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
 		addChild:
 			(BrButton new
 				look: BrGlamorousButtonWithLabelLook;
-				beSmallSize;
+				beSmall;
 				label: label;
 				action: [ anElement children second items: repositoriesI ]).
 	repositoriesO := (self repositories
@@ -56,7 +56,7 @@ Gt4Git >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
 		addChild:
 			(BrButton new
 				look: BrGlamorousButtonWithLabelLook;
-				beSmallSize;
+				beSmall;
 				label: label;
 				action: [ anElement children second items: repositoriesO ]).
 	repositoriesD := (self repositories
@@ -67,7 +67,7 @@ Gt4Git >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
 		addChild:
 			(BrButton new
 				look: BrGlamorousButtonWithLabelLook;
-				beSmallSize;
+				beSmall;
 				label: label;
 				action: [ anElement children second items: repositoriesD ]).
 	repositoriesH := (self repositories
@@ -81,7 +81,7 @@ Gt4Git >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
 		addChild:
 			(BrButton new
 				look: BrGlamorousButtonWithLabelLook;
-				beSmallSize;
+				beSmall;
 				label: label;
 				action: [ anElement children second items: repositoriesH ])
 ]
