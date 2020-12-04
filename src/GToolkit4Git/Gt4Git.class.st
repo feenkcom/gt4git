@@ -135,6 +135,15 @@ Gt4Git >> gtRepositoriesFor: aView [
 			aContainer ]
 ]
 
+{ #category : #'gt-extensions' }
+Gt4Git >> gtUpdateFor: anAction [
+	<gtAction>
+	^ anAction button
+		icon: BrGlamorousVectorIcons refresh;
+		tooltip: 'Refresh all views';
+		action: [ :aButton | aButton phlow fireUpdateWish ]
+]
+
 { #category : #accessing }
 Gt4Git >> repositories [
 	|repos|
