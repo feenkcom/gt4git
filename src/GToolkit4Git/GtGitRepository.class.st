@@ -167,15 +167,20 @@ GtGitRepository >> gtChangesFor: aView [
 			tooltip: 'Commit changes'
 			content: [ :aDropdown :aTarget | 
 			| editor button |
-			editor := BrEditor new look: BrGlamorousRegularEditorLook.
-			editor text: self currentCommitMessage.
+			
+			editor := BrEditor new
+				hMatchParent;
+				vFitContentLimited;
+				look: BrGlamorousRegularEditorLook;
+				text: self currentCommitMessage.
 			editor selecter all; select.
 			
-			button := BrButton new
+			button := BrButton new.
+			button
 				look: BrGlamorousButtonWithIconLook;
 				icon: BrGlamorousVectorIcons accept;
-				label: 'Commit'.
-			button
+				label: 'Commit';
+				disabled: editor text isEmpty;
 				action: [ 
 					self recentCommitMessage: editor text asString.
 					self executeCommit: editor editor text asString.
@@ -185,22 +190,16 @@ GtGitRepository >> gtChangesFor: aView [
 						action: [ 
 							aDropdown dispatchEvent: (BrDropdownHideWish new anchor: aDropdown).
 							aDropdown phlow fireUpdateWish ]) ].
-			editor text ifEmpty: [ 
-				button disable ].
+
 			editor editor
 				when: BrTextEditorModifiedEvent
-				do: [ :anEvent | 
-					anEvent text isEmpty
-						ifTrue: [ button disable ];
-						ifFalse: [  button enable ] ].
-			BlElement new
-				constraintsDo: [ :c | 
-					c horizontal exact: 400.
-					c vertical fitContent ];
-				layout: BlLinearLayout vertical;
+				do: [ :anEvent | button disabled: anEvent text isEmpty ].
+
+			BrVerticalPane new
+				hExact: 400;
+				vFitContentLimited;
 				padding: (BlInsets all: 10);
-				addChild: editor;
-				addChild: button ]
+				addChildren: { editor . button } ]
 ]
 
 { #category : #accessing }
