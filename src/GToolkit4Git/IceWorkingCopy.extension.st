@@ -14,7 +14,7 @@ IceWorkingCopy >> gtPackagesFor: aView [
 			aPackage isLoaded
 				ifTrue: [ GtPackageCoderTool package: (aPackage name asPackage) ]
 				ifFalse: [ GtInspectorTool forObject: aPackage ] ];
-		actionStencil: [ GtSpotterDropdownButtonStencil new
+		actionStencil: [ :anElement | GtSpotterDropdownButtonStencil new
 			object:RPackage organizer packages ;
 			tooltip: 'Add Package';
 			icon:BrGlamorousVectorIcons add;
@@ -22,6 +22,7 @@ IceWorkingCopy >> gtPackagesFor: aView [
 				self addPackageNamed: anItem name.
 				Iceberg announcer announce: 
 					(IceRepositoryModified new repository: self repository).
+				anElement phlow fireUpdateWish.
 				anActOnEvent beActed ] ]
 		tooltip: 'Add Package'
 ]
