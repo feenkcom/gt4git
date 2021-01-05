@@ -123,7 +123,7 @@ Gt4Git >> gtRepositoriesFor: aView [
 		updateWhen: IceRepositoryAnnouncement in: [Iceberg announcer];
 		addAutoUpdate: GtPhlowUpdateViewOnAddedToScene;
 		actionButtonLabel: 'Fetch All' 
-			action: [self repositories collect: [:r | r fetch]];
+			action: [[self repositories collect: [:r | r fetch]] fork];
 		actionDropdownButtonLabel: '+'
 			tooltip: 'Add Repository'
 			content: [ :aDropdown :aTarget | 
