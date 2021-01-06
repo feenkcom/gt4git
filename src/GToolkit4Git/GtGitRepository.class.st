@@ -43,6 +43,7 @@ GtGitRepository >> gtActionFetchFor: anAction [
 	self isMissing ifTrue: [ ^ anAction ].
 	^ anAction button
 		label: 'Fetch';
+		priority: 2;
 		action: [ :aButton |
 			(IceTipRepositoryModel on: self repository) fetch.
 			Iceberg announcer announce: (IceRepositoryModified for: self repository).
@@ -56,6 +57,7 @@ GtGitRepository >> gtActionPullFor: anAction [
 	(IceTipRepositoryModel on:self repository) isDetached ifTrue: [ ^ anAction ].
 	^ anAction button
 		label: 'Pull';
+		priority: 3;
 		action: [ :aButton | 
 			self repository pull.
 			Iceberg announcer announce: (IceRepositoryModified for: self repository).
@@ -69,6 +71,7 @@ GtGitRepository >> gtActionPushFor: anAction [
 	(IceTipRepositoryModel on:self repository) isDetached ifTrue: [ ^ anAction ].
 	^ anAction button
 		label: 'Push';
+		priority: 4;
 		action: [ :aButton | 
 			self repository push.
 			Iceberg announcer announce: (IceRepositoryModified for: self repository).
@@ -82,6 +85,7 @@ GtGitRepository >> gtActionRefreshFor: anAction [
 	self isMissing ifTrue: [ ^ anAction ].
 	^ anAction button
 		label: 'Refresh';
+		priority: 1;
 		action: [ :aButton |
 		
 			"Aim to only recalculate the dirty flag for packages that are marked as dirty.
