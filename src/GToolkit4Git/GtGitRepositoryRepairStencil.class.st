@@ -21,42 +21,33 @@ GtGitRepositoryRepairStencil >> createMainContainer [
 		pager := BrPager new.
 		pager matchParent.
 		container := BlElement new.
-		container constraintsDo: 
-			[:c | c horizontal exact: 480. 
-			c vertical exact: 400].
+		container size: 480@400.
 		container addChild: pager.
 		pager addPage: self initialPage.
-	
-		container constraintsDo: 
-			[:c | c horizontal exact: 480. 
-			c vertical exact: 400].
-	container  addChild: (BrResizer new
+
+		container addChild: (BrResizer new
 			target: container ;
 			beBottom;
 			look: (BrGlamorousResizerLook new);
-			when: BlResizerResizedEvent do: [ :anEvent | container  fireEvent: (GtSpotterResizedEvent target: container ) ];
 			constraintsDo: [ :c | 
 				c ignoreByLayout.
 				c ignored horizontal weight: 0.2 ]).
-	container  addChild: (BrResizer new
+		container addChild: (BrResizer new
 			target:container;
 			beLeft;
 			look: BrGlamorousResizerLook;
-			when: BlResizerResizedEvent do: [ :anEvent | container  fireEvent: (GtSpotterResizedEvent target: container ) ];
 			constraintsDo: [ :c | 
 				c ignoreByLayout.
 				c ignored vertical weight: 0.2 ]).
-	container addChild: (BrResizer new
+		container addChild: (BrResizer new
 			target: container ;
 			beRight;
 			look: BrGlamorousResizerLook;
-			when: BlResizerResizedEvent do: [ :anEvent | container  fireEvent: (GtSpotterResizedEvent target: container ) ];
 			constraintsDo: [ :c | 
 				c ignoreByLayout.
-				c ignored vertical weight: 0.2 ])].
-	
+				c ignored vertical weight: 0.2 ]) ].
+
 	^ container
-	
 ]
 
 { #category : #accessing }
