@@ -207,6 +207,15 @@ GtGitRepository >> gtChangesFor: aView [
 ]
 
 { #category : #accessing }
+GtGitRepository >> gtCommitsFor: aView [
+	<gtView>
+	^ aView forward
+		title: 'Commits';
+		object: [ self repository branch ];
+		view: #gtCommitsFor:
+]
+
+{ #category : #accessing }
 GtGitRepository >> gtDisplayOn: aStream [
 	aStream nextPutAll: self repository repositoryDirectory pathString
 ]
