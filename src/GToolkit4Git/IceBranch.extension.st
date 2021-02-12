@@ -16,7 +16,7 @@ IceBranch >> gtCommitsFor: aView [
 		items: [ self commits ];
 		column: 'Timestamp' item: [ :aCommit | aCommit timeStamp asStringYMDHM ] width: 120;
 		column: 'Commit' item: #shortId width: 70;
-		column: 'Author' item: #author;
+		column: 'Author' item: #author width: 100;
 		column: 'Description' item: #comment
 ]
 
