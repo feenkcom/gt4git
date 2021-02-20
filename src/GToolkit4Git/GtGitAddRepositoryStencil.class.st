@@ -31,34 +31,36 @@ GtGitAddRepositoryStencil >> githubPage [
 
 { #category : #accessing }
 GtGitAddRepositoryStencil >> initialPage [
-	|container button local label|
+	| container button local label |
 	label := BrLabel new.
-	label look: BrGlamorousLabelLook; text: 'Import Git'.
-	
+	label
+		look: BrGlamorousLabelLook;
+		text: 'Import Git'.
 	button := BrButton new.
-	button label: 'clone'; beHuge; hExact: 100.
+	button
+		label: 'clone';
+		beHugeSize;
+		hExact: 100.
 	button look: BrGlamorousButtonWithLabelLook.
 	button action: [ self openGithubPage ].
-	
-	
 	local := BrButton new.
-	local label: 'local'; beHuge; hExact: 100.
+	local
+		label: 'local';
+		beHugeSize;
+		hExact: 100.
 	local look: BrGlamorousButtonWithLabelLook.
 	local action: [ self openLocalPage ].
-	
 	container := BrPagerPageElement new.
-	container weight: 1.0;
+	container
+		weight: 1.0;
 		layout: BlLinearLayout vertical alignCenter.
-
 	label margin: (BlInsets top: 20).
 	button margin: (BlInsets top: 20).
 	local margin: (BlInsets top: 10 bottom: 10).
-
 	container addChild: label.
 	container addChild: button.
 	container addChild: local.
-	^ container.
-	
+	^ container
 ]
 
 { #category : #accessing }
