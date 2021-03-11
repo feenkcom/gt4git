@@ -120,8 +120,6 @@ Gt4Git >> gtRepositoriesFor: aView [
 	^ aView explicit
 		title: 'Repositories';
 		priority: 11;
-		"updateWhen: IceRepositoryAnnouncement in: [Iceberg announcer];"
-		"addAutoUpdate: GtPhlowUpdateViewOnAddedToScene;"
 		actionButtonLabel: 'Fetch All' 
 			action: [[self repositories collect: [:r | r fetch]] fork];
 		actionDropdownButtonLabel: '+'
@@ -133,7 +131,6 @@ Gt4Git >> gtRepositoriesFor: aView [
 			s repoGroup: self.
 			s ];
 		stencil: [ | aContainer aButtonsContainer aListView |
-			
 			aContainer := BlElement new
 				layout: BlLinearLayout vertical;
 				constraintsDo: [ :c | 
@@ -153,7 +150,10 @@ Gt4Git >> gtRepositoriesFor: aView [
 				asElementDo: [ :anElement |
 					aContainer addChild: anElement.
 					self buildButtonsContainer: aButtonsContainer
-						listWidget: anElement ].
+						listWidget: anElement.
+					Iceberg announcer weak when: IceRepositoryAnnouncement do: [
+						self buildButtonsContainer: aButtonsContainer
+						listWidget: anElement.] ].
 			aContainer ]
 ]
 
