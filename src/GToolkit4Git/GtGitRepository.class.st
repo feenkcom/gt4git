@@ -335,7 +335,7 @@ GtGitRepository >> resetCurrentCommitMessage [
 
 { #category : #accessing }
 GtGitRepository >> status [
-	^ status ifNil: [ status := (IceTipRepositoryModel on: self repository) status ]
+	^ status ifNil: [ status := (IceTipRepositoryModel on: self repository) status asString ]
 ]
 
 { #category : #accessing }
