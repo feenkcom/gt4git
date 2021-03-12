@@ -118,6 +118,7 @@ Gt4Git >> buildListViewFor: aView [
 
 { #category : #accessing }
 Gt4Git >> cachedRepositories [
+	repos ifNil: [repos := self repositories].
 	^ repos
 ]
 
