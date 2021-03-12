@@ -151,7 +151,8 @@ Gt4Git >> gtRepositoriesFor: aView [
 					aContainer addChild: anElement.
 					self buildButtonsContainer: aButtonsContainer
 						listWidget: anElement.
-					Iceberg announcer weak when: IceRepositoryAnnouncement do: [
+					Iceberg announcer unsubscribe:  self.
+					Iceberg announcer when: IceRepositoryAnnouncement do: [
 						self buildButtonsContainer: aButtonsContainer
 						listWidget: anElement.] ].
 			aContainer ]
