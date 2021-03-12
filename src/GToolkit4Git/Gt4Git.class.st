@@ -98,7 +98,7 @@ Gt4Git >> buildListViewFor: aView [
 		updateWhen: IceRepositoryAnnouncement
 			in: [ Iceberg announcer ];
 		items: [ self repositories
-			collect: [ :eachIceRepository | (GtGitRepository fromIcebergRepository: eachIceRepository) load ] ];
+			collect: [ :eachIceRepository | (GtGitRepository fromIcebergRepository: eachIceRepository) ] ];
 		column: 'Repository' translated
 			text: [ :each | 
 			| description |
