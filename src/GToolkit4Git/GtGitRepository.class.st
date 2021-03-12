@@ -6,7 +6,8 @@ Class {
 		'status',
 		'headDescription',
 		'isModified',
-		'currentCommitMessage'
+		'currentCommitMessage',
+		'repositoryModel'
 	],
 	#classVars : [
 		'RecentCommitMessage'
@@ -268,8 +269,18 @@ GtGitRepository >> gtViewOutgoingCommitsFor: aView [
 ]
 
 { #category : #accessing }
+GtGitRepository >> head [
+ ^ repository head
+]
+
+{ #category : #accessing }
 GtGitRepository >> headDescription [
 	^ headDescription ifNil: [ headDescription := self repository headDescription ]
+]
+
+{ #category : #accessing }
+GtGitRepository >> incomingCommits [
+ ^ repositoryModel incomingCommits
 ]
 
 { #category : #accessing }
@@ -296,6 +307,11 @@ GtGitRepository >> name [
 ]
 
 { #category : #accessing }
+GtGitRepository >> outgoingCommits [
+ ^ repositoryModel outgoingCommits
+]
+
+{ #category : #accessing }
 GtGitRepository >> pull [
 ]
 
@@ -318,7 +334,8 @@ GtGitRepository >> repository [
 
 { #category : #accessing }
 GtGitRepository >> repository: anIceRepository [
-	repository := anIceRepository
+	repository := anIceRepository.
+	repositoryModel := IceTipRepositoryModel on: repository.
 ]
 
 { #category : #initialization }

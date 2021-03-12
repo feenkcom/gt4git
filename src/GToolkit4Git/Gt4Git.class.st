@@ -1,6 +1,9 @@
 Class {
 	#name : #Gt4Git,
 	#superclass : #Object,
+	#instVars : [
+		'repos'
+	],
 	#category : #GToolkit4Git
 }
 
@@ -8,7 +11,9 @@ Class {
 Gt4Git >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
 	| label repositoriesA repositoriesU repositoriesI repositoriesO repositoriesD repositoriesH |
 	aButtonsContainer removeChildren.
-	repositoriesA := self repositories
+	
+	
+	repositoriesA := self cachedRepositories
 		collect: [ :r | GtGitRepository fromIcebergRepository: r ].
 	aButtonsContainer
 		addChild:
@@ -17,12 +22,11 @@ Gt4Git >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
 				beSmallSize;
 				label: 'All';
 				action: [ anElement children second items: repositoriesA ]).
-	repositoriesU := (self repositories
+	repositoriesU := (repositoriesA
 		select: [ :r | 
 			[ r isModified ]
 				on: Error
-				do: [ false ] ])
-		collect: [ :r | GtGitRepository fromIcebergRepository: r ].
+				do: [ false ] ]).
 	label := repositoriesU size asString , ' Uncommited'.
 	aButtonsContainer
 		addChild:
@@ -31,12 +35,11 @@ Gt4Git >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
 				beSmallSize;
 				label: label;
 				action: [ anElement children second items: repositoriesU ]).
-	repositoriesI := (self repositories
+	repositoriesI := (repositoriesA
 		select: [ :r | 
-			[ (IceTipRepositoryModel on: r) incomingCommits size > 0 ]
+			[ r incomingCommits size > 0 ]
 				on: Error
-				do: [ false ] ])
-		collect: [ :r | GtGitRepository fromIcebergRepository: r ].
+				do: [ false ] ]).
 	label := repositoriesI size asString , ' Incoming'.
 	aButtonsContainer
 		addChild:
@@ -45,12 +48,11 @@ Gt4Git >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
 				beSmallSize;
 				label: label;
 				action: [ anElement children second items: repositoriesI ]).
-	repositoriesO := (self repositories
+	repositoriesO := (repositoriesA
 		select: [ :r | 
-			[ (IceTipRepositoryModel on: r) outgoingCommits size > 0 ]
+			[ r outgoingCommits size > 0 ]
 				on: Error
-				do: [ false ] ])
-		collect: [ :r | GtGitRepository fromIcebergRepository: r ].
+				do: [ false ] ]).
 	label := repositoriesO size asString , ' Outgoing'.
 	aButtonsContainer
 		addChild:
@@ -59,9 +61,9 @@ Gt4Git >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
 				beSmallSize;
 				label: label;
 				action: [ anElement children second items: repositoriesO ]).
-	repositoriesD := (self repositories
-		select: [ :r | r isMissing not and: [ r workingCopy isDetached ] ])
-		collect: [ :r | GtGitRepository fromIcebergRepository: r ].
+				
+	repositoriesD := (repositoriesA
+		select: [ :r | r isMissing not and: [ r workingCopy isDetached ] ]).
 	label := repositoriesD size asString , ' Detached Working Copy'.
 	aButtonsContainer
 		addChild:
@@ -70,12 +72,12 @@ Gt4Git >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
 				beSmallSize;
 				label: label;
 				action: [ anElement children second items: repositoriesD ]).
-	repositoriesH := (self repositories
+				
+	repositoriesH := (repositoriesA
 		select: [ :r | 
 			[ r head isDetached ]
 				on: Error
-				do: [ false ] ])
-		collect: [ :r | GtGitRepository fromIcebergRepository: r ].
+				do: [ false ] ]).
 	label := repositoriesH size asString , ' Detached HEAD'.
 	aButtonsContainer
 		addChild:
@@ -115,6 +117,11 @@ Gt4Git >> buildListViewFor: aView [
 ]
 
 { #category : #accessing }
+Gt4Git >> cachedRepositories [
+	^ repos
+]
+
+{ #category : #accessing }
 Gt4Git >> gtRepositoriesFor: aView [
 	<gtView>
 	^ aView explicit
@@ -151,7 +158,7 @@ Gt4Git >> gtRepositoriesFor: aView [
 					aContainer addChild: anElement.
 					self buildButtonsContainer: aButtonsContainer
 						listWidget: anElement.
-					Iceberg announcer unsubscribe:  self.
+					Iceberg announcer unsubscribe: self.
 					Iceberg announcer when: IceRepositoryAnnouncement do: [
 						self buildButtonsContainer: aButtonsContainer
 						listWidget: anElement.] ].
@@ -169,7 +176,6 @@ Gt4Git >> gtUpdateFor: anAction [
 
 { #category : #accessing }
 Gt4Git >> repositories [
-	|repos|
 	repos := IceRepository registry copyFrom: 1 to: IceRepository registry size.
 	repos := repos sort: [:a :b | 
 	|aM bM result|
