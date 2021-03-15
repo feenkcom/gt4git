@@ -12,7 +12,7 @@ Class {
 	#classVars : [
 		'RecentCommitMessage'
 	],
-	#category : #GToolkit4Git
+	#category : #'GToolkit4Git-Inspector Integration'
 }
 
 { #category : #'instance creation' }

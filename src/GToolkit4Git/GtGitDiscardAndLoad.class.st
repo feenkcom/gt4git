@@ -1,7 +1,7 @@
 Class {
 	#name : #GtGitDiscardAndLoad,
 	#superclass : #GtGitRepairAction,
-	#category : #'GToolkit4Git-Actions'
+	#category : #'GToolkit4Git-Inspector Integration - Actions'
 }
 
 { #category : #accessing }

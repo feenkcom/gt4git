@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'repos'
 	],
-	#category : #GToolkit4Git
+	#category : #'GToolkit4Git-Inspector Integration'
 }
 
 { #category : #accessing }
@@ -160,9 +160,13 @@ Gt4Git >> gtRepositoriesFor: aView [
 					self buildButtonsContainer: aButtonsContainer
 						listWidget: anElement.
 					Iceberg announcer unsubscribe: self.
-					Iceberg announcer when: IceRepositoryAnnouncement do: [
-						self buildButtonsContainer: aButtonsContainer
-						listWidget: anElement.] ].
+					Iceberg announcer weak 
+						when: IceRepositoryAnnouncement 
+						send: #update
+						to: (Gt4GitUpdateRepositoryButtonsAction new
+							git: self;
+							buttonsContainer: aButtonsContainer;
+							listElement: anElement) ].
 			aContainer ]
 ]
 
