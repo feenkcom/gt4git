@@ -4,10 +4,27 @@ Class {
 	#traits : 'TGtGitWithRepositoryModel',
 	#classTraits : 'TGtGitWithRepositoryModel classTrait',
 	#instVars : [
-		'iceTipRepositoryViewModel'
+		'iceTipRepositoryViewModel',
+		'commitMessage'
 	],
 	#category : #'GToolkit4Git-UI - View Model'
 }
+
+{ #category : #'api - accessing' }
+GtGitRepositoryViewModel >> commitMessage [
+	^ commitMessage ifNil: [ commitMessage := GtGitCommitMessage default lastMessage ].
+]
+
+{ #category : #'api - accessing' }
+GtGitRepositoryViewModel >> commitMessage: aString [ 
+	commitMessage := aString
+]
+
+{ #category : #'api - actions' }
+GtGitRepositoryViewModel >> executeCommit: aCommitMessage [
+	GtGitCommitMessage default lastMessage: aCommitMessage.
+	self repositoryModel executeCommit: aCommitMessage.
+]
 
 { #category : #'api - repository' }
 GtGitRepositoryViewModel >> headDescription [

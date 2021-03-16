@@ -25,6 +25,17 @@ GtGitRepository >> changes [
 ]
 
 { #category : #'api - actions' }
+GtGitRepository >> executeCommit: aCommitMessage [
+	|diff|
+	diff := self repository workingCopyDiff.
+	self workingCopy 
+		commitChanges: diff
+		withMessage: aCommitMessage
+		force: false.
+	Iceberg announcer announce: (IceRepositoryModified for: self repository).
+]
+
+{ #category : #'api - actions' }
 GtGitRepository >> fetch [
 	self repository fetch.
 ]
@@ -32,7 +43,7 @@ GtGitRepository >> fetch [
 { #category : #'gt - extensions' }
 GtGitRepository >> gtChanges2For: aView context: aContext [
 	<gtView>
-	<gtRepositoryView>
+	"<gtRepositoryView>"
 	self hasChanges ifFalse: [ ^ aView empty ].
 	^ aView tree
 		title: 'Changes 2';
@@ -137,7 +148,7 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 				hMatchParent;
 				vFitContentLimited;
 				look: BrGlamorousRegularEditorLook;
-				text: 'self currentCommitMessage'.
+				text: aViewModel commitMessage.
 			editor selecter all; select.
 			
 			button := BrButton new.
@@ -147,18 +158,17 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 				label: 'Commit';
 				disabled: editor text isEmpty;
 				action: [ 
-					self recentCommitMessage: editor text asString.
-					self executeCommit: editor editor text asString.
+					aViewModel executeCommit: editor editor text asString.
 					button disable.
-					self resetCurrentCommitMessage.
 					aDropdown enqueueTask: (BlTaskAction new
 						action: [ 
-							aDropdown dispatchEvent: (BrDropdownHideWish new anchor: aDropdown).
-							aDropdown phlow fireUpdateWish ]) ].
+							aDropdown dispatchEvent: (BrDropdownHideWish new anchor: aDropdown). ]) ].
 
 			editor editor
 				when: BrTextEditorModifiedEvent
-				do: [ :anEvent | button disabled: anEvent text isEmpty ].
+				do: [ :anEvent | 
+					button disabled: anEvent text isEmpty.
+					aViewModel commitMessage: editor text asString. ].
 
 			BrVerticalPane new
 				hExact: 400;
@@ -178,8 +188,8 @@ GtGitRepository >> gtPackagesFor: aView context: aContext [
 { #category : #'api - testing' }
 GtGitRepository >> hasChanges [
 	^ self hasWorkingCopy and: [ 
-		self isModified and: [  
-			self workingCopy diffToReferenceCommit treeToShow children isNotEmpty ] ]
+		self isModified "and: [  
+			self workingCopy diffToReferenceCommit treeToShow children isNotEmpty ]" ]
 ]
 
 { #category : #'api - testing' }
