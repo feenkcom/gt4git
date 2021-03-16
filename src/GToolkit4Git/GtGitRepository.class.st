@@ -17,9 +17,114 @@ GtGitRepository >> announcer [
 	^ announcer
 ]
 
-{ #category : #actions }
+{ #category : #'api - actions' }
 GtGitRepository >> fetch [
 	self repository fetch.
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> gtChangesFor: aView context: aContext [
+	<gtView>
+	<gtRepositoryView>
+	self hasChanges ifFalse: [ ^ aView empty ].
+	^ aView tree
+		title: 'Changes';
+		items: [ self workingCopy diffToReferenceCommit treeToShow children ];
+		updateWhen: IceRepositoryModified in: Iceberg announcer;
+		children: #children;
+		expandUpTo: 3;
+		priority: 10;
+		stencil: [ :anIceNode |
+			BlElement new
+				layout: BlLinearLayout horizontal;
+				constraintsDo: [ :c | 
+					c horizontal matchParent.
+					c vertical fitContent ];
+				margin: (BlInsets all: 3);
+				constraintsDo: [ :c | c vertical fitContent ];
+				look:
+					(BrGlamorousWithContextMenuLook
+						content: [ BrGlamorousSimpleContextMenuContent new
+								items:
+									{('Revert changes'
+										->
+											[ :e | self workingCopy diffToReferenceCommit revertChanges: anIceNode ])};
+								yourself ]);
+				addChild:
+					(anIceNode value icon asElement
+						constraintsDo: [ :c | c linear horizontal alignCenter ]);
+				addChild:
+					(BrLabel new
+						look: BrGlamorousLabelLook;
+						text: anIceNode key asString asRopedText;
+						padding:
+							(BlInsets
+								top: 0
+								left: 6
+								bottom: 0
+								right: 3);
+						constraintsDo: [ :c | c linear horizontal alignCenter ]) ];
+		actionDropdownButtonLabel: 'Commit'
+			tooltip: 'Commit changes'
+			content: [ :aDropdown :aTarget | 
+			| editor button |
+			
+			editor := BrEditor new
+				hMatchParent;
+				vFitContentLimited;
+				look: BrGlamorousRegularEditorLook;
+				text: self currentCommitMessage.
+			editor selecter all; select.
+			
+			button := BrButton new.
+			button
+				look: BrGlamorousButtonWithIconLook;
+				icon: BrGlamorousVectorIcons accept;
+				label: 'Commit';
+				disabled: editor text isEmpty;
+				action: [ 
+					self recentCommitMessage: editor text asString.
+					self executeCommit: editor editor text asString.
+					button disable.
+					self resetCurrentCommitMessage.
+					aDropdown enqueueTask: (BlTaskAction new
+						action: [ 
+							aDropdown dispatchEvent: (BrDropdownHideWish new anchor: aDropdown).
+							aDropdown phlow fireUpdateWish ]) ].
+
+			editor editor
+				when: BrTextEditorModifiedEvent
+				do: [ :anEvent | button disabled: anEvent text isEmpty ].
+
+			BrVerticalPane new
+				hExact: 400;
+				vFitContentLimited;
+				padding: (BlInsets all: 10);
+				addChildren: { editor . button } ]
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> gtPackagesFor: aView context: aContext [
+	<gtView>
+	<gtRepositoryView>
+	self hasWorkingCopy ifFalse: [ ^ aView empty ].
+	^ self repository workingCopy gtPackagesFor: aView
+]
+
+{ #category : #'api - testing' }
+GtGitRepository >> hasChanges [
+	^ self hasWorkingCopy and: [ 
+		self repository workingCopy diffToReferenceCommit treeToShow children isNotEmpty ]
+]
+
+{ #category : #'api - testing' }
+GtGitRepository >> hasRepository [
+	^ self repository isNotNil
+]
+
+{ #category : #'api - testing' }
+GtGitRepository >> hasWorkingCopy [
+	^ self hasRepository and: [ self repository workingCopy isNotNil ]
 ]
 
 { #category : #'api - repository' }
@@ -75,4 +180,9 @@ GtGitRepository >> repository: aRepository [
 		when: IceRepositoryModified
 		send: #onRepositoryModifiedAnnouncement:
 		to: self.
+]
+
+{ #category : #'api - repository' }
+GtGitRepository >> workingCopy [
+	^ self repository workingCopy
 ]

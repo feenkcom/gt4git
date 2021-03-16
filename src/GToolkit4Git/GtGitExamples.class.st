@@ -23,6 +23,15 @@ GtGitExamples >> basicRepositoriesModel [
 ]
 
 { #category : #'examples - repositories - model' }
+GtGitExamples >> basicRepositoriesTool [
+	<gtExample>
+	| aTool |
+	aTool := GtGitRepositoriesTool new.
+	self assert: aTool repositoriesViewModel isNil.
+	^ aTool
+]
+
+{ #category : #'examples - repositories - model' }
 GtGitExamples >> basicRepositoriesViewModel [
 	<gtExample>
 	| aViewModel |
@@ -87,6 +96,27 @@ GtGitExamples >> repositoriesModel [
 	self assert: aModel collection isNotNil.
 	self assert: aModel collection isNotEmpty.
 	^ aModel
+]
+
+{ #category : #'examples - repositories - model' }
+GtGitExamples >> repositoriesTool [
+	<gtExample>
+	| aTool aViewModel |
+	aTool := self basicRepositoriesTool.
+	aViewModel := self repositoriesViewModel.
+	aTool repositoriesViewModel: aViewModel.
+	self assert: aTool repositoriesViewModel equals: aViewModel.
+	^ aTool
+]
+
+{ #category : #'examples - repositories - model' }
+GtGitExamples >> repositoriesTool_asElement [
+	<gtExample>
+	| aTool anElement |
+	aTool := self repositoriesTool.
+	anElement := aTool asElementDo: [ :e | e ].
+	self assert: anElement isNotNil.
+	^ anElement
 ]
 
 { #category : #'examples - repositories - model' }
