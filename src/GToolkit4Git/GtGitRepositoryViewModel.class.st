@@ -12,7 +12,7 @@ Class {
 
 { #category : #'api - accessing' }
 GtGitRepositoryViewModel >> commitMessage [
-	^ commitMessage ifNil: [ commitMessage := GtGitCommitMessage default lastMessage ].
+	^ commitMessage ifNil: [ GtGitCommitMessage default lastMessage ].
 ]
 
 { #category : #'api - accessing' }
@@ -23,6 +23,7 @@ GtGitRepositoryViewModel >> commitMessage: aString [
 { #category : #'api - actions' }
 GtGitRepositoryViewModel >> executeCommit: aCommitMessage [
 	GtGitCommitMessage default lastMessage: aCommitMessage.
+	self commitMessage: aCommitMessage.
 	self repositoryModel executeCommit: aCommitMessage.
 ]
 
