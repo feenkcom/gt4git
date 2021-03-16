@@ -35,6 +35,7 @@ GtGitRepositoriesElement >> initialize [
 { #category : #initialization }
 GtGitRepositoriesElement >> initializeListElement [
 	listElement := BrColumnedList new
+		margin: (BlInsets top: 5);
 		rowStencil: (BrGlamorousColumnedListSelectableRowElementStencilBuilder new).
 	
 	listElement column
