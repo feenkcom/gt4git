@@ -32,12 +32,29 @@ GtGitExamples >> basicRepositoriesViewModel [
 ]
 
 { #category : #'examples - repository - model' }
+GtGitExamples >> basicRepositoryElement [
+	<gtExample>
+	| anElement |
+	anElement := GtGitRepositoryElement new.
+	^ anElement
+]
+
+{ #category : #'examples - repository - model' }
 GtGitExamples >> basicRepositoryModel [
 	<gtExample>
 	| aModel |
 	aModel := GtGitRepository new.
 	self assert: aModel repository isNil.
 	^ aModel
+]
+
+{ #category : #'examples - repository - model' }
+GtGitExamples >> basicRepositoryViewModel [
+	<gtExample>
+	| aViewModel |
+	aViewModel := GtGitRepositoryViewModel new.
+	self assert: aViewModel hasRepository not.
+	^ aViewModel
 ]
 
 { #category : #'examples - repository - model' }
@@ -84,6 +101,17 @@ GtGitExamples >> repositoriesViewModel [
 ]
 
 { #category : #'examples - repository - model' }
+GtGitExamples >> repositoryElement [
+	<gtExample>
+	| anElement aViewModel |
+	anElement := self basicRepositoryElement.
+	aViewModel := self repositoryViewModel.
+	anElement repositoryViewModel: aViewModel.
+	self assert: anElement repositoryViewModel equals: aViewModel.
+	^ anElement
+]
+
+{ #category : #'examples - repository - model' }
 GtGitExamples >> repositoryModel [
 	<gtExample>
 	| aModel aRepository |
@@ -92,4 +120,15 @@ GtGitExamples >> repositoryModel [
 	aModel repository: aRepository.
 	self assert: aModel repository equals: aRepository.
 	^ aModel
+]
+
+{ #category : #'examples - repository - model' }
+GtGitExamples >> repositoryViewModel [
+	<gtExample>
+	| aViewModel aModel |
+	aViewModel := self basicRepositoryViewModel.
+	aModel := self repositoryModel.
+	aViewModel repositoryModel: aModel.
+	self assert: aViewModel repositoryModel equals: aModel.
+	^ aViewModel
 ]

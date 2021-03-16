@@ -34,7 +34,8 @@ GtGitRepositoriesElement >> initialize [
 
 { #category : #initialization }
 GtGitRepositoriesElement >> initializeListElement [
-	listElement := BrColumnedList new.
+	listElement := BrColumnedList new
+		rowStencil: (BrGlamorousColumnedListSelectableRowElementStencilBuilder new).
 	
 	listElement column
 		title: 'Repository';
@@ -52,7 +53,9 @@ GtGitRepositoriesElement >> initializeListElement [
 		title: 'Status';
 		cellStencil: [ self newCellLabel ];
 		dataBinder: [ :aCellElement :aRepository | 
-			aCellElement text: aRepository status ]
+			aCellElement text: aRepository status ].
+		
+	listElement when: BrSelectionChanged do: [ :anEvent | self onRepositorySelectionChanged: anEvent ].
 ]
 
 { #category : #initialization }
@@ -106,6 +109,13 @@ GtGitRepositoriesElement >> onRepositoriesViewModelChanged [
 	wish to perform an operation that requires an announcement, but keep in mind that this is not the most efficient way"
 
 	self updateElement.
+]
+
+{ #category : #'private - event handling' }
+GtGitRepositoriesElement >> onRepositorySelectionChanged: anEvent [
+	anEvent currentTarget selectedItemDo: [ :anItem :anIndex |
+		anEvent currentTarget phlow spawnTool: (GtGitRepositoryTool new 
+			repositoryViewModel: anItem) ]
 ]
 
 { #category : #'private - accessing' }
