@@ -139,6 +139,7 @@ GtGitExamples >> repositoriesViewModel [
 { #category : #'examples - repository - model' }
 GtGitExamples >> repositoryElement [
 	<gtExample>
+	<noTest>
 	| anElement aViewModel |
 	anElement := self basicRepositoryElement.
 	aViewModel := self repositoryViewModel.
@@ -150,6 +151,7 @@ GtGitExamples >> repositoryElement [
 { #category : #'examples - repository - model' }
 GtGitExamples >> repositoryModel [
 	<gtExample>
+	<noTest>
 	| aModel aRepository |
 	aModel := self basicRepositoryModel.
 	aRepository := self mockRepository.
