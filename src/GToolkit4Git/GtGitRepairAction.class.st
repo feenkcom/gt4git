@@ -5,7 +5,7 @@ Class {
 		'repository',
 		'dropdown'
 	],
-	#category : #'GToolkit4Git-Actions'
+	#category : #'GToolkit4Git-Inspector Integration - Actions'
 }
 
 { #category : #accessing }

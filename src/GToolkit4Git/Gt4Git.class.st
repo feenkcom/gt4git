@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'repos'
 	],
-	#category : #GToolkit4Git
+	#category : #'GToolkit4Git-Inspector Integration'
 }
 
 { #category : #accessing }
@@ -14,7 +14,7 @@ Gt4Git >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
 	
 	
 	repositoriesA := self cachedRepositories
-		collect: [ :r | GtGitRepository fromIcebergRepository: r ].
+		collect: [ :r | GtGitRepository2 fromIcebergRepository: r ].
 	aButtonsContainer
 		addChild:
 			(BrButton new
@@ -98,7 +98,7 @@ Gt4Git >> buildListViewFor: aView [
 		updateWhen: IceRepositoryAnnouncement
 			in: [ Iceberg announcer ];
 		items: [ self repositories
-			collect: [ :eachIceRepository | (GtGitRepository fromIcebergRepository: eachIceRepository) ] ];
+			collect: [ :eachIceRepository | (GtGitRepository2 fromIcebergRepository: eachIceRepository) ] ];
 		column: 'Repository' translated
 			text: [ :each | 
 			| description |
@@ -160,9 +160,13 @@ Gt4Git >> gtRepositoriesFor: aView [
 					self buildButtonsContainer: aButtonsContainer
 						listWidget: anElement.
 					Iceberg announcer unsubscribe: self.
-					Iceberg announcer when: IceRepositoryAnnouncement do: [
-						self buildButtonsContainer: aButtonsContainer
-						listWidget: anElement.] ].
+					Iceberg announcer weak 
+						when: IceRepositoryAnnouncement 
+						send: #update
+						to: (Gt4GitUpdateRepositoryButtonsAction new
+							git: self;
+							buttonsContainer: aButtonsContainer;
+							listElement: anElement) ].
 			aContainer ]
 ]
 
