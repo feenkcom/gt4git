@@ -72,7 +72,9 @@ GtGitExamples >> mockRepository [
 	| aRepository |
 	aRepository := IceRepository registry
 		detect: [ :eachRepository | 
-			eachRepository name = 'gt4git' ].
+			eachRepository name = 'gt4git' ]
+		ifNone: [ IceLibgitRepository new 
+			name: 'gt4git-mock' ].
 	self assert: aRepository isNotNil.
 	^ aRepository
 ]
