@@ -69,11 +69,12 @@ GtGitExamples >> basicRepositoryViewModel [
 { #category : #'examples - repository - model' }
 GtGitExamples >> mockRepository [
 	<gtExample>
-	<noTest>
 	| aRepository |
 	aRepository := IceRepository registry
 		detect: [ :eachRepository | 
-			eachRepository name = 'gt4git' ].
+			eachRepository name = 'gt4git' ]
+		ifNone: [ IceLibgitRepository new 
+			name: 'gt4git-mock' ].
 	self assert: aRepository isNotNil.
 	^ aRepository
 ]
@@ -81,7 +82,6 @@ GtGitExamples >> mockRepository [
 { #category : #'examples - repositories - model' }
 GtGitExamples >> repositoriesElement [
 	<gtExample>
-	<noTest>
 	| anElement aViewModel |
 	anElement := self basicRepositoriesElement.
 	aViewModel := self repositoriesViewModel.
@@ -93,7 +93,6 @@ GtGitExamples >> repositoriesElement [
 { #category : #'examples - repositories - model' }
 GtGitExamples >> repositoriesModel [
 	<gtExample>
-	<noTest>
 	| aModel |
 	aModel := GtGitRepositories default.
 	self assert: aModel collection isNotNil.
@@ -104,7 +103,6 @@ GtGitExamples >> repositoriesModel [
 { #category : #'examples - repositories - model' }
 GtGitExamples >> repositoriesTool [
 	<gtExample>
-	<noTest>
 	| aTool aViewModel |
 	aTool := self basicRepositoriesTool.
 	aViewModel := self repositoriesViewModel.
@@ -116,7 +114,6 @@ GtGitExamples >> repositoriesTool [
 { #category : #'examples - repositories - model' }
 GtGitExamples >> repositoriesTool_asElement [
 	<gtExample>
-	<noTest>
 	| aTool anElement |
 	aTool := self repositoriesTool.
 	anElement := aTool asElementDo: [ :e | e ].
@@ -127,7 +124,6 @@ GtGitExamples >> repositoriesTool_asElement [
 { #category : #'examples - repositories - model' }
 GtGitExamples >> repositoriesViewModel [
 	<gtExample>
-	<noTest>
 	| aViewModel aModel |
 	aViewModel := self basicRepositoriesViewModel.
 	aModel := self repositoriesModel.
@@ -163,7 +159,6 @@ GtGitExamples >> repositoryModel [
 { #category : #'examples - repository - model' }
 GtGitExamples >> repositoryViewModel [
 	<gtExample>
-	<noTest>
 	| aViewModel aModel |
 	aViewModel := self basicRepositoryViewModel.
 	aModel := self repositoryModel.
