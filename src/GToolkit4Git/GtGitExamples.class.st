@@ -7,6 +7,7 @@ Class {
 { #category : #'examples - repositories - model' }
 GtGitExamples >> basicRepositoriesElement [
 	<gtExample>
+	<noTest>
 	| anElement |
 	anElement := GtGitRepositoriesElement new.
 	^ anElement
@@ -15,6 +16,7 @@ GtGitExamples >> basicRepositoriesElement [
 { #category : #'examples - repositories - model' }
 GtGitExamples >> basicRepositoriesModel [
 	<gtExample>
+	<noTest>
 	| aModel |
 	aModel := GtGitRepositories new.
 	self assert: aModel collection isNotNil.
@@ -25,6 +27,7 @@ GtGitExamples >> basicRepositoriesModel [
 { #category : #'examples - repositories - model' }
 GtGitExamples >> basicRepositoriesTool [
 	<gtExample>
+	<noTest>
 	| aTool |
 	aTool := GtGitRepositoriesTool new.
 	self assert: aTool repositoriesViewModel isNil.
@@ -34,6 +37,7 @@ GtGitExamples >> basicRepositoriesTool [
 { #category : #'examples - repositories - model' }
 GtGitExamples >> basicRepositoriesViewModel [
 	<gtExample>
+	<noTest>
 	| aViewModel |
 	aViewModel := GtGitRepositoriesViewModel new.
 	self assert: aViewModel hasRepositories not.
@@ -43,6 +47,7 @@ GtGitExamples >> basicRepositoriesViewModel [
 { #category : #'examples - repository - model' }
 GtGitExamples >> basicRepositoryElement [
 	<gtExample>
+	<noTest>
 	| anElement |
 	anElement := GtGitRepositoryElement new.
 	^ anElement
@@ -51,6 +56,7 @@ GtGitExamples >> basicRepositoryElement [
 { #category : #'examples - repository - model' }
 GtGitExamples >> basicRepositoryModel [
 	<gtExample>
+	<noTest>
 	| aModel |
 	aModel := GtGitRepository new.
 	self assert: aModel repository isNil.
@@ -60,6 +66,7 @@ GtGitExamples >> basicRepositoryModel [
 { #category : #'examples - repository - model' }
 GtGitExamples >> basicRepositoryViewModel [
 	<gtExample>
+	<noTest>
 	| aViewModel |
 	aViewModel := GtGitRepositoryViewModel new.
 	self assert: aViewModel hasRepository not.
@@ -69,6 +76,7 @@ GtGitExamples >> basicRepositoryViewModel [
 { #category : #'examples - repository - model' }
 GtGitExamples >> mockRepository [
 	<gtExample>
+	<noTest>
 	| aRepository |
 	aRepository := IceRepository registry
 		detect: [ :eachRepository | 
@@ -82,6 +90,7 @@ GtGitExamples >> mockRepository [
 { #category : #'examples - repositories - model' }
 GtGitExamples >> repositoriesElement [
 	<gtExample>
+	<noTest>
 	| anElement aViewModel |
 	anElement := self basicRepositoriesElement.
 	aViewModel := self repositoriesViewModel.
@@ -93,6 +102,7 @@ GtGitExamples >> repositoriesElement [
 { #category : #'examples - repositories - model' }
 GtGitExamples >> repositoriesModel [
 	<gtExample>
+	<noTest>
 	| aModel |
 	aModel := GtGitRepositories default.
 	self assert: aModel collection isNotNil.
@@ -103,6 +113,7 @@ GtGitExamples >> repositoriesModel [
 { #category : #'examples - repositories - model' }
 GtGitExamples >> repositoriesTool [
 	<gtExample>
+	<noTest>
 	| aTool aViewModel |
 	aTool := self basicRepositoriesTool.
 	aViewModel := self repositoriesViewModel.
@@ -114,6 +125,7 @@ GtGitExamples >> repositoriesTool [
 { #category : #'examples - repositories - model' }
 GtGitExamples >> repositoriesTool_asElement [
 	<gtExample>
+	<noTest>
 	| aTool anElement |
 	aTool := self repositoriesTool.
 	anElement := aTool asElementDo: [ :e | e ].
@@ -124,6 +136,7 @@ GtGitExamples >> repositoriesTool_asElement [
 { #category : #'examples - repositories - model' }
 GtGitExamples >> repositoriesViewModel [
 	<gtExample>
+	<noTest>
 	| aViewModel aModel |
 	aViewModel := self basicRepositoriesViewModel.
 	aModel := self repositoriesModel.
@@ -159,6 +172,7 @@ GtGitExamples >> repositoryModel [
 { #category : #'examples - repository - model' }
 GtGitExamples >> repositoryViewModel [
 	<gtExample>
+	<noTest>
 	| aViewModel aModel |
 	aViewModel := self basicRepositoryViewModel.
 	aModel := self repositoryModel.
