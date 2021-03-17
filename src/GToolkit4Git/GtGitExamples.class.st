@@ -96,7 +96,6 @@ GtGitExamples >> repositoriesModel [
 	| aModel |
 	aModel := GtGitRepositories default.
 	self assert: aModel collection isNotNil.
-	self assert: aModel collection isNotEmpty.
 	^ aModel
 ]
 
