@@ -68,15 +68,18 @@ GtGitAddRepositoryStencil >> localPage [
 	|fileBrowser container |
 	container := BlElement new
 		viewModel: BrPagerPageModel new;
-		layout: (BlGridLayout new columnCount: 2);
-		padding: (BlInsets all: 8).
+		layout: (BlGridLayout new columnCount: 1);
+		padding: (BlInsets all: 8);
+		look: BrWidgetContainerLook.
 	container
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent ].
 	fileBrowser := BrFileSelector new.
-	fileBrowser hMatchParent.
+	
 	fileBrowser vMatchParent.
+	fileBrowser hExact:464.
+	
 	fileBrowser buttonLabel: 'Import'.
 	fileBrowser okAction: [:filePath | 
 		|repo|
