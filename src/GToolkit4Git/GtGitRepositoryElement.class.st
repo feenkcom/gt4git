@@ -41,13 +41,13 @@ GtGitRepositoryElement >> initializeLazyTabsElement [
 { #category : #initialization }
 GtGitRepositoryElement >> initializeToolbarElement [
 	toolbarElement := BrToolbar new
-		look: (BrGlamorousToolbarLook new spacing: 0);
+		aptitude: (BrGlamorousToolbarAptitude new spacing: 0);
 		vFitContent;
 		hMatchParent.
 	
 	toolbarElement
 		addItem: (labelElement := BrLabel new
-			look: (BrGlamorousLabelLook new 
+			aptitude: (BrGlamorousLabelAptitude new 
 				bold; 
 				labelDo: [ :aLabel | aLabel padding: BlInsets empty ]);
 			beHugeSize;
@@ -56,12 +56,12 @@ GtGitRepositoryElement >> initializeToolbarElement [
 			vFitContent;
 			hMatchParent);
 		addItem: (BrButton new
-			look: BrGlamorousButtonWithIconLook;
+			aptitude: BrGlamorousButtonWithIconAptitude;
 			icon: BrGlamorousVectorIcons refresh;
 			label: 'Fetch';
 			action: [ :aButton | self fetchAllRepositoriesFrom: aButton ]);
 		addItem: (BrButton new
-			look: BrGlamorousButtonWithIconLook;
+			aptitude: BrGlamorousButtonWithIconAptitude;
 			icon: BrGlamorousVectorIcons add;
 			label: 'Something')
 ]

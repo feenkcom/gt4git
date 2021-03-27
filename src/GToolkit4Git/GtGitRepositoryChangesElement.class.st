@@ -42,7 +42,7 @@ GtGitRepositoryChangesElement >> initializeTreeElement [
 					size: 16@16);
 				addChild: (BrLabel new
 					id: #label;
-					look: BrGlamorousLabelLook;
+					aptitude: BrGlamorousLabelAptitude;
 					margin: (BlInsets left: 6);
 					constraintsDo: [ :c | 
 						c linear horizontal alignCenter ]) ];

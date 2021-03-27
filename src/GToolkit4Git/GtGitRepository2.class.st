@@ -146,8 +146,8 @@ GtGitRepository2 >> gtChangesFor: aView [
 					c vertical fitContent ];
 				margin: (BlInsets all: 3);
 				constraintsDo: [ :c | c vertical fitContent ];
-				look:
-					(BrGlamorousWithContextMenuLook
+				aptitude:
+					(BrGlamorousWithContextMenuAptitude
 						content: [ BrGlamorousSimpleContextMenuContent new
 								items:
 									{('Revert changes'
@@ -159,7 +159,7 @@ GtGitRepository2 >> gtChangesFor: aView [
 						constraintsDo: [ :c | c linear horizontal alignCenter ]);
 				addChild:
 					(BrLabel new
-						look: BrGlamorousLabelLook;
+						aptitude: BrGlamorousLabelAptitude;
 						text: anIceNode key asString asRopedText;
 						padding:
 							(BlInsets
@@ -176,13 +176,13 @@ GtGitRepository2 >> gtChangesFor: aView [
 			editor := BrEditor new
 				hMatchParent;
 				vFitContentLimited;
-				look: BrGlamorousRegularEditorLook;
+				aptitude: BrGlamorousRegularEditorAptitude;
 				text: self currentCommitMessage.
 			editor selecter all; select.
 			
 			button := BrButton new.
 			button
-				look: BrGlamorousButtonWithIconLook;
+				aptitude: BrGlamorousButtonWithIconAptitude;
 				icon: BrGlamorousVectorIcons accept;
 				label: 'Commit';
 				disabled: editor text isEmpty;

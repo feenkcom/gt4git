@@ -27,8 +27,8 @@ IceDiff >> gtViewInspectorDiffFor: aView [
 					c vertical fitContent ];
 				margin: (BlInsets all: 3);
 				constraintsDo: [ :c | c vertical fitContent ];
-				look:
-					(BrGlamorousWithContextMenuLook
+				aptitude:
+					(BrGlamorousWithContextMenuAptitude
 						content: [ BrGlamorousSimpleContextMenuContent new
 								display:
 									{('Revert changes' -> [ self revertChanges: anIceNode ])};
@@ -38,7 +38,7 @@ IceDiff >> gtViewInspectorDiffFor: aView [
 						c linear vertical alignCenter ]);
 				addChild: (BrLabel new 
 					text: anIceNode key asString;
-					look: BrGlamorousLabelLook;
+					aptitude: BrGlamorousLabelAptitude;
 					padding: (BlInsets top: 3 left: 6 bottom: 0 right: 3);
 					constraintsDo: [ :c |
 						c linear horizontal alignCenter ]) ]

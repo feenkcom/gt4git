@@ -15,9 +15,9 @@ GtGitGithubPageFormStencil >> addOwnerContainer [
 	|container|
 	container := BlElement new.
 	container viewModel: BrPagerPageModel new;
-	look: BrWidgetContainerLook.
+	aptitude: BrWidgetContainerAptitude.
 	ownerEditor := BrEditableLabel new
-		look: BrGlamorousEditableLabelLook new glamorousRegularFontAndSize;
+		aptitude: BrGlamorousEditableLabelAptitude new glamorousRegularFontAndSize;
 		text: 'Owner'.
 	ownerEditor switchToEditor.
 	container addChild: ownerEditor.
@@ -30,9 +30,9 @@ GtGitGithubPageFormStencil >> addProjectContainer [
 	|container|
 	container := BlElement new.
 	container viewModel: BrPagerPageModel new;
-	look: BrWidgetContainerLook.
+	aptitude: BrWidgetContainerAptitude.
 	projectEditor := BrEditableLabel new
-		look: BrGlamorousEditableLabelLook new glamorousRegularFontAndSize;
+		aptitude: BrGlamorousEditableLabelAptitude new glamorousRegularFontAndSize;
 		text: 'Project'.
 	projectEditor switchToEditor.
 	container addChild: projectEditor.
@@ -49,7 +49,7 @@ GtGitGithubPageFormStencil >> create [
 GtGitGithubPageFormStencil >> createCloneButton [
 	|filler cloneButton|
 	cloneButton := BrButton new.
-	cloneButton look: (BrGlamorousButtonRectangularLook + (BrGlamorousButtonLabelLook new selectedColor: Color black)).
+	cloneButton aptitude: (BrGlamorousButtonRectangularAptitude + (BrGlamorousButtonLabelAptitude new selectedColor: Color black)).
 	cloneButton label: 'Clone'.
 	cloneButton action: [ 
 		|repo|	
@@ -85,10 +85,10 @@ GtGitGithubPageFormStencil >> createMainContainer [
 GtGitGithubPageFormStencil >> createUrl [
 	|label |
 	label := BrLabel new text:'Git URL'.
-	label look: BrGlamorousLabelLook.
+	label aptitude: BrGlamorousLabelAptitude.
 	
 	ownerEditor := BrEditableLabel new
-		look: BrGlamorousEditableLabelLook new glamorousRegularFontAndSize;
+		aptitude: BrGlamorousEditableLabelAptitude new glamorousRegularFontAndSize;
 		text: ''.
 	ownerEditor switchToEditor.
 	ownerEditor hMatchParent.

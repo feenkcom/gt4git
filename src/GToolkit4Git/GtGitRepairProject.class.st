@@ -17,7 +17,7 @@ GtGitRepairProject >> repairStencil [
 	container padding: (BlInsets all: 10).
 	srcSelector := BrFileSelector new folder: repository repositoryDirectory.
 	container addChild:(BrEditor new
-		look: BrGlamorousRegularEditorLook new;
+		aptitude: BrGlamorousRegularEditorAptitude new;
 		vFitContent;
 		text: self class iceTipClass help).
 	container addChild: srcSelector.

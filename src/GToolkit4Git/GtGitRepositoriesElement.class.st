@@ -62,13 +62,13 @@ GtGitRepositoriesElement >> initializeListElement [
 { #category : #initialization }
 GtGitRepositoriesElement >> initializeToolbar [
 	toolbarElement := BrToolbar new
-		look: (BrGlamorousToolbarLook new spacing: 0);
+		aptitude: (BrGlamorousToolbarAptitude new spacing: 0);
 		vFitContent;
 		hMatchParent.
 	
 	toolbarElement
 		addItem: (BrLabel new
-			look: (BrGlamorousLabelLook new 
+			aptitude: (BrGlamorousLabelAptitude new 
 				bold; 
 				labelDo: [ :aLabel | aLabel padding: BlInsets empty ]);
 			beHugeSize;
@@ -77,12 +77,12 @@ GtGitRepositoriesElement >> initializeToolbar [
 			vFitContent;
 			hMatchParent);
 		addItem: (BrButton new
-			look: BrGlamorousButtonWithIconLook;
+			aptitude: BrGlamorousButtonWithIconAptitude;
 			icon: BrGlamorousVectorIcons refresh;
 			label: 'Fetch all repositories';
 			action: [ :aButton | self fetchAllRepositoriesFrom: aButton ]);
 		addItem: (BrButton new
-			look: BrGlamorousButtonWithIconLook;
+			aptitude: BrGlamorousButtonWithIconAptitude;
 			icon: BrGlamorousVectorIcons add;
 			label: 'Add repository')
 ]
@@ -96,7 +96,7 @@ GtGitRepositoriesElement >> listElement [
 { #category : #'private - instance creation' }
 GtGitRepositoriesElement >> newCellLabel [
 	^ BrLabel new
-		look: BrGlamorousLabelLook new;
+		aptitude: BrGlamorousLabelAptitude new;
 		hMatchParent;
 		vFitContent
 ]
