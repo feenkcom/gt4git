@@ -28,21 +28,21 @@ GtGitRepositoryRepairStencil >> createMainContainer [
 		container addChild: (BrResizer new
 			target: container ;
 			beBottom;
-			look: (BrGlamorousResizerLook new);
+			aptitude: (BrGlamorousResizerAptitude new);
 			constraintsDo: [ :c | 
 				c ignoreByLayout.
 				c ignored horizontal weight: 0.2 ]).
 		container addChild: (BrResizer new
 			target:container;
 			beLeft;
-			look: BrGlamorousResizerLook;
+			aptitude: BrGlamorousResizerAptitude;
 			constraintsDo: [ :c | 
 				c ignoreByLayout.
 				c ignored vertical weight: 0.2 ]).
 		container addChild: (BrResizer new
 			target: container ;
 			beRight;
-			look: BrGlamorousResizerLook;
+			aptitude: BrGlamorousResizerAptitude;
 			constraintsDo: [ :c | 
 				c ignoreByLayout.
 				c ignored vertical weight: 0.2 ]) ].
@@ -58,7 +58,7 @@ GtGitRepositoryRepairStencil >> createRepairButtonsList [
 		collect: [:a | 
 			local := BrButton new.
 			local label: (a class iceTipClass title); beHuge; hFitContent.
-			local look: BrGlamorousButtonWithLabelLook.
+			local aptitude: BrGlamorousButtonWithLabelAptitude.
 			local action: [ self openPageForAction: a ].
 			local ]
 ]

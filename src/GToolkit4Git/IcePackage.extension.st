@@ -39,8 +39,8 @@ IcePackage >> gtPackageStatus [
 	self isLoaded ifFalse: [
 		| loadButton|
 		loadButton := BrButton new.
-		loadButton look: (BrGlamorousButtonRectangularLook + BrGlamorousButtonExteriorLook + 
-			(BrGlamorousButtonLabelLook new selectedColor: Color black)).
+		loadButton aptitude: (BrGlamorousButtonRectangularAptitude + BrGlamorousButtonExteriorAptitude + 
+			(BrGlamorousButtonLabelAptitude new selectedColor: Color black)).
 		loadButton label: 'Load'.
 		loadButton action: [ self load].
 		^ loadButton].
@@ -48,7 +48,7 @@ IcePackage >> gtPackageStatus [
 				attributes: {BlTextForegroundAttribute paint: Smalltalk ui theme disabledTextColor};
 				yourself ]."
 	label := BrLabel new.
-	label look: BrGlamorousLabelLook.
+	label aptitude: BrGlamorousLabelAptitude.
 	self isModified ifTrue: [ 
 		label text: 'Uncommited changes'].
 	label text: 'Up to date'.

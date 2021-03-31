@@ -34,21 +34,21 @@ GtGitAddRepositoryStencil >> initialPage [
 	| container button local label |
 	label := BrLabel new.
 	label
-		look: BrGlamorousLabelLook;
+		aptitude: BrGlamorousLabelAptitude;
 		text: 'Import Git'.
 	button := BrButton new.
 	button
 		label: 'clone';
 		beHugeSize;
 		hExact: 100.
-	button look: BrGlamorousButtonWithLabelLook.
+	button aptitude: BrGlamorousButtonWithLabelAptitude.
 	button action: [ self openGithubPage ].
 	local := BrButton new.
 	local
 		label: 'local';
 		beHugeSize;
 		hExact: 100.
-	local look: BrGlamorousButtonWithLabelLook.
+	local aptitude: BrGlamorousButtonWithLabelAptitude.
 	local action: [ self openLocalPage ].
 	container := BrPagerPageElement new.
 	container
@@ -70,7 +70,7 @@ GtGitAddRepositoryStencil >> localPage [
 		viewModel: BrPagerPageModel new;
 		layout: (BlGridLayout new columnCount: 1);
 		padding: (BlInsets all: 8);
-		look: BrWidgetContainerLook.
+		aptitude: BrWidgetContainerAptitude.
 	container
 		constraintsDo: [ :c | 
 			c horizontal matchParent.

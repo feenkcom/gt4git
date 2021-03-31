@@ -18,7 +18,7 @@ Gt4Git >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
 	aButtonsContainer
 		addChild:
 			(BrButton new
-				look: BrGlamorousButtonWithLabelLook;
+				aptitude: BrGlamorousButtonWithLabelAptitude;
 				beSmallSize;
 				label: 'All';
 				action: [ anElement children second items: repositoriesA ]).
@@ -31,7 +31,7 @@ Gt4Git >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
 	aButtonsContainer
 		addChild:
 			(BrButton new
-				look: BrGlamorousButtonWithLabelLook;
+				aptitude: BrGlamorousButtonWithLabelAptitude;
 				beSmallSize;
 				label: label;
 				action: [ anElement children second items: repositoriesU ]).
@@ -44,7 +44,7 @@ Gt4Git >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
 	aButtonsContainer
 		addChild:
 			(BrButton new
-				look: BrGlamorousButtonWithLabelLook;
+				aptitude: BrGlamorousButtonWithLabelAptitude;
 				beSmallSize;
 				label: label;
 				action: [ anElement children second items: repositoriesI ]).
@@ -57,7 +57,7 @@ Gt4Git >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
 	aButtonsContainer
 		addChild:
 			(BrButton new
-				look: BrGlamorousButtonWithLabelLook;
+				aptitude: BrGlamorousButtonWithLabelAptitude;
 				beSmallSize;
 				label: label;
 				action: [ anElement children second items: repositoriesO ]).
@@ -68,7 +68,7 @@ Gt4Git >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
 	aButtonsContainer
 		addChild:
 			(BrButton new
-				look: BrGlamorousButtonWithLabelLook;
+				aptitude: BrGlamorousButtonWithLabelAptitude;
 				beSmallSize;
 				label: label;
 				action: [ anElement children second items: repositoriesD ]).
@@ -82,7 +82,7 @@ Gt4Git >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
 	aButtonsContainer
 		addChild:
 			(BrButton new
-				look: BrGlamorousButtonWithLabelLook;
+				aptitude: BrGlamorousButtonWithLabelAptitude;
 				beSmallSize;
 				label: label;
 				action: [ anElement children second items: repositoriesH ])
