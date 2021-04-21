@@ -149,10 +149,13 @@ GtGitRepository2 >> gtChangesFor: aView [
 				aptitude:
 					(BrGlamorousWithContextMenuAptitude
 						content: [ BrGlamorousSimpleContextMenuContent new
-								items:
-									{('Revert changes'
+								items: {
+									'Browse'
 										->
-											[ :e | self workingCopy diffToReferenceCommit revertChanges: anIceNode ])};
+											[ :e | anIceNode value canBeBrowsed ifTrue: [ e phlow spawnObject: anIceNode value definition target ] ].
+									'Revert changes'
+										->
+											[ :e | self workingCopy diffToReferenceCommit revertChanges: anIceNode ]};
 								yourself ]);
 				addChild:
 					(anIceNode value icon asElement
