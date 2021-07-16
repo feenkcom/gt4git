@@ -189,7 +189,7 @@ Gt4Git >> repositories [
 	(aM isModified and:[ bM isModified not]) ifTrue: [result := true]. 
 	(bM isModified and:[ aM isModified not]) ifTrue: [result := false].
 	
-	(result ifNil: [result := a name translateToLowercase < b name translateToLowercase]).
+	(result ifNil: [result := a name asLowercase < b name asLowercase]).
 	result].
 	^ repos
 ]
