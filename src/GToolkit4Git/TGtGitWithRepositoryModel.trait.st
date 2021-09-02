@@ -1,12 +1,12 @@
 Trait {
-	#name : #TGtGitWithRepositoryModel,
+	#name : 'TGtGitWithRepositoryModel',
 	#instVars : [
 		'repositoryModel'
 	],
-	#category : #'GToolkit4Git-Model'
+	#category : 'GToolkit4Git-Model'
 }
 
-{ #category : #'api - repository model' }
+{ #category : 'api - repository model' }
 TGtGitWithRepositoryModel >> hasRepository [
 	"Return a true if repository model is assigned to the receiver, false otherwise"
 	<return: #Boolean>
@@ -14,14 +14,14 @@ TGtGitWithRepositoryModel >> hasRepository [
 	^ repositoryModel notNil
 ]
 
-{ #category : #'api - repository model' }
+{ #category : 'api - repository model' }
 TGtGitWithRepositoryModel >> onRepositoryModelChanged [
 	"Is sent when a new repository model is assigned to the view model"
 	
 	self explicitRequirement
 ]
 
-{ #category : #'api - repository model' }
+{ #category : 'api - repository model' }
 TGtGitWithRepositoryModel >> repositoryModel [
 	"Return a not-null repository model assigned to the receiver view model"
 	self
@@ -31,7 +31,7 @@ TGtGitWithRepositoryModel >> repositoryModel [
 	^ repositoryModel
 ]
 
-{ #category : #'api - repository model' }
+{ #category : 'api - repository model' }
 TGtGitWithRepositoryModel >> repositoryModel: aRepositoryModel [
 	"Set a not-null repository domain model assigned to the receiver view model"
 	self
@@ -48,14 +48,14 @@ TGtGitWithRepositoryModel >> repositoryModel: aRepositoryModel [
 	self subscribeToRepositoryModel
 ]
 
-{ #category : #'api - repository model' }
+{ #category : 'api - repository model' }
 TGtGitWithRepositoryModel >> subscribeToRepositoryModel [
 	"Is sent after a new repository model is assigned to the view model.
 	It is required to unsubscribe from the domain model by implementing
 	#unsubscribeFromRepositoryModel if view model subscribes to them"
 ]
 
-{ #category : #'api - repository model' }
+{ #category : 'api - repository model' }
 TGtGitWithRepositoryModel >> unsubscribeFromRepositoryModel [
 	"Is sent before a new repository model is assigned to the view model.
 	View models that subscribe to repository model are required to implement this methods"

@@ -1,26 +1,26 @@
 Class {
-	#name : #GtGitAddRepositoryStencil,
-	#superclass : #BrStencil,
+	#name : 'GtGitAddRepositoryStencil',
+	#superclass : 'BrStencil',
 	#instVars : [
 		'pager',
 		'pagerContainer',
 		'dropdown',
 		'repoGroup'
 	],
-	#category : #'GToolkit4Git-Inspector Integration'
+	#category : 'GToolkit4Git-Inspector Integration'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtGitAddRepositoryStencil >> create [
 	^ self pagerContainer 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtGitAddRepositoryStencil >> dropdown: aDropdown [ 
 	dropdown := aDropdown
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtGitAddRepositoryStencil >> githubPage [
 	|container button stencil|
 	stencil := GtGitGithubPageFormStencil new.
@@ -29,7 +29,7 @@ GtGitAddRepositoryStencil >> githubPage [
 	^ stencil create.
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtGitAddRepositoryStencil >> initialPage [
 	| container button local label |
 	label := BrLabel new.
@@ -63,7 +63,7 @@ GtGitAddRepositoryStencil >> initialPage [
 	^ container
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtGitAddRepositoryStencil >> localPage [
 	|fileBrowser container |
 	container := BlElement new
@@ -101,26 +101,26 @@ GtGitAddRepositoryStencil >> localPage [
 	
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtGitAddRepositoryStencil >> openGithubPage [
 	"self pager viewModel removePagesAfter: self pager viewModel pages first."
 	self pager addPage: self githubPage.
 	self pager smoothScrollToLast.
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtGitAddRepositoryStencil >> openLocalPage [
 	"self pager viewModel removePagesAfter: self pager viewModel pages first."
 	self pager addPage: self localPage.
 	self pager smoothScrollToLast.
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtGitAddRepositoryStencil >> pager [
 	^ pager
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtGitAddRepositoryStencil >> pagerContainer [
 	pagerContainer ifNil: [
 		pager := BrPager new.
@@ -134,7 +134,7 @@ GtGitAddRepositoryStencil >> pagerContainer [
 	^ pagerContainer
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtGitAddRepositoryStencil >> repoGroup: aGtGitRepositoryGroup [
 	repoGroup := aGtGitRepositoryGroup
 ]

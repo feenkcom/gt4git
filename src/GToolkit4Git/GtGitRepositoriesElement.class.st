@@ -1,26 +1,26 @@
 Class {
-	#name : #GtGitRepositoriesElement,
-	#superclass : #BlElement,
+	#name : 'GtGitRepositoriesElement',
+	#superclass : 'BlElement',
 	#traits : 'TGtGitWithRepositoriesViewModel + TBrLayoutResizable',
 	#classTraits : 'TGtGitWithRepositoriesViewModel classTrait + TBrLayoutResizable classTrait',
 	#instVars : [
 		'listElement',
 		'toolbarElement'
 	],
-	#category : #'GToolkit4Git-UI - Element'
+	#category : 'GToolkit4Git-UI - Element'
 }
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 GtGitRepositoriesElement >> defaultLayout [
 	^ BlLinearLayout vertical
 ]
 
-{ #category : #'private - actions' }
+{ #category : 'private - actions' }
 GtGitRepositoriesElement >> fetchAllRepositoriesFrom: aButton [
 	self repositoriesViewModel fetchAllSource: nil.
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 GtGitRepositoriesElement >> initialize [
 	super initialize.
 	self initializeToolbar.
@@ -32,7 +32,7 @@ GtGitRepositoriesElement >> initialize [
 	self matchParent.
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 GtGitRepositoriesElement >> initializeListElement [
 	listElement := BrColumnedList new
 		margin: (BlInsets top: 5);
@@ -59,7 +59,7 @@ GtGitRepositoriesElement >> initializeListElement [
 	listElement when: BrSelectionChanged do: [ :anEvent | self onRepositorySelectionChanged: anEvent ].
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 GtGitRepositoriesElement >> initializeToolbar [
 	toolbarElement := BrToolbar new
 		aptitude: (BrGlamorousToolbarAptitude new spacing: 0);
@@ -87,13 +87,13 @@ GtGitRepositoriesElement >> initializeToolbar [
 			label: 'Add repository')
 ]
 
-{ #category : #'private - accessing' }
+{ #category : 'private - accessing' }
 GtGitRepositoriesElement >> listElement [
 	<return: #BrColumnedList>
 	^ listElement
 ]
 
-{ #category : #'private - instance creation' }
+{ #category : 'private - instance creation' }
 GtGitRepositoriesElement >> newCellLabel [
 	^ BrLabel new
 		aptitude: BrGlamorousLabelAptitude new;
@@ -101,7 +101,7 @@ GtGitRepositoriesElement >> newCellLabel [
 		vFitContent
 ]
 
-{ #category : #'api - repositories view model' }
+{ #category : 'api - repositories view model' }
 GtGitRepositoriesElement >> onRepositoriesViewModelChanged [
 	"Is sent when a new repositories view model is assigned to the element.
 	Note: #onRepositoriesViewModelChanged is sent before #subscribeToRepositoriesViewModel
@@ -112,20 +112,20 @@ GtGitRepositoriesElement >> onRepositoriesViewModelChanged [
 	self updateElement.
 ]
 
-{ #category : #'private - event handling' }
+{ #category : 'private - event handling' }
 GtGitRepositoriesElement >> onRepositorySelectionChanged: anEvent [
 	anEvent currentTarget selectedItemDo: [ :anItem :anIndex |
 		anEvent currentTarget phlow spawnTool: (GtGitRepositoryTool new 
 			repositoryViewModel: anItem) ]
 ]
 
-{ #category : #'private - accessing' }
+{ #category : 'private - accessing' }
 GtGitRepositoriesElement >> toolbarElement [
 	<return: #BrToolbar>
 	^ toolbarElement
 ]
 
-{ #category : #'private - updating' }
+{ #category : 'private - updating' }
 GtGitRepositoriesElement >> updateElement [
 	self listElement items: self repositoriesViewModel repositories copy.
 ]

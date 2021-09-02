@@ -1,6 +1,6 @@
-Extension { #name : #IceCommit }
+Extension { #name : 'IceCommit' }
 
-{ #category : #'*GToolkit4Git' }
+{ #category : '*GToolkit4Git' }
 IceCommit >> gtCommitAncestorsDominanceTreeFor: aView [
 	<gtView>
 	^ aView mondrian
@@ -23,7 +23,7 @@ IceCommit >> gtCommitAncestorsDominanceTreeFor: aView [
 			view layout dominanceTree]
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : '*GToolkit4Git' }
 IceCommit >> gtCommitAncestorsTreeFor: aView [
 	<gtView>
 	^ aView mondrian
@@ -46,19 +46,19 @@ IceCommit >> gtCommitAncestorsTreeFor: aView [
 			view layout tree]
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : '*GToolkit4Git' }
 IceCommit >> gtCommitsFor: aView [
 	<gtView>
 	^ aView columnedList 
 		title: 'Ancestors' translated;
 		items: [ self commits ];
-		column: 'Timestamp' item: [ :aCommit | aCommit timeStamp asStringYMDHM ] width: 120;
-		column: 'Commit' item: #shortId width: 70;
-		column: 'Author' item: #author;
-		column: 'Description' item: #comment
+		column: 'Timestamp' text: [ :aCommit | aCommit timeStamp asStringYMDHM ] width: 120;
+		column: 'Commit' text: #shortId width: 70;
+		column: 'Author' text: #author;
+		column: 'Description' text: #comment
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : '*GToolkit4Git' }
 IceCommit >> gtDetailsFor: aView [
 	<gtView>
 	^ aView columnedList 
@@ -71,7 +71,7 @@ IceCommit >> gtDetailsFor: aView [
 			'Date'    -> self commit timeStamp asStringYMDHM.
 			'Tags'    -> self tagNames asCommaString.
 			'Comment' -> self commit comment } ];
-		column: 'Property' item: #key;
-		column: 'Value' item: #value;
+		column: 'Property' text: #key;
+		column: 'Value' text: #value;
 		send: #value
 ]

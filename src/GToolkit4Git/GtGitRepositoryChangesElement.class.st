@@ -1,20 +1,20 @@
 Class {
-	#name : #GtGitRepositoryChangesElement,
-	#superclass : #BlElement,
+	#name : 'GtGitRepositoryChangesElement',
+	#superclass : 'BlElement',
 	#traits : 'TGtGitWithRepositoryViewModel + TBrLayoutResizable',
 	#classTraits : 'TGtGitWithRepositoryViewModel classTrait + TBrLayoutResizable classTrait',
 	#instVars : [
 		'treeElement'
 	],
-	#category : #'GToolkit4Git-UI - Element'
+	#category : 'GToolkit4Git-UI - Element'
 }
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 GtGitRepositoryChangesElement >> defaultLayout [
 	^ BlLinearLayout vertical
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 GtGitRepositoryChangesElement >> initialize [
 	super initialize.
 	self initializeTreeElement.
@@ -24,7 +24,7 @@ GtGitRepositoryChangesElement >> initialize [
 	self matchParent.
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 GtGitRepositoryChangesElement >> initializeTreeElement [
 	treeElement := BrSimpleTree new
 		rowStencil: (BrGlamorousSimpleTreeSelectableRowElementStencilBuilder new);
@@ -58,13 +58,13 @@ GtGitRepositoryChangesElement >> initializeTreeElement [
 	treeElement when: BrSelectionChanged do: [ :anEvent | self onCodeChangeSelectionChanged: anEvent ].
 ]
 
-{ #category : #'private - event handling' }
+{ #category : 'private - event handling' }
 GtGitRepositoryChangesElement >> onCodeChangeSelectionChanged: anEvent [
 	anEvent currentTarget selectedNodeDo: [ :aNode |
 		anEvent currentTarget phlow spawnObject: aNode value ]
 ]
 
-{ #category : #'api - repository view model' }
+{ #category : 'api - repository view model' }
 GtGitRepositoryChangesElement >> onRepositoryViewModelChanged [
 	"Is sent when a new repository view model is assigned to the element.
 	Note: #onRepositoryViewModelChanged is sent before #subscribeToRepositoryViewModel
@@ -75,12 +75,12 @@ GtGitRepositoryChangesElement >> onRepositoryViewModelChanged [
 	self updateElement.
 ]
 
-{ #category : #'private - accessing' }
+{ #category : 'private - accessing' }
 GtGitRepositoryChangesElement >> treeElement [
 	^ treeElement
 ]
 
-{ #category : #'private - updating' }
+{ #category : 'private - updating' }
 GtGitRepositoryChangesElement >> updateElement [
 	| aTree |
 	aTree := self repositoryViewModel repositoryModel changes.

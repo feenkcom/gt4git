@@ -1,20 +1,20 @@
-Extension { #name : #IceLibgitRepository }
+Extension { #name : 'IceLibgitRepository' }
 
-{ #category : #'*GToolkit4Git' }
+{ #category : '*GToolkit4Git' }
 IceLibgitRepository >> gtLocalBranchesFor: aView [
 	<gtView>
 	self isMissing ifTrue: [ ^ aView empty ].
 	^ super gtLocalBranchesFor: aView
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : '*GToolkit4Git' }
 IceLibgitRepository >> gtRemoteBranchesFor: aView [
 	<gtView>
 	self isMissing ifTrue: [ ^ aView empty ].
 	^ super gtRemoteBranchesFor: aView
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : '*GToolkit4Git' }
 IceLibgitRepository >> gtRepositoryDirectoryFor: aView [
 	<gtView>
 	self isMissing ifTrue: [ ^ aView empty ].
@@ -23,7 +23,7 @@ IceLibgitRepository >> gtRepositoryDirectoryFor: aView [
 		priority: 35
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : '*GToolkit4Git' }
 IceLibgitRepository >> gtTagsFor: aView [
 	<gtView>
 	self isMissing ifTrue: [ ^ aView empty ].

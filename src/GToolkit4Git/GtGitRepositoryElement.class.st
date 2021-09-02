@@ -1,6 +1,6 @@
 Class {
-	#name : #GtGitRepositoryElement,
-	#superclass : #BlElement,
+	#name : 'GtGitRepositoryElement',
+	#superclass : 'BlElement',
 	#traits : 'TGtGitWithRepositoryViewModel + TBrLayoutResizable',
 	#classTraits : 'TGtGitWithRepositoryViewModel classTrait + TBrLayoutResizable classTrait',
 	#instVars : [
@@ -9,15 +9,15 @@ Class {
 		'labelElement',
 		'lazyTabsElement'
 	],
-	#category : #'GToolkit4Git-UI - Element'
+	#category : 'GToolkit4Git-UI - Element'
 }
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 GtGitRepositoryElement >> defaultLayout [
 	^ BlLinearLayout vertical
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 GtGitRepositoryElement >> initialize [
 	super initialize.
 	self initializeToolbarElement.
@@ -29,7 +29,7 @@ GtGitRepositoryElement >> initialize [
 	self matchParent.
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 GtGitRepositoryElement >> initializeLazyTabsElement [
 	lazyTabsElement := BlLazyElement new
 		withGlamorousPreview;
@@ -38,7 +38,7 @@ GtGitRepositoryElement >> initializeLazyTabsElement [
 			c vertical matchParent ]
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 GtGitRepositoryElement >> initializeToolbarElement [
 	toolbarElement := BrToolbar new
 		aptitude: (BrGlamorousToolbarAptitude new spacing: 0);
@@ -66,17 +66,17 @@ GtGitRepositoryElement >> initializeToolbarElement [
 			label: 'Something')
 ]
 
-{ #category : #'private - accessing' }
+{ #category : 'private - accessing' }
 GtGitRepositoryElement >> labelElement [
 	^ labelElement
 ]
 
-{ #category : #'private - accessing' }
+{ #category : 'private - accessing' }
 GtGitRepositoryElement >> lazyTabsElement [
 	^ lazyTabsElement
 ]
 
-{ #category : #'private - updating' }
+{ #category : 'private - updating' }
 GtGitRepositoryElement >> newRepositoryViewTabs [
 	<return: #BrTabGroup>
 
@@ -87,7 +87,7 @@ GtGitRepositoryElement >> newRepositoryViewTabs [
 	^ tabsElement
 ]
 
-{ #category : #'api - repository view model' }
+{ #category : 'api - repository view model' }
 GtGitRepositoryElement >> onRepositoryViewModelChanged [
 	"Is sent when a new repository view model is assigned to the element.
 	Note: #onRepositoryViewModelChanged is sent before #subscribeToRepositoryViewModel
@@ -98,7 +98,7 @@ GtGitRepositoryElement >> onRepositoryViewModelChanged [
 	self updateElement.
 ]
 
-{ #category : #'private - updating' }
+{ #category : 'private - updating' }
 GtGitRepositoryElement >> repositoryViewItems [
 	| aRepository collector context |
 	
@@ -116,28 +116,28 @@ GtGitRepositoryElement >> repositoryViewItems [
 	^ collector collect
 ]
 
-{ #category : #'private - accessing' }
+{ #category : 'private - accessing' }
 GtGitRepositoryElement >> tabsElement [
 	^ tabsElement
 ]
 
-{ #category : #'private - accessing' }
+{ #category : 'private - accessing' }
 GtGitRepositoryElement >> toolbarElement [
 	^ toolbarElement
 ]
 
-{ #category : #'private - updating' }
+{ #category : 'private - updating' }
 GtGitRepositoryElement >> updateElement [
 	self updateTabsElement.
 	self updateTitleElement.
 ]
 
-{ #category : #'private - updating' }
+{ #category : 'private - updating' }
 GtGitRepositoryElement >> updateTabsElement [
 	self lazyTabsElement elementBuilder: [ self newRepositoryViewTabs id: #tabs ]
 ]
 
-{ #category : #'private - updating' }
+{ #category : 'private - updating' }
 GtGitRepositoryElement >> updateTitleElement [
 	self labelElement text: self repositoryViewModel name
 ]

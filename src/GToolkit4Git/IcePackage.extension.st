@@ -1,6 +1,6 @@
-Extension { #name : #IcePackage }
+Extension { #name : 'IcePackage' }
 
-{ #category : #'*GToolkit4Git' }
+{ #category : '*GToolkit4Git' }
 IcePackage >> gtActionLoadFor: anAction [
 	<gtAction>
 	^ anAction button
@@ -10,7 +10,7 @@ IcePackage >> gtActionLoadFor: anAction [
 			Iceberg announcer announce: (IceRepositoryModified for: self repository)]
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : '*GToolkit4Git' }
 IcePackage >> gtCoderFor: aView [
 	<gtView>
 	self isLoaded ifFalse: [ 
@@ -21,7 +21,7 @@ IcePackage >> gtCoderFor: aView [
 		stencil: [(GtCoder forPackage: (self name asPackage)) beDetailedLevel ]
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : '*GToolkit4Git' }
 IcePackage >> gtPackageDescription [
 	| description |
 	description := self name asRopedText.
@@ -33,7 +33,7 @@ IcePackage >> gtPackageDescription [
 	^ description
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : '*GToolkit4Git' }
 IcePackage >> gtPackageStatus [
 	|label|
 	self isLoaded ifFalse: [
