@@ -1,13 +1,13 @@
 Class {
-	#name : #GtGitRepositoriesTool,
-	#superclass : #GtPhlowTool,
+	#name : 'GtGitRepositoriesTool',
+	#superclass : 'GtPhlowTool',
 	#instVars : [
 		'repositoriesViewModel'
 	],
-	#category : #'GToolkit4Git-UI - Element'
+	#category : 'GToolkit4Git-UI - Element'
 }
 
-{ #category : #'api - converting' }
+{ #category : 'api - converting' }
 GtGitRepositoriesTool >> asElementDo: aOneArgBlock [
 	"Create a tool element and execute the block."
 	| anElement |
@@ -20,12 +20,12 @@ GtGitRepositoriesTool >> asElementDo: aOneArgBlock [
 	^ aOneArgBlock cull: anElement
 ]
 
-{ #category : #'api - accessing' }
+{ #category : 'api - accessing' }
 GtGitRepositoriesTool >> repositoriesViewModel [
 	^ repositoriesViewModel
 ]
 
-{ #category : #'api - accessing' }
+{ #category : 'api - accessing' }
 GtGitRepositoriesTool >> repositoriesViewModel: anObject [
 	repositoriesViewModel := anObject
 ]

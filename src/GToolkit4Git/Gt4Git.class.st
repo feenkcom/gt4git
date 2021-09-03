@@ -1,13 +1,13 @@
 Class {
-	#name : #Gt4Git,
-	#superclass : #Object,
+	#name : 'Gt4Git',
+	#superclass : 'Object',
 	#instVars : [
 		'repos'
 	],
-	#category : #'GToolkit4Git-Inspector Integration'
+	#category : 'GToolkit4Git-Inspector Integration'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 Gt4Git >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
 	| label repositoriesA repositoriesU repositoriesI repositoriesO repositoriesD repositoriesH |
 	aButtonsContainer removeChildren.
@@ -88,7 +88,7 @@ Gt4Git >> buildButtonsContainer: aButtonsContainer listWidget: anElement [
 				action: [ anElement children second items: repositoriesH ])
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 Gt4Git >> buildListViewFor: aView [
 	| result |
 	result := aView columnedList
@@ -116,13 +116,13 @@ Gt4Git >> buildListViewFor: aView [
 	^ result
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 Gt4Git >> cachedRepositories [
 	repos ifNil: [repos := self repositories].
 	^ repos
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 Gt4Git >> gtRepositoriesFor: aView [
 	<gtView>
 	^ aView explicit
@@ -170,7 +170,7 @@ Gt4Git >> gtRepositoriesFor: aView [
 			aContainer ]
 ]
 
-{ #category : #'gt-extensions' }
+{ #category : 'gt-extensions' }
 Gt4Git >> gtUpdateFor: anAction [
 	<gtAction>
 	^ anAction button
@@ -179,7 +179,7 @@ Gt4Git >> gtUpdateFor: anAction [
 		action: [ :aButton | aButton phlow fireUpdateWish ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 Gt4Git >> repositories [
 	repos := IceRepository registry copyFrom: 1 to: IceRepository registry size.
 	repos := repos sort: [:a :b | 

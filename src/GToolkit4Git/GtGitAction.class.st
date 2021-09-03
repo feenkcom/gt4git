@@ -1,5 +1,5 @@
 Class {
-	#name : #GtGitAction,
-	#superclass : #Object,
-	#category : #'GToolkit4Git-Inspector Integration - Actions'
+	#name : 'GtGitAction',
+	#superclass : 'Object',
+	#category : 'GToolkit4Git-Inspector Integration - Actions'
 }

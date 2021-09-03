@@ -1,6 +1,6 @@
-Extension { #name : #IceMerge }
+Extension { #name : 'IceMerge' }
 
-{ #category : #'*GToolkit4Git' }
+{ #category : '*GToolkit4Git' }
 IceMerge >> gtInspectorMergeWindowIn: composite [
 	<gtInspectorPresentationOrder:20>
 	composite morph 

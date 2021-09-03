@@ -1,16 +1,16 @@
 Class {
-	#name : #GtGitGithubPageFormStencil,
-	#superclass : #BrStencil,
+	#name : 'GtGitGithubPageFormStencil',
+	#superclass : 'BrStencil',
 	#instVars : [
 		'ownerEditor',
 		'projectEditor',
 		'aDropdown',
 		'repoGroup'
 	],
-	#category : #'GToolkit4Git-Inspector Integration'
+	#category : 'GToolkit4Git-Inspector Integration'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtGitGithubPageFormStencil >> addOwnerContainer [
 	|container|
 	container := BlElement new.
@@ -25,7 +25,7 @@ GtGitGithubPageFormStencil >> addOwnerContainer [
 	
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtGitGithubPageFormStencil >> addProjectContainer [
 	|container|
 	container := BlElement new.
@@ -40,12 +40,12 @@ GtGitGithubPageFormStencil >> addProjectContainer [
 	
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtGitGithubPageFormStencil >> create [
 	^ self createMainContainer
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtGitGithubPageFormStencil >> createCloneButton [
 	|filler cloneButton|
 	cloneButton := BrButton new.
@@ -69,7 +69,7 @@ GtGitGithubPageFormStencil >> createCloneButton [
 	^ {filler . cloneButton}
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtGitGithubPageFormStencil >> createMainContainer [
 	|container|
 	container := BrPagerPageElement new
@@ -81,7 +81,7 @@ GtGitGithubPageFormStencil >> createMainContainer [
 	^ container.
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtGitGithubPageFormStencil >> createUrl [
 	|label |
 	label := BrLabel new text:'Git URL'.
@@ -99,12 +99,12 @@ GtGitGithubPageFormStencil >> createUrl [
 	
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtGitGithubPageFormStencil >> dropdown: anObject [ 
 	aDropdown := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtGitGithubPageFormStencil >> projectLocation [
 	|url owner project |
 	url := ownerEditor text asString.
@@ -117,7 +117,7 @@ GtGitGithubPageFormStencil >> projectLocation [
 		/ project
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtGitGithubPageFormStencil >> repoGroup: aGtGitRepositoryGroup [
 	repoGroup := aGtGitRepositoryGroup
 ]

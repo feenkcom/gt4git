@@ -1,24 +1,24 @@
 Class {
-	#name : #GtGitRepairAction,
-	#superclass : #GtGitAction,
+	#name : 'GtGitRepairAction',
+	#superclass : 'GtGitAction',
 	#instVars : [
 		'repository',
 		'dropdown'
 	],
-	#category : #'GToolkit4Git-Inspector Integration - Actions'
+	#category : 'GToolkit4Git-Inspector Integration - Actions'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtGitRepairAction class >> iceTipClass [
 	^ self subclassResponsibility
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtGitRepairAction >> dropdown: aDropdown [
 	dropdown := aDropdown
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtGitRepairAction >> repository: aRepository [
 	repository := aRepository
 ]

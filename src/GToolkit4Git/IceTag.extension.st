@@ -1,6 +1,6 @@
-Extension { #name : #IceTag }
+Extension { #name : 'IceTag' }
 
-{ #category : #'*GToolkit4Git' }
+{ #category : '*GToolkit4Git' }
 IceTag >> gtCommitAncestorsFor: aView [
 	<gtView>
 	^ (self commit
@@ -8,19 +8,19 @@ IceTag >> gtCommitAncestorsFor: aView [
 			title: 'Commits tree'
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : '*GToolkit4Git' }
 IceTag >> gtCommitsFor: aView [
 	<gtView>
 	^ aView columnedList 
 		title: 'Commits' translated;
 		items: [ self commits ];
-		column: 'Timestamp' item: [ :aCommit | aCommit timeStamp asStringYMDHM ] width: 120;
-		column: 'Commit' item: #shortId width: 70;
-		column: 'Author' item: #author;
-		column: 'Description' item: #comment
+		column: 'Timestamp' text: [ :aCommit | aCommit timeStamp asStringYMDHM ] width: 120;
+		column: 'Commit' text: #shortId width: 70;
+		column: 'Author' text: #author;
+		column: 'Description' text: #comment
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : '*GToolkit4Git' }
 IceTag >> gtHeadCommitDetailsFor: aView [
 	<gtView>
 	^ self commit gtDetailsFor: aView

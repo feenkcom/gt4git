@@ -1,6 +1,6 @@
-Extension { #name : #IceWorkingCopy }
+Extension { #name : 'IceWorkingCopy' }
 
-{ #category : #'*GToolkit4Git' }
+{ #category : '*GToolkit4Git' }
 IceWorkingCopy >> gtPackagesFor: aView [
 	<gtView>
 	^ aView columnedList 
@@ -8,7 +8,7 @@ IceWorkingCopy >> gtPackagesFor: aView [
 		title: 'Packages' translated;
 		items: [ (IceSortingStrategy new first: #modified) sort: self packages ];
 		updateWhen: IceRepositoryModified in: Iceberg announcer;
-		column: 'Name' item: #gtPackageDescription;
+		column: 'Name' text: #gtPackageDescription;
 		column: 'Status' icon: #gtPackageStatus width:100;
 		sendTool: [ :aPackage | 
 			aPackage isLoaded
@@ -27,7 +27,7 @@ IceWorkingCopy >> gtPackagesFor: aView [
 		tooltip: 'Add Package'
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : '*GToolkit4Git' }
 IceWorkingCopy >> gtViewDiffToReferenceCommitFor: aView [
 	<gtView>
 	^ (self diffToReferenceCommit 
