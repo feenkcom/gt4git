@@ -52,15 +52,21 @@ GtGitRepositoryRepairStencil >> createMainContainer [
 
 { #category : 'accessing' }
 GtGitRepositoryRepairStencil >> createRepairButtonsList [
+
 	| local |
-	^ ((GtGitRepairAction subclasses select: [:sc | sc iceTipClass isAvailableFor: repository]) 
-		collect: [:sc | sc new repository: repository; dropdown: dropdown]) 
-		collect: [:a | 
-			local := BrButton new.
-			local label: (a class iceTipClass title); beHuge; hFitContent.
-			local aptitude: BrGlamorousButtonWithLabelAptitude.
-			local action: [ self openPageForAction: a ].
-			local ]
+	^ ((GtGitRepairAction subclasses select: [ :sc | 
+		    sc iceTipClass isAvailableFor: repository ]) collect: [ :sc | 
+		   sc new
+			   repository: repository;
+			   dropdown: dropdown ]) collect: [ :a | 
+		  local := BrButton new.
+		  local
+			  label: a class iceTipClass title;
+			  beHugeSize;
+			  hFitContent.
+		  local aptitude: BrGlamorousButtonWithLabelAptitude.
+		  local action: [ self openPageForAction: a ].
+		  local ]
 ]
 
 { #category : 'accessing' }
