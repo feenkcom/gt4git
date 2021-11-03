@@ -4,14 +4,15 @@ Class {
 	#category : #BaselineOfGToolkit4Git
 }
 
-{ #category : #accessing }
+{ #category : #baseline }
 BaselineOfGToolkit4Git >> baseline: spec [
-
 	<baseline>
-	spec for: #common do: [ 
+	spec for: #'common' do: [
 		spec
-			baseline: 'Brick'
-			with: [ spec repository: 'github://feenkcom/Brick:main/src' ].
-		spec package: 'GToolkit4Git' with: [ 
-			spec requires: #( 'Brick' ) ]. ]
+			baseline: 'Brick' with: [
+				spec repository: 'github://feenkcom/Brick:v0.8.421/src' ].
+
+		spec package: 'GToolkit4Git' with: [
+			spec requires: #('Brick') ].
+	]
 ]
