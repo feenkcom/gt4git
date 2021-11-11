@@ -1,6 +1,6 @@
 Class {
-	#name : 'GtGitRepository2',
-	#superclass : 'Object',
+	#name : #GtGitRepository2,
+	#superclass : #Object,
 	#instVars : [
 		'repository',
 		'status',
@@ -15,19 +15,19 @@ Class {
 	#category : 'GToolkit4Git-Inspector Integration'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 GtGitRepository2 class >> fromIcebergRepository: anIceRepository [
 	^ self new repository: anIceRepository
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> currentCommitMessage [
 	<return: #BlText>
 	^ currentCommitMessage ifNil: [
 		currentCommitMessage := self recentCommitMessage asRopedText ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> executeCommit: aCommitMessage [
 	|diff|
 	diff := self repository workingCopyDiff.
@@ -38,7 +38,7 @@ GtGitRepository2 >> executeCommit: aCommitMessage [
 	Iceberg announcer announce: (IceRepositoryModified for: self repository).
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> gtActionFetchFor: anAction [
 	<gtAction>
 	self isMissing ifTrue: [ ^ anAction ].
@@ -51,7 +51,7 @@ GtGitRepository2 >> gtActionFetchFor: anAction [
 			aButton phlow fireUpdateWish ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> gtActionPullFor: anAction [
 	<gtAction>
 	self isMissing ifTrue: [ ^ anAction ].
@@ -65,7 +65,7 @@ GtGitRepository2 >> gtActionPullFor: anAction [
 			aButton phlow fireUpdateWish ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> gtActionPushFor: anAction [
 	<gtAction>
 	self isMissing ifTrue: [ ^ anAction ].
@@ -80,7 +80,7 @@ GtGitRepository2 >> gtActionPushFor: anAction [
 			aButton phlow fireUpdateWish ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> gtActionRefreshFor: anAction [
 	<gtAction>
 	self isMissing ifTrue: [ ^ anAction ].
@@ -113,7 +113,7 @@ GtGitRepository2 >> gtActionRefreshFor: anAction [
 			aButton phlow fireUpdateWish ]. 
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> gtActionRepairFor: anAction [
 	<gtAction>
 	self isMissing ifTrue: [ ^ anAction ].
@@ -125,7 +125,7 @@ GtGitRepository2 >> gtActionRepairFor: anAction [
 			GtGitRepositoryRepairStencil new repository:repository; dropdown: aDropdown ].
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> gtChangesFor: aView [
 	<gtView>
 	self workingCopy ifNil: [ ^ aView empty ].
@@ -207,7 +207,7 @@ GtGitRepository2 >> gtChangesFor: aView [
 				addChildren: { editor . button } ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> gtCommitsFor: aView [
 	<gtView>
 	^ aView forward
@@ -216,12 +216,12 @@ GtGitRepository2 >> gtCommitsFor: aView [
 		view: #gtCommitsFor:
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> gtDisplayOn: aStream [
 	aStream nextPutAll: self repository repositoryDirectory pathString
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> gtPackagesFor: aView [
 	<gtView>
 	^ self repository workingCopy 
@@ -229,13 +229,13 @@ GtGitRepository2 >> gtPackagesFor: aView [
 		ifNotNil: [ self repository workingCopy gtPackagesFor: aView ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> gtRepositoryDirectoryFor: aView [
 	<gtView>
 	^ (self repository gtRepositoryDirectoryFor: aView) priority: 40
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> gtViewIncomingCommitsFor: aView [
 	<gtView>
 	| incomingCommits |
@@ -255,7 +255,7 @@ GtGitRepository2 >> gtViewIncomingCommitsFor: aView [
 			aButton phlow fireUpdateWish ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> gtViewOutgoingCommitsFor: aView [
 	<gtView>
 	| outgoingCommits |
@@ -268,94 +268,94 @@ GtGitRepository2 >> gtViewOutgoingCommitsFor: aView [
 				priority: 12 ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> head [
  ^ repository head
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> headDescription [
 	^ headDescription ifNil: [ headDescription := self repository headDescription ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> incomingCommits [
  ^ repositoryModel incomingCommits
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> isMissing [
 ^ self repository repositoryDirectory isNil 
 		or: [ self repository repositoryDirectory exists not ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> isModified [
 	^ isModified ifNil: [ isModified := self repository isModified ]
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 GtGitRepository2 >> load [
 	self status.
 	self headDescription.
 	self isModified
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> name [
 	^ self repository name
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> outgoingCommits [
  ^ repositoryModel outgoingCommits
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> pull [
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> recentCommitMessage [
 	^ RecentCommitMessage ifNil: [ '' ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> recentCommitMessage: aString [ 
 	RecentCommitMessage := aString asString
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> repository [
 	<return: #IceRepository>
 
 	^ repository
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> repository: anIceRepository [
 	repository := anIceRepository.
 	repositoryModel := IceTipRepositoryModel on: repository.
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 GtGitRepository2 >> reset [
 	status := nil.
 	headDescription := nil.
 	isModified := nil
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> resetCurrentCommitMessage [
 	currentCommitMessage := nil
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> status [
 	^ status ifNil: [ status := (IceTipRepositoryModel on: self repository) status asString ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepository2 >> workingCopy [
 	^ self repository workingCopy
 ]

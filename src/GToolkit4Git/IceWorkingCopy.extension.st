@@ -1,6 +1,6 @@
-Extension { #name : 'IceWorkingCopy' }
+Extension { #name : #IceWorkingCopy }
 
-{ #category : '*GToolkit4Git' }
+{ #category : #'*GToolkit4Git' }
 IceWorkingCopy >> gtPackagesFor: aView [
 	<gtView>
 	^ aView columnedList 
@@ -27,7 +27,7 @@ IceWorkingCopy >> gtPackagesFor: aView [
 		tooltip: 'Add Package'
 ]
 
-{ #category : '*GToolkit4Git' }
+{ #category : #'*GToolkit4Git' }
 IceWorkingCopy >> gtViewDiffToReferenceCommitFor: aView [
 	<gtView>
 	^ (self diffToReferenceCommit 

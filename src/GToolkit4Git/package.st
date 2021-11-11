@@ -1,1 +1,1 @@
-Package { #name : 'GToolkit4Git' }
+Package { #name : #GToolkit4Git }

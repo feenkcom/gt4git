@@ -1,10 +1,10 @@
 Class {
-	#name : 'GtGitExamples',
-	#superclass : 'Object',
+	#name : #GtGitExamples,
+	#superclass : #Object,
 	#category : 'GToolkit4Git-Model'
 }
 
-{ #category : 'examples - repositories - model' }
+{ #category : #'examples - repositories - model' }
 GtGitExamples >> basicRepositoriesElement [
 	<gtExample>
 	| anElement |
@@ -12,7 +12,7 @@ GtGitExamples >> basicRepositoriesElement [
 	^ anElement
 ]
 
-{ #category : 'examples - repositories - model' }
+{ #category : #'examples - repositories - model' }
 GtGitExamples >> basicRepositoriesModel [
 	<gtExample>
 	| aModel |
@@ -22,7 +22,7 @@ GtGitExamples >> basicRepositoriesModel [
 	^ aModel
 ]
 
-{ #category : 'examples - repositories - model' }
+{ #category : #'examples - repositories - model' }
 GtGitExamples >> basicRepositoriesTool [
 	<gtExample>
 	| aTool |
@@ -31,7 +31,7 @@ GtGitExamples >> basicRepositoriesTool [
 	^ aTool
 ]
 
-{ #category : 'examples - repositories - model' }
+{ #category : #'examples - repositories - model' }
 GtGitExamples >> basicRepositoriesViewModel [
 	<gtExample>
 	| aViewModel |
@@ -40,7 +40,7 @@ GtGitExamples >> basicRepositoriesViewModel [
 	^ aViewModel
 ]
 
-{ #category : 'examples - repository - model' }
+{ #category : #'examples - repository - model' }
 GtGitExamples >> basicRepositoryElement [
 	<gtExample>
 	| anElement |
@@ -48,7 +48,7 @@ GtGitExamples >> basicRepositoryElement [
 	^ anElement
 ]
 
-{ #category : 'examples - repository - model' }
+{ #category : #'examples - repository - model' }
 GtGitExamples >> basicRepositoryModel [
 	<gtExample>
 	| aModel |
@@ -57,7 +57,7 @@ GtGitExamples >> basicRepositoryModel [
 	^ aModel
 ]
 
-{ #category : 'examples - repository - model' }
+{ #category : #'examples - repository - model' }
 GtGitExamples >> basicRepositoryViewModel [
 	<gtExample>
 	| aViewModel |
@@ -66,7 +66,7 @@ GtGitExamples >> basicRepositoryViewModel [
 	^ aViewModel
 ]
 
-{ #category : 'examples - repository - model' }
+{ #category : #'examples - repository - model' }
 GtGitExamples >> mockRepository [
 	<gtExample>
 	| aRepository |
@@ -79,7 +79,7 @@ GtGitExamples >> mockRepository [
 	^ aRepository
 ]
 
-{ #category : 'examples - repositories - model' }
+{ #category : #'examples - repositories - model' }
 GtGitExamples >> repositoriesElement [
 	<gtExample>
 	| anElement aViewModel |
@@ -90,7 +90,7 @@ GtGitExamples >> repositoriesElement [
 	^ anElement
 ]
 
-{ #category : 'examples - repositories - model' }
+{ #category : #'examples - repositories - model' }
 GtGitExamples >> repositoriesModel [
 	<gtExample>
 	| aModel |
@@ -99,7 +99,7 @@ GtGitExamples >> repositoriesModel [
 	^ aModel
 ]
 
-{ #category : 'examples - repositories - model' }
+{ #category : #'examples - repositories - model' }
 GtGitExamples >> repositoriesTool [
 	<gtExample>
 	| aTool aViewModel |
@@ -110,7 +110,7 @@ GtGitExamples >> repositoriesTool [
 	^ aTool
 ]
 
-{ #category : 'examples - repositories - model' }
+{ #category : #'examples - repositories - model' }
 GtGitExamples >> repositoriesTool_asElement [
 	<gtExample>
 	| aTool anElement |
@@ -120,7 +120,7 @@ GtGitExamples >> repositoriesTool_asElement [
 	^ anElement
 ]
 
-{ #category : 'examples - repositories - model' }
+{ #category : #'examples - repositories - model' }
 GtGitExamples >> repositoriesViewModel [
 	<gtExample>
 	| aViewModel aModel |
@@ -131,7 +131,7 @@ GtGitExamples >> repositoriesViewModel [
 	^ aViewModel
 ]
 
-{ #category : 'examples - repository - model' }
+{ #category : #'examples - repository - model' }
 GtGitExamples >> repositoryElement [
 	<gtExample>
 	| anElement aViewModel |
@@ -142,7 +142,7 @@ GtGitExamples >> repositoryElement [
 	^ anElement
 ]
 
-{ #category : 'examples - repository - model' }
+{ #category : #'examples - repository - model' }
 GtGitExamples >> repositoryModel [
 	<gtExample>
 	| aModel aRepository |
@@ -153,7 +153,7 @@ GtGitExamples >> repositoryModel [
 	^ aModel
 ]
 
-{ #category : 'examples - repository - model' }
+{ #category : #'examples - repository - model' }
 GtGitExamples >> repositoryViewModel [
 	<gtExample>
 	| aViewModel aModel |

@@ -1,6 +1,6 @@
-Extension { #name : 'IceDiff' }
+Extension { #name : #IceDiff }
 
-{ #category : '*GToolkit4Git' }
+{ #category : #'*GToolkit4Git' }
 IceDiff >> gtInspectorDiffIn: composite [
 	<gtInspectorPresentationOrder:5>
 	composite spec 
@@ -10,7 +10,7 @@ IceDiff >> gtInspectorDiffIn: composite [
 		title: 'Diff'
 ]
 
-{ #category : '*GToolkit4Git' }
+{ #category : #'*GToolkit4Git' }
 IceDiff >> gtViewInspectorDiffFor: aView [
 	<gtView>
 	^ aView tree
@@ -48,7 +48,7 @@ IceDiff >> gtViewInspectorDiffFor: aView [
 		
 ]
 
-{ #category : '*GToolkit4Git' }
+{ #category : #'*GToolkit4Git' }
 IceDiff >> revertChanges: aNode [
 	self canRevertChanges ifTrue: [
 		source discardChanges: aNode.
