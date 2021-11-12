@@ -1,6 +1,6 @@
 Class {
-	#name : 'GtGitRepositoriesViewModel',
-	#superclass : 'Object',
+	#name : #GtGitRepositoriesViewModel,
+	#superclass : #Object,
 	#traits : 'TGtGitWithRepositoriesModel',
 	#classTraits : 'TGtGitWithRepositoriesModel classTrait',
 	#instVars : [
@@ -9,19 +9,19 @@ Class {
 	#category : 'GToolkit4Git-UI - View Model'
 }
 
-{ #category : 'api - actions' }
+{ #category : #'api - actions' }
 GtGitRepositoriesViewModel >> fetchAllSource: aSource [
 	
 	self flag: 'todo'
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 GtGitRepositoriesViewModel >> initialize [
 	super initialize.
 	repositoryViewModels := Array empty.
 ]
 
-{ #category : 'api - repositories model' }
+{ #category : #'api - repositories model' }
 GtGitRepositoriesViewModel >> onRepositoriesModelChanged [
 	"Is sent when a new repositories model is assigned to the view model"
 	
@@ -34,7 +34,7 @@ GtGitRepositoriesViewModel >> onRepositoriesModelChanged [
 				aStream nextPut: aViewModel ] ]
 ]
 
-{ #category : 'api - repositories' }
+{ #category : #'api - repositories' }
 GtGitRepositoriesViewModel >> repositories [
 	^ repositoryViewModels
 ]

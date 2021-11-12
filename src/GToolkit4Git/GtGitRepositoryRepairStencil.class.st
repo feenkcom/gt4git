@@ -1,6 +1,6 @@
 Class {
-	#name : 'GtGitRepositoryRepairStencil',
-	#superclass : 'BrStencil',
+	#name : #GtGitRepositoryRepairStencil,
+	#superclass : #BrStencil,
 	#instVars : [
 		'container',
 		'pager',
@@ -10,12 +10,12 @@ Class {
 	#category : 'GToolkit4Git-Inspector Integration'
 }
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepositoryRepairStencil >> create [
 	^ self createMainContainer 
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepositoryRepairStencil >> createMainContainer [
 	container ifNil: [
 		pager := BrPager new.
@@ -50,7 +50,7 @@ GtGitRepositoryRepairStencil >> createMainContainer [
 	^ container
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepositoryRepairStencil >> createRepairButtonsList [
 
 	| local |
@@ -69,12 +69,12 @@ GtGitRepositoryRepairStencil >> createRepairButtonsList [
 		  local ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepositoryRepairStencil >> dropdown: aDropdown [ 
 	dropdown := aDropdown
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepositoryRepairStencil >> initialPage [
 	|page|
 	page := BrPagerPageElement new.
@@ -85,7 +85,7 @@ GtGitRepositoryRepairStencil >> initialPage [
 		
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepositoryRepairStencil >> openPageForAction: aGtGitRepairAction [
 	pager addPage: (BrPagerPageElement new
 					layout: BlLinearLayout vertical alignCenter;
@@ -94,7 +94,7 @@ GtGitRepositoryRepairStencil >> openPageForAction: aGtGitRepairAction [
 				pager scrollToLast
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepositoryRepairStencil >> repository: aRepository [
 	repository := aRepository
 ]

@@ -1,15 +1,15 @@
 Class {
-	#name : 'GtGitRepairProject',
-	#superclass : 'GtGitRepairAction',
+	#name : #GtGitRepairProject,
+	#superclass : #GtGitRepairAction,
 	#category : 'GToolkit4Git-Inspector Integration - Actions'
 }
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepairProject class >> iceTipClass [
 	^ IceTipRepairProject
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitRepairProject >> repairStencil [
 	|container srcSelector |
 	container := BrVerticalPane new.

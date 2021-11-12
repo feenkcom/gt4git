@@ -1,6 +1,6 @@
 Class {
-	#name : 'GtGitRepository',
-	#superclass : 'Object',
+	#name : #GtGitRepository,
+	#superclass : #Object,
 	#traits : 'TGtAnnouncer',
 	#classTraits : 'TGtAnnouncer classTrait',
 	#instVars : [
@@ -11,20 +11,20 @@ Class {
 	#category : 'GToolkit4Git-Model'
 }
 
-{ #category : 'announcer' }
+{ #category : #announcer }
 GtGitRepository >> announcer [
 	<return: #Announcer>
 	^ announcer
 ]
 
-{ #category : 'api - repository' }
+{ #category : #'api - repository' }
 GtGitRepository >> changes [
 	^ self isModified
 		ifTrue: [ self workingCopy diffToReferenceCommit treeToShow children ]
 		ifFalse: [ Array empty ]
 ]
 
-{ #category : 'api - actions' }
+{ #category : #'api - actions' }
 GtGitRepository >> executeCommit: aCommitMessage [
 	|diff|
 	diff := self repository workingCopyDiff.
@@ -35,12 +35,12 @@ GtGitRepository >> executeCommit: aCommitMessage [
 	Iceberg announcer announce: (IceRepositoryModified for: self repository).
 ]
 
-{ #category : 'api - actions' }
+{ #category : #'api - actions' }
 GtGitRepository >> fetch [
 	self repository fetch.
 ]
 
-{ #category : 'gt - extensions' }
+{ #category : #'gt - extensions' }
 GtGitRepository >> gtChanges2For: aView context: aContext [
 	<gtView>
 	"<gtRepositoryView>"
@@ -121,7 +121,7 @@ GtGitRepository >> gtChanges2For: aView context: aContext [
 				addChildren: { editor . button } ]
 ]
 
-{ #category : 'gt - extensions' }
+{ #category : #'gt - extensions' }
 GtGitRepository >> gtChangesFor: aView context: aContext [
 	<gtView>
 	<gtRepositoryView>
@@ -177,7 +177,7 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 				addChildren: { editor . button } ]
 ]
 
-{ #category : 'gt - extensions' }
+{ #category : #'gt - extensions' }
 GtGitRepository >> gtPackagesFor: aView context: aContext [
 	<gtView>
 	<gtRepositoryView>
@@ -185,53 +185,53 @@ GtGitRepository >> gtPackagesFor: aView context: aContext [
 	^ self repository workingCopy gtPackagesFor: aView
 ]
 
-{ #category : 'api - testing' }
+{ #category : #'api - testing' }
 GtGitRepository >> hasChanges [
 	^ self hasWorkingCopy and: [ 
 		self isModified "and: [  
 			self workingCopy diffToReferenceCommit treeToShow children isNotEmpty ]" ]
 ]
 
-{ #category : 'api - testing' }
+{ #category : #'api - testing' }
 GtGitRepository >> hasRepository [
 	^ self repository isNotNil
 ]
 
-{ #category : 'api - testing' }
+{ #category : #'api - testing' }
 GtGitRepository >> hasWorkingCopy [
 	^ self hasRepository and: [ self repository workingCopy isNotNil ]
 ]
 
-{ #category : 'api - repository' }
+{ #category : #'api - repository' }
 GtGitRepository >> headDescription [
 	^ self repository ifNotNil: #headDescription ifNil: [ '<missing>' ]
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 GtGitRepository >> initialize [
 	super initialize.
 	announcer := Announcer new.
 	isSubscribed := false.
 ]
 
-{ #category : 'api - testing' }
+{ #category : #'api - testing' }
 GtGitRepository >> isModified [
 	^ self hasWorkingCopy and: [ self workingCopy isModified ]
 ]
 
-{ #category : 'api - repository' }
+{ #category : #'api - repository' }
 GtGitRepository >> name [
 	^ self repository ifNotNil: #name ifNil: [ '<missing>' ]
 ]
 
-{ #category : 'private - announcement handling' }
+{ #category : #'private - announcement handling' }
 GtGitRepository >> onRepositoryModifiedAnnouncement: anAnnouncement [
 	anAnnouncement repository = self repository ifTrue: [ ^ self ].
 	
 	self announce: anAnnouncement
 ]
 
-{ #category : 'printing' }
+{ #category : #printing }
 GtGitRepository >> printOn: aStream [
 	super printOn: aStream.
 	self repository ifNil: [ ^ self ].
@@ -242,12 +242,12 @@ GtGitRepository >> printOn: aStream [
 		nextPut: $)
 ]
 
-{ #category : 'api - accessing' }
+{ #category : #'api - accessing' }
 GtGitRepository >> repository [
 	^ repository
 ]
 
-{ #category : 'api - accessing' }
+{ #category : #'api - accessing' }
 GtGitRepository >> repository: aRepository [
 
 	repository == aRepository ifTrue: [ ^ self ].
@@ -262,7 +262,7 @@ GtGitRepository >> repository: aRepository [
 		to: self.
 ]
 
-{ #category : 'api - repository' }
+{ #category : #'api - repository' }
 GtGitRepository >> workingCopy [
 	^ self repository workingCopy
 ]

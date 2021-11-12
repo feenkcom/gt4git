@@ -1,10 +1,10 @@
 Class {
-	#name : 'GtGitDiscardAndLoad',
-	#superclass : 'GtGitRepairAction',
+	#name : #GtGitDiscardAndLoad,
+	#superclass : #GtGitRepairAction,
 	#category : 'GToolkit4Git-Inspector Integration - Actions'
 }
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitDiscardAndLoad class >> iceTipClass [
 	^ IceTipRepairDiscardAndLoad
 ]

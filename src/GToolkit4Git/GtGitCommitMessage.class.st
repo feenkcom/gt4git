@@ -1,6 +1,6 @@
 Class {
-	#name : 'GtGitCommitMessage',
-	#superclass : 'Object',
+	#name : #GtGitCommitMessage,
+	#superclass : #Object,
 	#traits : 'TGtUniqueInstance',
 	#classTraits : 'TGtUniqueInstance classTrait',
 	#instVars : [
@@ -9,18 +9,18 @@ Class {
 	#category : 'GToolkit4Git-UI - View Model'
 }
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 GtGitCommitMessage >> initialize [
 	super initialize.
 	lastMessage := ''.
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitCommitMessage >> lastMessage [
 	^ lastMessage
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 GtGitCommitMessage >> lastMessage: anObject [
 	lastMessage := anObject
 ]

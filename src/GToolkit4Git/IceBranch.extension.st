@@ -1,6 +1,6 @@
-Extension { #name : 'IceBranch' }
+Extension { #name : #IceBranch }
 
-{ #category : '*GToolkit4Git' }
+{ #category : #'*GToolkit4Git' }
 IceBranch >> gtCommitAncestorsFor: aView [
 	<gtView>
 	^ (self commit
@@ -8,7 +8,7 @@ IceBranch >> gtCommitAncestorsFor: aView [
 			title: 'Commits tree'
 ]
 
-{ #category : '*GToolkit4Git' }
+{ #category : #'*GToolkit4Git' }
 IceBranch >> gtCommitsFor: aView [
 	<gtView>
 	^ aView columnedList 
@@ -20,7 +20,7 @@ IceBranch >> gtCommitsFor: aView [
 		column: 'Description' text: #comment
 ]
 
-{ #category : '*GToolkit4Git' }
+{ #category : #'*GToolkit4Git' }
 IceBranch >> gtSummaryDescription [
 	^ String streamContents: [ :aStream |
 		aStream

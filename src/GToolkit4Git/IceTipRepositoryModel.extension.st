@@ -1,6 +1,6 @@
-Extension { #name : 'IceTipRepositoryModel' }
+Extension { #name : #IceTipRepositoryModel }
 
-{ #category : '*GToolkit4Git' }
+{ #category : #'*GToolkit4Git' }
 IceTipRepositoryModel >> isModified [
 	^ entity isModified
 ]

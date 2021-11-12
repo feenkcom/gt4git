@@ -1,6 +1,6 @@
-Extension { #name : 'IceNode' }
+Extension { #name : #IceNode }
 
-{ #category : '*GToolkit4Git' }
+{ #category : #'*GToolkit4Git' }
 IceNode >> gtViewDiffFor: aView [
 	<gtView>
 	^ aView textEditor

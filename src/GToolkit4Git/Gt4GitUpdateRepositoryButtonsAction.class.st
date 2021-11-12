@@ -3,8 +3,8 @@ I update repositories filter buttons.
 
 "
 Class {
-	#name : 'Gt4GitUpdateRepositoryButtonsAction',
-	#superclass : 'Object',
+	#name : #Gt4GitUpdateRepositoryButtonsAction,
+	#superclass : #Object,
 	#instVars : [
 		'git',
 		'buttonsContainer',
@@ -13,37 +13,37 @@ Class {
 	#category : 'GToolkit4Git-Inspector Integration'
 }
 
-{ #category : 'api - accessing' }
+{ #category : #'api - accessing' }
 Gt4GitUpdateRepositoryButtonsAction >> buttonsContainer [
 	^ buttonsContainer
 ]
 
-{ #category : 'api - accessing' }
+{ #category : #'api - accessing' }
 Gt4GitUpdateRepositoryButtonsAction >> buttonsContainer: anObject [
 	buttonsContainer := anObject
 ]
 
-{ #category : 'api - accessing' }
+{ #category : #'api - accessing' }
 Gt4GitUpdateRepositoryButtonsAction >> git [
 	^ git
 ]
 
-{ #category : 'api - accessing' }
+{ #category : #'api - accessing' }
 Gt4GitUpdateRepositoryButtonsAction >> git: anObject [
 	git := anObject
 ]
 
-{ #category : 'api - accessing' }
+{ #category : #'api - accessing' }
 Gt4GitUpdateRepositoryButtonsAction >> listElement [
 	^ listElement
 ]
 
-{ #category : 'api - accessing' }
+{ #category : #'api - accessing' }
 Gt4GitUpdateRepositoryButtonsAction >> listElement: anObject [
 	listElement := anObject
 ]
 
-{ #category : 'api - updating' }
+{ #category : #'api - updating' }
 Gt4GitUpdateRepositoryButtonsAction >> update [
 	self git
 		buildButtonsContainer: self buttonsContainer

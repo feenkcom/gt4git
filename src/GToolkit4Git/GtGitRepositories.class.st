@@ -1,18 +1,18 @@
 Class {
-	#name : 'GtGitRepositories',
-	#superclass : 'Object',
+	#name : #GtGitRepositories,
+	#superclass : #Object,
 	#instVars : [
 		'collection'
 	],
 	#category : 'GToolkit4Git-Model'
 }
 
-{ #category : 'api - instance creation' }
+{ #category : #'api - instance creation' }
 GtGitRepositories class >> default [
 	^ self new collection: self defaultCollection
 ]
 
-{ #category : 'defaults' }
+{ #category : #defaults }
 GtGitRepositories class >> defaultCollection [
 	^ Array 
 			new: IceRepository registry size 
@@ -21,17 +21,17 @@ GtGitRepositories class >> defaultCollection [
 					aStream nextPut: (GtGitRepository new repository: eachRepository) ] ]
 ]
 
-{ #category : 'api - accessing' }
+{ #category : #'api - accessing' }
 GtGitRepositories >> collection [
 	^ collection
 ]
 
-{ #category : 'api - accessing' }
+{ #category : #'api - accessing' }
 GtGitRepositories >> collection: aCollection [
 	collection := aCollection
 ]
 
-{ #category : 'gt - extensions' }
+{ #category : #'gt - extensions' }
 GtGitRepositories >> gtRepositoriesFor: aView [
 	<gtView>
 	self collection ifNil: [ ^ aView empty ].
@@ -41,13 +41,13 @@ GtGitRepositories >> gtRepositoriesFor: aView [
 		itemText: #name
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 GtGitRepositories >> initialize [
 	super initialize.
 	collection := Array empty.
 ]
 
-{ #category : 'api - accessing' }
+{ #category : #'api - accessing' }
 GtGitRepositories >> repositoriesCount [
 	^ self collection size
 ]

@@ -1,6 +1,6 @@
-Extension { #name : 'IceCommit' }
+Extension { #name : #IceCommit }
 
-{ #category : '*GToolkit4Git' }
+{ #category : #'*GToolkit4Git' }
 IceCommit >> gtCommitAncestorsDominanceTreeFor: aView [
 	<gtView>
 	^ aView mondrian
@@ -23,7 +23,7 @@ IceCommit >> gtCommitAncestorsDominanceTreeFor: aView [
 			view layout dominanceTree]
 ]
 
-{ #category : '*GToolkit4Git' }
+{ #category : #'*GToolkit4Git' }
 IceCommit >> gtCommitAncestorsTreeFor: aView [
 	<gtView>
 	^ aView mondrian
@@ -46,7 +46,7 @@ IceCommit >> gtCommitAncestorsTreeFor: aView [
 			view layout tree]
 ]
 
-{ #category : '*GToolkit4Git' }
+{ #category : #'*GToolkit4Git' }
 IceCommit >> gtCommitsFor: aView [
 	<gtView>
 	^ aView columnedList 
@@ -58,7 +58,7 @@ IceCommit >> gtCommitsFor: aView [
 		column: 'Description' text: #comment
 ]
 
-{ #category : '*GToolkit4Git' }
+{ #category : #'*GToolkit4Git' }
 IceCommit >> gtDetailsFor: aView [
 	<gtView>
 	^ aView columnedList 
