@@ -13,7 +13,7 @@ GtLepiterWorkingCopy >> changesTo: aCommitish [
 	| changes |
 	changes := Set new.
 	self databases do: [ :aDatabase |
-		changes add: (GtLepiterDatabaseChange new
+		changes add: (GtLepiterLocalDatabaseChange new
 			database: aDatabase) ].
 	^ changes
 ]
@@ -30,6 +30,12 @@ GtLepiterWorkingCopy >> databases: anObject [
 	databases := anObject
 ]
 
+{ #category : #testing }
+GtLepiterWorkingCopy >> includesKnowledgeWithId: anUuid [
+	^ self databases anySatisfy: [ :aDatabase |
+		aDatabase uuid = anUuid ] 
+]
+
 { #category : #accessing }
 GtLepiterWorkingCopy >> repository [
 
@@ -40,6 +46,14 @@ GtLepiterWorkingCopy >> repository [
 GtLepiterWorkingCopy >> repository: anObject [
 
 	repository := anObject
+]
+
+{ #category : #accessing }
+GtLepiterWorkingCopy >> snapshotForKnowledgeWithId: anUuid [
+	| database |
+	database := self databases detect: [ :aDatabase |
+		aDatabase uuid = anUuid ].
+	^ GtLepiterDatabaseShapshot fromDatabase: database.
 ]
 
 { #category : #accessing }
