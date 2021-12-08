@@ -6,6 +6,6 @@ IceOperationMerge >> gtViewDiffFor: aView [
 	^ aView forward
 		title: 'Diff';
 		priority: 20;
-		object: [ self value ];
+		object: [ self chosenOperation ];
 		view: #gtViewDiffFor:
 ]
