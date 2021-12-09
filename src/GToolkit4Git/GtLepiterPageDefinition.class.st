@@ -16,3 +16,17 @@ GtLepiterPageDefinition >> pageUuid [
 GtLepiterPageDefinition >> pageUuid: anUuid [
 	pageUuid := anUuid
 ]
+
+{ #category : #printing }
+GtLepiterPageDefinition >> printOn: aStream [
+	super printOn: aStream.
+	aStream
+		<< '('.
+	self name ifNotNil: [ :aTitle | 
+		aStream
+			<< aTitle;
+			<< ', ' ].
+	aStream
+		<< self pageUuid asString36;
+		<< ')'
+]

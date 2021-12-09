@@ -1,5 +1,5 @@
 Class {
-	#name : #GtLepiterDatabaseChange,
+	#name : #GtLepiterLocalDatabaseChange,
 	#superclass : #IceChange,
 	#instVars : [
 		'database'
@@ -8,23 +8,28 @@ Class {
 }
 
 { #category : #visiting }
-GtLepiterDatabaseChange >> accept: aVisitor [
+GtLepiterLocalDatabaseChange >> accept: aVisitor [
 	
 	^ aVisitor visitLepiterDatabaseChange: self
 ]
 
 { #category : #accessing }
-GtLepiterDatabaseChange >> database [
+GtLepiterLocalDatabaseChange >> database [
 	^ database
 ]
 
 { #category : #accessing }
-GtLepiterDatabaseChange >> database: aDatabase [
+GtLepiterLocalDatabaseChange >> database: aDatabase [
 	database := aDatabase
 ]
 
 { #category : #accessing }
-GtLepiterDatabaseChange >> printOn: aStream [
+GtLepiterLocalDatabaseChange >> databaseUuid [
+	^ self database uuid
+]
+
+{ #category : #accessing }
+GtLepiterLocalDatabaseChange >> printOn: aStream [
 	super printOn: aStream.
 	aStream
 		<< '(';

@@ -29,6 +29,20 @@ IceNode >> gtViewDiffFor: aView [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceNode >> gtViewNodeValuesTreeFor: aView [
+	<gtView>
+	
+	^ aView tree
+		title: 'Node values';
+		priority: 20;
+		items: [ { self } ];
+		children: [ :each | each children ];
+		itemText: [ :aNode | aNode value gtDisplayString ];
+		expandAll;
+		send: [ :aNode | aNode value ]
+]
+
+{ #category : #'*GToolkit4Git' }
 IceNode >> gtViewNodesTreeFor: aView [
 	<gtView>
 	

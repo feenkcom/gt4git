@@ -2,17 +2,26 @@ Extension { #name : #IceChangeImporter }
 
 { #category : #'*GToolkit4Git' }
 IceChangeImporter >> visitLepiterDatabaseChange: aLepiterDatabaseChange [
-	| databaseDefinition databaseNode |
+	| databaseSnapshot databaseDefinition databaseNode |
+	
+	"If the version does not include the knowledge base, we do not import it"
+	(version 
+		includesKnowledgeWithId: aLepiterDatabaseChange databaseUuid)
+			ifFalse: [ ^ self ].
+	
+	databaseSnapshot := version 
+		snapshotForKnowledgeWithId: aLepiterDatabaseChange databaseUuid.
+	
 	databaseDefinition := GtLepiterDatabaseDefinition new
-		databaseId: aLepiterDatabaseChange database uuid;
-		name: aLepiterDatabaseChange database databaseName.
-		
+		databaseId: databaseSnapshot databaseUuid;
+		name: databaseSnapshot databaseName.
+	
 	databaseNode := parentNode addChild: databaseDefinition.
 
-	aLepiterDatabaseChange database pages do: [ :aPage |
+	databaseSnapshot pageSnapshots do: [ :aPageSnapshot |
 		| pageDefinition |
 		pageDefinition := GtLepiterPageDefinition new
-			name: aPage title;
-			pageUuid: aPage uid.
+			name: aPageSnapshot pageTitle;
+			pageUuid: aPageSnapshot pageUuid.
 		databaseNode addChild: pageDefinition ]
 ]
