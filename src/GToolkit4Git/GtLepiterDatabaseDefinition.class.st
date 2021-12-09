@@ -18,3 +18,14 @@ GtLepiterDatabaseDefinition >> databaseId: anObject [
 
 	databaseId := anObject
 ]
+
+{ #category : #printing }
+GtLepiterDatabaseDefinition >> printOn: aStream [
+	super printOn: aStream.
+	aStream 
+		<< '(';
+		<< self name;
+		<< ', ';
+		<< self databaseId asString36;
+		<< ')'
+]

@@ -24,6 +24,11 @@ GtLepiterLocalDatabaseChange >> database: aDatabase [
 ]
 
 { #category : #accessing }
+GtLepiterLocalDatabaseChange >> databaseUuid [
+	^ self database uuid
+]
+
+{ #category : #accessing }
 GtLepiterLocalDatabaseChange >> printOn: aStream [
 	super printOn: aStream.
 	aStream
