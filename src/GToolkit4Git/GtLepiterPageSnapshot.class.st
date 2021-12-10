@@ -3,8 +3,8 @@ Class {
 	#superclass : #GtLepiterSnapshot,
 	#instVars : [
 		'pageUuid',
-		'content',
-		'pageTitle'
+		'pageTitle',
+		'pageContents'
 	],
 	#category : #'GToolkit4Git-Lepiter'
 }
@@ -15,22 +15,22 @@ GtLepiterPageSnapshot class >> fromPage: aPage [
 		initializeFromPage: aPage
 ]
 
-{ #category : #accessing }
-GtLepiterPageSnapshot >> content [
-
-	^ content
-]
-
-{ #category : #accessing }
-GtLepiterPageSnapshot >> content: anObject [
-
-	content := anObject
-]
-
 { #category : #initialization }
 GtLepiterPageSnapshot >> initializeFromPage: aPage [ 
 	self pageUuid: aPage uid.
-	self pageTitle: aPage title
+	self pageTitle: aPage title.
+	self pageContents: (aPage database monitor 
+		pageFileReference: aPage) contents.
+]
+
+{ #category : #accessing }
+GtLepiterPageSnapshot >> pageContents [
+	^ pageContents
+]
+
+{ #category : #initialization }
+GtLepiterPageSnapshot >> pageContents: aPageContent [
+	pageContents := aPageContent
 ]
 
 { #category : #accessing }
