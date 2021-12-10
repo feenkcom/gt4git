@@ -1,47 +1,62 @@
 Class {
-	#name : #GtLepiterDatabaseShapshot,
+	#name : #GtLepiterDatabaseSnapshot,
 	#superclass : #GtLepiterSnapshot,
 	#instVars : [
-		'pageSnapshots',
 		'databaseUuid',
 		'databaseName',
-		'localRootRelativePath'
+		'localRootRelativePath',
+		'propertiesContents',
+		'pageSnapshots',
+		'attachmentSnapshots',
+		'linksSnapshot'
 	],
 	#category : #'GToolkit4Git-Lepiter'
 }
 
 { #category : #'instance creation' }
-GtLepiterDatabaseShapshot class >> fromDatabase: aDatabase [
+GtLepiterDatabaseSnapshot class >> fromDatabase: aDatabase [
 	^ self new
 		initializeFromDatabase: aDatabase
 ]
 
 { #category : #accessing }
-GtLepiterDatabaseShapshot >> databaseName [
+GtLepiterDatabaseSnapshot >> attachmentSnapshots [
+
+	^ attachmentSnapshots
+]
+
+{ #category : #accessing }
+GtLepiterDatabaseSnapshot >> attachmentSnapshots: anObject [
+
+	attachmentSnapshots := anObject
+]
+
+{ #category : #accessing }
+GtLepiterDatabaseSnapshot >> databaseName [
 
 	^ databaseName
 ]
 
 { #category : #accessing }
-GtLepiterDatabaseShapshot >> databaseName: anObject [
+GtLepiterDatabaseSnapshot >> databaseName: anObject [
 
 	databaseName := anObject
 ]
 
 { #category : #accessing }
-GtLepiterDatabaseShapshot >> databaseUuid [
+GtLepiterDatabaseSnapshot >> databaseUuid [
 
 	^ databaseUuid
 ]
 
 { #category : #accessing }
-GtLepiterDatabaseShapshot >> databaseUuid: anObject [
+GtLepiterDatabaseSnapshot >> databaseUuid: anObject [
 
 	databaseUuid := anObject
 ]
 
 { #category : #'gt-extensions' }
-GtLepiterDatabaseShapshot >> gtViewPageSnapshotsFor: aView [
+GtLepiterDatabaseSnapshot >> gtViewPageSnapshotsFor: aView [
 	<gtView>
 	^ aView columnedList
 		title: 'Page Snapshots';
@@ -51,38 +66,53 @@ GtLepiterDatabaseShapshot >> gtViewPageSnapshotsFor: aView [
 ]
 
 { #category : #initialization }
-GtLepiterDatabaseShapshot >> initializeFromDatabase: aDatabase [ 
+GtLepiterDatabaseSnapshot >> initializeFromDatabase: aDatabase [ 
 	self databaseUuid: aDatabase uuid.
 	self databaseName: aDatabase databaseName.
 	self localRootRelativePath: (RelativePath 
 		with: aDatabase localStoreRootDirectory basename).
 	
+	self attachmentSnapshots: ((aDatabase attachmentDirectories 
+		collect: [ :anAttachmentDirectory | 
+			GtLepiterAttachmentSnapshot fromDirectory: anAttachmentDirectory ])).
 	self pageSnapshots: (aDatabase pages collect: [ :aPage | 
 		GtLepiterPageSnapshot fromPage: aPage ]).	
 ]
 
 { #category : #accessing }
-GtLepiterDatabaseShapshot >> localRootRelativePath [
+GtLepiterDatabaseSnapshot >> linksSnapshot [
+
+	^ linksSnapshot
+]
+
+{ #category : #accessing }
+GtLepiterDatabaseSnapshot >> linksSnapshot: anObject [
+
+	linksSnapshot := anObject
+]
+
+{ #category : #accessing }
+GtLepiterDatabaseSnapshot >> localRootRelativePath [
 	^ localRootRelativePath
 ]
 
 { #category : #initialization }
-GtLepiterDatabaseShapshot >> localRootRelativePath: aPath [
+GtLepiterDatabaseSnapshot >> localRootRelativePath: aPath [
 	localRootRelativePath := aPath 
 ]
 
 { #category : #accessing }
-GtLepiterDatabaseShapshot >> pageSnapshots [
+GtLepiterDatabaseSnapshot >> pageSnapshots [
 	^ pageSnapshots
 ]
 
 { #category : #accessing }
-GtLepiterDatabaseShapshot >> pageSnapshots: aCollection [
+GtLepiterDatabaseSnapshot >> pageSnapshots: aCollection [
 	pageSnapshots := aCollection
 ]
 
 { #category : #printing }
-GtLepiterDatabaseShapshot >> printOn: aStream [
+GtLepiterDatabaseSnapshot >> printOn: aStream [
 	super printOn: aStream.
 	aStream 
 		<< '(';

@@ -53,7 +53,7 @@ GtLepiterWorkingCopy >> snapshotForKnowledgeWithId: anUuid [
 	| database |
 	database := self databases detect: [ :aDatabase |
 		aDatabase uuid = anUuid ].
-	^ GtLepiterDatabaseShapshot fromDatabase: database.
+	^ GtLepiterDatabaseSnapshot fromDatabase: database.
 ]
 
 { #category : #accessing }
