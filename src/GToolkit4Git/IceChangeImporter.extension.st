@@ -22,6 +22,7 @@ IceChangeImporter >> visitLepiterDatabaseChange: aLepiterDatabaseChange [
 		| pageDefinition |
 		pageDefinition := GtLepiterPageDefinition new
 			name: aPageSnapshot pageTitle;
-			pageUuid: aPageSnapshot pageUuid.
+			pageUuid: aPageSnapshot pageUuid;
+			pageContents: aPageSnapshot pageContents.
 		databaseNode addChild: pageDefinition ]
 ]
