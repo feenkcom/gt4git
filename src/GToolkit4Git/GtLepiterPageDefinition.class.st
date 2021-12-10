@@ -15,6 +15,12 @@ GtLepiterPageDefinition >> = anotherDefinition [
 		and: [ self pageContents = anotherDefinition pageContents ]
 ]
 
+{ #category : #visiting }
+GtLepiterPageDefinition >> accept: aVisitor [
+	
+	^ aVisitor visitLepiterPage: self
+]
+
 { #category : #accessing }
 GtLepiterPageDefinition >> contents [
 	^ self pageContents
