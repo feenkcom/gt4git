@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'pageSnapshots',
 		'databaseUuid',
-		'databaseName'
+		'databaseName',
+		'localRootRelativePath'
 	],
 	#category : #'GToolkit4Git-Lepiter'
 }
@@ -53,8 +54,21 @@ GtLepiterDatabaseShapshot >> gtViewPageSnapshotsFor: aView [
 GtLepiterDatabaseShapshot >> initializeFromDatabase: aDatabase [ 
 	self databaseUuid: aDatabase uuid.
 	self databaseName: aDatabase databaseName.
+	self localRootRelativePath: (RelativePath 
+		with: aDatabase localStoreRootDirectory basename).
+	
 	self pageSnapshots: (aDatabase pages collect: [ :aPage | 
-		GtLepiterPageSnapshot fromPage: aPage ])
+		GtLepiterPageSnapshot fromPage: aPage ]).	
+]
+
+{ #category : #accessing }
+GtLepiterDatabaseShapshot >> localRootRelativePath [
+	^ localRootRelativePath
+]
+
+{ #category : #initialization }
+GtLepiterDatabaseShapshot >> localRootRelativePath: aPath [
+	localRootRelativePath := aPath 
 ]
 
 { #category : #accessing }

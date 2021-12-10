@@ -2,10 +2,17 @@ Class {
 	#name : #GtLepiterDatabaseDefinition,
 	#superclass : #GtLepiterDefinition,
 	#instVars : [
-		'databaseId'
+		'databaseId',
+		'localRootRelativePath'
 	],
 	#category : #'GToolkit4Git-Lepiter'
 }
+
+{ #category : #visiting }
+GtLepiterDatabaseDefinition >> accept: aVisitor [
+	
+	^ aVisitor visitLepiterDatabase: self
+]
 
 { #category : #accessing }
 GtLepiterDatabaseDefinition >> databaseId [
@@ -17,6 +24,21 @@ GtLepiterDatabaseDefinition >> databaseId [
 GtLepiterDatabaseDefinition >> databaseId: anObject [
 
 	databaseId := anObject
+]
+
+{ #category : #accessing }
+GtLepiterDatabaseDefinition >> icon [
+	^ LeIcons lepiterDatabase  create   asSpartaForm
+]
+
+{ #category : #accessing }
+GtLepiterDatabaseDefinition >> localRootRelativePath [
+	^ localRootRelativePath
+]
+
+{ #category : #accessing }
+GtLepiterDatabaseDefinition >> localRootRelativePath: aPath [
+	localRootRelativePath := aPath
 ]
 
 { #category : #printing }
