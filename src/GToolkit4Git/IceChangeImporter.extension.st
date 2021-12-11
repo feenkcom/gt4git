@@ -22,6 +22,12 @@ IceChangeImporter >> visitLepiterDatabaseChange: aLepiterDatabaseChange [
 		name: databaseSnapshot propertiesFileName;
 		fileName: databaseSnapshot propertiesFileName;
 		fileContents: databaseSnapshot propertiesContents).
+	databaseSnapshot linksSnapshot 
+		ifNotNil: [ :aLinksSnapshot |
+			databaseNode addChild: (GtLepiterLinksDefinition new
+				name: 'Lepiter Links - ', aLinksSnapshot linksUuid asString36;
+				linksFileName: aLinksSnapshot linksFileName;
+				linksContents: aLinksSnapshot linksContents) ].
 
 	pagesDefinition := GtLepiterPagesDefinition new.
 	pagesNode := databaseNode addChild: pagesDefinition.

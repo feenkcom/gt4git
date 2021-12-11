@@ -73,6 +73,10 @@ GtLepiterDatabaseSnapshot >> initializeFromDatabase: aDatabase [
 		with: aDatabase localStoreRootDirectory basename).
 	self propertiesContents: aDatabase monitor dbPropertiesFile contents.
 	
+	aDatabase explicitLinks ifNotNil: [ :explicitLinks |
+		self linksSnapshot: (GtLepiterLinksSnapshot
+			fromExplicitLinks: explicitLinks 
+			inDatabase: aDatabase) ].	
 	self attachmentSnapshots: ((aDatabase attachmentDirectories 
 		collect: [ :anAttachmentDirectory | 
 			GtLepiterAttachmentSnapshot fromDirectory: anAttachmentDirectory ])).
