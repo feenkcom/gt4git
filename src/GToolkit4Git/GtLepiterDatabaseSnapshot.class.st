@@ -71,6 +71,7 @@ GtLepiterDatabaseSnapshot >> initializeFromDatabase: aDatabase [
 	self databaseName: aDatabase databaseName.
 	self localRootRelativePath: (RelativePath 
 		with: aDatabase localStoreRootDirectory basename).
+	self propertiesContents: aDatabase monitor dbPropertiesFile contents.
 	
 	self attachmentSnapshots: ((aDatabase attachmentDirectories 
 		collect: [ :anAttachmentDirectory | 
@@ -120,4 +121,21 @@ GtLepiterDatabaseSnapshot >> printOn: aStream [
 		<< ', ';
 		<< self databaseUuid asString36;
 		<< ')'
+]
+
+{ #category : #accessing }
+GtLepiterDatabaseSnapshot >> propertiesContents [
+
+	^ propertiesContents
+]
+
+{ #category : #accessing }
+GtLepiterDatabaseSnapshot >> propertiesContents: anObject [
+
+	propertiesContents := anObject
+]
+
+{ #category : #accessing }
+GtLepiterDatabaseSnapshot >> propertiesFileName [
+	^ LepiterCoreDefaults databasePropertiesBasename
 ]

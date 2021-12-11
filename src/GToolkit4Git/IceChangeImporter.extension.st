@@ -18,6 +18,10 @@ IceChangeImporter >> visitLepiterDatabaseChange: aLepiterDatabaseChange [
 		localRootRelativePath: databaseSnapshot localRootRelativePath.
 	
 	databaseNode := parentNode addChild: databaseDefinition.
+	databaseNode addChild: (GtLepiterDatabasePropertiesDefinition new
+		name: databaseSnapshot propertiesFileName;
+		fileName: databaseSnapshot propertiesFileName;
+		fileContents: databaseSnapshot propertiesContents).
 
 	pagesDefinition := GtLepiterPagesDefinition new.
 	pagesNode := databaseNode addChild: pagesDefinition.
