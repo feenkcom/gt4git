@@ -7,17 +7,28 @@ Class {
 		'headDescription',
 		'isModified',
 		'currentCommitMessage',
-		'repositoryModel'
+		'repositoryModel',
+		'workingCopy'
 	],
 	#classVars : [
 		'RecentCommitMessage'
 	],
-	#category : 'GToolkit4Git-Inspector Integration'
+	#category : #'GToolkit4Git-Inspector Integration'
 }
 
 { #category : #'instance creation' }
 GtGitRepository2 class >> fromIcebergRepository: anIceRepository [
 	^ self new repository: anIceRepository
+]
+
+{ #category : #accessing }
+GtGitRepository2 >> changes [
+	^ self generateDiff tree
+]
+
+{ #category : #accessing }
+GtGitRepository2 >> computeIsModified [
+  ^self changes isEmpty not
 ]
 
 { #category : #accessing }
@@ -30,12 +41,62 @@ GtGitRepository2 >> currentCommitMessage [
 { #category : #accessing }
 GtGitRepository2 >> executeCommit: aCommitMessage [
 	|diff|
-	diff := self repository workingCopyDiff.
+	diff := self generateDiff.
 	self workingCopy 
 		commitChanges: diff
 		withMessage: aCommitMessage
 		force: false.
 	Iceberg announcer announce: (IceRepositoryModified for: self repository).
+]
+
+{ #category : #accessing }
+GtGitRepository2 >> generateDiff [
+
+	| changes diff leftTree rightTree codeChanges tree mergedTree |
+	repository repositoryDirectory ifNil: [ ^ #(  ) ].
+
+	changes := workingCopy changesTo:
+		           repository workingCopy referenceCommit.
+	diff := IceDiff new
+		        sourceVersion: workingCopy;
+		        targetVersion: repository workingCopy referenceCommit;
+		        yourself.
+	codeChanges := repository workingCopy changesTo:
+		               repository workingCopy referenceCommit.
+	leftTree := IceNode value: IceRootDefinition new.
+	codeChanges do: [ :aChange | 
+		aChange accept: (IceChangeImporter new
+				 version: repository workingCopy;
+				 diff: diff;
+				 parentNode: leftTree;
+				 yourself) ].
+	changes do: [ :aChange | 
+		aChange accept: (IceChangeImporter new
+				 version: workingCopy;
+				 diff: diff;
+				 parentNode: leftTree;
+				 yourself) ].
+	rightTree := IceNode value: IceRootDefinition new.
+	codeChanges do: [ :change | 
+		change accept: (IceChangeImporter new
+				 version: repository workingCopy referenceCommit;
+				 diff: diff;
+				 parentNode: rightTree;
+				 yourself) ].
+	changes do: [ :change | 
+		change accept: (IceChangeImporter new
+				 version: repository workingCopy referenceCommit;
+				 diff: diff;
+				 parentNode: rightTree;
+				 yourself) ].
+
+	mergedTree := diff mergedTreeOf: leftTree with: rightTree.
+	tree := mergedTree select: [ :operation | operation hasChanges ].
+
+	diff instVarNamed: #tree put: tree.
+	diff instVarNamed: #mergedTree put: mergedTree.
+
+	^ diff
 ]
 
 { #category : #accessing }
@@ -128,12 +189,13 @@ GtGitRepository2 >> gtActionRepairFor: anAction [
 { #category : #accessing }
 GtGitRepository2 >> gtChangesFor: aView [
 	<gtView>
-	self workingCopy ifNil: [ ^ aView empty ].
-	self workingCopy diffToReferenceCommit treeToShow children
-		ifEmpty: [ ^ aView empty ].
+	| changes |
+	workingCopy ifNil: [ ^ aView empty ].
+	changes := self changes.
+	changes isEmpty ifTrue: [ ^ aView empty ].
 	^ aView tree
 		title: 'Changes';
-		items: [ self workingCopy diffToReferenceCommit treeToShow children ];
+		items: [ changes children ];
 		updateWhen: IceRepositoryModified in: Iceberg announcer;
 		children: #children;
 		expandUpTo: 3;
@@ -291,7 +353,7 @@ GtGitRepository2 >> isMissing [
 
 { #category : #accessing }
 GtGitRepository2 >> isModified [
-	^ isModified ifNil: [ isModified := self repository isModified ]
+	^ isModified ifNil: [ isModified := self repository isModified or: [ self repository isDirty ] ]
 ]
 
 { #category : #initialization }
@@ -336,6 +398,7 @@ GtGitRepository2 >> repository [
 GtGitRepository2 >> repository: anIceRepository [
 	repository := anIceRepository.
 	repositoryModel := IceTipRepositoryModel on: repository.
+	workingCopy := GtLepiterWorkingCopy new repository: anIceRepository; updateDatabases.
 ]
 
 { #category : #initialization }

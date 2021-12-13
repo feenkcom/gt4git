@@ -18,10 +18,13 @@ GtLepiterLinksSnapshot class >> fromExplicitLinks: anExplicitLinksGroup inDataba
 
 { #category : #initialization }
 GtLepiterLinksSnapshot >> initializeFomExplicitLinksGroup: anExplicitLinksGroup inDatabase: aDatabase [
+
 	self linksUuid: anExplicitLinksGroup uid.
-	self linksFileName: aDatabase monitor explicitLinksFileReference basename.
-	self linksContents: aDatabase monitor explicitLinksFileReference contents.
-	
+	aDatabase monitor explicitLinksFileReference ifNotNil: [ 
+		self linksFileName:
+			aDatabase monitor explicitLinksFileReference basename.
+		self linksContents:
+			aDatabase monitor explicitLinksFileReference contents ]
 ]
 
 { #category : #accessing }
