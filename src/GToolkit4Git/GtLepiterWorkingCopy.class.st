@@ -58,9 +58,12 @@ GtLepiterWorkingCopy >> snapshotForKnowledgeWithId: anUuid [
 
 { #category : #accessing }
 GtLepiterWorkingCopy >> updateDatabases [
+
 	| allDatabases |
-	allDatabases := LeDatabasesRegistry default defaultLogicalDatabase databases.
-	self databases: (allDatabases select: [ :aDatabase | 
-		self repository repositoryDirectory 
-			contains: aDatabase monitor localRoot ])
+	allDatabases := LeDatabasesRegistry default defaultLogicalDatabase
+		                databases.
+	self repository repositoryDirectory ifNotNil: [ 
+		self databases: (allDatabases select: [ :aDatabase | 
+				 self repository repositoryDirectory contains:
+					 aDatabase monitor localRoot ]) ]
 ]
