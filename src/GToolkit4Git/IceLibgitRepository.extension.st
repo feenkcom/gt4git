@@ -1,6 +1,11 @@
 Extension { #name : #IceLibgitRepository }
 
 { #category : #'*GToolkit4Git' }
+IceLibgitRepository >> getDeltas [
+	^ handle getDeltas
+]
+
+{ #category : #'*GToolkit4Git' }
 IceLibgitRepository >> gtLocalBranchesFor: aView [
 	<gtView>
 	self isMissing ifTrue: [ ^ aView empty ].
