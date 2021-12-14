@@ -33,3 +33,8 @@ IceLibgitRepository >> gtTagsFor: aView [
 	self isMissing ifTrue: [ ^ aView empty ].
 	^ super gtTagsFor: aView
 ]
+
+{ #category : #'*GToolkit4Git' }
+IceLibgitRepository >> isDirty [
+	^ handle isDirty
+]
