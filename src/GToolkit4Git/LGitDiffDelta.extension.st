@@ -13,3 +13,9 @@ LGitDiffDelta >> gtInfoFor: aView [
 			title: 'Info';
 			priority: 3
 ]
+
+{ #category : #'*GToolkit4Git' }
+LGitDiffDelta >> icon [
+
+	^ self status icon
+]

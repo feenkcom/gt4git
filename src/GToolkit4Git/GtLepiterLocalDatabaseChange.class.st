@@ -2,7 +2,8 @@ Class {
 	#name : #GtLepiterLocalDatabaseChange,
 	#superclass : #IceChange,
 	#instVars : [
-		'database'
+		'database',
+		'pages'
 	],
 	#category : #'GToolkit4Git-Lepiter'
 }
@@ -26,6 +27,16 @@ GtLepiterLocalDatabaseChange >> database: aDatabase [
 { #category : #accessing }
 GtLepiterLocalDatabaseChange >> databaseUuid [
 	^ self database uuid
+]
+
+{ #category : #accessing }
+GtLepiterLocalDatabaseChange >> pages [
+	^ pages
+]
+
+{ #category : #accessing }
+GtLepiterLocalDatabaseChange >> pages: aCollection [
+	pages := aCollection
 ]
 
 { #category : #accessing }
