@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'repos'
 	],
-	#category : 'GToolkit4Git-Inspector Integration'
+	#category : #'GToolkit4Git-Inspector Integration'
 }
 
 { #category : #accessing }
@@ -145,20 +145,10 @@ Gt4Git >> gtRepositoriesFor: aView [
 					c padding: (BlInsets all: 3).
 					c horizontal matchParent.
 					c vertical matchParent ].
-			aButtonsContainer := BlElement new
-				layout: (BlLinearLayout horizontal cellSpacing: 3);
-				constraintsDo: [ :c | 
-					c padding: (BlInsets all: 3).
-					c horizontal fitContent.
-					c vertical fitContent.
-					c linear horizontal alignCenter ].
-			aContainer addChild: aButtonsContainer.
 			aListView := self buildListViewFor: aView.
 			aListView
 				asElementDo: [ :anElement |
 					aContainer addChild: anElement.
-					self buildButtonsContainer: aButtonsContainer
-						listWidget: anElement.
 					Iceberg announcer unsubscribe: self.
 					Iceberg announcer weak 
 						when: IceRepositoryAnnouncement 
@@ -181,15 +171,6 @@ Gt4Git >> gtUpdateFor: anAction [
 
 { #category : #accessing }
 Gt4Git >> repositories [
-	repos := IceRepository registry copyFrom: 1 to: IceRepository registry size.
-	repos := repos sort: [:a :b | 
-	|aM bM result|
-	aM := (IceTipRepositoryModel on: a).
-	bM := (IceTipRepositoryModel on: b).
-	(aM isModified and:[ bM isModified not]) ifTrue: [result := true]. 
-	(bM isModified and:[ aM isModified not]) ifTrue: [result := false].
-	
-	(result ifNil: [result := a name asLowercase < b name asLowercase]).
-	result].
-	^ repos
+
+	^ IceRepository registry copyFrom: 1 to: IceRepository registry size
 ]
