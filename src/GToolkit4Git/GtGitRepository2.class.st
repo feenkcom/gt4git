@@ -27,11 +27,6 @@ GtGitRepository2 >> changes [
 ]
 
 { #category : #accessing }
-GtGitRepository2 >> computeIsModified [
-  ^self changes isEmpty not
-]
-
-{ #category : #accessing }
 GtGitRepository2 >> currentCommitMessage [
 	<return: #BlText>
 	^ currentCommitMessage ifNil: [
@@ -51,12 +46,11 @@ GtGitRepository2 >> executeCommit: aCommitMessage [
 
 { #category : #accessing }
 GtGitRepository2 >> generateDiff [
-
 	| changes diff leftTree rightTree codeChanges tree mergedTree |
 	repository repositoryDirectory ifNil: [ ^ #(  ) ].
 
-	changes := workingCopy changesTo:
-		           repository workingCopy referenceCommit.
+	
+	changes := self getDeltasTree.
 	diff := IceDiff new
 		        sourceVersion: workingCopy;
 		        targetVersion: repository workingCopy referenceCommit;
@@ -97,6 +91,24 @@ GtGitRepository2 >> generateDiff [
 	diff instVarNamed: #mergedTree put: mergedTree.
 
 	^ diff
+]
+
+{ #category : #accessing }
+GtGitRepository2 >> getDeltasTree [
+
+	| databases path uuid database |
+	databases := OrderedDictionary new.
+	self repository getDeltas do: [ :delta | 
+		path := delta oldFile path.
+		uuid := UUID fromString36: path basenameWithoutExtension.
+		database := LeDatabasesRegistry default defaultLogicalDatabase
+		                databases detect: [:db | db localStoreRootDirectory asPath = path parent ].
+		databases
+			at: database
+			update: [ :aList | aList, {delta} ]
+			initial: {delta} ].
+	^ databases keys collect: [ :key | 
+		  GtLepiterLocalDatabaseChange new database: key; pages: (databases at: key) ]
 ]
 
 { #category : #accessing }

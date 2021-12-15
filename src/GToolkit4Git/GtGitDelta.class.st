@@ -1,0 +1,78 @@
+Class {
+	#name : #GtGitDelta,
+	#superclass : #Object,
+	#instVars : [
+		'oldFile',
+		'newFile',
+		'status',
+		'oldFileRelative',
+		'newFileRelative'
+	],
+	#category : #GToolkit4Git
+}
+
+{ #category : #'instance creation' }
+GtGitDelta class >> from: aDiffDelta in: aRepository [
+	^ self new
+		oldFileRelative: aDiffDelta oldFile path copy;
+		oldFile: aRepository location resolve / aDiffDelta oldFile path copy;
+		newFileRelative: aDiffDelta newFile path copy;
+		newFile: aRepository location resolve / aDiffDelta newFile path copy;
+		status: aDiffDelta status copy
+]
+
+{ #category : #accessing }
+GtGitDelta >> icon [
+
+	^ self status icon
+]
+
+{ #category : #accessing }
+GtGitDelta >> newFile [
+	^ newFile
+]
+
+{ #category : #accessing }
+GtGitDelta >> newFile: aPath [
+	newFile := aPath
+]
+
+{ #category : #accessing }
+GtGitDelta >> newFileRelative [
+	^ newFileRelative
+]
+
+{ #category : #accessing }
+GtGitDelta >> newFileRelative: aPath [
+	newFileRelative := aPath
+]
+
+{ #category : #accessing }
+GtGitDelta >> oldFile [
+	^ oldFile
+]
+
+{ #category : #accessing }
+GtGitDelta >> oldFile: aPath [
+	oldFile := aPath
+]
+
+{ #category : #accessing }
+GtGitDelta >> oldFileRelative [
+	^ oldFileRelative
+]
+
+{ #category : #accessing }
+GtGitDelta >> oldFileRelative: aPath [
+	oldFileRelative := aPath
+]
+
+{ #category : #accessing }
+GtGitDelta >> status [
+	^ status
+]
+
+{ #category : #accessing }
+GtGitDelta >> status: aStatus [
+	status := aStatus
+]

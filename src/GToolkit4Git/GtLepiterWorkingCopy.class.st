@@ -30,6 +30,11 @@ GtLepiterWorkingCopy >> databases: anObject [
 	databases := anObject
 ]
 
+{ #category : #accessing }
+GtLepiterWorkingCopy >> fileSystem [
+	^ FileSystem disk
+]
+
 { #category : #testing }
 GtLepiterWorkingCopy >> includesKnowledgeWithId: anUuid [
 	^ self databases anySatisfy: [ :aDatabase |
