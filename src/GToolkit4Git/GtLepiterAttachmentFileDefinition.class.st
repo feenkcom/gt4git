@@ -29,6 +29,12 @@ GtLepiterAttachmentFileDefinition >> binaryContents: anObject [
 ]
 
 { #category : #accessing }
+GtLepiterAttachmentFileDefinition >> contents [
+
+	^ binaryContents
+]
+
+{ #category : #accessing }
 GtLepiterAttachmentFileDefinition >> fileName [
 
 	^ fileName

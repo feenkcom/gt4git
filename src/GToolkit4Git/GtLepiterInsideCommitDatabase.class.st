@@ -25,7 +25,7 @@ GtLepiterInsideCommitDatabase >> commit: anObject [
 GtLepiterInsideCommitDatabase >> database [
 	^ database ifNil: [ 
 		database := LeLocalStoreLoad current 
-			onlyLoadFrom: self localRoot ]
+			onlyLoadReadOnlyFrom: self localRoot ]
 ]
 
 { #category : #'gt-extensions' }
