@@ -41,5 +41,6 @@ IceLibgitRepository >> gtTagsFor: aView [
 
 { #category : #'*GToolkit4Git' }
 IceLibgitRepository >> isDirty [
-	^ handle isDirty
+
+	^ handle ifNil: [ false ] ifNotNil: [ handle isDirty ]
 ]
