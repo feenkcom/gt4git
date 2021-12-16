@@ -23,9 +23,8 @@ LGitRepository >> getDeltas [
 	| out numDiffs |
 	out := LGitDiff newPointer autoRelease; repository: self.
 	self diff_index_to_workdir: out.
-	numDiffs := self diff_num_deltas: out.
 	
-	^ (0 to: numDiffs - 1) collect: [:i |  self diff_get_delta: out at: i]
+	^ out deltas
 ]
 
 { #category : #'*GToolkit4Git' }
