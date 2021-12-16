@@ -101,7 +101,8 @@ GtGitRepository2 >> getDeltasTree [
 	self repository getDeltas do: [ :delta | 
 		path := delta oldFile path.
 		"TODO ignore properties and attachment files for now"
-		(path basename = 'lepiter.properties' or: [path parent parent basename = 'attachments']) ifFalse: [ 
+		(path basename = LepiterCoreDefaults databasePropertiesBasename or: [ 
+			 path parent parent basename = 'attachments' ]) ifFalse: [ 
 			database := LeDatabasesRegistry default defaultLogicalDatabase
 				            databases detect: [ :db | 
 				            db localStoreRootDirectory asPath = path parent ].
