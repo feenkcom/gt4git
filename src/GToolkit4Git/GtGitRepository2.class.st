@@ -100,15 +100,19 @@ GtGitRepository2 >> getDeltasTree [
 	databases := OrderedDictionary new.
 	self repository getDeltas do: [ :delta | 
 		path := delta oldFile path.
-		uuid := UUID fromString36: path basenameWithoutExtension.
-		database := LeDatabasesRegistry default defaultLogicalDatabase
-		                databases detect: [:db | db localStoreRootDirectory asPath = path parent ].
-		databases
-			at: database
-			update: [ :aList | aList, {delta} ]
-			initial: {delta} ].
+		"TODO ignore properties and attachment files for now"
+		(path basename = 'lepiter.properties' or: [path parent parent basename = 'attachments']) ifFalse: [ 
+			database := LeDatabasesRegistry default defaultLogicalDatabase
+				            databases detect: [ :db | 
+				            db localStoreRootDirectory asPath = path parent ].
+			databases
+				at: database
+				update: [ :aList | aList , { delta } ]
+				initial: { delta } ] ].
 	^ databases keys collect: [ :key | 
-		  GtLepiterLocalDatabaseChange new database: key; pages: (databases at: key) ]
+		  GtLepiterLocalDatabaseChange new
+			  database: key;
+			  pages: (databases at: key) ]
 ]
 
 { #category : #accessing }
