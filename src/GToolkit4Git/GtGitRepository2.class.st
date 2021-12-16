@@ -47,7 +47,7 @@ GtGitRepository2 >> executeCommit: aCommitMessage [
 { #category : #accessing }
 GtGitRepository2 >> generateDiff [
 	| changes diff leftTree rightTree codeChanges tree mergedTree |
-	repository repositoryDirectory ifNil: [ ^ #(  ) ].
+	repository repositoryDirectory ifNil: [ ^ IceDiff new ].
 
 	
 	changes := self getDeltasTree.
@@ -205,90 +205,91 @@ GtGitRepository2 >> gtActionRepairFor: anAction [
 
 { #category : #accessing }
 GtGitRepository2 >> gtChangesFor: aView [
+
 	<gtView>
 	| changes |
 	workingCopy ifNil: [ ^ aView empty ].
 	changes := self changes.
-	changes isEmpty ifTrue: [ ^ aView empty ].
+	(changes isNil or: [ changes isEmpty ]) ifTrue: [ ^ aView empty ].
 	^ aView tree
-		title: 'Changes';
-		items: [ changes children ];
-		updateWhen: IceRepositoryModified in: Iceberg announcer;
-		children: #children;
-		expandUpTo: 3;
-		priority: 10;
-		stencil: [ :anIceNode |
-			BlElement new
-				layout: BlLinearLayout horizontal;
-				constraintsDo: [ :c | 
-					c horizontal matchParent.
-					c vertical fitContent ];
-				margin: (BlInsets all: 3);
-				constraintsDo: [ :c | c vertical fitContent ];
-				aptitude:
-					(BrGlamorousWithContextMenuAptitude
-						content: [ BrGlamorousSimpleContextMenuContent new
-								items:
-									{('Revert changes'
-										->
-											[ :e | self workingCopy diffToReferenceCommit revertChanges: anIceNode ])};
-								yourself ]);
-				addChild:
-					(anIceNode value icon asElement
-						constraintsDo: [ :c | c linear horizontal alignCenter ]);
-				addChild:
-					(BrLabel new
-						aptitude: BrGlamorousLabelAptitude;
-						text: anIceNode key asString asRopedText;
-						padding:
-							(BlInsets
-								top: 0
-								left: 6
-								bottom: 0
-								right: 3);
-						constraintsDo: [ :c | c linear horizontal alignCenter ]) ];
-		actionDropdownButtonLabel: 'Commit'
-			tooltip: 'Commit changes'
-			content: [ :aDropdown :aTarget | 
-			| editor button |
-			
-			editor := BrEditor new
-				hMatchParent;
-				vFitContentLimited;
-				aptitude: BrGlamorousRegularEditorAptitude;
-				text: self currentCommitMessage.
-			editor selecter all; select.
-			
-			button := BrButton new.
-			button
-				aptitude: BrGlamorousButtonWithIconAptitude;
-				icon: BrGlamorousVectorIcons accept;
-				label: 'Commit';
-				disabled: editor text isEmpty;
-				action: [ 
-					self recentCommitMessage: editor text asString.
-					self executeCommit: editor editor text asString.
-					button disable.
-					self resetCurrentCommitMessage.
-					aDropdown enqueueTask: (BlTaskAction new
-						action: [ 
-							aDropdown dispatchEvent: (BrDropdownHideWish new anchor: aDropdown).
-							aDropdown phlow fireUpdateWish ]) ].
+		  title: 'Changes';
+		  items: [ changes children ];
+		  updateWhen: IceRepositoryModified in: Iceberg announcer;
+		  children: #children;
+		  expandUpTo: 3;
+		  priority: 10;
+		  stencil: [ :anIceNode | 
+			  BlElement new
+				  layout: BlLinearLayout horizontal;
+				  constraintsDo: [ :c | 
+					  c horizontal matchParent.
+					  c vertical fitContent ];
+				  margin: (BlInsets all: 3);
+				  constraintsDo: [ :c | c vertical fitContent ];
+				  aptitude: (BrGlamorousWithContextMenuAptitude content: [ 
+							   BrGlamorousSimpleContextMenuContent new
+								   items: { ('Revert changes' -> [ :e | 
+										    self workingCopy diffToReferenceCommit revertChanges:
+												    anIceNode ]) };
+								   yourself ]);
+				  addChild:
+					  (anIceNode value icon asElement constraintsDo: [ :c | 
+						   c linear horizontal alignCenter ]);
+				  addChild: (BrLabel new
+						   aptitude: BrGlamorousLabelAptitude;
+						   text: anIceNode key asString asRopedText;
+						   padding: (BlInsets
+								    top: 0
+								    left: 6
+								    bottom: 0
+								    right: 3);
+						   constraintsDo: [ :c | c linear horizontal alignCenter ]) ];
+		  actionDropdownButtonLabel: 'Commit'
+		  tooltip: 'Commit changes'
+		  content: [ :aDropdown :aTarget | 
+			  | editor button |
+			  editor := BrEditor new
+				            hMatchParent;
+				            vFitContentLimited;
+				            aptitude: BrGlamorousRegularEditorAptitude;
+				            text: self currentCommitMessage.
+			  editor selecter
+				  all;
+				  select.
 
-			editor editor
-				when: BrTextEditorModifiedEvent
-				do: [ :anEvent | button disabled: anEvent text isEmpty ].
+			  button := BrButton new.
+			  button
+				  aptitude: BrGlamorousButtonWithIconAptitude;
+				  icon: BrGlamorousVectorIcons accept;
+				  label: 'Commit';
+				  disabled: editor text isEmpty;
+				  action: [ 
+					  self recentCommitMessage: editor text asString.
+					  self executeCommit: editor editor text asString.
+					  button disable.
+					  self resetCurrentCommitMessage.
+					  aDropdown enqueueTask: (BlTaskAction new action: [ 
+									   aDropdown dispatchEvent:
+											   (BrDropdownHideWish new anchor: aDropdown).
+									   aDropdown phlow fireUpdateWish ]) ].
 
-			BrVerticalPane new
-				hExact: 400;
-				vFitContentLimited;
-				padding: (BlInsets all: 10);
-				addChildren: { editor . button } ]
+			  editor editor
+				  when: BrTextEditorModifiedEvent
+				  do: [ :anEvent | button disabled: anEvent text isEmpty ].
+
+			  BrVerticalPane new
+				  hExact: 400;
+				  vFitContentLimited;
+				  padding: (BlInsets all: 10);
+				  addChildren: { 
+						  editor.
+						  button } ]
 ]
 
 { #category : #accessing }
 GtGitRepository2 >> gtCommitsFor: aView [
 	<gtView>
+	self repository repositoryDirectory ifNil: [ ^ aView empty ].
 	^ aView forward
 		title: 'Commits';
 		object: [ self repository branch ];
@@ -297,6 +298,12 @@ GtGitRepository2 >> gtCommitsFor: aView [
 
 { #category : #accessing }
 GtGitRepository2 >> gtDisplayOn: aStream [
+
+	self repository repositoryDirectory ifNil: [ 
+		^ aStream
+			  nextPutAll: self name;
+			  nextPutAll: ', ';
+			  nextPutAll: self status ].
 	aStream nextPutAll: self repository repositoryDirectory pathString
 ]
 
@@ -318,6 +325,7 @@ GtGitRepository2 >> gtRepositoryDirectoryFor: aView [
 GtGitRepository2 >> gtViewIncomingCommitsFor: aView [
 	<gtView>
 	| incomingCommits |
+	self repository repositoryDirectory ifNil: [  ^ aView empty ].
 	incomingCommits := GtRlIceCommitsGroup forCommits: self repository incomingCommits.
 	incomingCommits commits ifEmpty: [ ^ aView empty ].
 	
@@ -338,6 +346,7 @@ GtGitRepository2 >> gtViewIncomingCommitsFor: aView [
 GtGitRepository2 >> gtViewOutgoingCommitsFor: aView [
 	<gtView>
 	| outgoingCommits |
+	self repository repositoryDirectory ifNil: [  ^ aView empty ].
 	outgoingCommits := GtRlIceCommitsGroup forCommits: self repository outgoingCommits.
 	^ outgoingCommits commits
 		ifEmpty: [ aView empty ]
