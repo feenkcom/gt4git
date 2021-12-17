@@ -5,42 +5,7 @@ Class {
 }
 
 { #category : #accessing }
-LGitStatusOptionEnum class >> git_status_opt_exclude_submodules [
-	^ self basicNew
-		value: 8;
-		yourself
-]
-
-{ #category : #accessing }
-LGitStatusOptionEnum class >> git_status_opt_include_ignored [
-	^ self basicNew
-		value: 2;
-		yourself
-]
-
-{ #category : #accessing }
-LGitStatusOptionEnum class >> git_status_opt_include_unmodified [
-	^ self basicNew
-		value: 4;
-		yourself
-]
-
-{ #category : #accessing }
-LGitStatusOptionEnum class >> git_status_opt_include_untracked [
-	^ self basicNew
-		value: 1;
-		yourself
-]
-
-{ #category : #accessing }
-LGitStatusOptionEnum class >> git_status_opt_recurse_untracked_dirs [
-	^ self basicNew
-		value: 16;
-		yourself
-]
-
-{ #category : #accessing }
-LGitStatusOptionEnum >> enumDecl [
+LGitStatusOptionEnum class >> enumDecl [
  ^ #(
 	GIT_STATUS_OPT_INCLUDE_UNTRACKED 1
 
@@ -76,14 +41,121 @@ LGitStatusOptionEnum >> enumDecl [
  )
 ]
 
-{ #category : #accessing }
-LGitStatusOptionEnum >> from: anInt [
-	^ self class basicNew
+{ #category : #'instance creation' }
+LGitStatusOptionEnum class >> from: anInt [
+	^ self basicNew
 		value: anInt;
 		yourself
 ]
 
-{ #category : #accessing }
-LGitStatusOptionEnum >> | aStatusOptionEnum [
-	^ self from: (self value | aStatusOptionEnum value)
+{ #category : #'accessing - values' }
+LGitStatusOptionEnum class >> git_status_opt_disable_pathspec_match [
+	^ self basicNew
+		value: 32;
+		yourself
+]
+
+{ #category : #'accessing - values' }
+LGitStatusOptionEnum class >> git_status_opt_exclude_submodules [
+	^ self basicNew
+		value: 8;
+		yourself
+]
+
+{ #category : #'accessing - values' }
+LGitStatusOptionEnum class >> git_status_opt_include_ignored [
+	^ self basicNew
+		value: 2;
+		yourself
+]
+
+{ #category : #'accessing - values' }
+LGitStatusOptionEnum class >> git_status_opt_include_unmodified [
+	^ self basicNew
+		value: 4;
+		yourself
+]
+
+{ #category : #'accessing - values' }
+LGitStatusOptionEnum class >> git_status_opt_include_unreadable [
+	^ self basicNew
+		value: 16384;
+		yourself
+]
+
+{ #category : #'accessing - values' }
+LGitStatusOptionEnum class >> git_status_opt_include_unreadable_as_untracked [
+	^ self basicNew
+		value: 32768;
+		yourself
+]
+
+{ #category : #'accessing - values' }
+LGitStatusOptionEnum class >> git_status_opt_include_untracked [
+	^ self basicNew
+		value: 1;
+		yourself
+]
+
+{ #category : #'accessing - values' }
+LGitStatusOptionEnum class >> git_status_opt_no_refresh [
+	^ self basicNew
+		value: 4096;
+		yourself
+]
+
+{ #category : #'accessing - values' }
+LGitStatusOptionEnum class >> git_status_opt_recurse_ignored_dirs [
+	^ self basicNew
+		value: 64;
+		yourself
+]
+
+{ #category : #'accessing - values' }
+LGitStatusOptionEnum class >> git_status_opt_recurse_untracked_dirs [
+	^ self basicNew
+		value: 16;
+		yourself
+]
+
+{ #category : #'accessing - values' }
+LGitStatusOptionEnum class >> git_status_opt_renames_from_rewrites [
+	^ self basicNew
+		value: 2048;
+		yourself
+]
+
+{ #category : #'accessing - values' }
+LGitStatusOptionEnum class >> git_status_opt_renames_head_to_index [
+	^ self basicNew
+		value: 128;
+		yourself
+]
+
+{ #category : #'accessing - values' }
+LGitStatusOptionEnum class >> git_status_opt_renames_index_to_workdir [
+	^ self basicNew
+		value: 256;
+		yourself
+]
+
+{ #category : #'accessing - values' }
+LGitStatusOptionEnum class >> git_status_opt_sort_case_insensitively [
+	^ self basicNew
+		value: 1024;
+		yourself
+]
+
+{ #category : #'accessing - values' }
+LGitStatusOptionEnum class >> git_status_opt_sort_case_sensitively [
+	^ self basicNew
+		value: 512;
+		yourself
+]
+
+{ #category : #'accessing - values' }
+LGitStatusOptionEnum class >> git_status_opt_update_index [
+	^ self basicNew
+		value: 8192;
+		yourself
 ]
