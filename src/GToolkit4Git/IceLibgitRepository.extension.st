@@ -8,6 +8,11 @@ IceLibgitRepository >> getDeltas [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceLibgitRepository >> getStatus [
+	^ handle getStatus
+]
+
+{ #category : #'*GToolkit4Git' }
 IceLibgitRepository >> gtLocalBranchesFor: aView [
 	<gtView>
 	self isMissing ifTrue: [ ^ aView empty ].
@@ -25,10 +30,25 @@ IceLibgitRepository >> gtRemoteBranchesFor: aView [
 IceLibgitRepository >> gtRepositoryDirectoryFor: aView [
 
 	<gtView>
+	| status |
+	"status := self getStatus."
 	self isMissing ifTrue: [ ^ aView empty ].
 	^ (self repositoryDirectory gtItemsFor: aView)
 		  title: 'Repository directory' translated;
 		  priority: 35;
+		  "column: 'Tracked' translated
+		  	icon: [ :each |
+		  		BrGlamorousIcons accept  ];"
+		  column: 'Actions'  translated
+		  	stencil: [ :each |
+		  	  | relative |
+		  	  relative := each relativeTo: self repositoryDirectory.
+			BrButton new
+				aptitude: BrGlamorousButtonWithIconAptitude;
+				icon: BrGlamorousVectorIcons add;
+				label: 'Add ', relative pathString;
+				beTinySize;
+				action: [:_ | self index addPath: relative; addToGitIndex]];
 		  actionButtonIcon: BrGlamorousIcons go
 		  tooltip: 'Open in OS'
 		  action: [ WebBrowser openOn: self location fullName ]
