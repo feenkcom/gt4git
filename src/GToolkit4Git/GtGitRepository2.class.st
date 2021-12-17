@@ -379,7 +379,7 @@ GtGitRepository2 >> isMissing [
 
 { #category : #accessing }
 GtGitRepository2 >> isModified [
-	^ isModified ifNil: [ isModified := self repository isModified or: [ self repository isDirty ] ]
+	^ self repository isModified or: [ self repository isDirty ]
 ]
 
 { #category : #initialization }

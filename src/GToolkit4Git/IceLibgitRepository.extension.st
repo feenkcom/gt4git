@@ -13,6 +13,16 @@ IceLibgitRepository >> getStatus [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceLibgitRepository >> getStatusByFile [
+	| res |
+	res := Dictionary new.
+	self getStatus do: [:each |
+		res at: each prim_index_to_workdir newFile prim_path fromCString asPath put: each prim_status
+	].
+	^ res
+]
+
+{ #category : #'*GToolkit4Git' }
 IceLibgitRepository >> gtLocalBranchesFor: aView [
 	<gtView>
 	self isMissing ifTrue: [ ^ aView empty ].
@@ -31,7 +41,7 @@ IceLibgitRepository >> gtRepositoryDirectoryFor: aView [
 
 	<gtView>
 	| status |
-	"status := self getStatus."
+	"status := self getStatusByFile."
 	self isMissing ifTrue: [ ^ aView empty ].
 	^ (self repositoryDirectory gtItemsFor: aView)
 		  title: 'Repository directory' translated;
