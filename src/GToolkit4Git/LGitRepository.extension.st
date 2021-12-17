@@ -34,3 +34,13 @@ LGitRepository >> isDirty [
 
 	^ out numberOfDeltas isZero not
 ]
+
+{ #category : #'*GToolkit4Git' }
+LGitRepository >> status_list_new: out [ 
+	^ self ffiCallSafely: #(int git_status_list_new (LGitStatusList out, self, NULL)) options: #()
+]
+
+{ #category : #'*GToolkit4Git' }
+LGitRepository >> status_list_new: out withOpts: opts [
+	^ self ffiCallSafely: #(int git_status_list_new (LGitStatusList* out, LGitRepository self, LGitStatusOptions* opts)) options: #()
+]
