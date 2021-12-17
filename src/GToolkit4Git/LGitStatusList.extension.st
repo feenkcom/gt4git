@@ -1,6 +1,11 @@
 Extension { #name : #LGitStatusList }
 
 { #category : #'*GToolkit4Git' }
+LGitStatusList >> at: idx [
+	^ self ffiCallSafely: #(LGitStatusEntry git_status_byindex(self, size_t idx)) options: #()
+]
+
+{ #category : #'*GToolkit4Git' }
 LGitStatusList >> gtInfoFor: aView [
 	<gtView>
 	^ ({
