@@ -1,39 +1,36 @@
 Extension { #name : #LGitRepository }
 
 { #category : #'*GToolkit4Git' }
-LGitRepository >> diff_index_to_workdir: diff [
-
-	^ self
-		  ffiCallSafely: #( LGitReturnCodeEnum git_diff_index_to_workdir
-			     #( LGitDiff * diff, self , NULL , NULL ) )
-		  options: #(  )
-]
-
-{ #category : #'*GToolkit4Git' }
-LGitRepository >> diff_num_deltas: diff [
-
-	^ self
-		  ffiCallSafely: #( size_t git_diff_num_deltas #( void * diff ) )
-		  options: #(  )
-]
-
-{ #category : #'*GToolkit4Git' }
 LGitRepository >> getDeltas [
 
 	| out numDiffs |
 	out := LGitDiff newPointer autoRelease; repository: self.
-	self diff_index_to_workdir: out.
+	
+	out diffTreeToWorkdir: (self revparse: self head basename) tree inRepo: self.
 	
 	^ out deltas
 ]
 
 { #category : #'*GToolkit4Git' }
+LGitRepository >> getStatus [
+	| out opts |
+	out := LGitStatusList newPointer "autoRelease".
+	opts := LGitStatusOptions newPointer autoRelease.
+	opts statusOptionsInit.
+	opts add: LGitStatusOptionEnum git_status_opt_include_untracked.
+	opts add: LGitStatusOptionEnum git_status_opt_recurse_untracked_dirs.
+	self status_list_new: out.
+	
+	^ out
+]
+
+{ #category : #'*GToolkit4Git' }
 LGitRepository >> isDirty [
 
-	| out numDiffs |
+	| out numDiffs head |
 	out := LGitDiff newPointer autoRelease; repository: self.
-	self diff_index_to_workdir: out.
-	numDiffs := self diff_num_deltas: out.
+	head := self head.
+	out diffTreeToWorkdir: (self revparse: head name) tree inRepo: self.
 
-	^ numDiffs isZero not
+	^ out numberOfDeltas isZero not
 ]

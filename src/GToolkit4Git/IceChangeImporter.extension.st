@@ -21,13 +21,13 @@ IceChangeImporter >> visitLepiterDatabaseChange: aLepiterDatabaseChange [
 			                 ifFalse: [ 
 			                 (version fileSystem resolve: aPageLocation newFile)
 				                 asFileReference ].
-
-		contents := fileReference contents.
-		page := LeJsonV4 uniqueInstance deserialize:
-			        fileReference readStream.
-		pageDefinition := GtLepiterPageDefinition new
-			                  name: page title;
-			                  pageUuid: page uid;
-			                  pageContents: contents.
-		pagesNode addChild: pageDefinition ]
+		fileReference exists ifTrue: [ 
+			contents := fileReference contents.
+			page := LeJsonV4 uniqueInstance deserialize:
+				        fileReference readStream.
+			pageDefinition := GtLepiterPageDefinition new
+				                  name: page title;
+				                  pageUuid: page uid;
+				                  pageContents: contents.
+			pagesNode addChild: pageDefinition ] ]
 ]
