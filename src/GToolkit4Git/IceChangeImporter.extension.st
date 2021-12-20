@@ -5,7 +5,10 @@ IceChangeImporter >> visitLepiterDatabaseChange: aLepiterDatabaseChange [
 
 	| databaseSnapshot databaseDefinition databaseNode pagesDefinition pagesNode attachmentsDefinition attachmentsNode |
 	databaseDefinition := GtLepiterDatabaseDefinition new name:
-		                      aLepiterDatabaseChange database databaseName.
+		                      aLepiterDatabaseChange database databaseName;
+		                      databaseId: aLepiterDatabaseChange database uuid;
+		                      localRootRelativePath: (RelativePath 
+		with: aLepiterDatabaseChange database localStoreRootDirectory basename).
 
 	databaseNode := parentNode addChild: databaseDefinition.
 

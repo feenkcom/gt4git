@@ -3,7 +3,7 @@ Extension { #name : #IceLibgitRepository }
 { #category : #'*GToolkit4Git' }
 IceLibgitRepository >> getDeltas [
 
-	^ handle getDeltas collect: [ :delta | 
+	^ (handle getDeltasFromHead: self head) collect: [ :delta | 
 		  GtGitDelta from: delta in: self ]
 ]
 
