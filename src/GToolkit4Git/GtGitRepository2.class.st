@@ -7,7 +7,6 @@ Class {
 		'headDescription',
 		'isModified',
 		'currentCommitMessage',
-		'repositoryModel',
 		'workingCopy'
 	],
 	#classVars : [
@@ -368,7 +367,7 @@ GtGitRepository2 >> headDescription [
 
 { #category : #accessing }
 GtGitRepository2 >> incomingCommits [
- ^ repositoryModel incomingCommits
+	^ repository incomingCommits
 ]
 
 { #category : #testing }
@@ -380,6 +379,11 @@ GtGitRepository2 >> isMissing [
 { #category : #testing }
 GtGitRepository2 >> isModified [
 	^ self repository isModified or: [ self repository isDirty ]
+]
+
+{ #category : #accessing }
+GtGitRepository2 >> lepiterWorkingCopy [
+	^ workingCopy
 ]
 
 { #category : #actions }
@@ -396,7 +400,7 @@ GtGitRepository2 >> name [
 
 { #category : #accessing }
 GtGitRepository2 >> outgoingCommits [
- ^ repositoryModel outgoingCommits
+	^ repository outgoingCommits
 ]
 
 { #category : #actions }
@@ -423,7 +427,6 @@ GtGitRepository2 >> repository [
 { #category : #accessing }
 GtGitRepository2 >> repository: anIceRepository [
 	repository := anIceRepository.
-	repositoryModel := IceTipRepositoryModel on: repository.
 	workingCopy := GtLepiterWorkingCopy new 
 		repository: anIceRepository; 
 		updateDatabases.
