@@ -122,7 +122,7 @@ Gt4Git >> cachedRepositories [
 	^ repos
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 Gt4Git >> gtRepositoriesFor: aView [
 	<gtView>
 	^ aView explicit

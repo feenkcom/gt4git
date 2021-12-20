@@ -33,7 +33,7 @@ GtGitRepository2 >> currentCommitMessage [
 		currentCommitMessage := self recentCommitMessage asRopedText ]
 ]
 
-{ #category : #accessing }
+{ #category : #actions }
 GtGitRepository2 >> executeCommit: aCommitMessage [
 	|diff|
 	diff := self generateDiff.
@@ -44,7 +44,7 @@ GtGitRepository2 >> executeCommit: aCommitMessage [
 	Iceberg announcer announce: (IceRepositoryModified for: self repository).
 ]
 
-{ #category : #accessing }
+{ #category : #actions }
 GtGitRepository2 >> generateDiff [
 	| changes diff leftTree rightTree codeChanges tree mergedTree |
 	repository repositoryDirectory ifNil: [ ^ IceDiff new ].
@@ -116,7 +116,7 @@ GtGitRepository2 >> getDeltasTree [
 			  pages: (databases at: key) ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 GtGitRepository2 >> gtActionFetchFor: anAction [
 	<gtAction>
 	self isMissing ifTrue: [ ^ anAction ].
@@ -129,7 +129,7 @@ GtGitRepository2 >> gtActionFetchFor: anAction [
 			aButton phlow fireUpdateWish ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 GtGitRepository2 >> gtActionPullFor: anAction [
 	<gtAction>
 	self isMissing ifTrue: [ ^ anAction ].
@@ -143,7 +143,7 @@ GtGitRepository2 >> gtActionPullFor: anAction [
 			aButton phlow fireUpdateWish ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 GtGitRepository2 >> gtActionPushFor: anAction [
 	<gtAction>
 	self isMissing ifTrue: [ ^ anAction ].
@@ -158,7 +158,7 @@ GtGitRepository2 >> gtActionPushFor: anAction [
 			aButton phlow fireUpdateWish ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 GtGitRepository2 >> gtActionRefreshFor: anAction [
 	<gtAction>
 	self isMissing ifTrue: [ ^ anAction ].
@@ -191,7 +191,7 @@ GtGitRepository2 >> gtActionRefreshFor: anAction [
 			aButton phlow fireUpdateWish ]. 
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 GtGitRepository2 >> gtActionRepairFor: anAction [
 	<gtAction>
 	self isMissing ifTrue: [ ^ anAction ].
@@ -203,7 +203,7 @@ GtGitRepository2 >> gtActionRepairFor: anAction [
 			GtGitRepositoryRepairStencil new repository:repository; dropdown: aDropdown ].
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 GtGitRepository2 >> gtChangesFor: aView [
 
 	<gtView>
@@ -286,7 +286,7 @@ GtGitRepository2 >> gtChangesFor: aView [
 						  button } ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 GtGitRepository2 >> gtCommitsFor: aView [
 	<gtView>
 	self repository repositoryDirectory ifNil: [ ^ aView empty ].
@@ -296,7 +296,7 @@ GtGitRepository2 >> gtCommitsFor: aView [
 		view: #gtCommitsFor:
 ]
 
-{ #category : #accessing }
+{ #category : #printing }
 GtGitRepository2 >> gtDisplayOn: aStream [
 
 	self repository repositoryDirectory ifNil: [ 
@@ -307,7 +307,7 @@ GtGitRepository2 >> gtDisplayOn: aStream [
 	aStream nextPutAll: self repository repositoryDirectory pathString
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 GtGitRepository2 >> gtPackagesFor: aView [
 	<gtView>
 	^ self repository workingCopy 
@@ -315,13 +315,13 @@ GtGitRepository2 >> gtPackagesFor: aView [
 		ifNotNil: [ self repository workingCopy gtPackagesFor: aView ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 GtGitRepository2 >> gtRepositoryDirectoryFor: aView [
 	<gtView>
 	^ (self repository gtRepositoryDirectoryFor: aView) priority: 40
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 GtGitRepository2 >> gtViewIncomingCommitsFor: aView [
 	<gtView>
 	| incomingCommits |
@@ -342,7 +342,7 @@ GtGitRepository2 >> gtViewIncomingCommitsFor: aView [
 			aButton phlow fireUpdateWish ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 GtGitRepository2 >> gtViewOutgoingCommitsFor: aView [
 	<gtView>
 	| outgoingCommits |
@@ -371,18 +371,18 @@ GtGitRepository2 >> incomingCommits [
  ^ repositoryModel incomingCommits
 ]
 
-{ #category : #accessing }
+{ #category : #testing }
 GtGitRepository2 >> isMissing [
 ^ self repository repositoryDirectory isNil 
 		or: [ self repository repositoryDirectory exists not ]
 ]
 
-{ #category : #accessing }
+{ #category : #testing }
 GtGitRepository2 >> isModified [
 	^ self repository isModified or: [ self repository isDirty ]
 ]
 
-{ #category : #initialization }
+{ #category : #actions }
 GtGitRepository2 >> load [
 	self status.
 	self headDescription.
@@ -399,7 +399,7 @@ GtGitRepository2 >> outgoingCommits [
  ^ repositoryModel outgoingCommits
 ]
 
-{ #category : #accessing }
+{ #category : #actions }
 GtGitRepository2 >> pull [
 ]
 
@@ -424,17 +424,19 @@ GtGitRepository2 >> repository [
 GtGitRepository2 >> repository: anIceRepository [
 	repository := anIceRepository.
 	repositoryModel := IceTipRepositoryModel on: repository.
-	workingCopy := GtLepiterWorkingCopy new repository: anIceRepository; updateDatabases.
+	workingCopy := GtLepiterWorkingCopy new 
+		repository: anIceRepository; 
+		updateDatabases.
 ]
 
-{ #category : #initialization }
+{ #category : #actions }
 GtGitRepository2 >> reset [
 	status := nil.
 	headDescription := nil.
 	isModified := nil
 ]
 
-{ #category : #accessing }
+{ #category : #actions }
 GtGitRepository2 >> resetCurrentCommitMessage [
 	currentCommitMessage := nil
 ]
