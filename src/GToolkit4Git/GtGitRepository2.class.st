@@ -21,11 +21,6 @@ GtGitRepository2 class >> fromIcebergRepository: anIceRepository [
 ]
 
 { #category : #accessing }
-GtGitRepository2 >> changes [
-	^ self generateDiff tree
-]
-
-{ #category : #accessing }
 GtGitRepository2 >> currentCommitMessage [
 	<return: #BlText>
 	^ currentCommitMessage ifNil: [
@@ -35,7 +30,7 @@ GtGitRepository2 >> currentCommitMessage [
 { #category : #actions }
 GtGitRepository2 >> executeCommit: aCommitMessage [
 	|diff|
-	diff := self generateDiff.
+	diff := self workingCopyDiff.
 	self workingCopy 
 		commitChanges: diff
 		withMessage: aCommitMessage
@@ -43,77 +38,9 @@ GtGitRepository2 >> executeCommit: aCommitMessage [
 	Iceberg announcer announce: (IceRepositoryModified for: self repository).
 ]
 
-{ #category : #actions }
-GtGitRepository2 >> generateDiff [
-	| lepiterChanges diff leftTree rightTree codeChanges tree mergedTree |
-	repository repositoryDirectory ifNil: [ ^ IceDiff new ].
-
-	lepiterChanges := self getDeltasTree.
-	codeChanges := repository workingCopy changesTo:
-		               repository workingCopy referenceCommit.
-		
-	diff := IceDiff new
-		        sourceVersion: self lepiterWorkingCopy;
-		        targetVersion: repository workingCopy referenceCommit;
-		        yourself.
-	
-	leftTree := IceNode value: IceRootDefinition new.
-	codeChanges do: [ :aChange | 
-		aChange accept: (IceChangeImporter new
-				 version: repository workingCopy;
-				 diff: diff;
-				 parentNode: leftTree;
-				 yourself) ].
-	lepiterChanges do: [ :aChange | 
-		aChange accept: (IceChangeImporter new
-				 version: self lepiterWorkingCopy;
-				 diff: diff;
-				 parentNode: leftTree;
-				 yourself) ].
-	rightTree := IceNode value: IceRootDefinition new.
-	codeChanges do: [ :change | 
-		change accept: (IceChangeImporter new
-				 version: repository workingCopy referenceCommit;
-				 diff: diff;
-				 parentNode: rightTree;
-				 yourself) ].
-	lepiterChanges do: [ :change | 
-		change accept: (IceChangeImporter new
-				 version: repository workingCopy referenceCommit;
-				 diff: diff;
-				 parentNode: rightTree;
-				 yourself) ].
-
-	mergedTree := diff mergedTreeOf: leftTree with: rightTree.
-	tree := mergedTree select: [ :operation | operation hasChanges ].
-
-	diff instVarNamed: #tree put: tree.
-	diff instVarNamed: #mergedTree put: mergedTree.
-
-	^ diff
-]
-
 { #category : #accessing }
 GtGitRepository2 >> getDeltasTree [
-
-	| databases path uuid |
-	databases := OrderedDictionary new.
-	self repository getDeltas do: [ :delta | 
-		path := delta oldFile path.
-		"TODO ignore properties and attachment files for now"
-		(path basename = LepiterCoreDefaults databasePropertiesBasename or: [ 
-			 path parent parent basename = 'attachments' ]) ifFalse: [ 
-			LeDatabasesRegistry default defaultLogicalDatabase databases
-				detect: [ :db | db localStoreRootDirectory asPath = path parent ]
-				ifFound: [ :database | 
-					databases
-						at: database
-						update: [ :aList | aList , { delta } ]
-						initial: { delta } ] ] ].
-	^ databases keys collect: [ :key | 
-		  GtLepiterLocalDatabaseChange new
-			  database: key;
-			  pages: (databases at: key) ]
+	^ self lepiterWorkingCopy getDeltasTree
 ]
 
 { #category : #'gt-extensions' }
@@ -208,7 +135,7 @@ GtGitRepository2 >> gtChangesFor: aView [
 	<gtView>
 	| changes |
 	self lepiterWorkingCopy ifNil: [ ^ aView empty ].
-	changes := self changes.
+	changes := self workingCopyDiff treeToShow.
 	(changes isNil or: [ changes isEmpty ]) ifTrue: [ ^ aView empty ].
 	^ aView tree
 		  title: 'Changes';
@@ -453,4 +380,10 @@ GtGitRepository2 >> status [
 { #category : #accessing }
 GtGitRepository2 >> workingCopy [
 	^ self repository workingCopy
+]
+
+{ #category : #accessing }
+GtGitRepository2 >> workingCopyDiff [
+	
+	^ self lepiterWorkingCopy diffToReferenceCommit
 ]

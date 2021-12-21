@@ -59,6 +59,28 @@ GtLepiterWorkingCopy >> fileSystem [
 ]
 
 { #category : #accessing }
+GtLepiterWorkingCopy >> getDeltasTree [
+	| changedDatabases path |
+	changedDatabases := OrderedDictionary new.
+	self repository getDeltas do: [ :delta | 
+		path := delta oldFile path.
+		"TODO ignore properties and attachment files for now"
+		(path basename = LepiterCoreDefaults databasePropertiesBasename or: [ 
+			 path parent parent basename = 'attachments' ]) ifFalse: [ 
+			self databases
+				detect: [ :db | db localStoreRootDirectory asPath = path parent ]
+				ifFound: [ :database | 
+					changedDatabases
+						at: database
+						update: [ :aList | aList , { delta } ]
+						initial: { delta } ] ] ].
+	^ changedDatabases keys collect: [ :key | 
+		  GtLepiterLocalDatabaseChange new
+			  database: key;
+			  pages: (changedDatabases at: key) ]
+]
+
+{ #category : #accessing }
 GtLepiterWorkingCopy >> icebergWorkingCopy [
 	^ self repository workingCopy
 ]
