@@ -68,6 +68,15 @@ GtGitDelta >> oldFileRelative: aPath [
 ]
 
 { #category : #accessing }
+GtGitDelta >> printOn: aStream [
+	super printOn: aStream.
+	aStream
+		<< '(';
+		<< self newFileRelative;
+		<< ')'
+]
+
+{ #category : #accessing }
 GtGitDelta >> status [
 	^ status
 ]
