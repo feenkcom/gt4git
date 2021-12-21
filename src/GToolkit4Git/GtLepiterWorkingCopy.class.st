@@ -60,24 +60,36 @@ GtLepiterWorkingCopy >> fileSystem [
 
 { #category : #accessing }
 GtLepiterWorkingCopy >> getDeltasTree [
-	| changedDatabases path |
-	changedDatabases := OrderedDictionary new.
+
+	| changedDatabases path changedDatabaseAttachments |
+	changedDatabases := Dictionary new.
+	self databases do: [ :database | 
+		changedDatabases
+			at: database
+			put: (GtLepiterLocalDatabaseChange new database: database) ].
 	self repository getDeltas do: [ :delta | 
 		path := delta oldFile path.
-		"TODO ignore properties and attachment files for now"
-		(path basename = LepiterCoreDefaults databasePropertiesBasename or: [ 
-			 path parent parent basename = 'attachments' ]) ifFalse: [ 
-			self databases
-				detect: [ :db | db localStoreRootDirectory asPath = path parent ]
-				ifFound: [ :database | 
-					changedDatabases
-						at: database
-						update: [ :aList | aList , { delta } ]
-						initial: { delta } ] ] ].
-	^ changedDatabases keys collect: [ :key | 
-		  GtLepiterLocalDatabaseChange new
-			  database: key;
-			  pages: (changedDatabases at: key) ]
+		"TODO ignore properties for now"
+		path basename = LepiterCoreDefaults databasePropertiesBasename 
+			ifFalse: [ 
+				path parent parent basename = 'attachments'
+					ifTrue: [ 
+						self databases
+							detect: [ :db | 
+							db localStoreRootDirectory asPath = path parent parent parent ]
+							ifFound: [ :database | 
+								changedDatabases at: database ifPresent: [ :databaseChange | 
+									databaseChange addAttachment:
+										(GtLepiterLocalAttachmentChange new path: path; delta: delta) ] ] ]
+					ifFalse: [ 
+						self databases
+							detect: [ :db | 
+							db localStoreRootDirectory asPath = path parent ]
+							ifFound: [ :database | 
+								changedDatabases at: database ifPresent: [ :databaseChange | 
+									databaseChange addPage:
+										(GtLepiterLocalPageChange new path: path; delta: delta) ] ] ] ] ].
+	^ changedDatabases values select: [:change | change hasChanges]
 ]
 
 { #category : #accessing }
@@ -133,6 +145,11 @@ GtLepiterWorkingCopy >> repository [
 GtLepiterWorkingCopy >> repository: anObject [
 
 	repository := anObject
+]
+
+{ #category : #accessing }
+GtLepiterWorkingCopy >> resolveDelta: aDelta [
+	^ (self fileSystem resolve: aDelta newFile) asFileReference
 ]
 
 { #category : #accessing }

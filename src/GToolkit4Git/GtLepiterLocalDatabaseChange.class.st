@@ -3,7 +3,8 @@ Class {
 	#superclass : #IceChange,
 	#instVars : [
 		'database',
-		'pages'
+		'pages',
+		'attachments'
 	],
 	#category : #'GToolkit4Git-Lepiter'
 }
@@ -12,6 +13,26 @@ Class {
 GtLepiterLocalDatabaseChange >> accept: aVisitor [
 	
 	^ aVisitor visitLepiterDatabaseChange: self
+]
+
+{ #category : #accessing }
+GtLepiterLocalDatabaseChange >> addAttachment: anAttachmentChange [
+	attachments add: anAttachmentChange
+]
+
+{ #category : #accessing }
+GtLepiterLocalDatabaseChange >> addPage: aPageChange [
+	pages add: aPageChange
+]
+
+{ #category : #accessing }
+GtLepiterLocalDatabaseChange >> attachments [
+	^ attachments
+]
+
+{ #category : #accessing }
+GtLepiterLocalDatabaseChange >> attachments: aList [
+	attachments := aList
 ]
 
 { #category : #accessing }
@@ -27,6 +48,19 @@ GtLepiterLocalDatabaseChange >> database: aDatabase [
 { #category : #accessing }
 GtLepiterLocalDatabaseChange >> databaseUuid [
 	^ self database uuid
+]
+
+{ #category : #accessing }
+GtLepiterLocalDatabaseChange >> hasChanges [
+
+	^ self pages isEmpty not or: [ self attachments isEmpty not ]
+]
+
+{ #category : #accessing }
+GtLepiterLocalDatabaseChange >> initialize [
+	super initialize.
+	self attachments: OrderedCollection new.
+	self pages: OrderedCollection new.
 ]
 
 { #category : #accessing }

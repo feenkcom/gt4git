@@ -8,3 +8,9 @@ Class {
 GtLepiterAttachmentsDefinition >> icon [
 	^ self iconNamed: #emptyPackage
 ]
+
+{ #category : #accessing }
+GtLepiterAttachmentsDefinition >> initialize [
+	super initialize.
+	self name: 'attachments'
+]

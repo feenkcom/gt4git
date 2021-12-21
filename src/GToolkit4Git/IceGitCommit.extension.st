@@ -41,6 +41,11 @@ IceGitCommit >> lepiterDatabases [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceGitCommit >> resolveDelta: aGtDiffDelta [
+	^ (self fileSystem resolve: aGtDiffDelta oldFileRelative) asFileReference
+]
+
+{ #category : #'*GToolkit4Git' }
 IceGitCommit >> snapshotForKnowledgeWithId: anUuid [
 	| inCommitDatabase |
 	inCommitDatabase := self lepiterDatabases detect: [ :anInCommitDatabase |
