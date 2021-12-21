@@ -102,6 +102,24 @@ GtIceLepiterExamples >> gitRepositoryAWithEmptyLepiterDatabase [
 	^ gtIceRepository
 ]
 
+{ #category : #examples }
+GtIceLepiterExamples >> gitRepositoryAWithNewAddedPage [
+	"<gtExample>"
+	<after: #cleanUpRepositoriesAndDatabases>
+	| gtIceRepository targetDatabase newPage |
+	
+	gtIceRepository := self gitRepositoryAWithEmptyLepiterDatabase. 
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
+	
+	newPage := LePage named: 'Page1'.
+	newPage addSnippet: (LeTextSnippet string: 'Block1').
+	targetDatabase addPage: newPage.
+	
+	"self assert: gtIceRepository workingCopyDiff isEmpty not."
+	
+	^ gtIceRepository
+]
+
 { #category : #accessing }
 GtIceLepiterExamples >> lepiterDatabases [ 
 	^ lepiterDatabases ifNil: [ 

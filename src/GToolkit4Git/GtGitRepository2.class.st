@@ -40,25 +40,7 @@ GtGitRepository2 >> executeCommit: aCommitMessage [
 
 { #category : #accessing }
 GtGitRepository2 >> getDeltasTree [
-
-	| databases path uuid |
-	databases := OrderedDictionary new.
-	self repository getDeltas do: [ :delta | 
-		path := delta oldFile path.
-		"TODO ignore properties and attachment files for now"
-		(path basename = LepiterCoreDefaults databasePropertiesBasename or: [ 
-			 path parent parent basename = 'attachments' ]) ifFalse: [ 
-			LeDatabasesRegistry default defaultLogicalDatabase databases
-				detect: [ :db | db localStoreRootDirectory asPath = path parent ]
-				ifFound: [ :database | 
-					databases
-						at: database
-						update: [ :aList | aList , { delta } ]
-						initial: { delta } ] ] ].
-	^ databases keys collect: [ :key | 
-		  GtLepiterLocalDatabaseChange new
-			  database: key;
-			  pages: (databases at: key) ]
+	^ self lepiterWorkingCopy getDeltasTree
 ]
 
 { #category : #'gt-extensions' }

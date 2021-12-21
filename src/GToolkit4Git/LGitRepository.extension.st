@@ -3,7 +3,7 @@ Extension { #name : #LGitRepository }
 { #category : #'*GToolkit4Git' }
 LGitRepository >> getDeltasFromHead: aHead [
 
-	| out numDiffs |
+	| out |
 	out := LGitDiff newPointer autoRelease; repository: self.
 	
 	out diffTreeToWorkdir: (self revparse: aHead gitRef) tree inRepo: self.
