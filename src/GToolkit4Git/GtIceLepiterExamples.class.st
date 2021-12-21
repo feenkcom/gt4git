@@ -8,6 +8,12 @@ Class {
 	#category : #'GToolkit4Git-Lepiter-Examples'
 }
 
+{ #category : #'setUp-tearDown' }
+GtIceLepiterExamples >> cleanUpRepositoriesAndDatabases [
+	self detachLepiterDatabases.
+	self removeRepositoriesAndCode.
+]
+
 { #category : #'creation repositories' }
 GtIceLepiterExamples >> createBasicIcebergRepositoryWithName: repositoryName [
 	| iceRepository reposioryFolder |
@@ -56,18 +62,30 @@ GtIceLepiterExamples >> createIcebergRepositoryNamed: aRepositoryName withLepite
 		relativeTo: iceRepository location).
 	iceRepository commitWithMessage: 'Add lepiter database.'.
 	
+	"The current mechanism requires a database to be registered
+	before creating the gt git repo, in order for the diff logic to work."
+	LeDatabasesRegistry defaultLogicalDatabase addDB: database.
+	
 	gtRepository := GtGitRepository2 fromIcebergRepository: iceRepository.
 	"self assertLepiterDatabase: database inFolderNamed: 'lepiter'."
 	
 	self repositories at: aRepositoryName put: gtRepository.
-	self repositories at: aDatabaseName put: database.
+	self lepiterDatabases at: aDatabaseName put: database.
 	
 	^ gtRepository
 ]
 
+{ #category : #'setUp-tearDown' }
+GtIceLepiterExamples >> detachLepiterDatabases [
+	self lepiterDatabases do: [ :aDatabase |
+		LeDatabasesRegistry defaultLogicalDatabase removeDB: aDatabase ].
+	self lepiterDatabases removeAll.
+]
+
 { #category : #examples }
 GtIceLepiterExamples >> gitRepositoryAWithEmptyLepiterDatabase [
-	"<gtExample>"
+	<gtExample>
+	<after: #cleanUpRepositoriesAndDatabases>
 	| gtIceRepository lepiterWorkingCopy |
 	
 	gtIceRepository := self 
@@ -88,6 +106,23 @@ GtIceLepiterExamples >> gitRepositoryAWithEmptyLepiterDatabase [
 GtIceLepiterExamples >> lepiterDatabases [ 
 	^ lepiterDatabases ifNil: [ 
 		lepiterDatabases := IdentityDictionary new ]
+]
+
+{ #category : #'setUp-tearDown' }
+GtIceLepiterExamples >> removeRepositoriesAndCode [
+	self repositories do: [ :anIcebergRepository |
+		IceRepository registry 
+			detect: [ :aRepo | aRepo name = anIcebergRepository name ] 
+			ifFound: [ :aRepo | aRepo forget ].
+
+		"Remove all packages from the system"
+		anIcebergRepository workingCopy packages do: [ :aPackage |
+			SystemAnnouncer uniqueInstance suspendAllWhile: [ 
+				GtPharoCodeModifier removePackageNamed: aPackage name ] ].
+
+		"Delete all files from disk related to this repository"
+		anIcebergRepository workingCopy fileSystem ensureDeleteAll ].
+	self repositories removeAll.
 ]
 
 { #category : #accessing }
