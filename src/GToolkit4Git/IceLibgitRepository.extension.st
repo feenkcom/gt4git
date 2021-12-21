@@ -8,17 +8,15 @@ IceLibgitRepository >> getDeltas [
 ]
 
 { #category : #'*GToolkit4Git' }
-IceLibgitRepository >> getStatus [
-	^ handle getStatus
-]
-
-{ #category : #'*GToolkit4Git' }
 IceLibgitRepository >> getStatusByFile [
+
 	| res |
 	res := Dictionary new.
-	self getStatus do: [:each |
-		res at: each prim_index_to_workdir newFile prim_path fromCString asPath put: each prim_status
-	].
+
+	handle index allFilesStatusDo: [ :path :flags :_ | 
+		res at: path put: (LGitStatusEnum fromInteger: flags).
+		0 ].
+
 	^ res
 ]
 
@@ -41,24 +39,40 @@ IceLibgitRepository >> gtRepositoryDirectoryFor: aView [
 
 	<gtView>
 	| status |
-	"status := self getStatusByFile."
+	status := self getStatusByFile.
 	self isMissing ifTrue: [ ^ aView empty ].
 	^ (self repositoryDirectory gtItemsFor: aView)
 		  title: 'Repository directory' translated;
 		  priority: 35;
-		  "column: 'Tracked' translated
-		  	icon: [ :each |
-		  		BrGlamorousIcons accept  ];"
-		  column: 'Actions'  translated
-		  	stencil: [ :each |
-		  	  | relative |
-		  	  relative := each relativeTo: self repositoryDirectory.
-			BrButton new
-				aptitude: BrGlamorousButtonWithIconAptitude;
-				icon: BrGlamorousVectorIcons add;
-				label: 'Add ', relative pathString;
-				beTinySize;
-				action: [:_ | self index addPath: relative; addToGitIndex]];
+		  column: 'Tracked' translated icon: [ :each | 
+			  | relative |
+			  relative := (each relativeTo: self repositoryDirectory)
+				              pathString.
+			  (status includesKey: relative)
+				  ifTrue: [ 
+					  (status at: relative) = LGitStatusEnum git_status_wt_new
+						  ifTrue: [ BrGlamorousIcons close ]
+						  ifFalse: [ BrGlamorousIcons accept ] ]
+				  ifFalse: [ "exclude parent dir"
+					  relative = '..'
+						  ifTrue: [ BrGlamorousIcons empty ]
+						  ifFalse: [ BrGlamorousIcons accept ] ] ];
+		  column: 'Actions' translated stencil: [ :each | 
+			  | relative |
+			  relative := each relativeTo: self repositoryDirectory.
+			  ((status includesKey: relative pathString) and: [ 
+					   (status at: relative pathString) = LGitStatusEnum git_status_wt_new ]) 
+				  ifTrue: [ 
+					  BrButton new
+						  aptitude: BrGlamorousButtonWithIconAptitude;
+						  icon: BrGlamorousVectorIcons add;
+						  label: 'Add ' , relative pathString;
+						  beTinySize;
+						  action: [ :_ | 
+							  self index
+								  addPath: relative;
+								  addToGitIndex ] ]
+					ifFalse: [ BrGlamorousIcons empty asElement ] ];
 		  actionButtonIcon: BrGlamorousIcons go
 		  tooltip: 'Open in OS'
 		  action: [ WebBrowser openOn: self location fullName ]
