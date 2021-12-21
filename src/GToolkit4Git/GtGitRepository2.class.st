@@ -7,8 +7,7 @@ Class {
 		'headDescription',
 		'isModified',
 		'currentCommitMessage',
-		'repositoryModel',
-		'workingCopy'
+		'lepiterWorkingCopy'
 	],
 	#classVars : [
 		'RecentCommitMessage'
@@ -46,17 +45,18 @@ GtGitRepository2 >> executeCommit: aCommitMessage [
 
 { #category : #actions }
 GtGitRepository2 >> generateDiff [
-	| changes diff leftTree rightTree codeChanges tree mergedTree |
+	| lepiterChanges diff leftTree rightTree codeChanges tree mergedTree |
 	repository repositoryDirectory ifNil: [ ^ IceDiff new ].
 
-	
-	changes := self getDeltasTree.
-	diff := IceDiff new
-		        sourceVersion: workingCopy;
-		        targetVersion: repository workingCopy referenceCommit;
-		        yourself.
+	lepiterChanges := self getDeltasTree.
 	codeChanges := repository workingCopy changesTo:
 		               repository workingCopy referenceCommit.
+		
+	diff := IceDiff new
+		        sourceVersion: self lepiterWorkingCopy;
+		        targetVersion: repository workingCopy referenceCommit;
+		        yourself.
+	
 	leftTree := IceNode value: IceRootDefinition new.
 	codeChanges do: [ :aChange | 
 		aChange accept: (IceChangeImporter new
@@ -64,9 +64,9 @@ GtGitRepository2 >> generateDiff [
 				 diff: diff;
 				 parentNode: leftTree;
 				 yourself) ].
-	changes do: [ :aChange | 
+	lepiterChanges do: [ :aChange | 
 		aChange accept: (IceChangeImporter new
-				 version: workingCopy;
+				 version: self lepiterWorkingCopy;
 				 diff: diff;
 				 parentNode: leftTree;
 				 yourself) ].
@@ -77,7 +77,7 @@ GtGitRepository2 >> generateDiff [
 				 diff: diff;
 				 parentNode: rightTree;
 				 yourself) ].
-	changes do: [ :change | 
+	lepiterChanges do: [ :change | 
 		change accept: (IceChangeImporter new
 				 version: repository workingCopy referenceCommit;
 				 diff: diff;
@@ -205,10 +205,9 @@ GtGitRepository2 >> gtActionRepairFor: anAction [
 
 { #category : #'gt-extensions' }
 GtGitRepository2 >> gtChangesFor: aView [
-
 	<gtView>
 	| changes |
-	workingCopy ifNil: [ ^ aView empty ].
+	self lepiterWorkingCopy ifNil: [ ^ aView empty ].
 	changes := self changes.
 	(changes isNil or: [ changes isEmpty ]) ifTrue: [ ^ aView empty ].
 	^ aView tree
@@ -311,8 +310,9 @@ GtGitRepository2 >> gtDisplayOn: aStream [
 GtGitRepository2 >> gtPackagesFor: aView [
 	<gtView>
 	^ self repository workingCopy 
-		ifNil: [ aView ]
-		ifNotNil: [ self repository workingCopy gtPackagesFor: aView ]
+		ifNil: [ aView empty ]
+		ifNotNil: [ 
+			self repository workingCopy gtPackagesFor: aView ]
 ]
 
 { #category : #'gt-extensions' }
@@ -368,7 +368,7 @@ GtGitRepository2 >> headDescription [
 
 { #category : #accessing }
 GtGitRepository2 >> incomingCommits [
- ^ repositoryModel incomingCommits
+	^ repository incomingCommits
 ]
 
 { #category : #testing }
@@ -380,6 +380,11 @@ GtGitRepository2 >> isMissing [
 { #category : #testing }
 GtGitRepository2 >> isModified [
 	^ self repository isModified or: [ self repository isDirty ]
+]
+
+{ #category : #accessing }
+GtGitRepository2 >> lepiterWorkingCopy [
+	^ lepiterWorkingCopy
 ]
 
 { #category : #actions }
@@ -396,7 +401,7 @@ GtGitRepository2 >> name [
 
 { #category : #accessing }
 GtGitRepository2 >> outgoingCommits [
- ^ repositoryModel outgoingCommits
+	^ repository outgoingCommits
 ]
 
 { #category : #actions }
@@ -423,8 +428,7 @@ GtGitRepository2 >> repository [
 { #category : #accessing }
 GtGitRepository2 >> repository: anIceRepository [
 	repository := anIceRepository.
-	repositoryModel := IceTipRepositoryModel on: repository.
-	workingCopy := GtLepiterWorkingCopy new 
+	lepiterWorkingCopy := GtLepiterWorkingCopy new 
 		repository: anIceRepository; 
 		updateDatabases.
 ]
