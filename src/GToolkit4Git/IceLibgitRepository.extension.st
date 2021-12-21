@@ -28,6 +28,19 @@ IceLibgitRepository >> gtLocalBranchesFor: aView [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceLibgitRepository >> gtRawStatusFor: aView [
+	<gtView>
+	^ aView columnedList
+		title: 'Raw Status';
+		priority: 100;
+		items: [self getStatusByFile associations];
+		column: 'File'
+		text: [:each | each key ];
+		column: 'Status'
+		text: [:each | each value ]
+]
+
+{ #category : #'*GToolkit4Git' }
 IceLibgitRepository >> gtRemoteBranchesFor: aView [
 	<gtView>
 	self isMissing ifTrue: [ ^ aView empty ].
@@ -76,6 +89,34 @@ IceLibgitRepository >> gtRepositoryDirectoryFor: aView [
 		  actionButtonIcon: BrGlamorousIcons go
 		  tooltip: 'Open in OS'
 		  action: [ WebBrowser openOn: self location fullName ]
+]
+
+{ #category : #'*GToolkit4Git' }
+IceLibgitRepository >> gtStatusFor: aView [
+
+	<gtView>
+	^ aView columnedTree
+		  title: 'Status';
+		  priority: 2;
+		  items: [ 
+			  (self getStatusByFile associations groupedBy: [ :each | 
+					   each value categoryName ]) associations sort: [ :a | 
+					  a key = 'Untracked'
+						  ifTrue: [ 0 ]
+						  ifFalse: [ 
+							  a key = 'Staged'
+								  ifTrue: [ 2 ]
+								  ifFalse: [ 1 ] ] ] descending ];
+		  children: [ :each | 
+			  each value isArray
+				  ifTrue: [ each value ]
+				  ifFalse: [ {  } ] ];
+		  column: 'File' text: [ :each | each key ];
+		  column: 'Status' text: [ :each | 
+			  each value isArray
+				  ifTrue: [ '' ]
+				  ifFalse: [ each value statusName ] ];
+		  expandAll
 ]
 
 { #category : #'*GToolkit4Git' }

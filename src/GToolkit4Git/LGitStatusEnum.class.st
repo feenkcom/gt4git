@@ -122,3 +122,45 @@ LGitStatusEnum class >> git_status_wt_unreadable [
 		value: 4096;
 		yourself
 ]
+
+{ #category : #accessing }
+LGitStatusEnum >> categoryName [
+
+	^ self isStaged
+		ifTrue: [ 'Staged' ]
+		ifFalse: [ 
+			self isTracked
+				ifTrue: [ 'Not Staged' ]
+				ifFalse: [ 'Untracked' ] ]
+]
+
+{ #category : #accessing }
+LGitStatusEnum >> isStaged [
+	^ self value between: 1 and: 127
+]
+
+{ #category : #accessing }
+LGitStatusEnum >> isTracked [
+	^ self isUnstaged or: [ self isStaged ]
+]
+
+{ #category : #accessing }
+LGitStatusEnum >> isUnstaged [
+	^ (self value between: 256 and: 4096)
+]
+
+{ #category : #accessing }
+LGitStatusEnum >> statusName [
+
+	self value = 0 ifTrue: [ ^ 'Current' ].
+	(self value = 1 or: [ self value = 128 ]) ifTrue: [ ^ 'New' ].
+	(self value = 2 or: [ self value = 256 ]) ifTrue: [ ^ 'Modified' ].
+	(self value = 4 or: [ self value = 512 ]) ifTrue: [ ^ 'Deleted' ].
+	(self value = 8 or: [ self value = 2048 ]) ifTrue: [ ^ 'Renamed' ].
+	(self value = 16 or: [ self value = 1024 ]) ifTrue: [ 
+		^ 'Type Changed' ].
+	self value = 4096 ifTrue: [ ^ 'Unreadable' ].
+	self value = 16384 ifTrue: [ ^ 'Ignored' ].
+	self value = 32768 ifTrue: [ ^ 'Conflicted' ].
+	^ self symbol
+]
