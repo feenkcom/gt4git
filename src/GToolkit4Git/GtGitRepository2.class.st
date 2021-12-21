@@ -7,8 +7,7 @@ Class {
 		'headDescription',
 		'isModified',
 		'currentCommitMessage',
-		'repositoryModel',
-		'workingCopy'
+		'lepiterWorkingCopy'
 	],
 	#classVars : [
 		'RecentCommitMessage'
@@ -33,7 +32,7 @@ GtGitRepository2 >> currentCommitMessage [
 		currentCommitMessage := self recentCommitMessage asRopedText ]
 ]
 
-{ #category : #accessing }
+{ #category : #actions }
 GtGitRepository2 >> executeCommit: aCommitMessage [
 	|diff|
 	diff := self generateDiff.
@@ -44,19 +43,20 @@ GtGitRepository2 >> executeCommit: aCommitMessage [
 	Iceberg announcer announce: (IceRepositoryModified for: self repository).
 ]
 
-{ #category : #accessing }
+{ #category : #actions }
 GtGitRepository2 >> generateDiff [
-	| changes diff leftTree rightTree codeChanges tree mergedTree |
+	| lepiterChanges diff leftTree rightTree codeChanges tree mergedTree |
 	repository repositoryDirectory ifNil: [ ^ IceDiff new ].
 
-	
-	changes := self getDeltasTree.
-	diff := IceDiff new
-		        sourceVersion: workingCopy;
-		        targetVersion: repository workingCopy referenceCommit;
-		        yourself.
+	lepiterChanges := self getDeltasTree.
 	codeChanges := repository workingCopy changesTo:
 		               repository workingCopy referenceCommit.
+		
+	diff := IceDiff new
+		        sourceVersion: self lepiterWorkingCopy;
+		        targetVersion: repository workingCopy referenceCommit;
+		        yourself.
+	
 	leftTree := IceNode value: IceRootDefinition new.
 	codeChanges do: [ :aChange | 
 		aChange accept: (IceChangeImporter new
@@ -64,9 +64,9 @@ GtGitRepository2 >> generateDiff [
 				 diff: diff;
 				 parentNode: leftTree;
 				 yourself) ].
-	changes do: [ :aChange | 
+	lepiterChanges do: [ :aChange | 
 		aChange accept: (IceChangeImporter new
-				 version: workingCopy;
+				 version: self lepiterWorkingCopy;
 				 diff: diff;
 				 parentNode: leftTree;
 				 yourself) ].
@@ -77,7 +77,7 @@ GtGitRepository2 >> generateDiff [
 				 diff: diff;
 				 parentNode: rightTree;
 				 yourself) ].
-	changes do: [ :change | 
+	lepiterChanges do: [ :change | 
 		change accept: (IceChangeImporter new
 				 version: repository workingCopy referenceCommit;
 				 diff: diff;
@@ -96,27 +96,27 @@ GtGitRepository2 >> generateDiff [
 { #category : #accessing }
 GtGitRepository2 >> getDeltasTree [
 
-	| databases path uuid database |
+	| databases path uuid |
 	databases := OrderedDictionary new.
 	self repository getDeltas do: [ :delta | 
 		path := delta oldFile path.
 		"TODO ignore properties and attachment files for now"
 		(path basename = LepiterCoreDefaults databasePropertiesBasename or: [ 
 			 path parent parent basename = 'attachments' ]) ifFalse: [ 
-			database := LeDatabasesRegistry default defaultLogicalDatabase
-				            databases detect: [ :db | 
-				            db localStoreRootDirectory asPath = path parent ].
-			databases
-				at: database
-				update: [ :aList | aList , { delta } ]
-				initial: { delta } ] ].
+			LeDatabasesRegistry default defaultLogicalDatabase databases
+				detect: [ :db | db localStoreRootDirectory asPath = path parent ]
+				ifFound: [ :database | 
+					databases
+						at: database
+						update: [ :aList | aList , { delta } ]
+						initial: { delta } ] ] ].
 	^ databases keys collect: [ :key | 
 		  GtLepiterLocalDatabaseChange new
 			  database: key;
 			  pages: (databases at: key) ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 GtGitRepository2 >> gtActionFetchFor: anAction [
 	<gtAction>
 	self isMissing ifTrue: [ ^ anAction ].
@@ -129,7 +129,7 @@ GtGitRepository2 >> gtActionFetchFor: anAction [
 			aButton phlow fireUpdateWish ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 GtGitRepository2 >> gtActionPullFor: anAction [
 	<gtAction>
 	self isMissing ifTrue: [ ^ anAction ].
@@ -143,7 +143,7 @@ GtGitRepository2 >> gtActionPullFor: anAction [
 			aButton phlow fireUpdateWish ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 GtGitRepository2 >> gtActionPushFor: anAction [
 	<gtAction>
 	self isMissing ifTrue: [ ^ anAction ].
@@ -158,7 +158,7 @@ GtGitRepository2 >> gtActionPushFor: anAction [
 			aButton phlow fireUpdateWish ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 GtGitRepository2 >> gtActionRefreshFor: anAction [
 	<gtAction>
 	self isMissing ifTrue: [ ^ anAction ].
@@ -191,7 +191,7 @@ GtGitRepository2 >> gtActionRefreshFor: anAction [
 			aButton phlow fireUpdateWish ]. 
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 GtGitRepository2 >> gtActionRepairFor: anAction [
 	<gtAction>
 	self isMissing ifTrue: [ ^ anAction ].
@@ -203,12 +203,11 @@ GtGitRepository2 >> gtActionRepairFor: anAction [
 			GtGitRepositoryRepairStencil new repository:repository; dropdown: aDropdown ].
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 GtGitRepository2 >> gtChangesFor: aView [
-
 	<gtView>
 	| changes |
-	workingCopy ifNil: [ ^ aView empty ].
+	self lepiterWorkingCopy ifNil: [ ^ aView empty ].
 	changes := self changes.
 	(changes isNil or: [ changes isEmpty ]) ifTrue: [ ^ aView empty ].
 	^ aView tree
@@ -286,7 +285,7 @@ GtGitRepository2 >> gtChangesFor: aView [
 						  button } ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 GtGitRepository2 >> gtCommitsFor: aView [
 	<gtView>
 	self repository repositoryDirectory ifNil: [ ^ aView empty ].
@@ -296,7 +295,7 @@ GtGitRepository2 >> gtCommitsFor: aView [
 		view: #gtCommitsFor:
 ]
 
-{ #category : #accessing }
+{ #category : #printing }
 GtGitRepository2 >> gtDisplayOn: aStream [
 
 	self repository repositoryDirectory ifNil: [ 
@@ -307,21 +306,22 @@ GtGitRepository2 >> gtDisplayOn: aStream [
 	aStream nextPutAll: self repository repositoryDirectory pathString
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 GtGitRepository2 >> gtPackagesFor: aView [
 	<gtView>
 	^ self repository workingCopy 
-		ifNil: [ aView ]
-		ifNotNil: [ self repository workingCopy gtPackagesFor: aView ]
+		ifNil: [ aView empty ]
+		ifNotNil: [ 
+			self repository workingCopy gtPackagesFor: aView ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 GtGitRepository2 >> gtRepositoryDirectoryFor: aView [
 	<gtView>
 	^ (self repository gtRepositoryDirectoryFor: aView) priority: 40
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 GtGitRepository2 >> gtViewIncomingCommitsFor: aView [
 	<gtView>
 	| incomingCommits |
@@ -342,7 +342,7 @@ GtGitRepository2 >> gtViewIncomingCommitsFor: aView [
 			aButton phlow fireUpdateWish ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt-extensions' }
 GtGitRepository2 >> gtViewOutgoingCommitsFor: aView [
 	<gtView>
 	| outgoingCommits |
@@ -368,21 +368,26 @@ GtGitRepository2 >> headDescription [
 
 { #category : #accessing }
 GtGitRepository2 >> incomingCommits [
- ^ repositoryModel incomingCommits
+	^ repository incomingCommits
 ]
 
-{ #category : #accessing }
+{ #category : #testing }
 GtGitRepository2 >> isMissing [
 ^ self repository repositoryDirectory isNil 
 		or: [ self repository repositoryDirectory exists not ]
 ]
 
-{ #category : #accessing }
+{ #category : #testing }
 GtGitRepository2 >> isModified [
 	^ self repository isModified or: [ self repository isDirty ]
 ]
 
-{ #category : #initialization }
+{ #category : #accessing }
+GtGitRepository2 >> lepiterWorkingCopy [
+	^ lepiterWorkingCopy
+]
+
+{ #category : #actions }
 GtGitRepository2 >> load [
 	self status.
 	self headDescription.
@@ -396,10 +401,10 @@ GtGitRepository2 >> name [
 
 { #category : #accessing }
 GtGitRepository2 >> outgoingCommits [
- ^ repositoryModel outgoingCommits
+	^ repository outgoingCommits
 ]
 
-{ #category : #accessing }
+{ #category : #actions }
 GtGitRepository2 >> pull [
 ]
 
@@ -423,18 +428,19 @@ GtGitRepository2 >> repository [
 { #category : #accessing }
 GtGitRepository2 >> repository: anIceRepository [
 	repository := anIceRepository.
-	repositoryModel := IceTipRepositoryModel on: repository.
-	workingCopy := GtLepiterWorkingCopy new repository: anIceRepository; updateDatabases.
+	lepiterWorkingCopy := GtLepiterWorkingCopy new 
+		repository: anIceRepository; 
+		updateDatabases.
 ]
 
-{ #category : #initialization }
+{ #category : #actions }
 GtGitRepository2 >> reset [
 	status := nil.
 	headDescription := nil.
 	isModified := nil
 ]
 
-{ #category : #accessing }
+{ #category : #actions }
 GtGitRepository2 >> resetCurrentCommitMessage [
 	currentCommitMessage := nil
 ]

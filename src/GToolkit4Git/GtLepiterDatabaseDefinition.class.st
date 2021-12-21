@@ -28,7 +28,7 @@ GtLepiterDatabaseDefinition >> databaseId: anObject [
 
 { #category : #accessing }
 GtLepiterDatabaseDefinition >> icon [
-	^ LeIcons lepiterDatabase  create   asSpartaForm
+	^ LeIcons lepiterDatabase create asSpartaForm
 ]
 
 { #category : #accessing }
