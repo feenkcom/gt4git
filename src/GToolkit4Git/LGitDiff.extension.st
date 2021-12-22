@@ -2,15 +2,26 @@ Extension { #name : #LGitDiff }
 
 { #category : #'*GToolkit4Git' }
 LGitDiff >> diffTreeToWorkdir: tree inRepo: repo [
-	^ self diff_tree_to_workdir: tree in_repo: repo
+	^ self 
+		diffTreeToWorkdir: tree 
+		inRepo: repo 
+		options: LGitDiffOptions defaults
 ]
 
 { #category : #'*GToolkit4Git' }
-LGitDiff >> diff_tree_to_workdir: tree in_repo: repo [
-	
+LGitDiff >> diffTreeToWorkdir: tree inRepo: repo options: anLGitDiffOptions [
+	^ self 
+		diff_tree_to_workdir: tree 
+		in_repo: repo 
+		opts: anLGitDiffOptions
+]
+
+{ #category : #'*GToolkit4Git' }
+LGitDiff >> diff_tree_to_workdir: tree in_repo: repo opts: opts [
+	 
 	^ self
 		ffiCall:
-			#(LGitReturnCodeEnum git_diff_tree_to_workdir_with_index #(LGitDiff * self , LGitRepository repo , LGitTree tree , NULL))
+			#(LGitReturnCodeEnum git_diff_tree_to_workdir_with_index #(LGitDiff * self , LGitRepository repo , LGitTree tree , LGitDiffOptions * opts))
 		options: #()
 ]
 
