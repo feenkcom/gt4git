@@ -131,6 +131,16 @@ GtLepiterWorkingCopy >> lepiterChangesTo: aCommitish [
 ]
 
 { #category : #accessing }
+GtLepiterWorkingCopy >> project [
+	^ self icebergWorkingCopy project
+]
+
+{ #category : #accessing }
+GtLepiterWorkingCopy >> properties [
+	^ self icebergWorkingCopy properties
+]
+
+{ #category : #accessing }
 GtLepiterWorkingCopy >> referenceCommit [
 	^ self icebergWorkingCopy referenceCommit
 ]
