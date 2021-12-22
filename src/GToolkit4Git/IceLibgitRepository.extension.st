@@ -76,6 +76,7 @@ IceLibgitRepository >> gtRepositoryDirectoryFor: aView [
 						  ifFalse: [ BrGlamorousIcons accept ] ] ];
 		  column: 'Actions' translated stencil: [ :each | 
 			  | relative |
+			  
 			  relative := each relativeTo: self repositoryDirectory.
 			  ((status includesKey: relative pathString) and: [ 
 					   (status at: relative pathString) = LGitStatusEnum git_status_wt_new ]) 

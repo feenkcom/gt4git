@@ -163,7 +163,7 @@ GtGitRepository2 >> gtChangesFor: aView [
 						   c linear horizontal alignCenter ]);
 				  addChild: (BrLabel new
 						   aptitude: BrGlamorousLabelAptitude;
-						   text: anIceNode key asString asRopedText;
+						   text: anIceNode value name asString asRopedText;
 						   padding: (BlInsets
 								    top: 0
 								    left: 6
