@@ -3,8 +3,12 @@ Extension { #name : #IceLibgitRepository }
 { #category : #'*GToolkit4Git' }
 IceLibgitRepository >> getDeltas [
 
-	^ (handle getDeltasFromHead: self head) collect: [ :delta | 
-		  GtGitDelta from: delta in: self ]
+	^ (handle 
+		getDeltasFromHead: self head
+		options: (LGitDiffOptions defaults
+			prim_flags: LGitDiffOptionTypeEnum git_diff_include_untracked value)) 
+				collect: [ :delta | 
+					GtGitDelta from: delta in: self ]
 ]
 
 { #category : #'*GToolkit4Git' }
