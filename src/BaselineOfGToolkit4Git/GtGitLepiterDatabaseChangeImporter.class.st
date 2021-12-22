@@ -10,16 +10,12 @@ Class {
 
 { #category : #accessing }
 GtGitLepiterDatabaseChangeImporter >> createDatabaseNodeOn: aParentNode [
-
 	| databaseDefinition |
 	databaseDefinition := GtLepiterDatabaseDefinition new
-		                      name:
-			                      lepiterDatabaseChange database databaseName;
-		                      databaseId:
-			                      lepiterDatabaseChange database uuid;
-		                      localRootRelativePath: (RelativePath with:
-					                       lepiterDatabaseChange database
-						                       localStoreRootDirectory basename).
+		name: lepiterDatabaseChange database databaseName;
+		databaseId: lepiterDatabaseChange database uuid;
+		localRootRelativePath: (RelativePath with:
+			lepiterDatabaseChange database localStoreRootDirectory basename).
 	^ aParentNode addChild: databaseDefinition
 ]
 

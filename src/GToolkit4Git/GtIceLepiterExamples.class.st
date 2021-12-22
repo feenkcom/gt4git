@@ -8,7 +8,7 @@ Class {
 	#category : #'GToolkit4Git-Lepiter-Examples'
 }
 
-{ #category : #examples }
+{ #category : #assertions }
 GtIceLepiterExamples >> assertAddedPageNode: aNode forPage: aPage [
 	| operation definition |
 	self 
@@ -23,27 +23,27 @@ GtIceLepiterExamples >> assertAddedPageNode: aNode forPage: aPage [
 	self assert: definition name equals: aPage title.
 ]
 
-{ #category : #examples }
+{ #category : #assertions }
 GtIceLepiterExamples >> assertDatabaseNode: aNode forDatabase: aDatabase withChildrenCount: anInteger [ 
 	| operation definition |
 	self 
 		assertNode: aNode 
-		withKey: aDatabase databaseName
+		withKey: aDatabase localStoreRootDirectory basename
 		withChildrenCount: anInteger.
 	
 	operation := aNode value .
 	self assert: operation isNoModification.
 	self assert: operation name equals: aDatabase databaseName.
-	self assert: operation key equals:  aDatabase databaseName.
+	self assert: operation key equals:  aDatabase localStoreRootDirectory basename.
 	
 	definition := operation definition.
 	self assert: definition name equals: aDatabase databaseName.
-	self assert: definition key equals:  aDatabase databaseName.
+	self assert: definition key equals:  aDatabase localStoreRootDirectory basename.
 	self assert: definition databaseId notNil.
 	self assert: definition class equals: GtLepiterDatabaseDefinition.
 ]
 
-{ #category : #examples }
+{ #category : #assertions }
 GtIceLepiterExamples >> assertDiff: diff withChildrenCount: aChildrenCount andFullCount: allChildrenCount [
 
 	self assert: diff isEmpty not.
@@ -52,13 +52,13 @@ GtIceLepiterExamples >> assertDiff: diff withChildrenCount: aChildrenCount andFu
 	self assert: diff tree children size equals: aChildrenCount
 ]
 
-{ #category : #examples }
+{ #category : #assertions }
 GtIceLepiterExamples >> assertNode: aNode withKey: aKey withChildrenCount: anInteger [ 
 	self assert: aNode key equals: aKey.
 	self assert: aNode children size equals: anInteger.
 ]
 
-{ #category : #examples }
+{ #category : #assertions }
 GtIceLepiterExamples >> assertPagesNode: aPagesNode withChildrenCount: anInteger [ 
 	| operation |
 	self 
@@ -147,11 +147,11 @@ GtIceLepiterExamples >> detachLepiterDatabases [
 	self lepiterDatabases removeAll.
 ]
 
-{ #category : #accessing }
+{ #category : #examples }
 GtIceLepiterExamples >> gitRepositoryACommitNewAddedPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
-	| gtIceRepository targetDatabase newPage diff databaseNode pagesNode |
+	| gtIceRepository |
 	gtIceRepository := self gitRepositoryAWithNewAddedPage.
 	
 	gtIceRepository executeCommit: 'Add Page1'.

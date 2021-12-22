@@ -32,6 +32,13 @@ GtLepiterDatabaseDefinition >> icon [
 ]
 
 { #category : #accessing }
+GtLepiterDatabaseDefinition >> key [
+	"The key is used by {{gtClass:IceNode}} to compute the path, so we use the
+	folder name. For now it should be a single folder."
+	^ self localRootRelativePath fullName
+]
+
+{ #category : #accessing }
 GtLepiterDatabaseDefinition >> localRootRelativePath [
 	^ localRootRelativePath
 ]
