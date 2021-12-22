@@ -5,21 +5,17 @@ Class {
 		'version',
 		'lepiterDatabaseChange'
 	],
-	#category : #'BaselineOfGToolkit4Git-Changes'
+	#category : #'GToolkit4Git-Lepiter'
 }
 
 { #category : #accessing }
 GtGitLepiterDatabaseChangeImporter >> createDatabaseNodeOn: aParentNode [
-
 	| databaseDefinition |
 	databaseDefinition := GtLepiterDatabaseDefinition new
-		                      name:
-			                      lepiterDatabaseChange database databaseName;
-		                      databaseId:
-			                      lepiterDatabaseChange database uuid;
-		                      localRootRelativePath: (RelativePath with:
-					                       lepiterDatabaseChange database
-						                       localStoreRootDirectory basename).
+		name: lepiterDatabaseChange database databaseName;
+		databaseId: lepiterDatabaseChange database uuid;
+		localRootRelativePath: (RelativePath with:
+			lepiterDatabaseChange database localStoreRootDirectory basename).
 	^ aParentNode addChild: databaseDefinition
 ]
 
@@ -54,7 +50,6 @@ GtGitLepiterDatabaseChangeImporter >> importOn: aParentNode [
 
 { #category : #accessing }
 GtGitLepiterDatabaseChangeImporter >> importPageDefinitionsOn: databaseNode [
-
 	| pagesDefinition pagesNode |
 	pagesDefinition := GtLepiterPagesDefinition new.
 	pagesNode := databaseNode addChild: pagesDefinition.
@@ -63,12 +58,13 @@ GtGitLepiterDatabaseChangeImporter >> importPageDefinitionsOn: databaseNode [
 		fileReference := version resolveDelta: aPageChange delta.
 		fileReference exists ifTrue: [ 
 			contents := fileReference contents.
-			page := LeJsonV4 uniqueInstance deserialize:
-				        fileReference readStream.
+			page := LeJsonV4 uniqueInstance 
+				deserialize: fileReference readStream.
 			pageDefinition := GtLepiterPageDefinition new
-				                  name: page title;
-				                  pageUuid: page uid;
-				                  pageContents: contents.
+				name: page title;
+				fileName: fileReference basename;
+				pageUuid: page uid;
+				pageContents: contents.
 			pagesNode addChild: pageDefinition ] ]
 ]
 

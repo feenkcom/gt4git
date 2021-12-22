@@ -3,7 +3,9 @@ Class {
 	#superclass : #GtLepiterDefinition,
 	#instVars : [
 		'pageUuid',
-		'pageContents'
+		'pageTitle',
+		'pageContents',
+		'fileName'
 	],
 	#category : #'GToolkit4Git-Lepiter'
 }
@@ -12,7 +14,8 @@ Class {
 GtLepiterPageDefinition >> = anotherDefinition [
 
 	^ super = anotherDefinition
-		and: [ self pageContents = anotherDefinition pageContents ]
+		and: [ self pageUuid = anotherDefinition pageUuid	 
+			and: [ self pageContents = anotherDefinition pageContents ] ]
 ]
 
 { #category : #visiting }
@@ -24,6 +27,18 @@ GtLepiterPageDefinition >> accept: aVisitor [
 { #category : #accessing }
 GtLepiterPageDefinition >> contents [
 	^ self pageContents
+]
+
+{ #category : #accessing }
+GtLepiterPageDefinition >> fileName [
+
+	^ fileName
+]
+
+{ #category : #accessing }
+GtLepiterPageDefinition >> fileName: anObject [
+
+	fileName := anObject
 ]
 
 { #category : #'gt-extensions' }
@@ -39,8 +54,14 @@ GtLepiterPageDefinition >> gtViewJsonContentsFor: aView [
 
 { #category : #comparing }
 GtLepiterPageDefinition >> hash [
-	^ super hash 
+	^ (super hash 
+		bitXor: self pageUuid)
 		bitXor: self pageContents hash
+]
+
+{ #category : #accessing }
+GtLepiterPageDefinition >> key [
+	^ self fileName
 ]
 
 { #category : #accessing }
@@ -51,6 +72,18 @@ GtLepiterPageDefinition >> pageContents [
 { #category : #accessing }
 GtLepiterPageDefinition >> pageContents: aString [
 	pageContents := aString
+]
+
+{ #category : #accessing }
+GtLepiterPageDefinition >> pageTitle [
+
+	^ pageTitle
+]
+
+{ #category : #accessing }
+GtLepiterPageDefinition >> pageTitle: anObject [
+
+	pageTitle := anObject
 ]
 
 { #category : #accessing }
