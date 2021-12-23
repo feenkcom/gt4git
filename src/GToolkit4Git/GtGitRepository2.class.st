@@ -38,11 +38,6 @@ GtGitRepository2 >> executeCommit: aCommitMessage [
 	Iceberg announcer announce: (IceRepositoryModified for: self repository).
 ]
 
-{ #category : #accessing }
-GtGitRepository2 >> getDeltasTree [
-	^ self lepiterWorkingCopy getDeltasTree
-]
-
 { #category : #'gt-extensions' }
 GtGitRepository2 >> gtActionFetchFor: anAction [
 	<gtAction>

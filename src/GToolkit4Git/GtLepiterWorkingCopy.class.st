@@ -14,12 +14,29 @@ GtLepiterWorkingCopy >> canRevertChanges [
 	^ true
 ]
 
-{ #category : #accessing }
+{ #category : #'API - changes' }
 GtLepiterWorkingCopy >> changesTo: aCommitish [
 	| lepiterChanges codeChanges |
 	lepiterChanges := self lepiterChangesTo: aCommitish.
-	codeChanges := self icebergWorkingCopy changesTo: aCommitish.
+	codeChanges := self codeChangesTo: aCommitish.
 	^ lepiterChanges asArray, codeChanges asArray
+]
+
+{ #category : #accessing }
+GtLepiterWorkingCopy >> changesToHeadUsingIndex [
+	"Determine the changes between the current head commit of the repository and
+	the working directory, by relying on the index."
+	| changesBuilder |
+	changesBuilder := GtGitLepiterChangesFromDeltasBuilder new
+		databases: self databases;
+		icebergRepository: self repository.
+	
+	^ changesBuilder changesFromDeltas: self repository getDeltasForFullDiff 
+]
+
+{ #category : #'API - changes' }
+GtLepiterWorkingCopy >> codeChangesTo: aCommitish [
+	^ self icebergWorkingCopy changesTo: aCommitish
 ]
 
 { #category : #accessing }
@@ -55,19 +72,18 @@ GtLepiterWorkingCopy >> discardChanges: aTree [
 
 { #category : #accessing }
 GtLepiterWorkingCopy >> fileSystem [
-	^ FileSystem disk
+	^ self icebergWorkingCopy fileSystem
 ]
 
 { #category : #accessing }
 GtLepiterWorkingCopy >> getDeltasTree [
-
-	| changedDatabases path changedDatabaseAttachments |
+	| changedDatabases path |
 	changedDatabases := Dictionary new.
 	self databases do: [ :database | 
 		changedDatabases
 			at: database
 			put: (GtLepiterLocalDatabaseChange new database: database) ].
-	self repository getDeltas do: [ :delta | 
+	self repository getDeltasForFullDiff do: [ :delta | 
 		path := delta oldFile path.
 		"TODO ignore properties for now"
 		path basename = LepiterCoreDefaults databasePropertiesBasename 
@@ -125,7 +141,7 @@ GtLepiterWorkingCopy >> lepiterChangesStragegy: aStragegy [
 	aStragegy workingCopy: self.
 ]
 
-{ #category : #accessing }
+{ #category : #'API - changes' }
 GtLepiterWorkingCopy >> lepiterChangesTo: aCommitish [
 	^ self lepiterChangesStragegy changesTo: aCommitish
 ]
