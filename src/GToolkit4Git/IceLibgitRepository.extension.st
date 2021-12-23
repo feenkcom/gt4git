@@ -8,7 +8,8 @@ IceLibgitRepository >> getDeltasForFullDiff [
 	^ (handle 
 		getDeltasFromHead: self head
 		options: (LGitDiffOptions defaults
-			prim_flags: LGitDiffOptionTypeEnum git_diff_include_untracked value)) 
+			prim_flags: (LGitDiffOptionTypeEnum git_diff_include_untracked value 
+				bitXor: LGitDiffOptionTypeEnum git_diff_recurse_untracked_dirs value))) 
 				collect: [ :delta | 
 					GtGitDelta from: delta in: self ]
 ]
