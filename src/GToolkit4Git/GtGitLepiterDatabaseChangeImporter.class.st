@@ -10,39 +10,93 @@ Class {
 
 { #category : #accessing }
 GtGitLepiterDatabaseChangeImporter >> createDatabaseNodeOn: aParentNode [
-	| databaseDefinition |
+	| databaseDefinition databaseNode |
 	databaseDefinition := GtLepiterDatabaseDefinition new
 		name: lepiterDatabaseChange database databaseName;
 		databaseId: lepiterDatabaseChange database uuid;
 		localRootRelativePath: (RelativePath with:
 			lepiterDatabaseChange database localStoreRootDirectory basename).
-	^ aParentNode addChild: databaseDefinition
+	
+	databaseNode	 := aParentNode addChild: databaseDefinition.
+	lepiterDatabaseChange propertiesFile ifNotNil: [
+		| fileReference |
+		fileReference := version resolveDelta: lepiterDatabaseChange propertiesFile delta.
+		fileReference exists ifTrue: [
+			databaseNode addChild: (GtLepiterDatabasePropertiesDefinition new
+				name: fileReference basename;
+				fileName: fileReference basename;
+				fileContents: fileReference contents) ] ].
+		
+	^ databaseNode
+]
+
+{ #category : #accessing }
+GtGitLepiterDatabaseChangeImporter >> importAttachmentDefinitionFor: anAttachmentChange on: anAttachmentsNode [
+	| attachmentDefinition attachmentNode |
+		
+	attachmentDefinition := GtLepiterAttachmentDefinition new 
+		name: anAttachmentChange uuidString.
+	attachmentNode := anAttachmentsNode addChild: attachmentDefinition.
+	
+	anAttachmentChange propertiesChange ifNotNil: [
+		self 
+			importAttachmentPropertiesDefinitionFor: anAttachmentChange propertiesChange 
+			on: attachmentNode ].
+	anAttachmentChange fileChanges do: [ :aFileChange | 
+		self 
+			importAttachmentFileDefinitionFor: aFileChange 
+			on: attachmentNode ].
 ]
 
 { #category : #accessing }
 GtGitLepiterDatabaseChangeImporter >> importAttachmentDefinitionsOn: databaseNode [
-
 	| attachmentsDefinition attachmentsNode |
 	attachmentsDefinition := GtLepiterAttachmentsDefinition new.
 	attachmentsNode := databaseNode addChild: attachmentsDefinition.
-	lepiterDatabaseChange attachments do: [ :attachmentChange | 
-		| fileReference attachmentDefinition contents attachmentNode |
-		fileReference := version resolveDelta: attachmentChange delta.
-		attachmentDefinition := GtLepiterAttachmentDefinition new name: fileReference parent basename.
-		attachmentNode := attachmentsNode addChild: attachmentDefinition.
-		fileReference exists ifTrue: [ 
-			contents := fileReference gtBinaryContents.
-			attachmentDefinition := GtLepiterAttachmentFileDefinition new
-				                        name: fileReference basename;
-				                        fileName: fileReference basename;
-				                        binaryContents: contents.
-			attachmentNode addChild: attachmentDefinition ] ]
+	(lepiterDatabaseChange attachments 
+		select: [ :anAttachmentChange | 
+			(version fileSystem resolve: anAttachmentChange path) exists ])
+		do: [ :anAttachmentChange | 
+		anAttachmentChange isUntracked 
+			ifTrue: [
+				self 
+					importUntrackedAttachmentDefinitionFor: anAttachmentChange 
+					on: attachmentsNode   ]
+			ifFalse: [ 
+				self 
+					importAttachmentDefinitionFor: anAttachmentChange 
+					on: attachmentsNode ] ]
+]
+
+{ #category : #accessing }
+GtGitLepiterDatabaseChangeImporter >> importAttachmentFileDefinitionFor: aFileChange on: anAttachmentNode [
+	| fileReference attachmentFileDefinition |
+	fileReference := version resolveDelta: aFileChange delta.
+	fileReference exists ifFalse: [ ^ self ].
+	
+	attachmentFileDefinition := GtLepiterAttachmentFileDefinition new
+		name: fileReference basename;
+		fileName: fileReference basename;
+		binaryContents: fileReference gtBinaryContents.
+	anAttachmentNode addChild: attachmentFileDefinition
+]
+
+{ #category : #accessing }
+GtGitLepiterDatabaseChangeImporter >> importAttachmentPropertiesDefinitionFor: aPropertiesFileChange on: anAttachmentNode [ 
+	| fileReference attachmentFileDefinition |
+	fileReference := version resolveDelta: aPropertiesFileChange delta.
+	fileReference exists ifFalse: [ ^ self ].
+	
+	attachmentFileDefinition := GtLepiterAttachmentPropertiesDefinition new
+		name: fileReference basename;
+		fileName: fileReference basename;
+		fileContents: fileReference contents.
+	anAttachmentNode addChild: attachmentFileDefinition
 ]
 
 { #category : #accessing }
 GtGitLepiterDatabaseChangeImporter >> importOn: aParentNode [
-
-	| databaseSnapshot databaseNode |
+	| databaseNode |
 	databaseNode := self createDatabaseNodeOn: aParentNode.
 	self importPageDefinitionsOn: databaseNode.
 	self importAttachmentDefinitionsOn: databaseNode
@@ -66,6 +120,35 @@ GtGitLepiterDatabaseChangeImporter >> importPageDefinitionsOn: databaseNode [
 				pageUuid: page uid;
 				pageContents: contents.
 			pagesNode addChild: pageDefinition ] ]
+]
+
+{ #category : #accessing }
+GtGitLepiterDatabaseChangeImporter >> importUntrackedAttachmentDefinitionFor: anAttachmentChange on: anAttachmentsNode [
+	| attachmentDefinition attachmentNode folderReference |
+		
+	folderReference := version resolveDelta: anAttachmentChange delta.
+	folderReference exists ifFalse: [ ^ self ].
+	
+	attachmentDefinition := GtLepiterAttachmentDefinition new 
+		name: anAttachmentChange uuidString.
+	attachmentNode := anAttachmentsNode addChild: attachmentDefinition.
+	
+	folderReference files do: [ :aFileReference |
+		| attachmentFileDefinition |
+		
+		attachmentFileDefinition := aFileReference basename = LeAttachment basename 
+			ifTrue: [ 
+				GtLepiterAttachmentPropertiesDefinition new
+					name: aFileReference basename;
+					fileName: aFileReference basename;
+					fileContents: aFileReference contents. ]
+			ifFalse: [
+				GtLepiterAttachmentFileDefinition new
+					name: aFileReference basename;
+					fileName: aFileReference basename;
+					binaryContents: aFileReference gtBinaryContents ].
+		
+		attachmentNode addChild: attachmentFileDefinition ]
 ]
 
 { #category : #accessing }

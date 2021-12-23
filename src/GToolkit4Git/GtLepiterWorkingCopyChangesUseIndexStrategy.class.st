@@ -6,5 +6,5 @@ Class {
 
 { #category : #'API - changes' }
 GtLepiterWorkingCopyChangesUseIndexStrategy >> changesTo: aCommitish [
-	^ self workingCopy  getDeltasTree
+	^ self workingCopy  changesToHeadUsingIndex
 ]

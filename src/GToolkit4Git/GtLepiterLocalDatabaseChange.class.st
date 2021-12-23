@@ -3,6 +3,7 @@ Class {
 	#superclass : #IceChange,
 	#instVars : [
 		'database',
+		'propertiesFile',
 		'pages',
 		'attachments'
 	],
@@ -80,4 +81,16 @@ GtLepiterLocalDatabaseChange >> printOn: aStream [
 		<< '(';
 		<< self database databaseName;
 		<< ')' 	
+]
+
+{ #category : #accessing }
+GtLepiterLocalDatabaseChange >> propertiesFile [
+
+	^ propertiesFile
+]
+
+{ #category : #accessing }
+GtLepiterLocalDatabaseChange >> propertiesFile: anObject [
+
+	propertiesFile := anObject
 ]

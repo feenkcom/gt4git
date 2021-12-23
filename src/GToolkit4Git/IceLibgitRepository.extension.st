@@ -1,7 +1,9 @@
 Extension { #name : #IceLibgitRepository }
 
 { #category : #'*GToolkit4Git' }
-IceLibgitRepository >> getDeltas [
+IceLibgitRepository >> getDeltasForFullDiff [
+	"Return the deltas including untracked files.
+	This makes it possible to create a full diff of what changed."
 
 	^ (handle 
 		getDeltasFromHead: self head

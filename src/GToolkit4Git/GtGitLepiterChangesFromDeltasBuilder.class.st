@@ -1,0 +1,178 @@
+Class {
+	#name : #GtGitLepiterChangesFromDeltasBuilder,
+	#superclass : #Object,
+	#instVars : [
+		'icebergRepository',
+		'databases'
+	],
+	#category : #'GToolkit4Git-Lepiter'
+}
+
+{ #category : #'as yet unclassified' }
+GtGitLepiterChangesFromDeltasBuilder >> changesForDeltasByDatabase: deltasByDatabase [
+	^ deltasByDatabase associations collect: [ :anAssociation |
+			| databaseChange |
+			databaseChange := GtLepiterLocalDatabaseChange new 
+				database: anAssociation key.
+			self 
+				importChangesFromDeltas: anAssociation value
+				intoDatabaseChange: databaseChange.
+			databaseChange ]
+]
+
+{ #category : #'as yet unclassified' }
+GtGitLepiterChangesFromDeltasBuilder >> changesFromDeltas: aDeltasCollection [
+	| deltasByDatabase normalFileDeltas |
+	
+	"First analyse the deltas and group them deltas for specific databases,
+	and deltas for normal files"
+	deltasByDatabase := OrderedDictionary new.
+	normalFileDeltas := OrderedCollection new.
+	
+	aDeltasCollection do: [ :aDelta |
+		| targetGroup |
+		targetGroup := self databases 
+			detect: [ :aDatabase | 
+				aDelta newFileRelative beginsWith: (aDatabase localStoreRootDirectory asFileReference path 
+					relativeTo: icebergRepository repositoryDirectory) fullName ] 
+			ifFound: [ :aDatabase |
+				deltasByDatabase 
+					at: aDatabase
+					ifAbsentPut: [ OrderedCollection new ] ]
+			ifNone: [ normalFileDeltas ].
+		targetGroup add: aDelta ].
+	
+	^ self changesForDeltasByDatabase: deltasByDatabase
+	"self changesForFileDeltas: normalFileDeltas"
+		
+	
+]
+
+{ #category : #accessing }
+GtGitLepiterChangesFromDeltasBuilder >> databases [
+
+	^ databases
+]
+
+{ #category : #accessing }
+GtGitLepiterChangesFromDeltasBuilder >> databases: anObject [
+
+	databases := anObject
+]
+
+{ #category : #accessing }
+GtGitLepiterChangesFromDeltasBuilder >> icebergRepository [
+
+	^ icebergRepository
+]
+
+{ #category : #accessing }
+GtGitLepiterChangesFromDeltasBuilder >> icebergRepository: anObject [
+
+	icebergRepository := anObject
+]
+
+{ #category : #accessing }
+GtGitLepiterChangesFromDeltasBuilder >> importAttachmentDelta: aDelta intoDatabaseChange: aDatabaseChange [ 
+	| attachmentPath uuidString attachmentChange |
+	attachmentPath := RelativePath with: aDelta newFileRelative.
+	uuidString := (aDelta newFileRelative endsWith: '/')
+		ifTrue: [ attachmentPath basename ]
+		ifFalse: [ attachmentPath parent basename ].
+	attachmentChange := aDatabaseChange attachments 
+		detect: [ :anAttachmentChange | 
+			anAttachmentChange uuidString = uuidString ]
+		ifNone: [ 
+			| newAttachmentChange |
+			newAttachmentChange := GtLepiterLocalAttachmentChange new 
+				uuidString: uuidString.
+			aDatabaseChange addAttachment: newAttachmentChange.
+			newAttachmentChange	 ].
+	
+	(aDelta newFileRelative endsWith: '/')
+		ifTrue: [ 
+			attachmentChange
+				path: attachmentPath; 
+				delta: aDelta.
+			
+			^ self ].
+	
+	attachmentChange path: attachmentPath parent.
+	attachmentPath basename = LeAttachment basename ifTrue: [
+		^ attachmentChange propertiesChange:  (GtLepiterLocalAttachmentPropertiesFileChange new 
+			path: attachmentPath; 
+			delta: aDelta) ].
+	
+	attachmentChange addFileChange: (GtLepiterLocalAttachmentFileChange new 
+		path: attachmentPath; 
+		delta: aDelta)
+]
+
+{ #category : #'as yet unclassified' }
+GtGitLepiterChangesFromDeltasBuilder >> importChangesFromDelta: aDelta intoDatabaseChange: aDatabaseChange [
+	(self isPageDelta: aDelta forDatabase: aDatabaseChange database) ifTrue: [
+		^ self importPageDelta: aDelta intoDatabaseChange: aDatabaseChange ].
+	
+	(self isAttachmentDelta: aDelta forDatabase: aDatabaseChange database) ifTrue: [
+		^ self importAttachmentDelta: aDelta intoDatabaseChange: aDatabaseChange ].
+	(self isDatabasePropertiesDelta: aDelta forDatabase: aDatabaseChange database) ifTrue: [
+		^ self 
+			importDatabasePropertiesDelta: aDelta 
+			intoDatabaseChange: aDatabaseChange ].
+		
+	"Error signal: 'Unknown Delta'."
+]
+
+{ #category : #'as yet unclassified' }
+GtGitLepiterChangesFromDeltasBuilder >> importChangesFromDeltas: aCollectionOfDeltas intoDatabaseChange: aDatabaseChange [
+	aCollectionOfDeltas do: [ :aDelta |
+		self 
+			importChangesFromDelta: aDelta 
+			intoDatabaseChange: aDatabaseChange ]
+]
+
+{ #category : #accessing }
+GtGitLepiterChangesFromDeltasBuilder >> importDatabasePropertiesDelta: aDelta intoDatabaseChange: aDatabaseChange [ 
+	aDatabaseChange propertiesFile: (GtLepiterLocalDatabasePropertiesFileChange new 
+		path: (RelativePath with: aDelta newFileRelative); 
+		delta: aDelta)
+]
+
+{ #category : #accessing }
+GtGitLepiterChangesFromDeltasBuilder >> importPageDelta: aDelta intoDatabaseChange: aDatabaseChange [ 
+	aDatabaseChange addPage: (GtLepiterLocalPageChange new 
+		path: (RelativePath with: aDelta newFileRelative); 
+		delta: aDelta)
+]
+
+{ #category : #testing }
+GtGitLepiterChangesFromDeltasBuilder >> isAttachmentDelta: aDelta forDatabase: aDatabase [
+	| attachmentPath |
+	
+	attachmentPath := RelativePath with: aDelta newFileRelative.
+	^  ((self relativePathForDatabase: aDatabase) / 'attachments') contains: attachmentPath 
+]
+
+{ #category : #testing }
+GtGitLepiterChangesFromDeltasBuilder >> isDatabasePropertiesDelta: aDelta forDatabase:  aDatabase [
+	| filePath |
+	
+	filePath := RelativePath with: aDelta newFileRelative.
+	^ (filePath parent = (self relativePathForDatabase: aDatabase))
+			and: [ filePath basename = LepiterCoreDefaults databasePropertiesBasename ]
+]
+
+{ #category : #testing }
+GtGitLepiterChangesFromDeltasBuilder >> isPageDelta: aDelta forDatabase: aDatabase [
+	| pagePath |
+	
+	pagePath := RelativePath with: aDelta newFileRelative.
+	^ (pagePath parent = (self relativePathForDatabase: aDatabase))
+			and: [ pagePath basename endsWith: '.lepiter' ]
+]
+
+{ #category : #accessing }
+GtGitLepiterChangesFromDeltasBuilder >> relativePathForDatabase: aDatabase [
+	^ aDatabase localStoreRootDirectory asFileReference path 
+			relativeTo: icebergRepository repositoryDirectory
+]
