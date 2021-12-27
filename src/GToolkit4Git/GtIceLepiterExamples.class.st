@@ -166,8 +166,13 @@ GtIceLepiterExamples >> createBasicIcebergRepositoryWithName: repositoryName [
 	| iceRepository reposioryFolder |
 	
 	reposioryFolder := (FileLocator localDirectory / #gt4git / repositoryName) asFileReference.
-	self assert: reposioryFolder exists not.
-	self assert: (IceRepository registry anySatisfy: [ :aRepo | aRepo name = repositoryName ]) not.
+	self 
+		assert: reposioryFolder exists not 
+		description: 'Repository does not exist'.
+	self 
+		assert: (IceRepository registry 
+			anySatisfy: [ :aRepo | aRepo name = repositoryName ]) not
+		description: 'Repository is not registered'.
 	
 	iceRepository := IceRepositoryCreator new
 		location: reposioryFolder;
@@ -182,8 +187,8 @@ GtIceLepiterExamples >> createBasicIcebergRepositoryWithName: repositoryName [
 	IceRepository registerRepository: iceRepository. 
 	
 	"Ensure the repo was creates successfully"
-	self assert: iceRepository isMissing not.
-	self assert: iceRepository isModified not.
+	self assert: iceRepository isMissing not description: 'Repository is present'.
+	self assert: iceRepository isModified not description: 'Repository is not modified'.
 	self assert: iceRepository branch name equals: 'master'.
 	self assert: iceRepository branch commits size equals: 1.
 	
