@@ -20,11 +20,11 @@ GtGitLepiterChangesFromDeltasBuilder >> changesForDeltasByDatabase: deltasByData
 			databaseChange ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #api }
 GtGitLepiterChangesFromDeltasBuilder >> changesFromDeltas: aDeltasCollection [
 	| deltasByDatabase normalFileDeltas |
 	
-	"First analyse the deltas and group them deltas for specific databases,
+	"First analyse the deltas and group the deltas for specific databases,
 	and deltas for normal files"
 	deltasByDatabase := OrderedDictionary new.
 	normalFileDeltas := OrderedCollection new.
@@ -33,8 +33,9 @@ GtGitLepiterChangesFromDeltasBuilder >> changesFromDeltas: aDeltasCollection [
 		| targetGroup |
 		targetGroup := self databases 
 			detect: [ :aDatabase | 
-				aDelta newFileRelative beginsWith: (aDatabase localStoreRootDirectory asFileReference path 
-					relativeTo: icebergRepository repositoryDirectory) fullName ] 
+				| filePath |
+				filePath := RelativePath with: aDelta newFileRelative.
+				(self relativePathForDatabase: aDatabase) contains: filePath ] 
 			ifFound: [ :aDatabase |
 				deltasByDatabase 
 					at: aDatabase
