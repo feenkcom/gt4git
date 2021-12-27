@@ -5,13 +5,14 @@ IceLibgitRepository >> getDeltasForFullDiff [
 	"Return the deltas including untracked files.
 	This makes it possible to create a full diff of what changed."
 
-	^ (handle 
-		getDeltasFromHead: self head
-		options: (LGitDiffOptions defaults
-			prim_flags: (LGitDiffOptionTypeEnum git_diff_include_untracked value 
-				bitXor: LGitDiffOptionTypeEnum git_diff_recurse_untracked_dirs value))) 
-				collect: [ :delta | 
-					GtGitDelta from: delta in: self ]
+	self handleLibgitError: [ 
+		^ (self repositoryHandle 
+			getDeltasFromHead: self head
+			options: (LGitDiffOptions defaults
+				prim_flags: (LGitDiffOptionTypeEnum git_diff_include_untracked value 
+					bitXor: LGitDiffOptionTypeEnum git_diff_recurse_untracked_dirs value))) 
+					collect: [ :delta | 
+						GtGitDelta from: delta in: self ] ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -20,7 +21,7 @@ IceLibgitRepository >> getStatusByFile [
 	| res |
 	res := Dictionary new.
 
-	handle index allFilesStatusDo: [ :path :flags :_ | 
+	self repositoryHandle index allFilesStatusDo: [ :path :flags :_ | 
 		res at: path put: (LGitStatusEnum fromInteger: flags).
 		0 ].
 

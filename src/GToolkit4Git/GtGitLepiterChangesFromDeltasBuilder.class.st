@@ -8,7 +8,7 @@ Class {
 	#category : #'GToolkit4Git-Lepiter'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #api }
 GtGitLepiterChangesFromDeltasBuilder >> changesForDeltasByDatabase: deltasByDatabase [
 	^ deltasByDatabase associations collect: [ :anAssociation |
 			| databaseChange |
@@ -20,11 +20,11 @@ GtGitLepiterChangesFromDeltasBuilder >> changesForDeltasByDatabase: deltasByData
 			databaseChange ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #api }
 GtGitLepiterChangesFromDeltasBuilder >> changesFromDeltas: aDeltasCollection [
 	| deltasByDatabase normalFileDeltas |
 	
-	"First analyse the deltas and group them deltas for specific databases,
+	"First analyse the deltas and group the deltas for specific databases,
 	and deltas for normal files"
 	deltasByDatabase := OrderedDictionary new.
 	normalFileDeltas := OrderedCollection new.
@@ -33,8 +33,9 @@ GtGitLepiterChangesFromDeltasBuilder >> changesFromDeltas: aDeltasCollection [
 		| targetGroup |
 		targetGroup := self databases 
 			detect: [ :aDatabase | 
-				aDelta newFileRelative beginsWith: (aDatabase localStoreRootDirectory asFileReference path 
-					relativeTo: icebergRepository repositoryDirectory) fullName ] 
+				| filePath |
+				filePath := RelativePath with: aDelta newFileRelative.
+				(self relativePathForDatabase: aDatabase) contains: filePath ] 
 			ifFound: [ :aDatabase |
 				deltasByDatabase 
 					at: aDatabase
@@ -72,32 +73,22 @@ GtGitLepiterChangesFromDeltasBuilder >> icebergRepository: anObject [
 	icebergRepository := anObject
 ]
 
-{ #category : #accessing }
+{ #category : #'changes importing' }
 GtGitLepiterChangesFromDeltasBuilder >> importAttachmentDelta: aDelta intoDatabaseChange: aDatabaseChange [ 
 	| attachmentPath uuidString attachmentChange |
 	attachmentPath := RelativePath with: aDelta newFileRelative.
-	uuidString := (aDelta newFileRelative endsWith: '/')
-		ifTrue: [ attachmentPath basename ]
-		ifFalse: [ attachmentPath parent basename ].
-	attachmentChange := aDatabaseChange attachments 
+	uuidString := attachmentPath parent basename.
+	attachmentChange := aDatabaseChange attachmentChanges
 		detect: [ :anAttachmentChange | 
 			anAttachmentChange uuidString = uuidString ]
 		ifNone: [ 
 			| newAttachmentChange |
 			newAttachmentChange := GtLepiterLocalAttachmentChange new 
 				uuidString: uuidString.
-			aDatabaseChange addAttachment: newAttachmentChange.
-			newAttachmentChange	 ].
+			aDatabaseChange addAttachmentChange: newAttachmentChange.
+			newAttachmentChange path: attachmentPath parent.
+			newAttachmentChange ].
 	
-	(aDelta newFileRelative endsWith: '/')
-		ifTrue: [ 
-			attachmentChange
-				path: attachmentPath; 
-				delta: aDelta.
-			
-			^ self ].
-	
-	attachmentChange path: attachmentPath parent.
 	attachmentPath basename = LeAttachment basename ifTrue: [
 		^ attachmentChange propertiesChange:  (GtLepiterLocalAttachmentPropertiesFileChange new 
 			path: attachmentPath; 
@@ -108,7 +99,7 @@ GtGitLepiterChangesFromDeltasBuilder >> importAttachmentDelta: aDelta intoDataba
 		delta: aDelta)
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'changes importing' }
 GtGitLepiterChangesFromDeltasBuilder >> importChangesFromDelta: aDelta intoDatabaseChange: aDatabaseChange [
 	(self isPageDelta: aDelta forDatabase: aDatabaseChange database) ifTrue: [
 		^ self importPageDelta: aDelta intoDatabaseChange: aDatabaseChange ].
@@ -119,11 +110,15 @@ GtGitLepiterChangesFromDeltasBuilder >> importChangesFromDelta: aDelta intoDatab
 		^ self 
 			importDatabasePropertiesDelta: aDelta 
 			intoDatabaseChange: aDatabaseChange ].
-		
+	(self isLinksDelta: aDelta forDatabase: aDatabaseChange database) ifTrue: [
+		^ self 
+			importLinksDelta: aDelta 
+			intoDatabaseChange: aDatabaseChange ].
+	
 	"Error signal: 'Unknown Delta'."
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'changes importing' }
 GtGitLepiterChangesFromDeltasBuilder >> importChangesFromDeltas: aCollectionOfDeltas intoDatabaseChange: aDatabaseChange [
 	aCollectionOfDeltas do: [ :aDelta |
 		self 
@@ -131,16 +126,23 @@ GtGitLepiterChangesFromDeltasBuilder >> importChangesFromDeltas: aCollectionOfDe
 			intoDatabaseChange: aDatabaseChange ]
 ]
 
-{ #category : #accessing }
+{ #category : #'changes importing' }
 GtGitLepiterChangesFromDeltasBuilder >> importDatabasePropertiesDelta: aDelta intoDatabaseChange: aDatabaseChange [ 
-	aDatabaseChange propertiesFile: (GtLepiterLocalDatabasePropertiesFileChange new 
+	aDatabaseChange propertiesFileChange: (GtLepiterLocalDatabasePropertiesFileChange new 
 		path: (RelativePath with: aDelta newFileRelative); 
 		delta: aDelta)
 ]
 
-{ #category : #accessing }
+{ #category : #'changes importing' }
+GtGitLepiterChangesFromDeltasBuilder >> importLinksDelta: aDelta intoDatabaseChange: aDatabaseChange [ 
+	aDatabaseChange linksChange: (GtLepiterLocalLinksChange new 
+		path: (RelativePath with: aDelta newFileRelative); 
+		delta: aDelta)
+]
+
+{ #category : #'changes importing' }
 GtGitLepiterChangesFromDeltasBuilder >> importPageDelta: aDelta intoDatabaseChange: aDatabaseChange [ 
-	aDatabaseChange addPage: (GtLepiterLocalPageChange new 
+	aDatabaseChange addPageChange: (GtLepiterLocalPageChange new 
 		path: (RelativePath with: aDelta newFileRelative); 
 		delta: aDelta)
 ]
@@ -160,6 +162,15 @@ GtGitLepiterChangesFromDeltasBuilder >> isDatabasePropertiesDelta: aDelta forDat
 	filePath := RelativePath with: aDelta newFileRelative.
 	^ (filePath parent = (self relativePathForDatabase: aDatabase))
 			and: [ filePath basename = LepiterCoreDefaults databasePropertiesBasename ]
+]
+
+{ #category : #testing }
+GtGitLepiterChangesFromDeltasBuilder >> isLinksDelta: aDelta forDatabase: aDatabase [
+	| filePath |
+	
+	filePath := RelativePath with: aDelta newFileRelative.
+	^ (filePath parent = (self relativePathForDatabase: aDatabase))
+			and: [ filePath basename endsWith: '.lepiter.links' ]
 ]
 
 { #category : #testing }

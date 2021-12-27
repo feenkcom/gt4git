@@ -1,31 +1,18 @@
 Class {
 	#name : #GtLepiterLocalAttachmentChange,
-	#superclass : #IceChange,
+	#superclass : #GtLepiterLocalChange,
 	#instVars : [
 		'uuidString',
 		'propertiesChange',
 		'fileChanges',
-		'path',
-		'delta'
+		'path'
 	],
 	#category : #'GToolkit4Git-Lepiter'
 }
 
-{ #category : #accessing }
+{ #category : #adding }
 GtLepiterLocalAttachmentChange >> addFileChange: aFileChange [
 	self fileChanges add: aFileChange
-]
-
-{ #category : #accessing }
-GtLepiterLocalAttachmentChange >> delta [
-
-	^ delta
-]
-
-{ #category : #accessing }
-GtLepiterLocalAttachmentChange >> delta: anObject [
-
-	delta := anObject
 ]
 
 { #category : #accessing }
@@ -39,12 +26,6 @@ GtLepiterLocalAttachmentChange >> fileChanges [
 GtLepiterLocalAttachmentChange >> fileChanges: anObject [
 
 	fileChanges := anObject
-]
-
-{ #category : #testing }
-GtLepiterLocalAttachmentChange >> isUntracked [
-	^ self propertiesChange isNil and: [ 
-		self fileChanges isEmpty ]
 ]
 
 { #category : #accessing }

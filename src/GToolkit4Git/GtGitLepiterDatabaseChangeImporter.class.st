@@ -8,19 +8,19 @@ Class {
 	#category : #'GToolkit4Git-Lepiter'
 }
 
-{ #category : #accessing }
+{ #category : #'nodes creation' }
 GtGitLepiterDatabaseChangeImporter >> createDatabaseNodeOn: aParentNode [
 	| databaseDefinition databaseNode |
 	databaseDefinition := GtLepiterDatabaseDefinition new
-		name: lepiterDatabaseChange database databaseName;
-		databaseId: lepiterDatabaseChange database uuid;
+		name: lepiterDatabaseChange databaseName;
+		databaseId: lepiterDatabaseChange databaseUuid;
 		localRootRelativePath: (RelativePath with:
 			lepiterDatabaseChange database localStoreRootDirectory basename).
 	
 	databaseNode	 := aParentNode addChild: databaseDefinition.
-	lepiterDatabaseChange propertiesFile ifNotNil: [
+	lepiterDatabaseChange propertiesFileChange ifNotNil: [
 		| fileReference |
-		fileReference := version resolveDelta: lepiterDatabaseChange propertiesFile delta.
+		fileReference := version resolveDelta: lepiterDatabaseChange propertiesFileChange delta.
 		fileReference exists ifTrue: [
 			databaseNode addChild: (GtLepiterDatabasePropertiesDefinition new
 				name: fileReference basename;
@@ -30,7 +30,7 @@ GtGitLepiterDatabaseChangeImporter >> createDatabaseNodeOn: aParentNode [
 	^ databaseNode
 ]
 
-{ #category : #accessing }
+{ #category : #'definitions importing' }
 GtGitLepiterDatabaseChangeImporter >> importAttachmentDefinitionFor: anAttachmentChange on: anAttachmentsNode [
 	| attachmentDefinition attachmentNode |
 		
@@ -48,27 +48,22 @@ GtGitLepiterDatabaseChangeImporter >> importAttachmentDefinitionFor: anAttachmen
 			on: attachmentNode ].
 ]
 
-{ #category : #accessing }
+{ #category : #'definitions importing' }
 GtGitLepiterDatabaseChangeImporter >> importAttachmentDefinitionsOn: databaseNode [
 	| attachmentsDefinition attachmentsNode |
 	attachmentsDefinition := GtLepiterAttachmentsDefinition new.
 	attachmentsNode := databaseNode addChild: attachmentsDefinition.
-	(lepiterDatabaseChange attachments 
+	
+	(lepiterDatabaseChange attachmentChanges
 		select: [ :anAttachmentChange | 
 			(version fileSystem resolve: anAttachmentChange path) exists ])
 		do: [ :anAttachmentChange | 
-		anAttachmentChange isUntracked 
-			ifTrue: [
-				self 
-					importUntrackedAttachmentDefinitionFor: anAttachmentChange 
-					on: attachmentsNode   ]
-			ifFalse: [ 
 				self 
 					importAttachmentDefinitionFor: anAttachmentChange 
-					on: attachmentsNode ] ]
+					on: attachmentsNode ] 
 ]
 
-{ #category : #accessing }
+{ #category : #'definitions importing' }
 GtGitLepiterDatabaseChangeImporter >> importAttachmentFileDefinitionFor: aFileChange on: anAttachmentNode [
 	| fileReference attachmentFileDefinition |
 	fileReference := version resolveDelta: aFileChange delta.
@@ -81,7 +76,7 @@ GtGitLepiterDatabaseChangeImporter >> importAttachmentFileDefinitionFor: aFileCh
 	anAttachmentNode addChild: attachmentFileDefinition
 ]
 
-{ #category : #accessing }
+{ #category : #'definitions importing' }
 GtGitLepiterDatabaseChangeImporter >> importAttachmentPropertiesDefinitionFor: aPropertiesFileChange on: anAttachmentNode [ 
 	| fileReference attachmentFileDefinition |
 	fileReference := version resolveDelta: aPropertiesFileChange delta.
@@ -94,61 +89,51 @@ GtGitLepiterDatabaseChangeImporter >> importAttachmentPropertiesDefinitionFor: a
 	anAttachmentNode addChild: attachmentFileDefinition
 ]
 
-{ #category : #accessing }
+{ #category : #'definitions importing' }
+GtGitLepiterDatabaseChangeImporter >> importLinksDefinitionOn: aDatabaseNode [
+	| fileReference linksDefinition |
+	
+	lepiterDatabaseChange linksChange ifNil: [ ^ self ].
+	
+	fileReference := version 
+		resolveDelta: lepiterDatabaseChange linksChange delta.
+	fileReference exists ifFalse: [ ^ self ].
+	
+	linksDefinition := GtLepiterLinksDefinition new
+		name: fileReference basename;
+		linksFileName: fileReference basename;
+		linksContents: fileReference contents.
+	aDatabaseNode addChild: linksDefinition
+]
+
+{ #category : #api }
 GtGitLepiterDatabaseChangeImporter >> importOn: aParentNode [
 	| databaseNode |
 	databaseNode := self createDatabaseNodeOn: aParentNode.
 	self importPageDefinitionsOn: databaseNode.
+	self importLinksDefinitionOn: databaseNode.
 	self importAttachmentDefinitionsOn: databaseNode
 ]
 
-{ #category : #accessing }
+{ #category : #'definitions importing' }
 GtGitLepiterDatabaseChangeImporter >> importPageDefinitionsOn: databaseNode [
 	| pagesDefinition pagesNode |
 	pagesDefinition := GtLepiterPagesDefinition new.
 	pagesNode := databaseNode addChild: pagesDefinition.
-	lepiterDatabaseChange pages do: [ :aPageChange | 
+	lepiterDatabaseChange pageChanges do: [ :aPageChange | 
 		| fileReference pageDefinition page contents |
 		fileReference := version resolveDelta: aPageChange delta.
 		fileReference exists ifTrue: [ 
 			contents := fileReference contents.
-			page := LeJsonV4 uniqueInstance 
-				deserialize: fileReference readStream.
+			page := contents readStreamDo: [ :aStream |
+				LeJsonV4 uniqueInstance 
+					deserialize: aStream ].
 			pageDefinition := GtLepiterPageDefinition new
 				name: page title;
 				fileName: fileReference basename;
 				pageUuid: page uid;
 				pageContents: contents.
 			pagesNode addChild: pageDefinition ] ]
-]
-
-{ #category : #accessing }
-GtGitLepiterDatabaseChangeImporter >> importUntrackedAttachmentDefinitionFor: anAttachmentChange on: anAttachmentsNode [
-	| attachmentDefinition attachmentNode folderReference |
-		
-	folderReference := version resolveDelta: anAttachmentChange delta.
-	folderReference exists ifFalse: [ ^ self ].
-	
-	attachmentDefinition := GtLepiterAttachmentDefinition new 
-		name: anAttachmentChange uuidString.
-	attachmentNode := anAttachmentsNode addChild: attachmentDefinition.
-	
-	folderReference files do: [ :aFileReference |
-		| attachmentFileDefinition |
-		
-		attachmentFileDefinition := aFileReference basename = LeAttachment basename 
-			ifTrue: [ 
-				GtLepiterAttachmentPropertiesDefinition new
-					name: aFileReference basename;
-					fileName: aFileReference basename;
-					fileContents: aFileReference contents. ]
-			ifFalse: [
-				GtLepiterAttachmentFileDefinition new
-					name: aFileReference basename;
-					fileName: aFileReference basename;
-					binaryContents: aFileReference gtBinaryContents ].
-		
-		attachmentNode addChild: attachmentFileDefinition ]
 ]
 
 { #category : #accessing }

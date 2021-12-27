@@ -8,22 +8,7 @@ Class {
 	#category : #'GToolkit4Git-Lepiter-Examples'
 }
 
-{ #category : #assertions }
-GtIceLepiterExamples >> assertAddedPageNode: aNode forPage: aPage [
-	| operation definition |
-	self 
-		assertNode: aNode 
-		withKey: (aPage database monitor pageFilename: aPage)
-		withChildrenCount: 0.
-		
-	operation := aNode value .
-	self assert: operation isAddition.
-	
-	definition := operation definition.
-	self assert: definition name equals: aPage title.
-]
-
-{ #category : #examples }
+{ #category : #'assertions - pages' }
 GtIceLepiterExamples >> assertAddedPageNodes: pageNodes forPages: pages [
 	| sortedPages sortedNodes |
 	 sortedPages := pages sorted: [ :aPage | aPage uidString] ascending.
@@ -32,9 +17,11 @@ GtIceLepiterExamples >> assertAddedPageNodes: pageNodes forPages: pages [
 	 		aPageNode value definition pageUuid asString36 ] ascending.
 	 self assert: sortedPages size equals: sortedNodes size.
 	 1 to: sortedPages size do: [ :anIndex |
-	 	self 
-	 		assertAddedPageNode: (sortedNodes at: anIndex)
-	 		forPage: (sortedPages at: anIndex) ].
+		self 
+			assertPageNode: (sortedNodes at: anIndex)  
+			fromDatabase: (sortedPages at: anIndex)  database 
+			forPage: (sortedPages at: anIndex)  
+			withOperation:  #add ].
 ]
 
 { #category : #assertions }
@@ -72,7 +59,89 @@ GtIceLepiterExamples >> assertNode: aNode withKey: aKey withChildrenCount: anInt
 	self assert: aNode children size equals: anInteger.
 ]
 
+{ #category : #'assertions - pages' }
+GtIceLepiterExamples >> assertOneAddedPage: aPage inRepository: gtIceRepository [
+	self 
+		assertOnePage: aPage 
+		inRepository: gtIceRepository 
+		withOperation: #add
+]
+
+{ #category : #'assertions - pages' }
+GtIceLepiterExamples >> assertOneModifiedPage: aPage inRepository: gtIceRepository [
+	self 
+		assertOnePage: aPage 
+		inRepository: gtIceRepository 
+		withOperation: #modify
+]
+
+{ #category : #'assertions - pages' }
+GtIceLepiterExamples >> assertOnePage: aPage fromDatabse: aDatabase inRepository: gtIceRepository withOperation: aSymbol [
+	| diff databaseNode pagesNode |
+	diff := gtIceRepository workingCopyDiff.
+	self assertDiff: diff withChildrenCount: 1 andFullCount: 4.
+	
+	databaseNode := diff tree children first.
+	self
+		assertDatabaseNode: databaseNode
+		forDatabase: aDatabase
+		withChildrenCount: 1.
+		
+	pagesNode := databaseNode children first.
+	self assertPagesNode: pagesNode withChildrenCount: 1.
+	self 
+		assertPageNode: pagesNode children first 
+		fromDatabase: aDatabase
+		forPage: aPage 
+		withOperation: aSymbol.
+]
+
+{ #category : #'assertions - pages' }
+GtIceLepiterExamples >> assertOnePage: aPage inRepository: gtIceRepository withOperation: aSymbol [
+	self 
+		assertOnePage: aPage 
+		fromDatabse: aPage database
+		inRepository: gtIceRepository 
+		withOperation: aSymbol
+]
+
+{ #category : #'assertions - pages' }
+GtIceLepiterExamples >> assertOneRemovedPage: aPage fromDatabase: aDatabase inRepository: gtIceRepository [
+	self 
+		assertOnePage: aPage 
+		fromDatabse: aDatabase
+		inRepository: gtIceRepository 
+		withOperation: #remove
+]
+
 { #category : #assertions }
+GtIceLepiterExamples >> assertOperation: aSymbol for: anOperation [
+	aSymbol = #add 
+		ifTrue: [ ^ self assert: anOperation isAddition ].
+	aSymbol = #modify 
+		ifTrue: [ ^ self assert: anOperation isModification ].
+	aSymbol = #remove 
+		ifTrue: [ ^ self assert: anOperation isRemoval ].
+	
+	Error signal: 'Unknown operation'.
+]
+
+{ #category : #'assertions - pages' }
+GtIceLepiterExamples >> assertPageNode: aNode fromDatabase: aDatabase forPage: aPage withOperation: aSymbol [
+	| operation definition |
+	self 
+		assertNode: aNode 
+		withKey: (aDatabase monitor pageFilename: aPage)
+		withChildrenCount: 0.
+		
+	operation := aNode value.
+	self assertOperation: aSymbol for: operation.
+	
+	definition := operation definition.
+	self assert: definition name equals: aPage title.
+]
+
+{ #category : #'assertions - pages' }
 GtIceLepiterExamples >> assertPagesNode: aPagesNode withChildrenCount: anInteger [ 
 	| operation |
 	self 
@@ -97,8 +166,13 @@ GtIceLepiterExamples >> createBasicIcebergRepositoryWithName: repositoryName [
 	| iceRepository reposioryFolder |
 	
 	reposioryFolder := (FileLocator localDirectory / #gt4git / repositoryName) asFileReference.
-	self assert: reposioryFolder exists not.
-	self assert: (IceRepository registry anySatisfy: [ :aRepo | aRepo name = repositoryName ]) not.
+	self 
+		assert: reposioryFolder exists not 
+		description: 'Repository does not exist'.
+	self 
+		assert: (IceRepository registry 
+			anySatisfy: [ :aRepo | aRepo name = repositoryName ]) not
+		description: 'Repository is not registered'.
 	
 	iceRepository := IceRepositoryCreator new
 		location: reposioryFolder;
@@ -113,8 +187,8 @@ GtIceLepiterExamples >> createBasicIcebergRepositoryWithName: repositoryName [
 	IceRepository registerRepository: iceRepository. 
 	
 	"Ensure the repo was creates successfully"
-	self assert: iceRepository isMissing not.
-	self assert: iceRepository isModified not.
+	self assert: iceRepository isMissing not description: 'Repository is present'.
+	self assert: iceRepository isModified not description: 'Repository is not modified'.
 	self assert: iceRepository branch name equals: 'master'.
 	self assert: iceRepository branch commits size equals: 1.
 	
@@ -161,7 +235,21 @@ GtIceLepiterExamples >> detachLepiterDatabases [
 	self lepiterDatabases removeAll.
 ]
 
-{ #category : #examples }
+{ #category : #'examples - single page' }
+GtIceLepiterExamples >> gitRepositoryACommitEditedPage [
+	<gtExample>
+	<after: #cleanUpRepositoriesAndDatabases>
+	| gtIceRepository |
+	gtIceRepository := self gitRepositoryAEditExistingPage.
+	
+	gtIceRepository executeCommit: 'Edit Page1'.
+	
+	self assert: gtIceRepository workingCopyDiff isEmpty.
+	
+	^ gtIceRepository
+]
+
+{ #category : #'examples - single page' }
 GtIceLepiterExamples >> gitRepositoryACommitNewAddedPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
@@ -169,6 +257,34 @@ GtIceLepiterExamples >> gitRepositoryACommitNewAddedPage [
 	gtIceRepository := self gitRepositoryAWithNewAddedPage.
 	
 	gtIceRepository executeCommit: 'Add Page1'.
+	
+	self assert: gtIceRepository workingCopyDiff isEmpty.
+	
+	^ gtIceRepository
+]
+
+{ #category : #'examples - single page' }
+GtIceLepiterExamples >> gitRepositoryACommitNewUnnamedAddedPage [
+	<gtExample>
+	<after: #cleanUpRepositoriesAndDatabases>
+	| gtIceRepository |
+	gtIceRepository := self gitRepositoryAWithNewUnnamedAddedPage.
+	
+	gtIceRepository executeCommit: 'Add Page1 unnamed'.
+	
+	self assert: gtIceRepository workingCopyDiff isEmpty.
+	
+	^ gtIceRepository
+]
+
+{ #category : #'examples - single page' }
+GtIceLepiterExamples >> gitRepositoryACommitRemovedPage [
+	<gtExample>
+	<after: #cleanUpRepositoriesAndDatabases>
+	| gtIceRepository |
+	gtIceRepository := self gitRepositoryARemoveExistingPage.
+	
+	gtIceRepository executeCommit: 'Remove Page1'.
 	
 	self assert: gtIceRepository workingCopyDiff isEmpty.
 	
@@ -185,6 +301,41 @@ GtIceLepiterExamples >> gitRepositoryACommitTwoNewUnnamedAddedPage [
 	gtIceRepository executeCommit: 'Add Two Pages'.
 	
 	self assert: gtIceRepository workingCopyDiff isEmpty.
+	
+	^ gtIceRepository
+]
+
+{ #category : #'examples - single page' }
+GtIceLepiterExamples >> gitRepositoryAEditExistingPage [
+	<gtExample>
+	<after: #cleanUpRepositoriesAndDatabases>
+	| gtIceRepository targetDatabase targetPage |
+	gtIceRepository := self gitRepositoryACommitNewAddedPage.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
+	
+	targetPage := targetDatabase pageNamed: 'Page1'.
+	targetPage children first updateString: 'Updated Snippet1 Text'.
+
+	self assertOneModifiedPage: targetPage inRepository: gtIceRepository.
+	
+	^ gtIceRepository
+]
+
+{ #category : #'examples - single page' }
+GtIceLepiterExamples >> gitRepositoryARemoveExistingPage [
+	<gtExample>
+	<after: #cleanUpRepositoriesAndDatabases>
+	| gtIceRepository targetDatabase targetPage |
+	gtIceRepository := self gitRepositoryACommitNewAddedPage.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
+	
+	targetPage := targetDatabase pageNamed: 'Page1'.
+	targetPage removeSelf.
+
+	self 
+		assertOneRemovedPage: targetPage 
+		fromDatabase: targetDatabase 
+		inRepository: gtIceRepository.
 	
 	^ gtIceRepository
 ]
@@ -209,30 +360,19 @@ GtIceLepiterExamples >> gitRepositoryAWithEmptyLepiterDatabase [
 	^ gtIceRepository
 ]
 
-{ #category : #examples }
+{ #category : #'examples - single page' }
 GtIceLepiterExamples >> gitRepositoryAWithNewAddedPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
-	| gtIceRepository targetDatabase newPage diff databaseNode pagesNode |
+	| gtIceRepository targetDatabase newPage |
 	gtIceRepository := self gitRepositoryAWithEmptyLepiterDatabase.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
 	
 	newPage := LePage named: 'Page1'.
-	newPage addSnippet: (LeTextSnippet string: 'Block1').
+	newPage addSnippet: (LeTextSnippet string: 'Snippet1').
 	targetDatabase addPage: newPage.
 	
-	diff := gtIceRepository workingCopyDiff.
-	self assertDiff: diff withChildrenCount: 1 andFullCount: 4.
-	
-	databaseNode := diff tree children first.
-	self
-		assertDatabaseNode: databaseNode
-		forDatabase: targetDatabase
-		withChildrenCount: 1.
-		
-	pagesNode := databaseNode children first.
-	self assertPagesNode: pagesNode withChildrenCount: 1.
-	self assertAddedPageNode: pagesNode children first forPage: newPage.
+	self assertOneAddedPage: newPage inRepository: gtIceRepository.
 	
 	^ gtIceRepository
 ]
@@ -241,7 +381,7 @@ GtIceLepiterExamples >> gitRepositoryAWithNewAddedPage [
 GtIceLepiterExamples >> gitRepositoryAWithNewUnnamedAddedPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
-	| gtIceRepository targetDatabase newPage diff databaseNode pagesNode |
+	| gtIceRepository targetDatabase newPage |
 	gtIceRepository := self gitRepositoryAWithEmptyLepiterDatabase.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
 	
@@ -249,18 +389,7 @@ GtIceLepiterExamples >> gitRepositoryAWithNewUnnamedAddedPage [
 	newPage addSnippet: (LeTextSnippet string: 'Block1 in Unnamed Page').
 	targetDatabase addPage: newPage.
 	
-	diff := gtIceRepository workingCopyDiff.
-	self assertDiff: diff withChildrenCount: 1 andFullCount: 4.
-	
-	databaseNode := diff tree children first.
-	self
-		assertDatabaseNode: databaseNode
-		forDatabase: targetDatabase
-		withChildrenCount: 1.
-		
-	pagesNode := databaseNode children first.
-	self assertPagesNode: pagesNode withChildrenCount: 1.
-	self assertAddedPageNode: pagesNode children first forPage: newPage.
+	self assertOneAddedPage: newPage inRepository: gtIceRepository.
 	
 	^ gtIceRepository
 ]

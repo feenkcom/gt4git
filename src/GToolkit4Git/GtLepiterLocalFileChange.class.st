@@ -1,6 +1,6 @@
 Class {
 	#name : #GtLepiterLocalFileChange,
-	#superclass : #IceChange,
+	#superclass : #GtLepiterLocalChange,
 	#instVars : [
 		'path',
 		'delta'
