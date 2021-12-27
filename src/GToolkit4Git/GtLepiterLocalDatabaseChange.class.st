@@ -1,6 +1,6 @@
 Class {
 	#name : #GtLepiterLocalDatabaseChange,
-	#superclass : #IceChange,
+	#superclass : #GtLepiterLocalChange,
 	#instVars : [
 		'database',
 		'propertiesFile',

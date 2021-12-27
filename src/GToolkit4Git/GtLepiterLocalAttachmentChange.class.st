@@ -1,6 +1,6 @@
 Class {
 	#name : #GtLepiterLocalAttachmentChange,
-	#superclass : #IceChange,
+	#superclass : #GtLepiterLocalChange,
 	#instVars : [
 		'uuidString',
 		'propertiesChange',
