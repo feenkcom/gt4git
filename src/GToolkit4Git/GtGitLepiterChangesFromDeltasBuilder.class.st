@@ -8,7 +8,7 @@ Class {
 	#category : #'GToolkit4Git-Lepiter'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #api }
 GtGitLepiterChangesFromDeltasBuilder >> changesForDeltasByDatabase: deltasByDatabase [
 	^ deltasByDatabase associations collect: [ :anAssociation |
 			| databaseChange |
@@ -109,7 +109,7 @@ GtGitLepiterChangesFromDeltasBuilder >> importAttachmentDelta: aDelta intoDataba
 		delta: aDelta)
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'changes creation' }
 GtGitLepiterChangesFromDeltasBuilder >> importChangesFromDelta: aDelta intoDatabaseChange: aDatabaseChange [
 	(self isPageDelta: aDelta forDatabase: aDatabaseChange database) ifTrue: [
 		^ self importPageDelta: aDelta intoDatabaseChange: aDatabaseChange ].
@@ -124,7 +124,7 @@ GtGitLepiterChangesFromDeltasBuilder >> importChangesFromDelta: aDelta intoDatab
 	"Error signal: 'Unknown Delta'."
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'changes creation' }
 GtGitLepiterChangesFromDeltasBuilder >> importChangesFromDeltas: aCollectionOfDeltas intoDatabaseChange: aDatabaseChange [
 	aCollectionOfDeltas do: [ :aDelta |
 		self 
@@ -132,14 +132,14 @@ GtGitLepiterChangesFromDeltasBuilder >> importChangesFromDeltas: aCollectionOfDe
 			intoDatabaseChange: aDatabaseChange ]
 ]
 
-{ #category : #accessing }
+{ #category : #'changes creation' }
 GtGitLepiterChangesFromDeltasBuilder >> importDatabasePropertiesDelta: aDelta intoDatabaseChange: aDatabaseChange [ 
 	aDatabaseChange propertiesFile: (GtLepiterLocalDatabasePropertiesFileChange new 
 		path: (RelativePath with: aDelta newFileRelative); 
 		delta: aDelta)
 ]
 
-{ #category : #accessing }
+{ #category : #'changes creation' }
 GtGitLepiterChangesFromDeltasBuilder >> importPageDelta: aDelta intoDatabaseChange: aDatabaseChange [ 
 	aDatabaseChange addPage: (GtLepiterLocalPageChange new 
 		path: (RelativePath with: aDelta newFileRelative); 
