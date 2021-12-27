@@ -78,14 +78,14 @@ GtGitLepiterChangesFromDeltasBuilder >> importAttachmentDelta: aDelta intoDataba
 	| attachmentPath uuidString attachmentChange |
 	attachmentPath := RelativePath with: aDelta newFileRelative.
 	uuidString := attachmentPath parent basename.
-	attachmentChange := aDatabaseChange attachments 
+	attachmentChange := aDatabaseChange attachmentChanges
 		detect: [ :anAttachmentChange | 
 			anAttachmentChange uuidString = uuidString ]
 		ifNone: [ 
 			| newAttachmentChange |
 			newAttachmentChange := GtLepiterLocalAttachmentChange new 
 				uuidString: uuidString.
-			aDatabaseChange addAttachment: newAttachmentChange.
+			aDatabaseChange addAttachmentChange: newAttachmentChange.
 			newAttachmentChange path: attachmentPath parent.
 			newAttachmentChange ].
 	
@@ -128,21 +128,21 @@ GtGitLepiterChangesFromDeltasBuilder >> importChangesFromDeltas: aCollectionOfDe
 
 { #category : #'changes importing' }
 GtGitLepiterChangesFromDeltasBuilder >> importDatabasePropertiesDelta: aDelta intoDatabaseChange: aDatabaseChange [ 
-	aDatabaseChange propertiesFile: (GtLepiterLocalDatabasePropertiesFileChange new 
+	aDatabaseChange propertiesFileChange: (GtLepiterLocalDatabasePropertiesFileChange new 
 		path: (RelativePath with: aDelta newFileRelative); 
 		delta: aDelta)
 ]
 
 { #category : #'changes importing' }
 GtGitLepiterChangesFromDeltasBuilder >> importLinksDelta: aDelta intoDatabaseChange: aDatabaseChange [ 
-	aDatabaseChange links: (GtLepiterLocalLinksChange new 
+	aDatabaseChange linksChange: (GtLepiterLocalLinksChange new 
 		path: (RelativePath with: aDelta newFileRelative); 
 		delta: aDelta)
 ]
 
 { #category : #'changes importing' }
 GtGitLepiterChangesFromDeltasBuilder >> importPageDelta: aDelta intoDatabaseChange: aDatabaseChange [ 
-	aDatabaseChange addPage: (GtLepiterLocalPageChange new 
+	aDatabaseChange addPageChange: (GtLepiterLocalPageChange new 
 		path: (RelativePath with: aDelta newFileRelative); 
 		delta: aDelta)
 ]

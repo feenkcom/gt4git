@@ -76,39 +76,6 @@ GtLepiterWorkingCopy >> fileSystem [
 ]
 
 { #category : #accessing }
-GtLepiterWorkingCopy >> getDeltasTree [
-	| changedDatabases path |
-	changedDatabases := Dictionary new.
-	self databases do: [ :database | 
-		changedDatabases
-			at: database
-			put: (GtLepiterLocalDatabaseChange new database: database) ].
-	self repository getDeltasForFullDiff do: [ :delta | 
-		path := delta oldFile path.
-		"TODO ignore properties for now"
-		path basename = LepiterCoreDefaults databasePropertiesBasename 
-			ifFalse: [ 
-				path parent parent basename = 'attachments'
-					ifTrue: [ 
-						self databases
-							detect: [ :db | 
-							db localStoreRootDirectory asPath = path parent parent parent ]
-							ifFound: [ :database | 
-								changedDatabases at: database ifPresent: [ :databaseChange | 
-									databaseChange addAttachment:
-										(GtLepiterLocalAttachmentChange new path: path; delta: delta) ] ] ]
-					ifFalse: [ 
-						self databases
-							detect: [ :db | 
-							db localStoreRootDirectory asPath = path parent ]
-							ifFound: [ :database | 
-								changedDatabases at: database ifPresent: [ :databaseChange | 
-									databaseChange addPage:
-										(GtLepiterLocalPageChange new path: path; delta: delta) ] ] ] ] ].
-	^ changedDatabases values select: [:change | change hasChanges]
-]
-
-{ #category : #accessing }
 GtLepiterWorkingCopy >> icebergWorkingCopy [
 	^ self repository workingCopy
 ]

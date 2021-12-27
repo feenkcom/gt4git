@@ -12,15 +12,15 @@ Class {
 GtGitLepiterDatabaseChangeImporter >> createDatabaseNodeOn: aParentNode [
 	| databaseDefinition databaseNode |
 	databaseDefinition := GtLepiterDatabaseDefinition new
-		name: lepiterDatabaseChange database databaseName;
-		databaseId: lepiterDatabaseChange database uuid;
+		name: lepiterDatabaseChange databaseName;
+		databaseId: lepiterDatabaseChange databaseUuid;
 		localRootRelativePath: (RelativePath with:
 			lepiterDatabaseChange database localStoreRootDirectory basename).
 	
 	databaseNode	 := aParentNode addChild: databaseDefinition.
-	lepiterDatabaseChange propertiesFile ifNotNil: [
+	lepiterDatabaseChange propertiesFileChange ifNotNil: [
 		| fileReference |
-		fileReference := version resolveDelta: lepiterDatabaseChange propertiesFile delta.
+		fileReference := version resolveDelta: lepiterDatabaseChange propertiesFileChange delta.
 		fileReference exists ifTrue: [
 			databaseNode addChild: (GtLepiterDatabasePropertiesDefinition new
 				name: fileReference basename;
@@ -54,7 +54,7 @@ GtGitLepiterDatabaseChangeImporter >> importAttachmentDefinitionsOn: databaseNod
 	attachmentsDefinition := GtLepiterAttachmentsDefinition new.
 	attachmentsNode := databaseNode addChild: attachmentsDefinition.
 	
-	(lepiterDatabaseChange attachments 
+	(lepiterDatabaseChange attachmentChanges
 		select: [ :anAttachmentChange | 
 			(version fileSystem resolve: anAttachmentChange path) exists ])
 		do: [ :anAttachmentChange | 
@@ -93,9 +93,10 @@ GtGitLepiterDatabaseChangeImporter >> importAttachmentPropertiesDefinitionFor: a
 GtGitLepiterDatabaseChangeImporter >> importLinksDefinitionOn: aDatabaseNode [
 	| fileReference linksDefinition |
 	
-	lepiterDatabaseChange links ifNil: [ ^ self ].
+	lepiterDatabaseChange linksChange ifNil: [ ^ self ].
 	
-	fileReference := version resolveDelta: lepiterDatabaseChange links delta.
+	fileReference := version 
+		resolveDelta: lepiterDatabaseChange linksChange delta.
 	fileReference exists ifFalse: [ ^ self ].
 	
 	linksDefinition := GtLepiterLinksDefinition new
@@ -119,7 +120,7 @@ GtGitLepiterDatabaseChangeImporter >> importPageDefinitionsOn: databaseNode [
 	| pagesDefinition pagesNode |
 	pagesDefinition := GtLepiterPagesDefinition new.
 	pagesNode := databaseNode addChild: pagesDefinition.
-	lepiterDatabaseChange pages do: [ :aPageChange | 
+	lepiterDatabaseChange pageChanges do: [ :aPageChange | 
 		| fileReference pageDefinition page contents |
 		fileReference := version resolveDelta: aPageChange delta.
 		fileReference exists ifTrue: [ 

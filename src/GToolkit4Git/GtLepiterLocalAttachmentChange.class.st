@@ -10,7 +10,7 @@ Class {
 	#category : #'GToolkit4Git-Lepiter'
 }
 
-{ #category : #accessing }
+{ #category : #adding }
 GtLepiterLocalAttachmentChange >> addFileChange: aFileChange [
 	self fileChanges add: aFileChange
 ]
