@@ -22,7 +22,7 @@ LGitRepository >> getDeltasFromHead: aHead options: anLGitDiffOptions [
 { #category : #'*GToolkit4Git' }
 LGitRepository >> isDirty [
 
-	| out numDiffs head |
+	| out head |
 	out := LGitDiff newPointer autoRelease; repository: self.
 	head := self head.
 	out diffTreeToWorkdir: (self revparse: head name) tree inRepo: self.
