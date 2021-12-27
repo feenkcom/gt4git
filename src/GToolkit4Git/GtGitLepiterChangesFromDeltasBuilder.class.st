@@ -73,13 +73,11 @@ GtGitLepiterChangesFromDeltasBuilder >> icebergRepository: anObject [
 	icebergRepository := anObject
 ]
 
-{ #category : #accessing }
+{ #category : #'changes creation' }
 GtGitLepiterChangesFromDeltasBuilder >> importAttachmentDelta: aDelta intoDatabaseChange: aDatabaseChange [ 
 	| attachmentPath uuidString attachmentChange |
 	attachmentPath := RelativePath with: aDelta newFileRelative.
-	uuidString := (aDelta newFileRelative endsWith: '/')
-		ifTrue: [ attachmentPath basename ]
-		ifFalse: [ attachmentPath parent basename ].
+	uuidString := attachmentPath parent basename.
 	attachmentChange := aDatabaseChange attachments 
 		detect: [ :anAttachmentChange | 
 			anAttachmentChange uuidString = uuidString ]
@@ -88,17 +86,9 @@ GtGitLepiterChangesFromDeltasBuilder >> importAttachmentDelta: aDelta intoDataba
 			newAttachmentChange := GtLepiterLocalAttachmentChange new 
 				uuidString: uuidString.
 			aDatabaseChange addAttachment: newAttachmentChange.
-			newAttachmentChange	 ].
+			newAttachmentChange path: attachmentPath parent.
+			newAttachmentChange ].
 	
-	(aDelta newFileRelative endsWith: '/')
-		ifTrue: [ 
-			attachmentChange
-				path: attachmentPath; 
-				delta: aDelta.
-			
-			^ self ].
-	
-	attachmentChange path: attachmentPath parent.
 	attachmentPath basename = LeAttachment basename ifTrue: [
 		^ attachmentChange propertiesChange:  (GtLepiterLocalAttachmentPropertiesFileChange new 
 			path: attachmentPath; 

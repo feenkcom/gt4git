@@ -53,19 +53,14 @@ GtGitLepiterDatabaseChangeImporter >> importAttachmentDefinitionsOn: databaseNod
 	| attachmentsDefinition attachmentsNode |
 	attachmentsDefinition := GtLepiterAttachmentsDefinition new.
 	attachmentsNode := databaseNode addChild: attachmentsDefinition.
+	
 	(lepiterDatabaseChange attachments 
 		select: [ :anAttachmentChange | 
 			(version fileSystem resolve: anAttachmentChange path) exists ])
 		do: [ :anAttachmentChange | 
-		anAttachmentChange isUntracked 
-			ifTrue: [
-				self 
-					importUntrackedAttachmentDefinitionFor: anAttachmentChange 
-					on: attachmentsNode   ]
-			ifFalse: [ 
 				self 
 					importAttachmentDefinitionFor: anAttachmentChange 
-					on: attachmentsNode ] ]
+					on: attachmentsNode ] 
 ]
 
 { #category : #accessing }
@@ -120,35 +115,6 @@ GtGitLepiterDatabaseChangeImporter >> importPageDefinitionsOn: databaseNode [
 				pageUuid: page uid;
 				pageContents: contents.
 			pagesNode addChild: pageDefinition ] ]
-]
-
-{ #category : #accessing }
-GtGitLepiterDatabaseChangeImporter >> importUntrackedAttachmentDefinitionFor: anAttachmentChange on: anAttachmentsNode [
-	| attachmentDefinition attachmentNode folderReference |
-		
-	folderReference := version resolveDelta: anAttachmentChange delta.
-	folderReference exists ifFalse: [ ^ self ].
-	
-	attachmentDefinition := GtLepiterAttachmentDefinition new 
-		name: anAttachmentChange uuidString.
-	attachmentNode := anAttachmentsNode addChild: attachmentDefinition.
-	
-	folderReference files do: [ :aFileReference |
-		| attachmentFileDefinition |
-		
-		attachmentFileDefinition := aFileReference basename = LeAttachment basename 
-			ifTrue: [ 
-				GtLepiterAttachmentPropertiesDefinition new
-					name: aFileReference basename;
-					fileName: aFileReference basename;
-					fileContents: aFileReference contents. ]
-			ifFalse: [
-				GtLepiterAttachmentFileDefinition new
-					name: aFileReference basename;
-					fileName: aFileReference basename;
-					binaryContents: aFileReference gtBinaryContents ].
-		
-		attachmentNode addChild: attachmentFileDefinition ]
 ]
 
 { #category : #accessing }
