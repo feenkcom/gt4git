@@ -8,7 +8,7 @@ Class {
 	#category : #'GToolkit4Git-Lepiter'
 }
 
-{ #category : #accessing }
+{ #category : #'nodes creation' }
 GtGitLepiterDatabaseChangeImporter >> createDatabaseNodeOn: aParentNode [
 	| databaseDefinition databaseNode |
 	databaseDefinition := GtLepiterDatabaseDefinition new
@@ -30,7 +30,7 @@ GtGitLepiterDatabaseChangeImporter >> createDatabaseNodeOn: aParentNode [
 	^ databaseNode
 ]
 
-{ #category : #accessing }
+{ #category : #'definitions importing' }
 GtGitLepiterDatabaseChangeImporter >> importAttachmentDefinitionFor: anAttachmentChange on: anAttachmentsNode [
 	| attachmentDefinition attachmentNode |
 		
@@ -48,7 +48,7 @@ GtGitLepiterDatabaseChangeImporter >> importAttachmentDefinitionFor: anAttachmen
 			on: attachmentNode ].
 ]
 
-{ #category : #accessing }
+{ #category : #'definitions importing' }
 GtGitLepiterDatabaseChangeImporter >> importAttachmentDefinitionsOn: databaseNode [
 	| attachmentsDefinition attachmentsNode |
 	attachmentsDefinition := GtLepiterAttachmentsDefinition new.
@@ -63,7 +63,7 @@ GtGitLepiterDatabaseChangeImporter >> importAttachmentDefinitionsOn: databaseNod
 					on: attachmentsNode ] 
 ]
 
-{ #category : #accessing }
+{ #category : #'definitions importing' }
 GtGitLepiterDatabaseChangeImporter >> importAttachmentFileDefinitionFor: aFileChange on: anAttachmentNode [
 	| fileReference attachmentFileDefinition |
 	fileReference := version resolveDelta: aFileChange delta.
@@ -76,7 +76,7 @@ GtGitLepiterDatabaseChangeImporter >> importAttachmentFileDefinitionFor: aFileCh
 	anAttachmentNode addChild: attachmentFileDefinition
 ]
 
-{ #category : #accessing }
+{ #category : #'definitions importing' }
 GtGitLepiterDatabaseChangeImporter >> importAttachmentPropertiesDefinitionFor: aPropertiesFileChange on: anAttachmentNode [ 
 	| fileReference attachmentFileDefinition |
 	fileReference := version resolveDelta: aPropertiesFileChange delta.
@@ -89,15 +89,32 @@ GtGitLepiterDatabaseChangeImporter >> importAttachmentPropertiesDefinitionFor: a
 	anAttachmentNode addChild: attachmentFileDefinition
 ]
 
-{ #category : #accessing }
+{ #category : #'definitions importing' }
+GtGitLepiterDatabaseChangeImporter >> importLinksDefinitionOn: aDatabaseNode [
+	| fileReference linksDefinition |
+	
+	lepiterDatabaseChange links ifNil: [ ^ self ].
+	
+	fileReference := version resolveDelta: lepiterDatabaseChange links delta.
+	fileReference exists ifFalse: [ ^ self ].
+	
+	linksDefinition := GtLepiterLinksDefinition new
+		name: fileReference basename;
+		linksFileName: fileReference basename;
+		linksContents: fileReference contents.
+	aDatabaseNode addChild: linksDefinition
+]
+
+{ #category : #api }
 GtGitLepiterDatabaseChangeImporter >> importOn: aParentNode [
 	| databaseNode |
 	databaseNode := self createDatabaseNodeOn: aParentNode.
 	self importPageDefinitionsOn: databaseNode.
+	self importLinksDefinitionOn: databaseNode.
 	self importAttachmentDefinitionsOn: databaseNode
 ]
 
-{ #category : #accessing }
+{ #category : #'definitions importing' }
 GtGitLepiterDatabaseChangeImporter >> importPageDefinitionsOn: databaseNode [
 	| pagesDefinition pagesNode |
 	pagesDefinition := GtLepiterPagesDefinition new.

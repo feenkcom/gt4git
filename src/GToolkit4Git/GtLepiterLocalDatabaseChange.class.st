@@ -5,7 +5,8 @@ Class {
 		'database',
 		'propertiesFile',
 		'pages',
-		'attachments'
+		'attachments',
+		'links'
 	],
 	#category : #'GToolkit4Git-Lepiter'
 }
@@ -62,6 +63,18 @@ GtLepiterLocalDatabaseChange >> initialize [
 	super initialize.
 	self attachments: OrderedCollection new.
 	self pages: OrderedCollection new.
+]
+
+{ #category : #accessing }
+GtLepiterLocalDatabaseChange >> links [
+
+	^ links
+]
+
+{ #category : #accessing }
+GtLepiterLocalDatabaseChange >> links: anObject [
+
+	links := anObject
 ]
 
 { #category : #accessing }
