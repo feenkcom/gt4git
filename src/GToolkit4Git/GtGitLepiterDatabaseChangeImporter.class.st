@@ -125,8 +125,9 @@ GtGitLepiterDatabaseChangeImporter >> importPageDefinitionsOn: databaseNode [
 		fileReference := version resolveDelta: aPageChange delta.
 		fileReference exists ifTrue: [ 
 			contents := fileReference contents.
-			page := LeJsonV4 uniqueInstance 
-				deserialize: fileReference readStream.
+			page := contents readStreamDo: [ :aStream |
+				LeJsonV4 uniqueInstance 
+					deserialize: aStream ].
 			pageDefinition := GtLepiterPageDefinition new
 				name: page title;
 				fileName: fileReference basename;
