@@ -136,6 +136,26 @@ GtIceLepiterExamples >> assertDatabaseNode: aNode forDatabase: aDatabase withChi
 ]
 
 { #category : #assertions }
+GtIceLepiterExamples >> assertDatabasePropertiesNode: aNode forDatabase: aDatabase withOperation: aSymbol [
+	| operation definition |
+	self 
+		assertNode: aNode 
+		withKey: LepiterCoreDefaults databasePropertiesBasename
+		withChildrenCount: 0.
+	
+	operation := aNode value .
+	self assertOperation: aSymbol for: operation.
+	self assert: operation name equals: LepiterCoreDefaults databasePropertiesBasename.
+	self assert: operation key equals: LepiterCoreDefaults databasePropertiesBasename.
+	
+	definition := operation definition.
+	self assert: definition name equals: LepiterCoreDefaults databasePropertiesBasename.
+	self assert: definition key equals: LepiterCoreDefaults databasePropertiesBasename.
+	self assert: definition fileName equals: LepiterCoreDefaults databasePropertiesBasename.
+	self assert: definition class equals: GtLepiterDatabasePropertiesDefinition.
+]
+
+{ #category : #assertions }
 GtIceLepiterExamples >> assertDiff: diff withChildrenCount: aChildrenCount andFullCount: allChildrenCount [
 
 	self assert: diff isEmpty not.
@@ -309,10 +329,6 @@ GtIceLepiterExamples >> createIcebergRepositoryNamed: aRepositoryName withLepite
 		saveDelay: 0 seconds.
 	database databaseName: aDatabaseName.
 	
-	iceRepository index addPath: (database localStoreRootDirectory 
-		relativeTo: iceRepository location).
-	iceRepository commitWithMessage: 'Add lepiter database.'.
-	
 	"The current mechanism requires a database to be registered
 	before creating the gt git repo, in order for the diff logic to work."
 	LeDatabasesRegistry defaultLogicalDatabase addDB: database.
@@ -407,7 +423,7 @@ GtIceLepiterExamples >> gitRepositoryACommitRemovedPage [
 	^ gtIceRepository
 ]
 
-{ #category : #examples }
+{ #category : #'examples - pages' }
 GtIceLepiterExamples >> gitRepositoryACommitTwoNewUnnamedAddedPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
@@ -457,21 +473,15 @@ GtIceLepiterExamples >> gitRepositoryARemoveExistingPage [
 ]
 
 { #category : #examples }
-GtIceLepiterExamples >> gitRepositoryAWithEmptyLepiterDatabase [
+GtIceLepiterExamples >> gitRepositoryAWithEmptyCommitedLepiterDatabase [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
-	| gtIceRepository lepiterWorkingCopy |
+	| gtIceRepository |
 	
-	gtIceRepository := self 
-		createIcebergRepositoryNamed: 'repo-a' 
-		withLepiterDatabaseNamed: 'database-a'. 
+	gtIceRepository := self gitRepositoryAWithNewEmptyNotCommitedLepiterDatabase. 
+	gtIceRepository executeCommit: 'Add Two Pages'.
 	
-	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
-	self assert: lepiterWorkingCopy databases size equals: 1.
-	self 
-		assert: lepiterWorkingCopy databases first databaseName 
-		equals: 'database-a'.
-	self assert: lepiterWorkingCopy diffToReferenceCommit isEmpty.
+	self assert: gtIceRepository workingCopyDiff isEmpty.
 	
 	^ gtIceRepository
 ]
@@ -481,7 +491,7 @@ GtIceLepiterExamples >> gitRepositoryAWithNewAddedPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
 	| gtIceRepository targetDatabase newPage |
-	gtIceRepository := self gitRepositoryAWithEmptyLepiterDatabase.
+	gtIceRepository := self gitRepositoryAWithEmptyCommitedLepiterDatabase.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
 	
 	newPage := LePage named: 'Page1'.
@@ -493,12 +503,47 @@ GtIceLepiterExamples >> gitRepositoryAWithNewAddedPage [
 	^ gtIceRepository
 ]
 
+{ #category : #examples }
+GtIceLepiterExamples >> gitRepositoryAWithNewEmptyNotCommitedLepiterDatabase [
+	<gtExample>
+	<after: #cleanUpRepositoriesAndDatabases>
+	| gtIceRepository lepiterWorkingCopy targetDatabase diff databaseNode |
+	
+	gtIceRepository := self 
+		createIcebergRepositoryNamed: 'repo-a' 
+		withLepiterDatabaseNamed: 'database-a'. 
+	
+	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
+	self assert: lepiterWorkingCopy databases size equals: 1.
+	targetDatabase := lepiterWorkingCopy databases first.
+	self 
+		assert: lepiterWorkingCopy databases first databaseName 
+		equals: 'database-a'.
+	
+	diff := lepiterWorkingCopy diffToReferenceCommit.
+	self assert: diff isEmpty not.
+
+	self assertDiff: diff withChildrenCount: 1 andFullCount: 3.
+	
+	databaseNode := diff tree children first.
+	self
+		assertDatabaseNode: databaseNode
+		forDatabase: targetDatabase
+		withChildrenCount: 1.
+	self
+		assertDatabasePropertiesNode: databaseNode children first
+		forDatabase: targetDatabase
+		withOperation: #add.
+	
+	^ gtIceRepository
+]
+
 { #category : #'examples - attachments' }
 GtIceLepiterExamples >> gitRepositoryAWithNewPageWithAttachment [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
 	| gtIceRepository targetDatabase newPage diff databaseNode pagesNode attachmentsNode |
-	gtIceRepository := self gitRepositoryAWithEmptyLepiterDatabase.
+	gtIceRepository := self gitRepositoryAWithEmptyCommitedLepiterDatabase.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
 	
 	newPage := self createNewPageWithAttachmentIn: targetDatabase.
@@ -530,12 +575,12 @@ GtIceLepiterExamples >> gitRepositoryAWithNewPageWithAttachment [
 	^ gtIceRepository
 ]
 
-{ #category : #examples }
+{ #category : #'examples - pages' }
 GtIceLepiterExamples >> gitRepositoryAWithNewUnnamedAddedPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
 	| gtIceRepository targetDatabase newPage |
-	gtIceRepository := self gitRepositoryAWithEmptyLepiterDatabase.
+	gtIceRepository := self gitRepositoryAWithEmptyCommitedLepiterDatabase.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
 	
 	newPage := LePage unnamedPage.
@@ -547,12 +592,12 @@ GtIceLepiterExamples >> gitRepositoryAWithNewUnnamedAddedPage [
 	^ gtIceRepository
 ]
 
-{ #category : #examples }
+{ #category : #'examples - pages' }
 GtIceLepiterExamples >> gitRepositoryAWithTwoNewUnnamedAddedPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
 	| gtIceRepository targetDatabase newPage1 newPage2 diff databaseNode pagesNode |
-	gtIceRepository := self gitRepositoryAWithEmptyLepiterDatabase.
+	gtIceRepository := self gitRepositoryAWithEmptyCommitedLepiterDatabase.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
 	
 	newPage1 := LePage unnamedPage.
