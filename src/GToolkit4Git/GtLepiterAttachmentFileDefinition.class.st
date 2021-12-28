@@ -52,3 +52,8 @@ GtLepiterAttachmentFileDefinition >> hash [
 		bitXor: self fileName hash)
 		bitXor: self binaryContents hash
 ]
+
+{ #category : #testing }
+GtLepiterAttachmentFileDefinition >> isAttachmentFileDefinition [
+	^ true
+]

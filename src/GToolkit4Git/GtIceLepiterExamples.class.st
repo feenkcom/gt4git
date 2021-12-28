@@ -24,6 +24,97 @@ GtIceLepiterExamples >> assertAddedPageNodes: pageNodes forPages: pages [
 			withOperation:  #add ].
 ]
 
+{ #category : #'assertions - attachments' }
+GtIceLepiterExamples >> assertAttachmentContentNode: aNode forFile: aFile withOperation: aSymbol [
+	| operation definition |
+	
+	self 
+		assertNode: aNode 
+		withKey: aFile basename
+		withChildrenCount: 0.
+		
+	operation := aNode value.
+	self assertOperation: aSymbol for: operation.
+	self assert: operation name equals: aFile basename.
+	self assert: operation key equals: aFile basename.
+	
+	definition := operation definition.
+	self assert: definition name equals: aFile basename.
+	self assert: definition key equals: aFile basename.
+	self assert: definition class equals: GtLepiterAttachmentFileDefinition.
+]
+
+{ #category : #'assertions - attachments' }
+GtIceLepiterExamples >> assertAttachmentNode: aNode fromDatabase: aDatabase forDirectory: aDirectory withOperation: aSymbol [
+	self assertBasicAttachmentNode: aNode forDirectory: aDirectory withOperation: aSymbol.
+	self 
+		assertAttachmentPropertiesNode: (aNode children 
+			detect: [ :aChildNode | 
+				aChildNode value definition isAttachmentPropertiesDefinition ])
+		forFile: (aDirectory filesMatching: LeAttachment basename) first
+		withOperation: aSymbol.
+	self 
+		assertAttachmentContentNode: (aNode children 
+			detect: [ :aChildNode | aChildNode value definition  isAttachmentFileDefinition ])
+		forFile: (aDirectory files reject: [ :aFile | 
+			aFile basename = LeAttachment basename]) first
+		withOperation: aSymbol.
+]
+
+{ #category : #'assertions - attachments' }
+GtIceLepiterExamples >> assertAttachmentPropertiesNode: aNode forFile: aFile withOperation: aSymbol [
+	| operation definition |
+	
+	self 
+		assertNode: aNode 
+		withKey: aFile basename
+		withChildrenCount: 0.
+		
+	operation := aNode value.
+	self assertOperation: aSymbol for: operation.
+	self assert: operation name equals: aFile basename.
+	self assert: operation key equals: aFile basename.
+	
+	definition := operation definition.
+	self assert: definition name equals: aFile basename.
+	self assert: definition key equals: aFile basename.
+	self assert: definition class equals: GtLepiterAttachmentPropertiesDefinition.
+]
+
+{ #category : #'assertions - attachments' }
+GtIceLepiterExamples >> assertAttachmentsNode: aPagesNode withChildrenCount: anInteger [ 
+	| operation |
+	self 
+		assertNode: aPagesNode 
+		withKey: 'attachments'
+		withChildrenCount: anInteger.
+		
+	operation := aPagesNode value .
+	self assert: operation isNoModification.
+	self assert: operation name equals: 'attachments'.
+	self assert: operation key equals: 'attachments'
+]
+
+{ #category : #'assertions - attachments' }
+GtIceLepiterExamples >> assertBasicAttachmentNode: aNode forDirectory: aDirectory withOperation: aSymbol [
+	| operation definition |
+	
+	self 
+		assertNode: aNode 
+		withKey: aDirectory basename
+		withChildrenCount: 2.
+		
+	operation := aNode value.
+	self assertOperation: aSymbol for: operation.
+	self assert: operation name equals: aDirectory basename.
+	self assert: operation key equals: aDirectory basename.
+	
+	definition := operation definition.
+	self assert: definition name equals: aDirectory basename.
+	self assert: definition key equals: aDirectory basename.
+	self assert: definition class equals: GtLepiterAttachmentDefinition.
+]
+
 { #category : #assertions }
 GtIceLepiterExamples >> assertDatabaseNode: aNode forDatabase: aDatabase withChildrenCount: anInteger [ 
 	| operation definition |
@@ -42,6 +133,26 @@ GtIceLepiterExamples >> assertDatabaseNode: aNode forDatabase: aDatabase withChi
 	self assert: definition key equals:  aDatabase localStoreRootDirectory basename.
 	self assert: definition databaseId notNil.
 	self assert: definition class equals: GtLepiterDatabaseDefinition.
+]
+
+{ #category : #assertions }
+GtIceLepiterExamples >> assertDatabasePropertiesNode: aNode forDatabase: aDatabase withOperation: aSymbol [
+	| operation definition |
+	self 
+		assertNode: aNode 
+		withKey: LepiterCoreDefaults databasePropertiesBasename
+		withChildrenCount: 0.
+	
+	operation := aNode value .
+	self assertOperation: aSymbol for: operation.
+	self assert: operation name equals: LepiterCoreDefaults databasePropertiesBasename.
+	self assert: operation key equals: LepiterCoreDefaults databasePropertiesBasename.
+	
+	definition := operation definition.
+	self assert: definition name equals: LepiterCoreDefaults databasePropertiesBasename.
+	self assert: definition key equals: LepiterCoreDefaults databasePropertiesBasename.
+	self assert: definition fileName equals: LepiterCoreDefaults databasePropertiesBasename.
+	self assert: definition class equals: GtLepiterDatabasePropertiesDefinition.
 ]
 
 { #category : #assertions }
@@ -128,17 +239,24 @@ GtIceLepiterExamples >> assertOperation: aSymbol for: anOperation [
 
 { #category : #'assertions - pages' }
 GtIceLepiterExamples >> assertPageNode: aNode fromDatabase: aDatabase forPage: aPage withOperation: aSymbol [
-	| operation definition |
+	| operation definition pageName |
+	pageName := aDatabase monitor pageFilename: aPage.
 	self 
 		assertNode: aNode 
-		withKey: (aDatabase monitor pageFilename: aPage)
+		withKey: pageName
 		withChildrenCount: 0.
 		
 	operation := aNode value.
 	self assertOperation: aSymbol for: operation.
+	self assert: operation name equals: aPage title.
+	self assert: operation key equals: pageName.
 	
 	definition := operation definition.
 	self assert: definition name equals: aPage title.
+	self assert: definition key equals: pageName.
+	self assert: definition fileName equals: pageName.
+	self assert: definition pageUuid equals: aPage uid.
+	self assert: definition class equals: GtLepiterPageDefinition.
 ]
 
 { #category : #'assertions - pages' }
@@ -211,10 +329,6 @@ GtIceLepiterExamples >> createIcebergRepositoryNamed: aRepositoryName withLepite
 		saveDelay: 0 seconds.
 	database databaseName: aDatabaseName.
 	
-	iceRepository index addPath: (database localStoreRootDirectory 
-		relativeTo: iceRepository location).
-	iceRepository commitWithMessage: 'Add lepiter database.'.
-	
 	"The current mechanism requires a database to be registered
 	before creating the gt git repo, in order for the diff logic to work."
 	LeDatabasesRegistry defaultLogicalDatabase addDB: database.
@@ -226,6 +340,25 @@ GtIceLepiterExamples >> createIcebergRepositoryNamed: aRepositoryName withLepite
 	self lepiterDatabases at: aDatabaseName put: database.
 	
 	^ gtRepository
+]
+
+{ #category : #utils }
+GtIceLepiterExamples >> createNewPageWithAttachmentIn: aDatabase [
+	<gtIgnoreConstraint: #GtRBAcceptVisitorCalledFromNonVisitingMethods>
+	| newPage textSnippet visitor |
+	newPage := LePage named: 'Page1'.
+	textSnippet := LeTextSnippet
+		string: '![](https://feenk.com/assets/pictures/feenk.png)'.
+	newPage addSnippet: textSnippet.
+	aDatabase addPage: newPage.
+
+	visitor := LeImageImportVisitor new.
+	aDatabase acceptVisitor: visitor.
+	
+	self assert: visitor addedImages size equals: 1.
+	visitor cleanUp.
+	
+	^ newPage
 ]
 
 { #category : #'setUp-tearDown' }
@@ -291,7 +424,7 @@ GtIceLepiterExamples >> gitRepositoryACommitRemovedPage [
 	^ gtIceRepository
 ]
 
-{ #category : #examples }
+{ #category : #'examples - pages' }
 GtIceLepiterExamples >> gitRepositoryACommitTwoNewUnnamedAddedPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
@@ -341,21 +474,15 @@ GtIceLepiterExamples >> gitRepositoryARemoveExistingPage [
 ]
 
 { #category : #examples }
-GtIceLepiterExamples >> gitRepositoryAWithEmptyLepiterDatabase [
+GtIceLepiterExamples >> gitRepositoryAWithEmptyCommitedLepiterDatabase [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
-	| gtIceRepository lepiterWorkingCopy |
+	| gtIceRepository |
 	
-	gtIceRepository := self 
-		createIcebergRepositoryNamed: 'repo-a' 
-		withLepiterDatabaseNamed: 'database-a'. 
+	gtIceRepository := self gitRepositoryAWithNewEmptyNotCommitedLepiterDatabase. 
+	gtIceRepository executeCommit: 'Add Two Pages'.
 	
-	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
-	self assert: lepiterWorkingCopy databases size equals: 1.
-	self 
-		assert: lepiterWorkingCopy databases first databaseName 
-		equals: 'database-a'.
-	self assert: lepiterWorkingCopy diffToReferenceCommit isEmpty.
+	self assert: gtIceRepository workingCopyDiff isEmpty.
 	
 	^ gtIceRepository
 ]
@@ -365,7 +492,7 @@ GtIceLepiterExamples >> gitRepositoryAWithNewAddedPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
 	| gtIceRepository targetDatabase newPage |
-	gtIceRepository := self gitRepositoryAWithEmptyLepiterDatabase.
+	gtIceRepository := self gitRepositoryAWithEmptyCommitedLepiterDatabase.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
 	
 	newPage := LePage named: 'Page1'.
@@ -378,11 +505,83 @@ GtIceLepiterExamples >> gitRepositoryAWithNewAddedPage [
 ]
 
 { #category : #examples }
+GtIceLepiterExamples >> gitRepositoryAWithNewEmptyNotCommitedLepiterDatabase [
+	<gtExample>
+	<after: #cleanUpRepositoriesAndDatabases>
+	| gtIceRepository lepiterWorkingCopy targetDatabase diff databaseNode |
+	
+	gtIceRepository := self 
+		createIcebergRepositoryNamed: 'repo-a' 
+		withLepiterDatabaseNamed: 'database-a'. 
+	
+	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
+	self assert: lepiterWorkingCopy databases size equals: 1.
+	targetDatabase := lepiterWorkingCopy databases first.
+	self 
+		assert: lepiterWorkingCopy databases first databaseName 
+		equals: 'database-a'.
+	
+	diff := lepiterWorkingCopy diffToReferenceCommit.
+	self assert: diff isEmpty not.
+
+	self assertDiff: diff withChildrenCount: 1 andFullCount: 3.
+	
+	databaseNode := diff tree children first.
+	self
+		assertDatabaseNode: databaseNode
+		forDatabase: targetDatabase
+		withChildrenCount: 1.
+	self
+		assertDatabasePropertiesNode: databaseNode children first
+		forDatabase: targetDatabase
+		withOperation: #add.
+	
+	^ gtIceRepository
+]
+
+{ #category : #'examples - attachments' }
+GtIceLepiterExamples >> gitRepositoryAWithNewPageWithAttachment [
+	<gtExample>
+	<after: #cleanUpRepositoriesAndDatabases>
+	| gtIceRepository targetDatabase newPage diff databaseNode pagesNode attachmentsNode |
+	gtIceRepository := self gitRepositoryAWithEmptyCommitedLepiterDatabase.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
+	
+	newPage := self createNewPageWithAttachmentIn: targetDatabase.
+	
+	diff := gtIceRepository workingCopyDiff.
+	self assertDiff: diff withChildrenCount: 1 andFullCount: 8.
+	
+	databaseNode := diff tree children first.
+	self
+		assertDatabaseNode: databaseNode
+		forDatabase: targetDatabase
+		withChildrenCount: 2.
+	pagesNode := databaseNode children second.
+	self assertPagesNode: pagesNode withChildrenCount: 1.
+	self 
+		assertPageNode: pagesNode children first 
+		fromDatabase: targetDatabase
+		forPage: newPage 
+		withOperation: #add.
+	
+	attachmentsNode := databaseNode children first.
+	self assertAttachmentsNode: attachmentsNode withChildrenCount: 1.
+	self 
+		assertAttachmentNode: attachmentsNode children first 
+		fromDatabase: targetDatabase
+		forDirectory: targetDatabase attachmentDirectories first 
+		withOperation: #add.
+	
+	^ gtIceRepository
+]
+
+{ #category : #'examples - pages' }
 GtIceLepiterExamples >> gitRepositoryAWithNewUnnamedAddedPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
 	| gtIceRepository targetDatabase newPage |
-	gtIceRepository := self gitRepositoryAWithEmptyLepiterDatabase.
+	gtIceRepository := self gitRepositoryAWithEmptyCommitedLepiterDatabase.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
 	
 	newPage := LePage unnamedPage.
@@ -394,12 +593,12 @@ GtIceLepiterExamples >> gitRepositoryAWithNewUnnamedAddedPage [
 	^ gtIceRepository
 ]
 
-{ #category : #examples }
+{ #category : #'examples - pages' }
 GtIceLepiterExamples >> gitRepositoryAWithTwoNewUnnamedAddedPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
 	| gtIceRepository targetDatabase newPage1 newPage2 diff databaseNode pagesNode |
-	gtIceRepository := self gitRepositoryAWithEmptyLepiterDatabase.
+	gtIceRepository := self gitRepositoryAWithEmptyCommitedLepiterDatabase.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
 	
 	newPage1 := LePage unnamedPage.

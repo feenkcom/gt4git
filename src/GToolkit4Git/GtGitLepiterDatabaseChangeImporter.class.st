@@ -18,15 +18,6 @@ GtGitLepiterDatabaseChangeImporter >> createDatabaseNodeOn: aParentNode [
 			lepiterDatabaseChange database localStoreRootDirectory basename).
 	
 	databaseNode	 := aParentNode addChild: databaseDefinition.
-	lepiterDatabaseChange propertiesFileChange ifNotNil: [
-		| fileReference |
-		fileReference := version resolveDelta: lepiterDatabaseChange propertiesFileChange delta.
-		fileReference exists ifTrue: [
-			databaseNode addChild: (GtLepiterDatabasePropertiesDefinition new
-				name: fileReference basename;
-				fileName: fileReference basename;
-				fileContents: fileReference contents) ] ].
-		
 	^ databaseNode
 ]
 
@@ -49,10 +40,10 @@ GtGitLepiterDatabaseChangeImporter >> importAttachmentDefinitionFor: anAttachmen
 ]
 
 { #category : #'definitions importing' }
-GtGitLepiterDatabaseChangeImporter >> importAttachmentDefinitionsOn: databaseNode [
+GtGitLepiterDatabaseChangeImporter >> importAttachmentDefinitionsOn: aDatabaseNode [
 	| attachmentsDefinition attachmentsNode |
 	attachmentsDefinition := GtLepiterAttachmentsDefinition new.
-	attachmentsNode := databaseNode addChild: attachmentsDefinition.
+	attachmentsNode := aDatabaseNode addChild: attachmentsDefinition.
 	
 	(lepiterDatabaseChange attachmentChanges
 		select: [ :anAttachmentChange | 
@@ -90,6 +81,20 @@ GtGitLepiterDatabaseChangeImporter >> importAttachmentPropertiesDefinitionFor: a
 ]
 
 { #category : #'definitions importing' }
+GtGitLepiterDatabaseChangeImporter >> importDatabasePropertiesDefinitionOn: databaseNode [
+	| fileReference |
+
+	lepiterDatabaseChange propertiesFileChange ifNil: [ ^ self ].
+	fileReference := version resolveDelta: lepiterDatabaseChange propertiesFileChange delta.
+	fileReference exists ifFalse: [ ^ self ].
+	
+	databaseNode addChild: (GtLepiterDatabasePropertiesDefinition new
+		name: fileReference basename;
+		fileName: fileReference basename;
+		fileContents: fileReference contents)
+]
+
+{ #category : #'definitions importing' }
 GtGitLepiterDatabaseChangeImporter >> importLinksDefinitionOn: aDatabaseNode [
 	| fileReference linksDefinition |
 	
@@ -110,30 +115,36 @@ GtGitLepiterDatabaseChangeImporter >> importLinksDefinitionOn: aDatabaseNode [
 GtGitLepiterDatabaseChangeImporter >> importOn: aParentNode [
 	| databaseNode |
 	databaseNode := self createDatabaseNodeOn: aParentNode.
+	self importDatabasePropertiesDefinitionOn: databaseNode.
 	self importPageDefinitionsOn: databaseNode.
 	self importLinksDefinitionOn: databaseNode.
 	self importAttachmentDefinitionsOn: databaseNode
 ]
 
 { #category : #'definitions importing' }
-GtGitLepiterDatabaseChangeImporter >> importPageDefinitionsOn: databaseNode [
+GtGitLepiterDatabaseChangeImporter >> importPageDefinitionFor: aPageChange on: aPagesNode [
+	| fileReference pageDefinition page contents |
+	fileReference := version resolveDelta: aPageChange delta.
+	fileReference exists ifFalse: [ ^ self ].
+	
+	contents := fileReference contents.
+	page := LeJsonV4 uniqueInstance 
+		deserialize: contents readStream.
+	pageDefinition := GtLepiterPageDefinition new
+		name: page title;
+		fileName: fileReference basename;
+		pageUuid: page uid;
+		pageContents: contents.
+	aPagesNode addChild: pageDefinition 
+]
+
+{ #category : #'definitions importing' }
+GtGitLepiterDatabaseChangeImporter >> importPageDefinitionsOn: aDatabaseNode [
 	| pagesDefinition pagesNode |
 	pagesDefinition := GtLepiterPagesDefinition new.
-	pagesNode := databaseNode addChild: pagesDefinition.
+	pagesNode := aDatabaseNode addChild: pagesDefinition.
 	lepiterDatabaseChange pageChanges do: [ :aPageChange | 
-		| fileReference pageDefinition page contents |
-		fileReference := version resolveDelta: aPageChange delta.
-		fileReference exists ifTrue: [ 
-			contents := fileReference contents.
-			page := contents readStreamDo: [ :aStream |
-				LeJsonV4 uniqueInstance 
-					deserialize: aStream ].
-			pageDefinition := GtLepiterPageDefinition new
-				name: page title;
-				fileName: fileReference basename;
-				pageUuid: page uid;
-				pageContents: contents.
-			pagesNode addChild: pageDefinition ] ]
+		self importPageDefinitionFor: aPageChange on: pagesNode ]
 ]
 
 { #category : #accessing }
