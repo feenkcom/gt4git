@@ -24,6 +24,97 @@ GtIceLepiterExamples >> assertAddedPageNodes: pageNodes forPages: pages [
 			withOperation:  #add ].
 ]
 
+{ #category : #'assertions - attachments' }
+GtIceLepiterExamples >> assertAttachmentContentNode: aNode forFile: aFile withOperation: aSymbol [
+	| operation definition |
+	
+	self 
+		assertNode: aNode 
+		withKey: aFile basename
+		withChildrenCount: 0.
+		
+	operation := aNode value.
+	self assertOperation: aSymbol for: operation.
+	self assert: operation name equals: aFile basename.
+	self assert: operation key equals: aFile basename.
+	
+	definition := operation definition.
+	self assert: definition name equals: aFile basename.
+	self assert: definition key equals: aFile basename.
+	self assert: definition class equals: GtLepiterAttachmentFileDefinition.
+]
+
+{ #category : #'assertions - attachments' }
+GtIceLepiterExamples >> assertAttachmentNode: aNode fromDatabase: aDatabase forDirectory: aDirectory withOperation: aSymbol [
+	self assertBasicAttachmentNode: aNode forDirectory: aDirectory withOperation: aSymbol.
+	self 
+		assertAttachmentPropertiesNode: (aNode children 
+			detect: [ :aChildNode | 
+				aChildNode value definition isAttachmentPropertiesDefinition ])
+		forFile: (aDirectory filesMatching: LeAttachment basename) first
+		withOperation: aSymbol.
+	self 
+		assertAttachmentContentNode: (aNode children 
+			detect: [ :aChildNode | aChildNode value definition  isAttachmentFileDefinition ])
+		forFile: (aDirectory files reject: [ :aFile | 
+			aFile basename = LeAttachment basename]) first
+		withOperation: aSymbol.
+]
+
+{ #category : #'assertions - attachments' }
+GtIceLepiterExamples >> assertAttachmentPropertiesNode: aNode forFile: aFile withOperation: aSymbol [
+	| operation definition |
+	
+	self 
+		assertNode: aNode 
+		withKey: aFile basename
+		withChildrenCount: 0.
+		
+	operation := aNode value.
+	self assertOperation: aSymbol for: operation.
+	self assert: operation name equals: aFile basename.
+	self assert: operation key equals: aFile basename.
+	
+	definition := operation definition.
+	self assert: definition name equals: aFile basename.
+	self assert: definition key equals: aFile basename.
+	self assert: definition class equals: GtLepiterAttachmentPropertiesDefinition.
+]
+
+{ #category : #'assertions - attachments' }
+GtIceLepiterExamples >> assertAttachmentsNode: aPagesNode withChildrenCount: anInteger [ 
+	| operation |
+	self 
+		assertNode: aPagesNode 
+		withKey: 'attachments'
+		withChildrenCount: anInteger.
+		
+	operation := aPagesNode value .
+	self assert: operation isNoModification.
+	self assert: operation name equals: 'attachments'.
+	self assert: operation key equals: 'attachments'
+]
+
+{ #category : #'assertions - attachments' }
+GtIceLepiterExamples >> assertBasicAttachmentNode: aNode forDirectory: aDirectory withOperation: aSymbol [
+	| operation definition |
+	
+	self 
+		assertNode: aNode 
+		withKey: aDirectory basename
+		withChildrenCount: 2.
+		
+	operation := aNode value.
+	self assertOperation: aSymbol for: operation.
+	self assert: operation name equals: aDirectory basename.
+	self assert: operation key equals: aDirectory basename.
+	
+	definition := operation definition.
+	self assert: definition name equals: aDirectory basename.
+	self assert: definition key equals: aDirectory basename.
+	self assert: definition class equals: GtLepiterAttachmentDefinition.
+]
+
 { #category : #assertions }
 GtIceLepiterExamples >> assertDatabaseNode: aNode forDatabase: aDatabase withChildrenCount: anInteger [ 
 	| operation definition |
@@ -128,17 +219,24 @@ GtIceLepiterExamples >> assertOperation: aSymbol for: anOperation [
 
 { #category : #'assertions - pages' }
 GtIceLepiterExamples >> assertPageNode: aNode fromDatabase: aDatabase forPage: aPage withOperation: aSymbol [
-	| operation definition |
+	| operation definition pageName |
+	pageName := aDatabase monitor pageFilename: aPage.
 	self 
 		assertNode: aNode 
-		withKey: (aDatabase monitor pageFilename: aPage)
+		withKey: pageName
 		withChildrenCount: 0.
 		
 	operation := aNode value.
 	self assertOperation: aSymbol for: operation.
+	self assert: operation name equals: aPage title.
+	self assert: operation key equals: pageName.
 	
 	definition := operation definition.
 	self assert: definition name equals: aPage title.
+	self assert: definition key equals: pageName.
+	self assert: definition fileName equals: pageName.
+	self assert: definition pageUuid equals: aPage uid.
+	self assert: definition class equals: GtLepiterPageDefinition.
 ]
 
 { #category : #'assertions - pages' }
@@ -226,6 +324,24 @@ GtIceLepiterExamples >> createIcebergRepositoryNamed: aRepositoryName withLepite
 	self lepiterDatabases at: aDatabaseName put: database.
 	
 	^ gtRepository
+]
+
+{ #category : #utils }
+GtIceLepiterExamples >> createNewPageWithAttachmentIn: aDatabase [
+	| newPage textSnippet visitor |
+	newPage := LePage named: 'Page1'.
+	textSnippet := LeTextSnippet
+		string: '![](https://feenk.com/assets/pictures/feenk.png)'.
+	newPage addSnippet: textSnippet.
+	aDatabase addPage: newPage.
+
+	visitor := LeImageImportVisitor new.
+	aDatabase acceptVisitor: visitor.
+	
+	self assert: visitor addedImages size equals: 1.
+	visitor cleanUp.
+	
+	^ newPage
 ]
 
 { #category : #'setUp-tearDown' }
@@ -377,25 +493,15 @@ GtIceLepiterExamples >> gitRepositoryAWithNewAddedPage [
 	^ gtIceRepository
 ]
 
-{ #category : #'examples - single page' }
+{ #category : #'examples - attachments' }
 GtIceLepiterExamples >> gitRepositoryAWithNewPageWithAttachment [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
-	| gtIceRepository targetDatabase newPage textSnippet visitor diff databaseNode pagesNode |
+	| gtIceRepository targetDatabase newPage diff databaseNode pagesNode attachmentsNode |
 	gtIceRepository := self gitRepositoryAWithEmptyLepiterDatabase.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
 	
-	newPage := LePage named: 'Page1'.
-	textSnippet := LeTextSnippet
-		string: '![](https://feenk.com/assets/pictures/feenk.png)'.
-	newPage addSnippet: textSnippet.
-	targetDatabase addPage: newPage.
-
-	visitor := LeImageImportVisitor new.
-	targetDatabase acceptVisitor: visitor.
-	
-	self assert: visitor addedImages size equals: 1.
-	visitor cleanUp.
+	newPage := self createNewPageWithAttachmentIn: targetDatabase.
 	
 	diff := gtIceRepository workingCopyDiff.
 	self assertDiff: diff withChildrenCount: 1 andFullCount: 8.
@@ -411,6 +517,14 @@ GtIceLepiterExamples >> gitRepositoryAWithNewPageWithAttachment [
 		assertPageNode: pagesNode children first 
 		fromDatabase: targetDatabase
 		forPage: newPage 
+		withOperation: #add.
+	
+	attachmentsNode := databaseNode children first.
+	self assertAttachmentsNode: attachmentsNode withChildrenCount: 1.
+	self 
+		assertAttachmentNode: attachmentsNode children first 
+		fromDatabase: targetDatabase
+		forDirectory: targetDatabase attachmentDirectories first 
 		withOperation: #add.
 	
 	^ gtIceRepository
