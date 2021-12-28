@@ -122,6 +122,23 @@ GtGitLepiterDatabaseChangeImporter >> importOn: aParentNode [
 ]
 
 { #category : #'definitions importing' }
+GtGitLepiterDatabaseChangeImporter >> importPageDefinitionFor: aPageChange on: aPagesNode [
+	| fileReference pageDefinition page contents |
+	fileReference := version resolveDelta: aPageChange delta.
+	fileReference exists ifFalse: [ ^ self ].
+	
+	contents := fileReference contents.
+	page := LeJsonV4 uniqueInstance 
+		deserialize: contents readStream.
+	pageDefinition := GtLepiterPageDefinition new
+		name: page title;
+		fileName: fileReference basename;
+		pageUuid: page uid;
+		pageContents: contents.
+	aPagesNode addChild: pageDefinition 
+]
+
+{ #category : #'definitions importing' }
 GtGitLepiterDatabaseChangeImporter >> importPageDefinitionsOn: aDatabaseNode [
 	| pagesDefinition pagesNode |
 	pagesDefinition := GtLepiterPagesDefinition new.

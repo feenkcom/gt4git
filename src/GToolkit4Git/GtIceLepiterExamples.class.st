@@ -377,6 +377,45 @@ GtIceLepiterExamples >> gitRepositoryAWithNewAddedPage [
 	^ gtIceRepository
 ]
 
+{ #category : #'examples - single page' }
+GtIceLepiterExamples >> gitRepositoryAWithNewPageWithAttachment [
+	<gtExample>
+	<after: #cleanUpRepositoriesAndDatabases>
+	| gtIceRepository targetDatabase newPage textSnippet visitor diff databaseNode pagesNode |
+	gtIceRepository := self gitRepositoryAWithEmptyLepiterDatabase.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
+	
+	newPage := LePage named: 'Page1'.
+	textSnippet := LeTextSnippet
+		string: '![](https://feenk.com/assets/pictures/feenk.png)'.
+	newPage addSnippet: textSnippet.
+	targetDatabase addPage: newPage.
+
+	visitor := LeImageImportVisitor new.
+	targetDatabase acceptVisitor: visitor.
+	
+	self assert: visitor addedImages size equals: 1.
+	visitor cleanUp.
+	
+	diff := gtIceRepository workingCopyDiff.
+	self assertDiff: diff withChildrenCount: 1 andFullCount: 8.
+	
+	databaseNode := diff tree children first.
+	self
+		assertDatabaseNode: databaseNode
+		forDatabase: targetDatabase
+		withChildrenCount: 2.
+	pagesNode := databaseNode children second.
+	self assertPagesNode: pagesNode withChildrenCount: 1.
+	self 
+		assertPageNode: pagesNode children first 
+		fromDatabase: targetDatabase
+		forPage: newPage 
+		withOperation: #add.
+	
+	^ gtIceRepository
+]
+
 { #category : #examples }
 GtIceLepiterExamples >> gitRepositoryAWithNewUnnamedAddedPage [
 	<gtExample>
