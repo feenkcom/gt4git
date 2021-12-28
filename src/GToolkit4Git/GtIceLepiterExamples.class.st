@@ -344,6 +344,7 @@ GtIceLepiterExamples >> createIcebergRepositoryNamed: aRepositoryName withLepite
 
 { #category : #utils }
 GtIceLepiterExamples >> createNewPageWithAttachmentIn: aDatabase [
+	<gtIgnoreConstraint: #GtRBAcceptVisitorCalledFromNonVisitingMethods>
 	| newPage textSnippet visitor |
 	newPage := LePage named: 'Page1'.
 	textSnippet := LeTextSnippet
