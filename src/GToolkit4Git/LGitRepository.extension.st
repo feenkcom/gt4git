@@ -8,11 +8,13 @@ LGitRepository >> getDeltasFromHead: aHead [
 { #category : #'*GToolkit4Git' }
 LGitRepository >> getDeltasFromHead: aHead options: anLGitDiffOptions [
 
-	| out |
+	| out tree |
 	out := LGitDiff newPointer autoRelease; repository: self.
 	
+	tree := (aHead isKindOf: IceGitUnbornBranch) ifTrue: [ (LGitTreeBuilder of: self fromTree: nil) newTree ] ifFalse: [(self revparse: aHead gitRef) tree].
+	
 	out 
-		diffTreeToWorkdir: (self revparse: aHead gitRef) tree 
+		diffTreeToWorkdir: tree 
 		inRepo: self
 		options: anLGitDiffOptions.
 	
