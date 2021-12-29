@@ -286,11 +286,11 @@ GtIceLepiterExamples >> createBasicIcebergRepositoryWithName: repositoryName [
 	reposioryFolder := (FileLocator localDirectory / #gt4git / repositoryName) asFileReference.
 	self 
 		assert: reposioryFolder exists not 
-		description: 'Repository does not exist'.
+		description: 'Repository folder should not exist'.
 	self 
 		assert: (IceRepository registry 
 			anySatisfy: [ :aRepo | aRepo name = repositoryName ]) not
-		description: 'Repository is not registered'.
+		description: 'Repository should not be registered'.
 	
 	iceRepository := IceRepositoryCreator new
 		location: reposioryFolder;
