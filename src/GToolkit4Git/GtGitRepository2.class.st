@@ -261,7 +261,9 @@ GtGitRepository2 >> gtViewIncomingCommitsFor: aView [
 	^ (incomingCommits gtViewCommitsListFor: aView)
 		  title: 'Incoming commits' translated;
 		  updateWhen: IceCommited
-		  in: [ Iceberg announcer ];
+		  in: Iceberg announcer;
+		  updateWhen: IceRepositoryModified
+		  in: Iceberg announcer;
 		  priority: 10;
 		  actionButtonLabel: 'Merge' action: [ :aButton | 
 			  | remoteBranch |
