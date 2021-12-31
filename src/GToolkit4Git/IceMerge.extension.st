@@ -12,6 +12,8 @@ IceMerge >> gtActionMergeFor: anAction [
 			  self updateHead.
 
 			  self updateWorkingCopy.
+			  
+			  Iceberg announcer announce: (IceRepositoryModified for: self repository).
 			  Iceberg announcer announce: (IceCommited for: self repository).
 			  aButton phlow fireUpdateWish ]
 ]
