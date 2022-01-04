@@ -184,15 +184,22 @@ GtGitRepositoryElement >> updateToolbarElement [
 				 aptitude: BrGlamorousButtonWithIconAptitude;
 				 icon: BrGlamorousVectorIcons refresh;
 				 label: 'Fetch';
-				 action: [ :aButton | self fetchAllRepositoriesFrom: aButton ]);
+				 action: [ :aButton | 
+					 self fetchAllRepositoriesFrom: aButton.
+					 aButton phlow fireUpdateWish ]);
 		addItem: (BrButton new
 				 aptitude: BrGlamorousButtonWithIconAptitude;
 				 icon: BrGlamorousVectorIcons down;
 				 label: 'Pull';
-				 action: [ :aButton | self pullFrom: aButton ]);
+				 action: [ :aButton | 
+					 self pullFrom: aButton.
+					 aButton phlow fireUpdateWish.
+					 aButton phlow fireUpdateWish ]);
 		addItem: (BrButton new
 				 aptitude: BrGlamorousButtonWithIconAptitude;
 				 icon: BrGlamorousVectorIcons up;
 				 label: 'Push';
-				 action: [ :aButton | self pushFrom: aButton ])
+				 action: [ :aButton | 
+					 self pushFrom: aButton.
+					 aButton phlow fireUpdateWish ])
 ]
