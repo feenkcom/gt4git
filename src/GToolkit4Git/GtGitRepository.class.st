@@ -177,6 +177,17 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 				addChildren: { editor . button } ]
 ]
 
+{ #category : #accessing }
+GtGitRepository >> gtCommitsFor: aView [
+	<gtView>
+	<gtRepositoryView>
+	self repository repositoryDirectory ifNil: [ ^ aView empty ].
+	^ aView forward
+		title: 'Commits';
+		object: [ self repository branch ];
+		view: #gtCommitsFor:
+]
+
 { #category : #'gt - extensions' }
 GtGitRepository >> gtPackagesFor: aView context: aContext [
 	<gtView>
