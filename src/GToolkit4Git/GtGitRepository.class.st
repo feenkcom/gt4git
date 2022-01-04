@@ -8,7 +8,7 @@ Class {
 		'announcer',
 		'isSubscribed'
 	],
-	#category : 'GToolkit4Git-Model'
+	#category : #'GToolkit4Git-Model'
 }
 
 { #category : #announcer }
@@ -240,6 +240,21 @@ GtGitRepository >> printOn: aStream [
 		nextPut: $(;
 		nextPutAll: self repository name;
 		nextPut: $)
+]
+
+{ #category : #accessing }
+GtGitRepository >> pull [
+	^ self repository pull
+]
+
+{ #category : #accessing }
+GtGitRepository >> push [
+
+	| res |
+	res := self repository push.
+	Iceberg announcer announce:
+		(IceRepositoryModified for: self repository).
+	^ res
 ]
 
 { #category : #'api - accessing' }

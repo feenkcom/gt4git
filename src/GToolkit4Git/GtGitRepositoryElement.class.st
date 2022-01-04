@@ -9,12 +9,33 @@ Class {
 		'labelElement',
 		'lazyTabsElement'
 	],
-	#category : 'GToolkit4Git-UI - Element'
+	#category : #'GToolkit4Git-UI - Element'
 }
+
+{ #category : #'instance creation' }
+GtGitRepositoryElement class >> on: each [ 
+	| aViewModel |
+	aViewModel := GtGitRepositoryViewModel new.
+	aViewModel repositoryModel: (GtGitRepository new repository: each).
+	
+	^ self new repositoryViewModel: aViewModel
+]
+
+{ #category : #initialization }
+GtGitRepositoryElement >> addPackageNamed: aString [ 
+	
+	self repositoryViewModel addPackage: aString asSymbol
+]
 
 { #category : #initialization }
 GtGitRepositoryElement >> defaultLayout [
 	^ BlLinearLayout vertical
+]
+
+{ #category : #initialization }
+GtGitRepositoryElement >> fetchAllRepositoriesFrom: aButton [ 
+	self repositoryViewModel fetch.
+	aButton phlow fireUpdateWish
 ]
 
 { #category : #initialization }
@@ -40,30 +61,12 @@ GtGitRepositoryElement >> initializeLazyTabsElement [
 
 { #category : #initialization }
 GtGitRepositoryElement >> initializeToolbarElement [
+
 	toolbarElement := BrToolbar new
-		aptitude: (BrGlamorousToolbarAptitude new spacing: 0);
-		vFitContent;
-		hMatchParent.
-	
-	toolbarElement
-		addItem: (labelElement := BrLabel new
-			aptitude: (BrGlamorousLabelAptitude new 
-				bold; 
-				labelDo: [ :aLabel | aLabel padding: BlInsets empty ]);
-			beHugeSize;
-			text: '');
-		addItem: (BrFrame new
-			vFitContent;
-			hMatchParent);
-		addItem: (BrButton new
-			aptitude: BrGlamorousButtonWithIconAptitude;
-			icon: BrGlamorousVectorIcons refresh;
-			label: 'Fetch';
-			action: [ :aButton | self fetchAllRepositoriesFrom: aButton ]);
-		addItem: (BrButton new
-			aptitude: BrGlamorousButtonWithIconAptitude;
-			icon: BrGlamorousVectorIcons add;
-			label: 'Something')
+		                  aptitude:
+			                  (BrGlamorousToolbarAptitude new spacing: 0);
+		                  vFitContent;
+		                  hMatchParent.          
 ]
 
 { #category : #'private - accessing' }
@@ -99,14 +102,27 @@ GtGitRepositoryElement >> onRepositoryViewModelChanged [
 ]
 
 { #category : #'private - updating' }
+GtGitRepositoryElement >> pullFrom: aButton [
+	self repositoryViewModel pull.
+	aButton phlow fireUpdateWish
+]
+
+{ #category : #'private - updating' }
+GtGitRepositoryElement >> pushFrom: aButton [
+	self repositoryViewModel push.
+	aButton phlow fireUpdateWish
+]
+
+{ #category : #'private - updating' }
 GtGitRepositoryElement >> repositoryViewItems [
+
 	| aRepository collector context |
-	
+	self repositoryViewModel hasRepository ifFalse: [ ^ #(  ) ].
 	aRepository := self repositoryViewModel repositoryModel.
 
 	collector := GtPhlowViewsCollector new
-		fromObject: aRepository;
-		pragmaName: #gtRepositoryView.
+		             fromObject: aRepository;
+		             pragmaName: #gtRepositoryView.
 
 	context := GtPhlowContext new.
 	context optionAt: #repositoryViewModel put: self repositoryViewModel.
@@ -129,6 +145,7 @@ GtGitRepositoryElement >> toolbarElement [
 { #category : #'private - updating' }
 GtGitRepositoryElement >> updateElement [
 	self updateTabsElement.
+	self updateToolbarElement.
 	self updateTitleElement.
 ]
 
@@ -139,5 +156,43 @@ GtGitRepositoryElement >> updateTabsElement [
 
 { #category : #'private - updating' }
 GtGitRepositoryElement >> updateTitleElement [
+	(self hasRepositoryViewModel not or: [ 
+		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
 	self labelElement text: self repositoryViewModel name
+]
+
+{ #category : #'private - updating' }
+GtGitRepositoryElement >> updateToolbarElement [
+
+	| look |
+	(self hasRepositoryViewModel not or: [ 
+		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
+
+	toolbarElement removeAllItems.
+	toolbarElement
+		addItem: (labelElement := BrLabel new
+				                 aptitude: (BrGlamorousLabelAptitude new
+						                  bold;
+						                  labelDo: [ :aLabel | 
+							                  aLabel padding: BlInsets empty ]);
+				                 beHugeSize;
+				                 text: '');
+		addItem: (BrFrame new
+				 vFitContent;
+				 hMatchParent);
+		addItem: (BrButton new
+				 aptitude: BrGlamorousButtonWithIconAptitude;
+				 icon: BrGlamorousVectorIcons refresh;
+				 label: 'Fetch';
+				 action: [ :aButton | self fetchAllRepositoriesFrom: aButton ]);
+		addItem: (BrButton new
+				 aptitude: BrGlamorousButtonWithIconAptitude;
+				 icon: BrGlamorousVectorIcons down;
+				 label: 'Pull';
+				 action: [ :aButton | self pullFrom: aButton ]);
+		addItem: (BrButton new
+				 aptitude: BrGlamorousButtonWithIconAptitude;
+				 icon: BrGlamorousVectorIcons up;
+				 label: 'Push';
+				 action: [ :aButton | self pushFrom: aButton ])
 ]
