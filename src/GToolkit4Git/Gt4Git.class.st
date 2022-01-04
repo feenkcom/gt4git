@@ -94,7 +94,7 @@ Gt4Git >> buildListViewFor: aView [
 	result := aView columnedList
 		title: 'Repositories' translated;
 		priority: 50;
-		send: [ :each | each ];
+		send: [ :each | "GtGitRepositoryElement on: "each ];
 		updateWhen: IceRepositoryAnnouncement
 			in: [ Iceberg announcer ];
 		items: [ self repositories

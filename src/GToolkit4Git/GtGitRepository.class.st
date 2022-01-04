@@ -6,9 +6,10 @@ Class {
 	#instVars : [
 		'repository',
 		'announcer',
-		'isSubscribed'
+		'isSubscribed',
+		'lepiterWorkingCopy'
 	],
-	#category : 'GToolkit4Git-Model'
+	#category : #'GToolkit4Git-Model'
 }
 
 { #category : #announcer }
@@ -125,56 +126,97 @@ GtGitRepository >> gtChanges2For: aView context: aContext [
 GtGitRepository >> gtChangesFor: aView context: aContext [
 	<gtView>
 	<gtRepositoryView>
-	| aViewModel |
+	| aViewModel changes |
 
-	self hasChanges ifFalse: [ ^ aView empty ].
-	
 	aViewModel := aContext
 		at: #repositoryViewModel
 		ifAbsentPut: [ GtGitRepositoryViewModel new repositoryModel: self ].
 	
-	^ aView explicit
-		title: 'Changes';
-		priority: 10;
-		stencil: [ GtGitRepositoryChangesElement new 
-			margin: (BlInsets all: 10);
-			repositoryViewModel: aViewModel ];
-		actionDropdownButtonLabel: 'Commit'
-			tooltip: 'Commit changes'
-			content: [ :aDropdown :aTarget | 
-			| editor button |
-			
-			editor := BrEditor new
-				hMatchParent;
-				vFitContentLimited;
-				aptitude: BrGlamorousRegularEditorAptitude;
-				text: aViewModel commitMessage.
-			editor selecter all; select.
-			
-			button := BrButton new.
-			button
-				aptitude: BrGlamorousButtonWithIconAptitude;
-				icon: BrGlamorousVectorIcons accept;
-				label: 'Commit';
-				disabled: editor text isEmpty;
-				action: [ 
-					aViewModel executeCommit: editor editor text asString.
-					button disable.
-					aDropdown enqueueTask: (BlTaskAction new
-						action: [ 
-							aDropdown dispatchEvent: (BrDropdownHideWish new anchor: aDropdown). ]) ].
+	self lepiterWorkingCopy ifNil: [ ^ aView empty ].
+	changes := self workingCopyDiff treeToShow.
+	(changes isNil or: [ changes isEmpty ]) ifTrue: [ ^ aView empty ].
+	^ aView tree
+		  title: 'Changes';
+		  items: [ changes children ];
+		  updateWhen: IceRepositoryModified in: Iceberg announcer;
+		  children: #children;
+		  expandUpTo: 3;
+		  priority: 10;
+		  stencil: [ :anIceNode | 
+			  BlElement new
+				  layout: BlLinearLayout horizontal;
+				  constraintsDo: [ :c | 
+					  c horizontal matchParent.
+					  c vertical fitContent ];
+				  margin: (BlInsets all: 3);
+				  constraintsDo: [ :c | c vertical fitContent ];
+				  aptitude: (BrGlamorousWithContextMenuAptitude content: [ 
+							   BrGlamorousSimpleContextMenuContent new
+								   items: { ('Revert changes' -> [ :e | 
+										    self workingCopy diffToReferenceCommit revertChanges:
+												    anIceNode ]) };
+								   yourself ]);
+				  addChild:
+					  (anIceNode value icon asElement constraintsDo: [ :c | 
+						   c linear horizontal alignCenter ]);
+				  addChild: (BrLabel new
+						   aptitude: BrGlamorousLabelAptitude;
+						   text: anIceNode value name asString asRopedText;
+						   padding: (BlInsets
+								    top: 0
+								    left: 6
+								    bottom: 0
+								    right: 3);
+						   constraintsDo: [ :c | c linear horizontal alignCenter ]) ];
+		  actionDropdownButtonLabel: 'Commit'
+		  tooltip: 'Commit changes'
+		  content: [ :aDropdown :aTarget | 
+			  | editor button |
+			  editor := BrEditor new
+				            hMatchParent;
+				            vFitContentLimited;
+				            aptitude: BrGlamorousRegularEditorAptitude;
+				            text: aViewModel commitMessage.
+			  editor selecter
+				  all;
+				  select.
 
-			editor editor
-				when: BrTextEditorModifiedEvent
-				do: [ :anEvent | 
-					button disabled: anEvent text isEmpty.
-					aViewModel commitMessage: editor text asString. ].
+			  button := BrButton new.
+			  button
+				  aptitude: BrGlamorousButtonWithIconAptitude;
+				  icon: BrGlamorousVectorIcons accept;
+				  label: 'Commit';
+				  disabled: editor text isEmpty;
+				  action: [ 
+					  aViewModel executeCommit: editor editor text asString.
+					  button disable.
+					  aDropdown enqueueTask: (BlTaskAction new action: [ 
+									   aDropdown dispatchEvent:
+											   (BrDropdownHideWish new anchor: aDropdown).
+									   aDropdown phlow fireUpdateWish ]) ].
 
-			BrVerticalPane new
-				hExact: 400;
-				vFitContentLimited;
-				padding: (BlInsets all: 10);
-				addChildren: { editor . button } ]
+			  editor editor
+				  when: BrTextEditorModifiedEvent
+				  do: [ :anEvent | button disabled: anEvent text isEmpty ].
+
+			  BrVerticalPane new
+				  hExact: 400;
+				  vFitContentLimited;
+				  padding: (BlInsets all: 10);
+				  addChildren: { 
+						  editor.
+						  button } ]
+]
+
+{ #category : #accessing }
+GtGitRepository >> gtCommitsFor: aView [
+	<gtView>
+	<gtRepositoryView>
+	self repository repositoryDirectory ifNil: [ ^ aView empty ].
+	^ aView forward
+		title: 'Commits';
+		object: [ self repository branch ];
+		view: #gtCommitsFor:
 ]
 
 { #category : #'gt - extensions' }
@@ -219,6 +261,11 @@ GtGitRepository >> isModified [
 	^ self hasWorkingCopy and: [ self workingCopy isModified ]
 ]
 
+{ #category : #'gt - extensions' }
+GtGitRepository >> lepiterWorkingCopy [
+	^ lepiterWorkingCopy
+]
+
 { #category : #'api - repository' }
 GtGitRepository >> name [
 	^ self repository ifNotNil: #name ifNil: [ '<missing>' ]
@@ -242,6 +289,21 @@ GtGitRepository >> printOn: aStream [
 		nextPut: $)
 ]
 
+{ #category : #accessing }
+GtGitRepository >> pull [
+	^ self repository pull
+]
+
+{ #category : #accessing }
+GtGitRepository >> push [
+
+	| res |
+	res := self repository push.
+	Iceberg announcer announce:
+		(IceRepositoryModified for: self repository).
+	^ res
+]
+
 { #category : #'api - accessing' }
 GtGitRepository >> repository [
 	^ repository
@@ -260,9 +322,18 @@ GtGitRepository >> repository: aRepository [
 		when: IceRepositoryModified
 		send: #onRepositoryModifiedAnnouncement:
 		to: self.
+		
+	lepiterWorkingCopy := GtLepiterWorkingCopy new 
+		repository: aRepository; 
+		updateDatabases.
 ]
 
 { #category : #'api - repository' }
 GtGitRepository >> workingCopy [
 	^ self repository workingCopy
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> workingCopyDiff [
+	^ self lepiterWorkingCopy diffToReferenceCommit
 ]

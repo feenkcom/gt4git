@@ -21,6 +21,11 @@ GtGitRepository2 class >> fromIcebergRepository: anIceRepository [
 ]
 
 { #category : #accessing }
+GtGitRepository2 >> addPackage: aSymbol [
+	self workingCopy addPackageNamed: aSymbol
+]
+
+{ #category : #accessing }
 GtGitRepository2 >> currentCommitMessage [
 	<return: #BlText>
 	^ currentCommitMessage ifNil: [

@@ -7,8 +7,14 @@ Class {
 		'iceTipRepositoryViewModel',
 		'commitMessage'
 	],
-	#category : 'GToolkit4Git-UI - View Model'
+	#category : #'GToolkit4Git-UI - View Model'
 }
+
+{ #category : #accessing }
+GtGitRepositoryViewModel >> addPackage: aSymbol [
+	
+	self repositoryModel workingCopy addPackageNamed: aSymbol
+]
 
 { #category : #'api - accessing' }
 GtGitRepositoryViewModel >> commitMessage [
@@ -25,6 +31,11 @@ GtGitRepositoryViewModel >> executeCommit: aCommitMessage [
 	GtGitCommitMessage default lastMessage: aCommitMessage.
 	self commitMessage: aCommitMessage.
 	self repositoryModel executeCommit: aCommitMessage.
+]
+
+{ #category : #accessing }
+GtGitRepositoryViewModel >> fetch [
+	self repositoryModel fetch
 ]
 
 { #category : #'api - repository' }
@@ -46,6 +57,16 @@ GtGitRepositoryViewModel >> onRepositoryModelChanged [
 	"Is sent when a new repository model is assigned to the view model"
 	
 	iceTipRepositoryViewModel := IceTipRepositoryModel on: self repositoryModel repository
+]
+
+{ #category : #accessing }
+GtGitRepositoryViewModel >> pull [
+	self repositoryModel pull
+]
+
+{ #category : #accessing }
+GtGitRepositoryViewModel >> push [
+	self repositoryModel push
 ]
 
 { #category : #'api - repository' }
