@@ -162,7 +162,8 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 					button disable.
 					aDropdown enqueueTask: (BlTaskAction new
 						action: [ 
-							aDropdown dispatchEvent: (BrDropdownHideWish new anchor: aDropdown). ]) ].
+							aDropdown dispatchEvent: (BrDropdownHideWish new anchor: aDropdown).
+					button phlow fireUpdateWish ]) ].
 
 			editor editor
 				when: BrTextEditorModifiedEvent
