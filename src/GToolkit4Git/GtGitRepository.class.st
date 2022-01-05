@@ -7,7 +7,8 @@ Class {
 		'repository',
 		'announcer',
 		'isSubscribed',
-		'lepiterWorkingCopy'
+		'lepiterWorkingCopy',
+		'status'
 	],
 	#category : #'GToolkit4Git-Model'
 }
@@ -302,6 +303,19 @@ GtGitRepository >> push [
 	Iceberg announcer announce:
 		(IceRepositoryModified for: self repository).
 	^ res
+]
+
+{ #category : #accessing }
+GtGitRepository >> repairActions [
+
+	^ GtGitRepairAction subclasses select: [ :sc | 
+		  sc iceTipClass isAvailableFor: self repository ]
+]
+
+{ #category : #accessing }
+GtGitRepository >> repairStencil [
+
+	^ GtGitRepositoryRepairStencil new repository: repository
 ]
 
 { #category : #'api - accessing' }
