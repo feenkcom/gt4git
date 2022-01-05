@@ -183,7 +183,6 @@ GtGitRepositoryElement >> updateStatusElement [
 
 { #category : #'private - updating' }
 GtGitRepositoryElement >> updateTabsElement [
-	self lazyTabsElement element: nil.
 	self lazyTabsElement elementBuilder: [ self newRepositoryViewTabs id: #tabs ]
 ]
 
