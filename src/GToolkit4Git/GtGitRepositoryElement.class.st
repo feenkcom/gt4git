@@ -68,7 +68,8 @@ GtGitRepositoryElement >> initializeStatusElement [
 				                 aptitude: (BrGlamorousLabelAptitude new
 						                  labelDo: [ :aLabel | 
 							                  aLabel padding: BlInsets empty ]);
-				                 beSmallSize
+				                 beSmallSize;
+				                 text: ''
 ]
 
 { #category : #initialization }

@@ -194,7 +194,7 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 					  aDropdown enqueueTask: (BlTaskAction new action: [ 
 									   aDropdown dispatchEvent:
 											   (BrDropdownHideWish new anchor: aDropdown).
-									   aDropdown phlow fireUpdateWish ]) ].
+									   aView phlow fireUpdateWish ]) ].
 
 			  editor editor
 				  when: BrTextEditorModifiedEvent
