@@ -208,6 +208,12 @@ GtGitRepositoryElement >> updateToolbarElement [
 				 hMatchParent);
 		addItem: (BrButton new
 				 aptitude: BrGlamorousButtonWithIconAptitude;
+				 icon: BrGlamorousVectorIcons inspect;
+				 label: 'Inspect';
+				 action: [ :aButton | 
+					 aButton phlow spawnObject: self repositoryViewModel repositoryModel ]);
+		addItem: (BrButton new
+				 aptitude: BrGlamorousButtonWithIconAptitude;
 				 icon: BrGlamorousVectorIcons refresh;
 				 label: 'Fetch';
 				 action: [ :aButton | 
@@ -219,7 +225,6 @@ GtGitRepositoryElement >> updateToolbarElement [
 				 label: 'Pull';
 				 action: [ :aButton | 
 					 self pullFrom: aButton.
-					 aButton phlow fireUpdateWish.
 					 aButton phlow fireUpdateWish ]);
 		addItem: (BrButton new
 				 aptitude: BrGlamorousButtonWithIconAptitude;

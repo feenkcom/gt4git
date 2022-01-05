@@ -26,24 +26,21 @@ GtGitNavigationStencil >> create [
 		  items: [ 
 			  self navigationModel repositories collect: [ :eachIceRepository | 
 					  GtGitRepository new repository: eachIceRepository ] ];
-		  send: [:repo | 	self
-		announce:
-			(GtGitRepositorySelected new
-				repository: repo)];
+		  send: [ :repo | 
+			  self announce: (GtGitRepositorySelected new repository: repo) ];
 		  column: 'Repository' translated text: [ :each | 
 			  | description |
-			  description := each name asRopedText.
+			  description := each name.
 			  each isModified ifTrue: [ 
-					  description := ('*' , description asString) asRopedText 
+					  description := ('*' , description) asRopedText 
 						                 foreground: (Color r: 0 g: 0.5 b: 0) ].
-			  description ]
-		  width: 200;
-		  column: 'Branch' translated
-		  text: [ :each | each headDescription ]
+			  description asRopedText glamorousRegularFont glamorousRegularSmallSize ]
 		  width: 200;
 		  column: 'Status' translated
-		  text: [ :each | each status ]
-		  width: 200
+		  text: [ :each | each status asRopedText glamorousRegularFont glamorousRegularSmallSize ]
+		  width: 200;
+		  asElementDo: [ :aList | 
+			  aList background: BrGlamorousColors neutralBackgroundColor ]
 ]
 
 { #category : #accessing }
