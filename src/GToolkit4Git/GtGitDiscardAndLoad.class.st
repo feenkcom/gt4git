@@ -19,6 +19,7 @@ GtGitDiscardAndLoad >> repairStencil [
 	repository branch checkout.
 	Iceberg announcer announce: (IceRepositoryModified for: repository).
 	dropdown enqueueTask: (BlTaskAction new action: [ 
-			 dropdown dispatchEvent: (BrDropdownHideWish new anchor: dropdown) ]).
+			 dropdown dispatchEvent: (BrDropdownHideWish new anchor: dropdown).
+			 dropdown phlow fireUpdateWish ]).
 	^ container
 ]

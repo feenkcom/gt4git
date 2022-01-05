@@ -189,7 +189,7 @@ GtGitRepositoryElement >> updateTitleElement [
 { #category : #'private - updating' }
 GtGitRepositoryElement >> updateToolbarElement [
 
-	| look |
+	| look aDropdown |
 	(self hasRepositoryViewModel not or: [ 
 		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
 
@@ -229,15 +229,16 @@ GtGitRepositoryElement >> updateToolbarElement [
 					 aButton phlow fireUpdateWish ]).
 
 	self repositoryViewModel needsRepair ifTrue: [ 
-		toolbarElement addItem: (BrButton new
-				 aptitude: BrGlamorousButtonWithLabelTooltipAptitude
-					 + (BrGlamorousWithDropdownAptitude handle: [ 
+		toolbarElement addItem: (aDropdown := BrButton new
+				 aptitude: BrGlamorousButtonWithLabelAptitude
+					 + (BrGlamorousWithDropdownAptitude
+							  handle: [ 
 								  BrButton new
-									  aptitude: BrGlamorousButtonWithIconAptitude
-										  - BrGlamorousButtonWithLabelTooltipAptitude
+									  aptitude:
+										  BrGlamorousButtonWithLabelAptitude
 										  - BrGlamorousButtonExteriorAptitude;
-									  label: 'Repair' ]);
-				 label: 'Repair';
-				 content: [ :aDropdown | 
-				 self repositoryViewModel repairStencilFor: aDropdown ]) ]
+									  label: 'Repair' ]
+							  content: [
+							  self repositoryViewModel repairStencilFor: aDropdown ]);
+				 label: 'Repair') ]
 ]
