@@ -342,6 +342,11 @@ GtGitRepository >> repository: aRepository [
 		updateDatabases.
 ]
 
+{ #category : #accessing }
+GtGitRepository >> status [
+	^ status ifNil: [ status := (IceTipRepositoryModel on: self repository) status asString ]
+]
+
 { #category : #'api - repository' }
 GtGitRepository >> workingCopy [
 	^ self repository workingCopy

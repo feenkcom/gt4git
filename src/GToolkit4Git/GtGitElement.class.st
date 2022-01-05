@@ -38,6 +38,7 @@ GtGitElement >> initialize [
 	self layout: BlLinearLayout horizontal.
 	self addAptitude: BrLayoutResizerAptitude inherit.
 	self initializeView.
+	self navigationModel: GtGitNavigationModel new.
 ]
 
 { #category : #accessing }
@@ -45,7 +46,7 @@ GtGitElement >> initializeContentElement [
 	| aViewModel |
 	aViewModel := GtGitRepositoryViewModel new.
 	repository ifNotNil: [
-		aViewModel repositoryModel: (GtGitRepository new repository: repository)].
+		aViewModel repositoryModel: repository].
 	
 	contentElement := GtGitRepositoryElement new.
 	contentElement repositoryViewModel: aViewModel.
@@ -57,7 +58,7 @@ GtGitElement >> initializeListeners [
 
 { #category : #accessing }
 GtGitElement >> initializeNavigationModel [
-	navigationModel := self defaultNavigationModel
+	self navigationModel: self defaultNavigationModel
 ]
 
 { #category : #accessing }
@@ -102,6 +103,31 @@ GtGitElement >> initializeView [
 ]
 
 { #category : #accessing }
+GtGitElement >> navigationModel [
+	^ navigationModel
+]
+
+{ #category : #accessing }
+GtGitElement >> navigationModel: aNavigationModel [
+	navigationModel := aNavigationModel.
+	self subscribeToNavigationModel.
+	self onNavigationModelChanged
+]
+
+{ #category : #accessing }
+GtGitElement >> onNavigationModelChange: anEvent [
+	repository := anEvent repository.
+	self initializeView.
+	self enqueueTask: (BlTaskAction new action: [
+		self updateTabLabel ])
+]
+
+{ #category : #accessing }
+GtGitElement >> onNavigationModelChanged [
+	self updateSidebarContent
+]
+
+{ #category : #accessing }
 GtGitElement >> repository: aRepository [
 	repository := aRepository.
 	self initializeView
@@ -118,6 +144,30 @@ GtGitElement >> sidebarElement [
 ]
 
 { #category : #accessing }
+GtGitElement >> subscribeToNavigationModel [
+	self navigationModel weak 
+		when: GtGitRepositorySelected
+		send: #onNavigationModelChange: to: self
+]
+
+{ #category : #accessing }
+GtGitElement >> titleNotifier [
+	^ titleNotifier
+]
+
+{ #category : #accessing }
 GtGitElement >> toolbarElement [
 	^ toolbarElement
+]
+
+{ #category : #accessing }
+GtGitElement >> updateSidebarContent [
+	self sidebarElement
+		contentStencil: (GtGitNavigationStencil new 
+			navigationModel: self navigationModel)
+]
+
+{ #category : #accessing }
+GtGitElement >> updateTabLabel [
+	self titleNotifier notifyIfFocused
 ]
