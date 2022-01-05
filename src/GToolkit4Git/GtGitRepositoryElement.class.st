@@ -201,5 +201,18 @@ GtGitRepositoryElement >> updateToolbarElement [
 				 label: 'Push';
 				 action: [ :aButton | 
 					 self pushFrom: aButton.
-					 aButton phlow fireUpdateWish ])
+					 aButton phlow fireUpdateWish ]).
+
+	self repositoryViewModel needsRepair ifTrue: [ 
+		toolbarElement addItem: (BrButton new
+				 aptitude: BrGlamorousButtonWithLabelTooltipAptitude
+					 + (BrGlamorousWithDropdownAptitude handle: [ 
+								  BrButton new
+									  aptitude: BrGlamorousButtonWithIconAptitude
+										  - BrGlamorousButtonWithLabelTooltipAptitude
+										  - BrGlamorousButtonExteriorAptitude;
+									  label: 'Repair' ]);
+				 label: 'Repair';
+				 content: [ :aDropdown | 
+				 self repositoryViewModel repairStencilFor: aDropdown ]) ]
 ]

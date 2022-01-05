@@ -52,6 +52,11 @@ GtGitRepositoryViewModel >> name [
 		ifFalse: [ '<missing>' ]
 ]
 
+{ #category : #accessing }
+GtGitRepositoryViewModel >> needsRepair [
+	^ self repositoryModel repairActions size > 0 
+]
+
 { #category : #'api - repository model' }
 GtGitRepositoryViewModel >> onRepositoryModelChanged [
 	"Is sent when a new repository model is assigned to the view model"
@@ -67,6 +72,11 @@ GtGitRepositoryViewModel >> pull [
 { #category : #accessing }
 GtGitRepositoryViewModel >> push [
 	self repositoryModel push
+]
+
+{ #category : #accessing }
+GtGitRepositoryViewModel >> repairStencilFor: aDropdown [
+	^ self repositoryModel repairStencil dropdown: aDropdown
 ]
 
 { #category : #'api - repository' }

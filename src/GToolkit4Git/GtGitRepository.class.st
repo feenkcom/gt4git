@@ -304,6 +304,19 @@ GtGitRepository >> push [
 	^ res
 ]
 
+{ #category : #accessing }
+GtGitRepository >> repairActions [
+
+	^ GtGitRepairAction subclasses select: [ :sc | 
+		  sc iceTipClass isAvailableFor: self repository ]
+]
+
+{ #category : #accessing }
+GtGitRepository >> repairStencil [
+
+	^ GtGitRepositoryRepairStencil new repository: repository
+]
+
 { #category : #'api - accessing' }
 GtGitRepository >> repository [
 	^ repository
