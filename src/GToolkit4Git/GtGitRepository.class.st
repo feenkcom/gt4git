@@ -7,7 +7,8 @@ Class {
 		'repository',
 		'announcer',
 		'isSubscribed',
-		'lepiterWorkingCopy'
+		'lepiterWorkingCopy',
+		'status'
 	],
 	#category : #'GToolkit4Git-Model'
 }

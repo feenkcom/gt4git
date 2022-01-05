@@ -47,9 +47,9 @@ GtGitRepositoryViewModel >> headDescription [
 
 { #category : #'api - repository' }
 GtGitRepositoryViewModel >> name [
-	^ self hasRepository 
+	^ (self hasRepository 
 		ifTrue: [ iceTipRepositoryViewModel descriptionWithDecoration ] 
-		ifFalse: [ '<missing>' ]
+		ifFalse: [ '<missing>' ]) asRopedText
 ]
 
 { #category : #accessing }
@@ -81,7 +81,7 @@ GtGitRepositoryViewModel >> repairStencilFor: aDropdown [
 
 { #category : #'api - repository' }
 GtGitRepositoryViewModel >> status [
-	^ iceTipRepositoryViewModel
-		ifNotNil: [ :aViewModel | aViewModel status asRopedText ]
-		ifNil: [ '<missing>' ]
+	^ (iceTipRepositoryViewModel
+		ifNotNil: [ :aViewModel | aViewModel status ]
+		ifNil: [ '<missing>' ]) asRopedText
 ]

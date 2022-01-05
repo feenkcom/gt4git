@@ -7,7 +7,8 @@ Class {
 		'tabsElement',
 		'toolbarElement',
 		'labelElement',
-		'lazyTabsElement'
+		'lazyTabsElement',
+		'statusElement'
 	],
 	#category : #'GToolkit4Git-UI - Element'
 }
@@ -43,9 +44,11 @@ GtGitRepositoryElement >> initialize [
 	super initialize.
 	self initializeToolbarElement.
 	self initializeLazyTabsElement.
+	self initializeStatusElement.
 	
 	self addChild: self toolbarElement as: #toolbar.
 	self addChild: self lazyTabsElement as: #lazyTabs.
+	self addChild: self statusElement as: #status.
 	
 	self matchParent.
 ]
@@ -57,6 +60,15 @@ GtGitRepositoryElement >> initializeLazyTabsElement [
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent ]
+]
+
+{ #category : #initialization }
+GtGitRepositoryElement >> initializeStatusElement [
+	statusElement := BrLabel new 
+				                 aptitude: (BrGlamorousLabelAptitude new
+						                  labelDo: [ :aLabel | 
+							                  aLabel padding: BlInsets empty ]);
+				                 beSmallSize
 ]
 
 { #category : #initialization }
@@ -132,6 +144,11 @@ GtGitRepositoryElement >> repositoryViewItems [
 	^ collector collect
 ]
 
+{ #category : #initialization }
+GtGitRepositoryElement >> statusElement [
+	^ statusElement
+]
+
 { #category : #'private - accessing' }
 GtGitRepositoryElement >> tabsElement [
 	^ tabsElement
@@ -147,6 +164,14 @@ GtGitRepositoryElement >> updateElement [
 	self updateTabsElement.
 	self updateToolbarElement.
 	self updateTitleElement.
+	self updateStatusElement.
+]
+
+{ #category : #'private - updating' }
+GtGitRepositoryElement >> updateStatusElement [
+	(self hasRepositoryViewModel not or: [ 
+		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
+	self statusElement text: self repositoryViewModel status
 ]
 
 { #category : #'private - updating' }
