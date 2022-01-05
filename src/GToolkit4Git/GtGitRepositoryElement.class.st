@@ -42,6 +42,7 @@ GtGitRepositoryElement >> fetchAllRepositoriesFrom: aButton [
 { #category : #initialization }
 GtGitRepositoryElement >> initialize [
 	super initialize.
+	self subscribeToSignals.
 	self initializeToolbarElement.
 	self initializeLazyTabsElement.
 	self initializeStatusElement.
@@ -148,6 +149,11 @@ GtGitRepositoryElement >> repositoryViewItems [
 { #category : #initialization }
 GtGitRepositoryElement >> statusElement [
 	^ statusElement
+]
+
+{ #category : #initialization }
+GtGitRepositoryElement >> subscribeToSignals [
+	Iceberg announcer weak when: IceRepositoryAnnouncement send: #updateElement to: self
 ]
 
 { #category : #'private - accessing' }
