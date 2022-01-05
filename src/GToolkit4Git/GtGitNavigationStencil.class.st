@@ -30,11 +30,11 @@ GtGitNavigationStencil >> create [
 			  self announce: (GtGitRepositorySelected new repository: repo) ];
 		  column: 'Repository' translated text: [ :each | 
 			  | description |
-			  description := each name.
+			  description := each name asRopedText.
 			  each isModified ifTrue: [ 
-					  description := ('*' , description) asRopedText 
+					  description := description
 						                 foreground: (Color r: 0 g: 0.5 b: 0) ].
-			  description asRopedText glamorousRegularFont glamorousRegularSmallSize ]
+			  description glamorousRegularFont glamorousRegularSmallSize ]
 		  width: 200;
 		  column: 'Status' translated
 		  text: [ :each | each status asRopedText glamorousRegularFont glamorousRegularSmallSize ]
