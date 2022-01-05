@@ -42,6 +42,7 @@ GtGitRepositoryElement >> fetchAllRepositoriesFrom: aButton [
 { #category : #initialization }
 GtGitRepositoryElement >> initialize [
 	super initialize.
+	self subscribeToSignals.
 	self initializeToolbarElement.
 	self initializeLazyTabsElement.
 	self initializeStatusElement.
@@ -68,7 +69,8 @@ GtGitRepositoryElement >> initializeStatusElement [
 				                 aptitude: (BrGlamorousLabelAptitude new
 						                  labelDo: [ :aLabel | 
 							                  aLabel padding: BlInsets empty ]);
-				                 beSmallSize
+				                 beSmallSize;
+				                 text: ''
 ]
 
 { #category : #initialization }
@@ -149,6 +151,11 @@ GtGitRepositoryElement >> statusElement [
 	^ statusElement
 ]
 
+{ #category : #initialization }
+GtGitRepositoryElement >> subscribeToSignals [
+	Iceberg announcer weak when: IceRepositoryAnnouncement send: #updateElement to: self
+]
+
 { #category : #'private - accessing' }
 GtGitRepositoryElement >> tabsElement [
 	^ tabsElement
@@ -207,6 +214,12 @@ GtGitRepositoryElement >> updateToolbarElement [
 				 hMatchParent);
 		addItem: (BrButton new
 				 aptitude: BrGlamorousButtonWithIconAptitude;
+				 icon: BrGlamorousVectorIcons inspect;
+				 label: 'Inspect';
+				 action: [ :aButton | 
+					 aButton phlow spawnObject: self repositoryViewModel repositoryModel ]);
+		addItem: (BrButton new
+				 aptitude: BrGlamorousButtonWithIconAptitude;
 				 icon: BrGlamorousVectorIcons refresh;
 				 label: 'Fetch';
 				 action: [ :aButton | 
@@ -218,7 +231,6 @@ GtGitRepositoryElement >> updateToolbarElement [
 				 label: 'Pull';
 				 action: [ :aButton | 
 					 self pullFrom: aButton.
-					 aButton phlow fireUpdateWish.
 					 aButton phlow fireUpdateWish ]);
 		addItem: (BrButton new
 				 aptitude: BrGlamorousButtonWithIconAptitude;

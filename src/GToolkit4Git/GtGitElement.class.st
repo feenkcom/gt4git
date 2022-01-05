@@ -38,6 +38,7 @@ GtGitElement >> initialize [
 	self layout: BlLinearLayout horizontal.
 	self addAptitude: BrLayoutResizerAptitude inherit.
 	self initializeView.
+	self navigationModel: GtGitNavigationModel new.
 ]
 
 { #category : #accessing }
@@ -45,7 +46,7 @@ GtGitElement >> initializeContentElement [
 	| aViewModel |
 	aViewModel := GtGitRepositoryViewModel new.
 	repository ifNotNil: [
-		aViewModel repositoryModel: (GtGitRepository new repository: repository)].
+		aViewModel repositoryModel: repository].
 	
 	contentElement := GtGitRepositoryElement new.
 	contentElement repositoryViewModel: aViewModel.
@@ -57,7 +58,7 @@ GtGitElement >> initializeListeners [
 
 { #category : #accessing }
 GtGitElement >> initializeNavigationModel [
-	navigationModel := self defaultNavigationModel
+	self navigationModel: self defaultNavigationModel
 ]
 
 { #category : #accessing }
@@ -72,17 +73,8 @@ GtGitElement >> initializeSidebarElement [
 GtGitElement >> initializeTitleNotifier [
 	titleNotifier := GtPhlowTitleIconAndLabelNotifier new
 		shortLabel: [ self shortTitle ifEmpty: [ 'Git' asRopedText ] ];
-		icon: BrGlamorousVectorIcons largebranching.
+		icon: BrGlamorousVectorIcons branching.
 	self addEventHandler: titleNotifier.
-]
-
-{ #category : #accessing }
-GtGitElement >> initializeToolbarElement [
-	toolbarElement := GtGitToolbarElement new
-		constraintsDo: [ :c | 
-			c ignoreByLayout.
-			c ignored horizontal alignRight.
-			c ignored vertical alignTop ].
 ]
 
 { #category : #accessing }
@@ -90,7 +82,6 @@ GtGitElement >> initializeView [
 
 	self initializeContentElement.
 	self initializeSidebarElement.
-	self initializeToolbarElement.
 	self initializeNavigationModel.
 
 	self removeChildren.
@@ -98,7 +89,42 @@ GtGitElement >> initializeView [
 	self
 		addChild: (self contentElement padding: (BlInsets all: 5))
 		as: #content.
-	self addChild: self toolbarElement as: #toolbar.
+]
+
+{ #category : #accessing }
+GtGitElement >> navigationModel [
+	^ navigationModel
+]
+
+{ #category : #accessing }
+GtGitElement >> navigationModel: aNavigationModel [
+	navigationModel := aNavigationModel.
+	self subscribeToNavigationModel.
+	self onNavigationModelChanged
+]
+
+{ #category : #accessing }
+GtGitElement >> onNavigationModelChange: anEvent [
+	repository := anEvent repository.
+	self refreshView.
+	self updateTabLabel
+]
+
+{ #category : #accessing }
+GtGitElement >> onNavigationModelChanged [
+	self updateSidebarContent
+]
+
+{ #category : #accessing }
+GtGitElement >> refreshView [
+
+	self initializeContentElement.
+
+	self removeChildren.
+	self addChild: self sidebarElement as: #sidebar.
+	self
+		addChild: (self contentElement padding: (BlInsets all: 5))
+		as: #content.
 ]
 
 { #category : #accessing }
@@ -109,7 +135,7 @@ GtGitElement >> repository: aRepository [
 
 { #category : #accessing }
 GtGitElement >> shortTitle [
-	^ repository asString
+	^ repository name
 ]
 
 { #category : #accessing }
@@ -118,6 +144,30 @@ GtGitElement >> sidebarElement [
 ]
 
 { #category : #accessing }
+GtGitElement >> subscribeToNavigationModel [
+	self navigationModel weak 
+		when: GtGitRepositorySelected
+		send: #onNavigationModelChange: to: self
+]
+
+{ #category : #accessing }
+GtGitElement >> titleNotifier [
+	^ titleNotifier
+]
+
+{ #category : #accessing }
 GtGitElement >> toolbarElement [
 	^ toolbarElement
+]
+
+{ #category : #accessing }
+GtGitElement >> updateSidebarContent [
+	self sidebarElement
+		contentStencil: (GtGitNavigationStencil new 
+			navigationModel: self navigationModel)
+]
+
+{ #category : #accessing }
+GtGitElement >> updateTabLabel [
+	self titleNotifier notify
 ]
