@@ -65,12 +65,10 @@ GtGitRepositoryElement >> initializeLazyTabsElement [
 
 { #category : #initialization }
 GtGitRepositoryElement >> initializeStatusElement [
-	statusElement := BrLabel new 
-				                 aptitude: (BrGlamorousLabelAptitude new
-						                  labelDo: [ :aLabel | 
-							                  aLabel padding: BlInsets empty ]);
-				                 beSmallSize;
-				                 text: ''
+
+	statusElement := BlElement new
+		                 layout: BlLinearLayout horizontal;
+		                 constraintsDo: [:c | c horizontal fitContent. c vertical fitContent ]
 ]
 
 { #category : #initialization }
@@ -176,9 +174,14 @@ GtGitRepositoryElement >> updateElement [
 
 { #category : #'private - updating' }
 GtGitRepositoryElement >> updateStatusElement [
+
 	(self hasRepositoryViewModel not or: [ 
 		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
-	self statusElement text: self repositoryViewModel status
+	self statusElement removeChildren.
+	self repositoryViewModel repositoryModel statusModel do: [ :status | 
+		self statusElement
+			addChild: status icon asElement;
+			addChild: (BrLabel new aptitude: BrGlamorousLabelAptitude; text: status label) ]
 ]
 
 { #category : #'private - updating' }

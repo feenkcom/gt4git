@@ -8,7 +8,8 @@ Class {
 		'announcer',
 		'isSubscribed',
 		'lepiterWorkingCopy',
-		'status'
+		'status',
+		'statusModel'
 	],
 	#category : #'GToolkit4Git-Model'
 }
@@ -352,6 +353,11 @@ GtGitRepository >> repository: aRepository [
 { #category : #accessing }
 GtGitRepository >> status [
 	^ status ifNil: [ status := (IceTipRepositoryModel on: self repository) status ]
+]
+
+{ #category : #accessing }
+GtGitRepository >> statusModel [
+	^ statusModel ifNil: [ statusModel := (IceTipRepositoryModel on: self repository) statusModel ]
 ]
 
 { #category : #'api - repository' }
