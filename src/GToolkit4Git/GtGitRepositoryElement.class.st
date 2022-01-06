@@ -180,7 +180,7 @@ GtGitRepositoryElement >> updateStatusElement [
 	self statusElement removeChildren.
 	self repositoryViewModel repositoryModel statusModel do: [ :status | 
 		self statusElement
-			addChild: status icon asElement;
+			addChild: status bareIcon asElement;
 			addChild: (BrLabel new aptitude: BrGlamorousLabelAptitude; text: status label) ]
 ]
 

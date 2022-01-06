@@ -39,11 +39,13 @@ GtGitNavigationStencil >> create [
 		  column: 'Status' translated stencil: [ :each | 
 			  element := BlElement new
 				             layout: BlLinearLayout horizontal;
-				             constraintsDo: [ :c | c vertical fitContent ].
+				             constraintsDo: [ :c | 
+					             c vertical fitContent.
+					             c horizontal fitContent ].
 			  each statusModel do: [ :status | 
 				  element addChild: status asElement ].
 			  element ]
-		  width: 50;
+		  width: 100;
 		  asElementDo: [ :aList | 
 		  aList background: BrGlamorousColors neutralBackgroundColor ]
 ]

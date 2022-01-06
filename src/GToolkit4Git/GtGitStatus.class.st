@@ -7,8 +7,23 @@ Class {
 { #category : #accessing }
 GtGitStatus >> asElement [
 
-	^ self icon asElement
-		  aptitude: (BrGlamorousWithLabelTooltipAptitude new text: self label)
+	| element |
+	element := BlElement new
+		           addAptitude:
+			           (BrGlamorousWithLabelTooltipAptitude new text:
+					            self label);
+		           margin: (BlInsets left: 10);
+		           layout: BlLinearLayout horizontal alignCenter;
+		           constraintsDo: [ :c | 
+			           c horizontal fitContent.
+			           c vertical matchParent ].
+	element addChild: self icon asElement asScalableElement.
+	^ element
+]
+
+{ #category : #accessing }
+GtGitStatus >> bareIcon [
+	^ self icon
 ]
 
 { #category : #accessing }

@@ -18,10 +18,15 @@ GtGitStatusWithCount >> count: aNumber [
 ]
 
 { #category : #accessing }
-GtGitStatusWithCount >> iconWithCount: anIcon [
-	BrButton new
-		aptitude: BrGlamorousButtonLabelAndIconAptitude;
-		label: count;
-		disable;
-		icon: anIcon
+GtGitStatusWithCount >> icon [
+
+	^ BlElement new
+		  addChild: self bareIcon asElement;
+		  addChild: (BrLabel new
+				   aptitude: BrGlamorousLabelAptitude;
+				   text: count asString);
+		  layout: BlLinearLayout horizontal alignCenterLeft;
+		  constraintsDo: [ :c | 
+			  c horizontal fitContent.
+			  c vertical fitContent ]
 ]

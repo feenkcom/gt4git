@@ -5,8 +5,8 @@ Class {
 }
 
 { #category : #accessing }
-GtGitStatusOutgoing >> icon [
-	^ self iconWithCount: BrGlamorousVectorIcons up
+GtGitStatusOutgoing >> bareIcon [
+	^ BrGlamorousVectorIcons up
 ]
 
 { #category : #accessing }

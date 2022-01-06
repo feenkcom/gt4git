@@ -6,7 +6,7 @@ Class {
 
 { #category : #accessing }
 GtGitStatusUncommittedChanges >> icon [
-	^ BrGlamorousVectorIcons emphasizedInspect 
+	^ BrGlamorousVectorIcons inspect 
 ]
 
 { #category : #accessing }
