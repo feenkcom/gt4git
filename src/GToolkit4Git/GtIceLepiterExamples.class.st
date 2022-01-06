@@ -600,7 +600,7 @@ GtIceLepiterExamples >> gitRepositoryAWithNewUnnamedAddedPage [
 GtIceLepiterExamples >> gitRepositoryAWithTwoNewUnnamedAddedPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
-	| gtIceRepository targetDatabase newPage1 newPage2 diff databaseNode pagesNode |
+	| gtIceRepository targetDatabase newPage1 newPage2 diff databaseNode pagesNode deltas |
 	gtIceRepository := self gitRepositoryAWithEmptyCommitedLepiterDatabase.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
 	
@@ -611,6 +611,9 @@ GtIceLepiterExamples >> gitRepositoryAWithTwoNewUnnamedAddedPage [
 	newPage2 := LePage unnamedPage.
 	newPage2 addSnippet: (LeTextSnippet string: 'Block1 in Unnamed Page2').
 	targetDatabase addPage: newPage2.
+	
+	deltas := gtIceRepository repository getDeltasForFullDiff.
+	self assert: deltas size equals: 2.
 	
 	diff := gtIceRepository workingCopyDiff.
 	self assertDiff: diff withChildrenCount: 1 andFullCount: 5.
