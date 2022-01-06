@@ -186,7 +186,7 @@ GtGitRepositoryElement >> updateDefinitionsElement [
 GtGitRepositoryElement >> updateElement [
 	self updateTabsElement.
 	self updateToolbarElement.
-	self updateDefinitionsElement.
+	"self updateDefinitionsElement."
 	self updateTitleElement.
 	self updateStatusElement.
 ]
