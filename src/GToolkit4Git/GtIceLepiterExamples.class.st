@@ -380,10 +380,9 @@ GtIceLepiterExamples >> gitRepositoryACommitEditedPage [
 	| gtIceRepository |
 	gtIceRepository := self gitRepositoryAEditExistingPage.
 	
-	self assert: false.
-	
 	gtIceRepository executeCommit: 'Edit Page1'.
 	
+	self assert: gtIceRepository repository  getDeltasForFullDiff isEmpty.
 	self assert: gtIceRepository workingCopyDiff isEmpty.
 	
 	^ gtIceRepository
