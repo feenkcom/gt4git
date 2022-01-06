@@ -21,6 +21,7 @@ GtGitNavigationStencil >> announcer [
 GtGitNavigationStencil >> create [
 
 	<return: #BrColumnedList>
+	| element |
 	^ GtPhlowColumnedListView new
 		  updateWhen: IceRepositoryAnnouncement in: [ Iceberg announcer ];
 		  items: [ 
@@ -28,19 +29,20 @@ GtGitNavigationStencil >> create [
 					  GtGitRepository new repository: eachIceRepository ] ];
 		  send: [ :repo | 
 			  self announce: (GtGitRepositorySelected new repository: repo) ];
-		  column: 'Repository' translated text: [ :each | 
-			  | description |
-			  description := each name asRopedText.
-			  each isModified ifTrue: [ 
-					  description := description
-						                 foreground: (Color r: 0 g: 0.5 b: 0) ].
-			  description glamorousRegularFont glamorousRegularSmallSize ]
+		  column: 'Repository' translated text: [ :each | each name asRopedText glamorousRegularSmallSize ]
 		  width: 200;
-		  column: 'Status' translated
-		  text: [ :each | each status asRopedText glamorousRegularFont glamorousRegularSmallSize ]
-		  width: 200;
+		  column: 'Status' translated stencil: [ :each | 
+			  element := BlElement new
+				             layout: BlLinearLayout horizontal;
+				             constraintsDo: [ :c | 
+					             c vertical fitContent.
+					             c horizontal fitContent ].
+			  each statusModel do: [ :status | 
+				  element addChild: status asElement ].
+			  element ]
+		  width: 100;
 		  asElementDo: [ :aList | 
-			  aList background: BrGlamorousColors neutralBackgroundColor ]
+		  aList background: BrGlamorousColors neutralBackgroundColor ]
 ]
 
 { #category : #accessing }

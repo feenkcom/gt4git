@@ -48,7 +48,7 @@ GtGitRepositoryViewModel >> headDescription [
 { #category : #'api - repository' }
 GtGitRepositoryViewModel >> name [
 	^ (self hasRepository 
-		ifTrue: [ iceTipRepositoryViewModel descriptionWithDecoration ] 
+		ifTrue: [ repositoryModel name ] 
 		ifFalse: [ '<missing>' ]) asRopedText
 ]
 

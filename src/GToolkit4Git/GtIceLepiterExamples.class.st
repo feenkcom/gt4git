@@ -282,34 +282,42 @@ GtIceLepiterExamples >> cleanUpRepositoriesAndDatabases [
 { #category : #'creation repositories' }
 GtIceLepiterExamples >> createBasicIcebergRepositoryWithName: repositoryName [
 	| iceRepository reposioryFolder |
-	
-	reposioryFolder := (FileLocator localDirectory / #gt4git / repositoryName) asFileReference.
-	self 
-		assert: reposioryFolder exists not 
+
+	(self repositories includesKey: repositoryName) ifTrue: [ 
+		Error signal: 'Repository already present.' ].
+
+	reposioryFolder := (FileLocator localDirectory / #gt4git
+	                    / repositoryName) asFileReference.
+	self
+		assert: reposioryFolder exists not
 		description: 'Repository folder should not exist'.
-	self 
-		assert: (IceRepository registry 
-			anySatisfy: [ :aRepo | aRepo name = repositoryName ]) not
+	self
+		assert: (IceRepository registry anySatisfy: [ :aRepo | 
+				 aRepo name = repositoryName ]) not
 		description: 'Repository should not be registered'.
-	
+
 	iceRepository := IceRepositoryCreator new
-		location: reposioryFolder;
-		subdirectory: 'src';
-		ensureProjectFile;
-		createNewRepositoryNamed: repositoryName.
-	iceRepository workingCopy 
-		commitWithMessage: 'Add properties and project files'.
+		                 location: reposioryFolder;
+		                 subdirectory: 'src';
+		                 ensureProjectFile;
+		                 createNewRepositoryNamed: repositoryName.
+	iceRepository workingCopy commitWithMessage:
+		'Add properties and project files'.
 
 	"Ideally do not register the repository with Iceberg.
 	Registered for now to make ot easy to debug."
-	IceRepository registerRepository: iceRepository. 
-	
+	IceRepository registerRepository: iceRepository.
+	self repositories at: repositoryName put: iceRepository.
+
 	"Ensure the repo was creates successfully"
-	self assert: iceRepository isMissing not description: 'Repository is present'.
-	self assert: iceRepository isModified not description: 'Repository is not modified'.
-	self assert: iceRepository branch name equals: 'master'.
+	self
+		assert: iceRepository isMissing not
+		description: 'Repository is present'.
+	self
+		assert: iceRepository isModified not
+		description: 'Repository is not modified'.
 	self assert: iceRepository branch commits size equals: 1.
-	
+
 	^ iceRepository
 ]
 
@@ -317,8 +325,6 @@ GtIceLepiterExamples >> createBasicIcebergRepositoryWithName: repositoryName [
 GtIceLepiterExamples >> createIcebergRepositoryNamed: aRepositoryName withLepiterDatabaseNamed: aDatabaseName [
 	| iceRepository gtRepository database |
 	
-	(self repositories includesKey: aRepositoryName) 
-		ifTrue: [ Error signal: 'Repository already present.' ].
 	(self lepiterDatabases includesKey: aDatabaseName)
 		ifTrue: [ Error signal: 'Database already present.' ].
 		
@@ -335,8 +341,7 @@ GtIceLepiterExamples >> createIcebergRepositoryNamed: aRepositoryName withLepite
 	
 	gtRepository := GtGitRepository2 fromIcebergRepository: iceRepository.
 	"self assertLepiterDatabase: database inFolderNamed: 'lepiter'."
-	
-	self repositories at: aRepositoryName put: gtRepository.
+
 	self lepiterDatabases at: aDatabaseName put: database.
 	
 	^ gtRepository

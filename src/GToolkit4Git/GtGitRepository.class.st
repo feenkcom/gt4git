@@ -354,6 +354,11 @@ GtGitRepository >> status [
 	^ status ifNil: [ status := (IceTipRepositoryModel on: self repository) status ]
 ]
 
+{ #category : #accessing }
+GtGitRepository >> statusModel [
+	^ (IceTipRepositoryModel on: self repository) statusModel
+]
+
 { #category : #'api - repository' }
 GtGitRepository >> workingCopy [
 	^ self repository workingCopy
