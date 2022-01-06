@@ -580,13 +580,16 @@ GtIceLepiterExamples >> gitRepositoryAWithNewPageWithAttachment [
 GtIceLepiterExamples >> gitRepositoryAWithNewUnnamedAddedPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
-	| gtIceRepository targetDatabase newPage |
+	| gtIceRepository targetDatabase newPage deltas |
 	gtIceRepository := self gitRepositoryAWithEmptyCommitedLepiterDatabase.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
 	
 	newPage := LePage unnamedPage.
 	newPage addSnippet: (LeTextSnippet string: 'Block1 in Unnamed Page').
 	targetDatabase addPage: newPage.
+	
+	deltas := gtIceRepository repository getDeltasForFullDiff.
+	self assert: deltas size equals: 1.
 	
 	self assertOneAddedPage: newPage inRepository: gtIceRepository.
 	
