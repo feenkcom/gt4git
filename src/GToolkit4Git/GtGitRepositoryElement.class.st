@@ -193,7 +193,7 @@ GtGitRepositoryElement >> updateTabsElement [
 GtGitRepositoryElement >> updateTitleElement [
 	(self hasRepositoryViewModel not or: [ 
 		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
-	self labelElement text: self repositoryViewModel name
+	self labelElement text: self repositoryViewModel name asString
 ]
 
 { #category : #'private - updating' }

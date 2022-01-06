@@ -29,12 +29,7 @@ GtGitNavigationStencil >> create [
 					  GtGitRepository new repository: eachIceRepository ] ];
 		  send: [ :repo | 
 			  self announce: (GtGitRepositorySelected new repository: repo) ];
-		  column: 'Repository' translated text: [ :each | 
-			  | description |
-			  description := each name asRopedText.
-			  each isModified ifTrue: [ 
-					  description := description foreground: (Color r: 0 g: 0.5 b: 0) ].
-			  description glamorousRegularFont glamorousRegularSmallSize ]
+		  column: 'Repository' translated text: [ :each | each name asRopedText glamorousRegularSmallSize ]
 		  width: 200;
 		  column: 'Status' translated stencil: [ :each | 
 			  element := BlElement new
