@@ -12,7 +12,7 @@ GtGitStatus >> asElement [
 		           addAptitude:
 			           (BrGlamorousWithLabelTooltipAptitude new text:
 					            self label);
-		           margin: (BlInsets left: 10);
+		           margin: (BlInsets right: 10);
 		           layout: BlLinearLayout horizontal alignCenter;
 		           constraintsDo: [ :c | 
 			           c horizontal fitContent.

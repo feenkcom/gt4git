@@ -7,7 +7,6 @@ Class {
 		'titleNotifier',
 		'contentElement',
 		'sidebarElement',
-		'toolbarElement',
 		'navigationModel',
 		'repository'
 	],
@@ -153,11 +152,6 @@ GtGitElement >> subscribeToNavigationModel [
 { #category : #accessing }
 GtGitElement >> titleNotifier [
 	^ titleNotifier
-]
-
-{ #category : #accessing }
-GtGitElement >> toolbarElement [
-	^ toolbarElement
 ]
 
 { #category : #accessing }
