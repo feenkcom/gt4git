@@ -67,7 +67,7 @@ GtGitRepositoryElement >> initializeLazyTabsElement [
 GtGitRepositoryElement >> initializeStatusElement [
 
 	statusElement := BlElement new
-		                 layout: BlLinearLayout horizontal;
+		                 layout: BlLinearLayout horizontal alignCenterLeft;
 		                 constraintsDo: [:c | c horizontal fitContent. c vertical fitContent ]
 ]
 
