@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #accessing }
+GtGitStatusError >> color [
+	^ BrGlamorousColors errorBackgroundColor
+]
+
+{ #category : #accessing }
 GtGitStatusError >> icon [
 	^ BrGlamorousVectorIcons cancel
 ]

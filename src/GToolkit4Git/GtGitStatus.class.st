@@ -14,6 +14,7 @@ GtGitStatus >> asElement [
 					            self label);
 		           margin: (BlInsets right: 10);
 		           layout: BlLinearLayout horizontal alignCenter;
+		           background: self color;
 		           constraintsDo: [ :c | 
 			           c horizontal fitContent.
 			           c vertical matchParent ].
@@ -24,6 +25,11 @@ GtGitStatus >> asElement [
 { #category : #accessing }
 GtGitStatus >> bareIcon [
 	^ self icon
+]
+
+{ #category : #accessing }
+GtGitStatus >> color [
+	^ self subclassResponsibility
 ]
 
 { #category : #accessing }
