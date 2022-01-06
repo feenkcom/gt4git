@@ -15,6 +15,7 @@ GtGitStatus >> asElement [
 		           margin: (BlInsets right: 10);
 		           layout: BlLinearLayout horizontal alignCenter;
 		           background: self color;
+		           geometry: (BlRoundedRectangleGeometry cornerRadius: 4);
 		           constraintsDo: [ :c | 
 			           c horizontal fitContent.
 			           c vertical matchParent ].
