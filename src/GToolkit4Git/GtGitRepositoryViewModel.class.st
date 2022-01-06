@@ -7,8 +7,14 @@ Class {
 		'iceTipRepositoryViewModel',
 		'commitMessage'
 	],
-	#category : 'GToolkit4Git-UI - View Model'
+	#category : #'GToolkit4Git-UI - View Model'
 }
+
+{ #category : #accessing }
+GtGitRepositoryViewModel >> addPackage: aSymbol [
+	
+	self repositoryModel workingCopy addPackageNamed: aSymbol
+]
 
 { #category : #'api - accessing' }
 GtGitRepositoryViewModel >> commitMessage [
@@ -27,6 +33,11 @@ GtGitRepositoryViewModel >> executeCommit: aCommitMessage [
 	self repositoryModel executeCommit: aCommitMessage.
 ]
 
+{ #category : #accessing }
+GtGitRepositoryViewModel >> fetch [
+	self repositoryModel fetch
+]
+
 { #category : #'api - repository' }
 GtGitRepositoryViewModel >> headDescription [
 	^ self hasRepository 
@@ -36,9 +47,14 @@ GtGitRepositoryViewModel >> headDescription [
 
 { #category : #'api - repository' }
 GtGitRepositoryViewModel >> name [
-	^ self hasRepository 
+	^ (self hasRepository 
 		ifTrue: [ iceTipRepositoryViewModel descriptionWithDecoration ] 
-		ifFalse: [ '<missing>' ]
+		ifFalse: [ '<missing>' ]) asRopedText
+]
+
+{ #category : #accessing }
+GtGitRepositoryViewModel >> needsRepair [
+	^ self repositoryModel repairActions size > 0 
 ]
 
 { #category : #'api - repository model' }
@@ -48,9 +64,24 @@ GtGitRepositoryViewModel >> onRepositoryModelChanged [
 	iceTipRepositoryViewModel := IceTipRepositoryModel on: self repositoryModel repository
 ]
 
+{ #category : #accessing }
+GtGitRepositoryViewModel >> pull [
+	self repositoryModel pull
+]
+
+{ #category : #accessing }
+GtGitRepositoryViewModel >> push [
+	self repositoryModel push
+]
+
+{ #category : #accessing }
+GtGitRepositoryViewModel >> repairStencilFor: aDropdown [
+	^ self repositoryModel repairStencil dropdown: aDropdown
+]
+
 { #category : #'api - repository' }
 GtGitRepositoryViewModel >> status [
-	^ iceTipRepositoryViewModel
-		ifNotNil: [ :aViewModel | aViewModel status asRopedText ]
-		ifNil: [ '<missing>' ]
+	^ (iceTipRepositoryViewModel
+		ifNotNil: [ :aViewModel | aViewModel status ]
+		ifNil: [ '<missing>' ]) asRopedText
 ]

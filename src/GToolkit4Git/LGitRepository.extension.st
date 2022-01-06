@@ -11,7 +11,7 @@ LGitRepository >> getDeltasFromHead: aHead options: anLGitDiffOptions [
 	| out tree |
 	out := LGitDiff newPointer autoRelease; repository: self.
 	
-	tree := (aHead isKindOf: IceGitUnbornBranch) ifTrue: [ (LGitTreeBuilder of: self fromTree: nil) newTree ] ifFalse: [(self revparse: aHead gitRef) tree].
+	tree := aHead treeFor: self.
 	
 	out 
 		diffTreeToWorkdir: tree 

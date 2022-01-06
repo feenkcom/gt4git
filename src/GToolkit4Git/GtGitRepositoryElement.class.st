@@ -7,10 +7,26 @@ Class {
 		'tabsElement',
 		'toolbarElement',
 		'labelElement',
-		'lazyTabsElement'
+		'lazyTabsElement',
+		'statusElement'
 	],
-	#category : 'GToolkit4Git-UI - Element'
+	#category : #'GToolkit4Git-UI - Element'
 }
+
+{ #category : #'instance creation' }
+GtGitRepositoryElement class >> on: each [ 
+	| aViewModel |
+	aViewModel := GtGitRepositoryViewModel new.
+	aViewModel repositoryModel: (GtGitRepository new repository: each).
+	
+	^ self new repositoryViewModel: aViewModel
+]
+
+{ #category : #initialization }
+GtGitRepositoryElement >> addPackageNamed: aString [ 
+	
+	self repositoryViewModel addPackage: aString asSymbol
+]
 
 { #category : #initialization }
 GtGitRepositoryElement >> defaultLayout [
@@ -18,13 +34,22 @@ GtGitRepositoryElement >> defaultLayout [
 ]
 
 { #category : #initialization }
+GtGitRepositoryElement >> fetchAllRepositoriesFrom: aButton [ 
+	self repositoryViewModel fetch.
+	aButton phlow fireUpdateWish
+]
+
+{ #category : #initialization }
 GtGitRepositoryElement >> initialize [
 	super initialize.
+	self subscribeToSignals.
 	self initializeToolbarElement.
 	self initializeLazyTabsElement.
+	self initializeStatusElement.
 	
 	self addChild: self toolbarElement as: #toolbar.
 	self addChild: self lazyTabsElement as: #lazyTabs.
+	self addChild: self statusElement as: #status.
 	
 	self matchParent.
 ]
@@ -39,31 +64,23 @@ GtGitRepositoryElement >> initializeLazyTabsElement [
 ]
 
 { #category : #initialization }
+GtGitRepositoryElement >> initializeStatusElement [
+	statusElement := BrLabel new 
+				                 aptitude: (BrGlamorousLabelAptitude new
+						                  labelDo: [ :aLabel | 
+							                  aLabel padding: BlInsets empty ]);
+				                 beSmallSize;
+				                 text: ''
+]
+
+{ #category : #initialization }
 GtGitRepositoryElement >> initializeToolbarElement [
+
 	toolbarElement := BrToolbar new
-		aptitude: (BrGlamorousToolbarAptitude new spacing: 0);
-		vFitContent;
-		hMatchParent.
-	
-	toolbarElement
-		addItem: (labelElement := BrLabel new
-			aptitude: (BrGlamorousLabelAptitude new 
-				bold; 
-				labelDo: [ :aLabel | aLabel padding: BlInsets empty ]);
-			beHugeSize;
-			text: '');
-		addItem: (BrFrame new
-			vFitContent;
-			hMatchParent);
-		addItem: (BrButton new
-			aptitude: BrGlamorousButtonWithIconAptitude;
-			icon: BrGlamorousVectorIcons refresh;
-			label: 'Fetch';
-			action: [ :aButton | self fetchAllRepositoriesFrom: aButton ]);
-		addItem: (BrButton new
-			aptitude: BrGlamorousButtonWithIconAptitude;
-			icon: BrGlamorousVectorIcons add;
-			label: 'Something')
+		                  aptitude:
+			                  (BrGlamorousToolbarAptitude new spacing: 0);
+		                  vFitContent;
+		                  hMatchParent.          
 ]
 
 { #category : #'private - accessing' }
@@ -99,14 +116,27 @@ GtGitRepositoryElement >> onRepositoryViewModelChanged [
 ]
 
 { #category : #'private - updating' }
+GtGitRepositoryElement >> pullFrom: aButton [
+	self repositoryViewModel pull.
+	aButton phlow fireUpdateWish
+]
+
+{ #category : #'private - updating' }
+GtGitRepositoryElement >> pushFrom: aButton [
+	self repositoryViewModel push.
+	aButton phlow fireUpdateWish
+]
+
+{ #category : #'private - updating' }
 GtGitRepositoryElement >> repositoryViewItems [
+
 	| aRepository collector context |
-	
+	self repositoryViewModel hasRepository ifFalse: [ ^ #(  ) ].
 	aRepository := self repositoryViewModel repositoryModel.
 
 	collector := GtPhlowViewsCollector new
-		fromObject: aRepository;
-		pragmaName: #gtRepositoryView.
+		             fromObject: aRepository;
+		             pragmaName: #gtRepositoryView.
 
 	context := GtPhlowContext new.
 	context optionAt: #repositoryViewModel put: self repositoryViewModel.
@@ -114,6 +144,16 @@ GtGitRepositoryElement >> repositoryViewItems [
 	collector context: context.
 
 	^ collector collect
+]
+
+{ #category : #initialization }
+GtGitRepositoryElement >> statusElement [
+	^ statusElement
+]
+
+{ #category : #initialization }
+GtGitRepositoryElement >> subscribeToSignals [
+	Iceberg announcer weak when: IceRepositoryAnnouncement send: #updateElement to: self
 ]
 
 { #category : #'private - accessing' }
@@ -129,7 +169,16 @@ GtGitRepositoryElement >> toolbarElement [
 { #category : #'private - updating' }
 GtGitRepositoryElement >> updateElement [
 	self updateTabsElement.
+	self updateToolbarElement.
 	self updateTitleElement.
+	self updateStatusElement.
+]
+
+{ #category : #'private - updating' }
+GtGitRepositoryElement >> updateStatusElement [
+	(self hasRepositoryViewModel not or: [ 
+		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
+	self statusElement text: self repositoryViewModel status
 ]
 
 { #category : #'private - updating' }
@@ -139,5 +188,69 @@ GtGitRepositoryElement >> updateTabsElement [
 
 { #category : #'private - updating' }
 GtGitRepositoryElement >> updateTitleElement [
+	(self hasRepositoryViewModel not or: [ 
+		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
 	self labelElement text: self repositoryViewModel name
+]
+
+{ #category : #'private - updating' }
+GtGitRepositoryElement >> updateToolbarElement [
+
+	| look aDropdown |
+	(self hasRepositoryViewModel not or: [ 
+		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
+
+	toolbarElement removeAllItems.
+	toolbarElement
+		addItem: (labelElement := BrLabel new
+				                 aptitude: (BrGlamorousLabelAptitude new
+						                  bold;
+						                  labelDo: [ :aLabel | 
+							                  aLabel padding: BlInsets empty ]);
+				                 beHugeSize;
+				                 text: '');
+		addItem: (BrFrame new
+				 vFitContent;
+				 hMatchParent);
+		addItem: (BrButton new
+				 aptitude: BrGlamorousButtonWithIconAptitude;
+				 icon: BrGlamorousVectorIcons inspect;
+				 label: 'Inspect';
+				 action: [ :aButton | 
+					 aButton phlow spawnObject: self repositoryViewModel repositoryModel ]);
+		addItem: (BrButton new
+				 aptitude: BrGlamorousButtonWithIconAptitude;
+				 icon: BrGlamorousVectorIcons refresh;
+				 label: 'Fetch';
+				 action: [ :aButton | 
+					 self fetchAllRepositoriesFrom: aButton.
+					 aButton phlow fireUpdateWish ]);
+		addItem: (BrButton new
+				 aptitude: BrGlamorousButtonWithIconAptitude;
+				 icon: BrGlamorousVectorIcons down;
+				 label: 'Pull';
+				 action: [ :aButton | 
+					 self pullFrom: aButton.
+					 aButton phlow fireUpdateWish ]);
+		addItem: (BrButton new
+				 aptitude: BrGlamorousButtonWithIconAptitude;
+				 icon: BrGlamorousVectorIcons up;
+				 label: 'Push';
+				 action: [ :aButton | 
+					 self pushFrom: aButton.
+					 aButton phlow fireUpdateWish ]).
+
+	self repositoryViewModel needsRepair ifTrue: [ 
+		toolbarElement addItem: (aDropdown := BrButton new
+				 aptitude: BrGlamorousButtonWithLabelAptitude
+					 + (BrGlamorousWithDropdownAptitude
+							  handle: [ 
+								  BrButton new
+									  aptitude:
+										  BrGlamorousButtonWithLabelAptitude
+										  - BrGlamorousButtonExteriorAptitude;
+									  label: 'Repair' ]
+							  content: [
+							  self repositoryViewModel repairStencilFor: aDropdown ]);
+				 label: 'Repair') ]
 ]

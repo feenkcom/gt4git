@@ -21,6 +21,11 @@ GtGitRepository2 class >> fromIcebergRepository: anIceRepository [
 ]
 
 { #category : #accessing }
+GtGitRepository2 >> addPackage: aSymbol [
+	self workingCopy addPackageNamed: aSymbol
+]
+
+{ #category : #accessing }
 GtGitRepository2 >> currentCommitMessage [
 	<return: #BlText>
 	^ currentCommitMessage ifNil: [
@@ -53,16 +58,21 @@ GtGitRepository2 >> gtActionFetchFor: anAction [
 
 { #category : #'gt-extensions' }
 GtGitRepository2 >> gtActionPullFor: anAction [
+
 	<gtAction>
 	self isMissing ifTrue: [ ^ anAction ].
-	(IceTipRepositoryModel on:self repository) isDetached ifTrue: [ ^ anAction ].
+	(IceTipRepositoryModel on: self repository) isDetached ifTrue: [ 
+		^ anAction ].
 	^ anAction button
-		label: 'Pull';
-		priority: 3;
-		action: [ :aButton | 
-			self repository pull.
-			Iceberg announcer announce: (IceRepositoryModified for: self repository).
-			aButton phlow fireUpdateWish ]
+		  label: 'Pull';
+		  priority: 3;
+		  action: [ :aButton | 
+			  [ self repository pull ]
+				  on: IceMergeResolutionRequest
+				  do: [ :r | aButton phlow spawnObject: r merge ].
+			  Iceberg announcer announce:
+					  (IceRepositoryModified for: self repository).
+			  aButton phlow fireUpdateWish ]
 ]
 
 { #category : #'gt-extensions' }
@@ -245,23 +255,33 @@ GtGitRepository2 >> gtRepositoryDirectoryFor: aView [
 
 { #category : #'gt-extensions' }
 GtGitRepository2 >> gtViewIncomingCommitsFor: aView [
+
 	<gtView>
 	| incomingCommits |
-	self repository repositoryDirectory ifNil: [  ^ aView empty ].
-	incomingCommits := GtRlIceCommitsGroup forCommits: self repository incomingCommits.
+	self repository repositoryDirectory ifNil: [ ^ aView empty ].
+	incomingCommits := GtRlIceCommitsGroup forCommits:
+		                   self repository incomingCommits.
 	incomingCommits commits ifEmpty: [ ^ aView empty ].
-	
+
 	^ (incomingCommits gtViewCommitsListFor: aView)
-		title: 'Incoming commits' translated;
-		priority: 10;
-		actionButtonLabel: 'Merge' action: [ :aButton |
-			| remoteBranch |
-			remoteBranch := self repository branch upstream remote 
-				remoteBranchNamed: self repository branch name 
-				ifAbsent: [ self repository branch ].
-			self repository workingCopy mergeCommit: remoteBranch commit.
-			Iceberg announcer announce: (IceRepositoryModified for: self repository).
-			aButton phlow fireUpdateWish ]
+		  title: 'Incoming commits' translated;
+		  updateWhen: IceCommited
+		  in: Iceberg announcer;
+		  updateWhen: IceRepositoryModified
+		  in: Iceberg announcer;
+		  priority: 10;
+		  actionButtonLabel: 'Merge' action: [ :aButton | 
+			  | remoteBranch |
+			  remoteBranch := self repository branch upstream remote
+				                  remoteBranchNamed: self repository branch name
+				                  ifAbsent: [ self repository branch ].
+
+			  [ self repository workingCopy mergeCommit: remoteBranch commit ]
+				  on: IceMergeResolutionRequest
+				  do: [ :r | aButton phlow spawnObject: r merge ].
+			  Iceberg announcer announce:
+					  (IceRepositoryModified for: self repository).
+			  aButton phlow fireUpdateWish ]
 ]
 
 { #category : #'gt-extensions' }
