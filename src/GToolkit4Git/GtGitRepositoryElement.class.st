@@ -8,7 +8,8 @@ Class {
 		'toolbarElement',
 		'labelElement',
 		'lazyTabsElement',
-		'statusElement'
+		'statusElement',
+		'definitionsElement'
 	],
 	#category : #'GToolkit4Git-UI - Element'
 }
@@ -34,6 +35,11 @@ GtGitRepositoryElement >> defaultLayout [
 ]
 
 { #category : #initialization }
+GtGitRepositoryElement >> definitionsElement [
+	^ definitionsElement
+]
+
+{ #category : #initialization }
 GtGitRepositoryElement >> fetchAllRepositoriesFrom: aButton [ 
 	self repositoryViewModel fetch.
 	aButton phlow fireUpdateWish
@@ -45,13 +51,20 @@ GtGitRepositoryElement >> initialize [
 	self subscribeToSignals.
 	self initializeToolbarElement.
 	self initializeLazyTabsElement.
+	self initializeDefinitionsElement.
 	self initializeStatusElement.
 	
 	self addChild: self toolbarElement as: #toolbar.
+	"self addChild: self definitionsElement as: #definitions."
 	self addChild: self lazyTabsElement as: #lazyTabs.
 	self addChild: self statusElement as: #status.
 	
 	self matchParent.
+]
+
+{ #category : #initialization }
+GtGitRepositoryElement >> initializeDefinitionsElement [
+	definitionsElement := GtGitDefinitionsElement new.
 ]
 
 { #category : #initialization }
@@ -165,9 +178,15 @@ GtGitRepositoryElement >> toolbarElement [
 ]
 
 { #category : #'private - updating' }
+GtGitRepositoryElement >> updateDefinitionsElement [
+	definitionsElement repositoryViewModel: self repositoryViewModel
+]
+
+{ #category : #'private - updating' }
 GtGitRepositoryElement >> updateElement [
 	self updateTabsElement.
 	self updateToolbarElement.
+	self updateDefinitionsElement.
 	self updateTitleElement.
 	self updateStatusElement.
 ]
