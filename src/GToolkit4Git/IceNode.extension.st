@@ -20,7 +20,7 @@ IceNode >> gtViewDiffFor: aView [
 	
 	^ aView textEditor
 		title: 'Diff' translated;
-		priority: 20;
+		priority: 10;
 		text: [ :anEditor | 
 			GtEpiceaDiffStencil new
 				from: self value rightContents;
