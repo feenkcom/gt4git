@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #accessing }
+GtGitStatusUncommittedChanges >> color [
+	^ BrGlamorousColors newsBackgroundColor 
+]
+
+{ #category : #accessing }
 GtGitStatusUncommittedChanges >> icon [
 	^ BrGlamorousVectorIcons inspect 
 ]

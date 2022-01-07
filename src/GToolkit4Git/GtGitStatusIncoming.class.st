@@ -10,6 +10,11 @@ GtGitStatusIncoming >> bareIcon [
 ]
 
 { #category : #accessing }
+GtGitStatusIncoming >> color [
+	^ BrGlamorousColors selectedListItemColor
+]
+
+{ #category : #accessing }
 GtGitStatusIncoming >> label [
 	^ count asString, ' incoming changes'
 ]
