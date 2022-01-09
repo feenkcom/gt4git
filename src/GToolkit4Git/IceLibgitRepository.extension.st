@@ -62,7 +62,7 @@ IceLibgitRepository >> gtRepositoryDirectoryFor: aView [
 	| status |
 	status := self getStatusByFile.
 	self isMissing ifTrue: [ ^ aView empty ].
-	^ (self repositoryDirectory gtItemsFor: aView)
+	^ (self repositoryDirectory gtTreeFor: aView)
 		  title: 'Repository directory' translated;
 		  priority: 35;
 		  column: 'Tracked' translated icon: [ :each | 
