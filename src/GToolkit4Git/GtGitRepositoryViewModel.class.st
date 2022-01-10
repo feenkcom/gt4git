@@ -45,6 +45,16 @@ GtGitRepositoryViewModel >> headDescription [
 		ifFalse: [ '<missing>' ]
 ]
 
+{ #category : #accessing }
+GtGitRepositoryViewModel >> incomingCommits [
+	^ self repositoryModel incomingCommits
+]
+
+{ #category : #accessing }
+GtGitRepositoryViewModel >> isMissing [
+	^ self repositoryModel isMissing
+]
+
 { #category : #'api - repository' }
 GtGitRepositoryViewModel >> name [
 	^ (self hasRepository 
@@ -62,6 +72,11 @@ GtGitRepositoryViewModel >> onRepositoryModelChanged [
 	"Is sent when a new repository model is assigned to the view model"
 	
 	iceTipRepositoryViewModel := IceTipRepositoryModel on: self repositoryModel repository
+]
+
+{ #category : #accessing }
+GtGitRepositoryViewModel >> outgoingCommits [
+	^ self repositoryModel outgoingCommits
 ]
 
 { #category : #accessing }

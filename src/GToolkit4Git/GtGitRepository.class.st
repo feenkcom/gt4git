@@ -257,11 +257,35 @@ GtGitRepository >> headDescription [
 	^ self repository ifNotNil: #headDescription ifNil: [ '<missing>' ]
 ]
 
+{ #category : #accessing }
+GtGitRepository >> incomingCommits [
+
+	^ self isCommittable
+		  ifTrue: [ self repository incomingCommits ]
+		  ifFalse: [ #(  ) ]
+]
+
 { #category : #initialization }
 GtGitRepository >> initialize [
 	super initialize.
 	announcer := Announcer new.
 	isSubscribed := false.
+]
+
+{ #category : #accessing }
+GtGitRepository >> isCommittable [
+
+	^ (((self hasWorkingCopy and: [ self repository isMissing not ]) 
+		    and: [ 
+			    self repository workingCopy workingCopyState
+				    isUnknownCommitState not ]) and: [ 
+		   self repository workingCopy isDetached not not ]) and: [ 
+		  self repository head isDetached not not ]
+]
+
+{ #category : #accessing }
+GtGitRepository >> isMissing [
+	^ self repository isMissing
 ]
 
 { #category : #'api - testing' }
@@ -284,6 +308,14 @@ GtGitRepository >> onRepositoryModifiedAnnouncement: anAnnouncement [
 	anAnnouncement repository = self repository ifTrue: [ ^ self ].
 	
 	self announce: anAnnouncement
+]
+
+{ #category : #accessing }
+GtGitRepository >> outgoingCommits [
+
+	^ self isCommittable
+		  ifTrue: [ self repository outgoingCommits ]
+		  ifFalse: [ #(  ) ]
 ]
 
 { #category : #printing }

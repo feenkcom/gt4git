@@ -218,7 +218,7 @@ GtGitRepositoryElement >> updateTitleElement [
 { #category : #'private - updating' }
 GtGitRepositoryElement >> updateToolbarElement [
 
-	| look aDropdown |
+	| look aDropdown incoming outgoing |
 	(self hasRepositoryViewModel not or: [ 
 		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
 
@@ -239,40 +239,52 @@ GtGitRepositoryElement >> updateToolbarElement [
 				 icon: BrGlamorousVectorIcons inspect;
 				 label: 'Inspect';
 				 action: [ :aButton | 
-					 aButton phlow spawnObject: self repositoryViewModel repositoryModel ]);
+					 aButton phlow spawnObject:
+							 self repositoryViewModel repositoryModel ]);
 		addItem: (BrButton new
 				 aptitude: BrGlamorousButtonWithIconAptitude;
 				 icon: BrGlamorousVectorIcons refresh;
 				 label: 'Fetch';
 				 action: [ :aButton | 
 					 self fetchAllRepositoriesFrom: aButton.
-					 aButton phlow fireUpdateWish ]);
-		addItem: (BrButton new
-				 aptitude: BrGlamorousButtonWithIconAptitude;
+					 aButton phlow fireUpdateWish ]).
+
+	incoming := self repositoryViewModel incomingCommits size.
+	outgoing := self repositoryViewModel outgoingCommits size.
+
+	self repositoryViewModel isMissing ifFalse: [ 
+		toolbarElement addItem: (BrButton new
+				 aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
 				 icon: BrGlamorousVectorIcons down;
-				 label: 'Pull';
+				 label: (incoming > 0
+						  ifTrue: [ incoming asRopedText ]
+						  ifFalse: [ '' ]);
 				 action: [ :aButton | 
 					 self pullFrom: aButton.
-					 aButton phlow fireUpdateWish ]);
-		addItem: (BrButton new
-				 aptitude: BrGlamorousButtonWithIconAptitude;
+					 aButton phlow fireUpdateWish ]) ].
+
+	outgoing > 0 ifTrue: [ 
+		toolbarElement addItem: (BrButton new
+				 aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
 				 icon: BrGlamorousVectorIcons up;
-				 label: 'Push';
+				 label: outgoing asRopedText;
 				 action: [ :aButton | 
 					 self pushFrom: aButton.
-					 aButton phlow fireUpdateWish ]).
+					 aButton phlow fireUpdateWish ]) ].
 
 	self repositoryViewModel needsRepair ifTrue: [ 
 		toolbarElement addItem: (aDropdown := BrButton new
-				 aptitude: BrGlamorousButtonWithLabelAptitude
-					 + (BrGlamorousWithDropdownAptitude
-							  handle: [ 
-								  BrButton new
-									  aptitude:
-										  BrGlamorousButtonWithLabelAptitude
-										  - BrGlamorousButtonExteriorAptitude;
-									  label: 'Repair' ]
-							  content: [
-							  self repositoryViewModel repairStencilFor: aDropdown ]);
-				 label: 'Repair') ]
+				              aptitude:
+					              BrGlamorousButtonWithLabelAptitude
+					              + (BrGlamorousWithDropdownAptitude
+							               handle: [ 
+								               BrButton new
+									               aptitude:
+										               BrGlamorousButtonWithLabelAptitude
+										               - BrGlamorousButtonExteriorAptitude;
+									               label: 'Repair' ]
+							               content: [ 
+							               self repositoryViewModel repairStencilFor:
+								               aDropdown ]);
+				              label: 'Repair') ]
 ]
