@@ -232,7 +232,13 @@ GtGitDefinitionsElement >> repositoryViewModel: aViewModel [
 GtGitDefinitionsElement >> updateElements [
 
 	self header: [ 
-	self repositoryViewModel isCommittable ifTrue: [ self buildDefinitionReader ] ifFalse: [ self buildErrorMessage ]  ].
-		self content: [ 
-	self repositoryViewModel isCommittable ifTrue: [ self buildDefinitionEditor ] ifFalse: [ self buildErrorMessage ] ]
+		(self repositoryViewModel hasRepository not or: [ 
+			 self repositoryViewModel isCommittable ])
+			ifTrue: [ self buildDefinitionReader ]
+			ifFalse: [ self buildErrorMessage ] ].
+	self content: [ 
+		(self repositoryViewModel hasRepository not or: [ 
+			 self repositoryViewModel isCommittable ])
+			ifTrue: [ self buildDefinitionEditor ]
+			ifFalse: [ self buildErrorMessage ] ]
 ]
