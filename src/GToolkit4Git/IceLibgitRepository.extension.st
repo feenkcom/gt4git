@@ -140,3 +140,15 @@ IceLibgitRepository >> isDirty [
 
 	^ handle ifNil: [ false ] ifNotNil: [ handle isDirty ]
 ]
+
+{ #category : #'*GToolkit4Git' }
+IceLibgitRepository >> originUrl [
+	^ self origin url
+]
+
+{ #category : #'*GToolkit4Git' }
+IceLibgitRepository >> setOriginTo: url [
+	(LGitRemote of: self repositoryHandle named: 'origin')
+		lookup;
+		setUrl: url.
+]

@@ -55,7 +55,7 @@ GtGitRepositoryElement >> initialize [
 	self initializeStatusElement.
 	
 	self addChild: self toolbarElement as: #toolbar.
-	"self addChild: self definitionsElement as: #definitions."
+	self addChild: self definitionsElement as: #definitions.
 	self addChild: self lazyTabsElement as: #lazyTabs.
 	self addChild: self statusElement as: #status.
 	
@@ -91,7 +91,8 @@ GtGitRepositoryElement >> initializeToolbarElement [
 		                  aptitude:
 			                  (BrGlamorousToolbarAptitude new spacing: 0);
 		                  vFitContent;
-		                  hMatchParent.          
+		                  hMatchParent;
+		                  margin: (BlInsets bottom: 5)
 ]
 
 { #category : #'private - accessing' }
@@ -186,7 +187,7 @@ GtGitRepositoryElement >> updateDefinitionsElement [
 GtGitRepositoryElement >> updateElement [
 	self updateTabsElement.
 	self updateToolbarElement.
-	"self updateDefinitionsElement."
+	self updateDefinitionsElement.
 	self updateTitleElement.
 	self updateStatusElement.
 ]
@@ -199,8 +200,7 @@ GtGitRepositoryElement >> updateStatusElement [
 	self statusElement removeChildren.
 	self repositoryViewModel repositoryModel statusModel do: [ :status | 
 		self statusElement
-			addChild: status bareIcon asElement;
-			addChild: (BrLabel new aptitude: BrGlamorousLabelAptitude; text: status label) ]
+			addChild: status asLabelElement ]
 ]
 
 { #category : #'private - updating' }
@@ -259,18 +259,14 @@ GtGitRepositoryElement >> updateToolbarElement [
 				 label: (incoming > 0
 						  ifTrue: [ incoming asRopedText ]
 						  ifFalse: [ '' ]);
-				 action: [ :aButton | 
-					 self pullFrom: aButton.
-					 aButton phlow fireUpdateWish ]) ].
+				 action: [ :aButton | self pullFrom: aButton ]) ].
 
 	outgoing > 0 ifTrue: [ 
 		toolbarElement addItem: (BrButton new
 				 aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
 				 icon: BrGlamorousVectorIcons up;
 				 label: outgoing asRopedText;
-				 action: [ :aButton | 
-					 self pushFrom: aButton.
-					 aButton phlow fireUpdateWish ]) ].
+				 action: [ :aButton | self pushFrom: aButton ]) ].
 
 	self repositoryViewModel needsRepair ifTrue: [ 
 		toolbarElement addItem: (aDropdown := BrButton new

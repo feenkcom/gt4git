@@ -32,30 +32,20 @@ GtGitDefinitionsElement >> addDefinitionEditorShortcutsTo: aPropertiesElement [
 
 { #category : #accessing }
 GtGitDefinitionsElement >> buildDefinitionEditor [
+
 	| theProperties |
-		
 	theProperties := BlElement new
-		layout: (BlGridLayout new columnCount: 2);
-		constraintsDo: [ :c |
-			c horizontal matchParent.
-			c vertical fitContent ].
-		
+		                 layout: (BlGridLayout new columnCount: 2);
+		                 constraintsDo: [ :c | 
+			                 c horizontal matchParent.
+			                 c vertical fitContent ].
+
 	self addDefinitionEditorShortcutsTo: theProperties.
 
-	self editors do: [ :eachEditor |
+	self editors do: [ :eachEditor | 
 		theProperties addChildren: { 
 				(self buildSectionLabel: eachEditor title).
-				(eachEditor
-					aptitude: [ self editableLabelLook ];
-					margin: self buttonMargin;
-					asElement) } ].
-
-	theProperties addChild: (GtRefactoringsPreviewButton new
-		refactorings: [ self repositoryViewModel refactorings ];
-		when: GtRefactoringsAppliedEvent do: [
-			self updateElements
-		];
-		constraintsDo: [ :c | c grid horizontal span: 2 ]).
+				eachEditor asElement } ].
 
 	^ theProperties
 ]
@@ -81,6 +71,11 @@ GtGitDefinitionsElement >> buildDefinitionReader [
 					asElement) } ].
 
 	^ theProperties
+]
+
+{ #category : #accessing }
+GtGitDefinitionsElement >> buildErrorMessage [
+	^ self repositoryViewModel statusModel first asLabelElement
 ]
 
 { #category : #accessing }
@@ -110,13 +105,95 @@ GtGitDefinitionsElement >> editableLabelLook [
 { #category : #accessing }
 GtGitDefinitionsElement >> editors [
 
-	^ #( 'Branch' #'.' 'File Format' #'.' 'Origin' )
+	| repository |
+	self repositoryViewModel hasRepository ifFalse: [ ^ #(  ) ].
+
+	repository := self repositoryViewModel repositoryModel repository.
+	^ { 
+		  (GtGitDefinitionsEditor new
+			   title: 'Branch';
+			   repository: repository;
+			   getSelector: #branchName;
+			   completions:
+				   (repository allBranches collect: [ :branch | branch name ]);
+			   setSelector: #checkoutBranch:).
+		  (GtGitDefinitionsEditor new
+			   title: 'Origin';
+			   repository: repository;
+			   getSelector: #originUrl;
+			   setSelector: #setOriginTo:).
+		  (GtGitDefinitionsStaticDropdownEditor new
+			   title: 'File Format';
+			   value: repository writerClass description;
+			   options: { 'Tonel'. 'Filetree' };
+			   action: [ :format | 
+				   | model |
+				   model := IceBasicProject onRepository: repository.
+				   model fileFormat: (format = 'Tonel'
+							    ifTrue: [ IceLibgitTonelWriter ]
+							    ifFalse: [ IceLibgitFiletreeWriter ]).
+				   repository workingCopy project: model.
+				   Iceberg announcer announce:
+						   (IceRepositoryModified for: repository) ]).
+		  (GtGitDefinitionsDropdownEditor new
+			   title: 'Code Directory';
+			   value: repository codeDirectory;
+			   contentBlock: [ :dropdown | 
+				   | fileBrowser container |
+				   container := BlElement new
+					                layout: (BlGridLayout new columnCount: 1);
+					                padding: (BlInsets all: 8);
+					                aptitude: BrWidgetContainerAptitude.
+				   container constraintsDo: [ :c | 
+					   c horizontal fitContent.
+					   c vertical fitContent ].
+				   fileBrowser := BrFileSelector new folder:
+					                  repository codeDirectory.
+
+				   fileBrowser vExact: 250.
+				   fileBrowser hExact: 400.
+
+				   fileBrowser buttonLabel: 'Set'.
+				   fileBrowser okAction: [ :filePath | 
+					   repository codeDirectory: (filePath  relativeTo: repository repositoryDirectory) pathString.
+					   Iceberg announcer announce:
+						   (IceRepositoryAnnouncement for: repository).
+					   dropdown ifNotNil: [ 
+						   dropdown enqueueTask: (BlTaskAction new action: [ 
+								    dropdown dispatchEvent:
+									    (BrDropdownHideWish new anchor: dropdown) ]) ] ].
+
+				   fileBrowser fileFilterBlock: [ :aFileReference | 
+					   aFileReference isDirectory and: [ 
+						   (FileSystemDirectoryEntry reference: aFileReference) isHidden
+							   not ] ].
+				   container addChild: fileBrowser.
+				   container ]) }
+]
+
+{ #category : #accessing }
+GtGitDefinitionsElement >> initialize [
+	super initialize.	
+
+	self
+		aptitude: GtCoderExpanderAptitude;
+		hMatchParent;
+		vFitContent
 ]
 
 { #category : #accessing }
 GtGitDefinitionsElement >> readers [
+	self repositoryViewModel hasRepository ifFalse: [ ^#() ].
 
-	^ #( 'Branch' #'.' 'File Format' #'.' 'Origin' )
+	^ { 
+		  (GtGitDefinitionsReader new
+			   title: 'Branch';
+			   repository: self repositoryViewModel repositoryModel repository;
+			   getSelector: #branchName).
+		  (GtGitDefinitionsReader new
+			   title: 'Origin';
+			   repository: self repositoryViewModel repositoryModel repository;
+			   getSelector: #originUrl)}
 ]
 
 { #category : #accessing }
@@ -150,6 +227,15 @@ GtGitDefinitionsElement >> repositoryViewModel: aViewModel [
 
 { #category : #accessing }
 GtGitDefinitionsElement >> updateElements [
-	self header: [ self buildDefinitionReader ].
-	self content: [ self buildDefinitionEditor ]
+
+	self header: [ 
+		(self repositoryViewModel hasRepository not or: [ 
+			 self repositoryViewModel isCommittable ])
+			ifTrue: [ self buildDefinitionReader ]
+			ifFalse: [ self buildErrorMessage ] ].
+	self content: [ 
+		(self repositoryViewModel hasRepository not or: [ 
+			 self repositoryViewModel isCommittable ])
+			ifTrue: [ self buildDefinitionEditor ]
+			ifFalse: [ self buildErrorMessage ] ]
 ]
