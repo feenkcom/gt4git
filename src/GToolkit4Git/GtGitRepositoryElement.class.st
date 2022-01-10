@@ -55,7 +55,7 @@ GtGitRepositoryElement >> initialize [
 	self initializeStatusElement.
 	
 	self addChild: self toolbarElement as: #toolbar.
-	"self addChild: self definitionsElement as: #definitions."
+	self addChild: self definitionsElement as: #definitions.
 	self addChild: self lazyTabsElement as: #lazyTabs.
 	self addChild: self statusElement as: #status.
 	
@@ -91,7 +91,8 @@ GtGitRepositoryElement >> initializeToolbarElement [
 		                  aptitude:
 			                  (BrGlamorousToolbarAptitude new spacing: 0);
 		                  vFitContent;
-		                  hMatchParent.          
+		                  hMatchParent;
+		                  margin: (BlInsets bottom: 5)
 ]
 
 { #category : #'private - accessing' }
@@ -186,7 +187,7 @@ GtGitRepositoryElement >> updateDefinitionsElement [
 GtGitRepositoryElement >> updateElement [
 	self updateTabsElement.
 	self updateToolbarElement.
-	"self updateDefinitionsElement."
+	self updateDefinitionsElement.
 	self updateTitleElement.
 	self updateStatusElement.
 ]
