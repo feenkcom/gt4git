@@ -279,8 +279,8 @@ GtGitRepository >> isCommittable [
 		    and: [ 
 			    self repository workingCopy workingCopyState
 				    isUnknownCommitState not ]) and: [ 
-		   self repository workingCopy isDetached not not ]) and: [ 
-		  self repository head isDetached not not ]
+		   self repository workingCopy isDetached not ]) and: [ 
+		  self repository head isDetached not ]
 ]
 
 { #category : #accessing }
