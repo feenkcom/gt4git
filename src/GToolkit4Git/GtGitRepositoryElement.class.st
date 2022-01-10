@@ -200,8 +200,7 @@ GtGitRepositoryElement >> updateStatusElement [
 	self statusElement removeChildren.
 	self repositoryViewModel repositoryModel statusModel do: [ :status | 
 		self statusElement
-			addChild: status bareIcon asElement;
-			addChild: (BrLabel new aptitude: BrGlamorousLabelAptitude; text: status label) ]
+			addChild: status asLabelElement ]
 ]
 
 { #category : #'private - updating' }

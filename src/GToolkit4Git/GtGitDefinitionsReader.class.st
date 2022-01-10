@@ -32,7 +32,7 @@ GtGitDefinitionsReader >> getSelector: aSymbol [
 
 { #category : #accessing }
 GtGitDefinitionsReader >> getValue [
-	^ repository perform: getSelector withArguments: {}
+	^  [ repository perform: getSelector withArguments: {} ] on: Error do: [ '' ]
 ]
 
 { #category : #accessing }

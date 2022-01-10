@@ -74,6 +74,11 @@ GtGitDefinitionsElement >> buildDefinitionReader [
 ]
 
 { #category : #accessing }
+GtGitDefinitionsElement >> buildErrorMessage [
+	^ self repositoryViewModel statusModel first asLabelElement
+]
+
+{ #category : #accessing }
 GtGitDefinitionsElement >> buildSectionLabel: aSectionName [
 	
 	^ BrLabel new
@@ -101,6 +106,8 @@ GtGitDefinitionsElement >> editableLabelLook [
 GtGitDefinitionsElement >> editors [
 
 	| repository |
+	self repositoryViewModel hasRepository ifFalse: [ ^#() ].
+	
 	repository := self repositoryViewModel repositoryModel repository.
 	^ { 
 		  (GtGitDefinitionsEditor new
@@ -138,12 +145,12 @@ GtGitDefinitionsElement >> editors [
 					                padding: (BlInsets all: 8);
 					                aptitude: BrWidgetContainerAptitude.
 				   container constraintsDo: [ :c | 
-					   c horizontal matchParent.
-					   c vertical matchParent ].
+					   c horizontal fitContent.
+					   c vertical fitContent ].
 				   fileBrowser := BrFileSelector new.
 
-				   fileBrowser vMatchParent.
-				   fileBrowser hExact: 464.
+				   fileBrowser vExact: 250.
+				   fileBrowser hExact: 500.
 
 				   fileBrowser buttonLabel: 'Set'.
 				   fileBrowser okAction: [ :filePath | 
@@ -179,6 +186,7 @@ GtGitDefinitionsElement >> initialize [
 
 { #category : #accessing }
 GtGitDefinitionsElement >> readers [
+	self repositoryViewModel hasRepository ifFalse: [ ^#() ].
 
 	^ { 
 		  (GtGitDefinitionsReader new
@@ -222,6 +230,9 @@ GtGitDefinitionsElement >> repositoryViewModel: aViewModel [
 
 { #category : #accessing }
 GtGitDefinitionsElement >> updateElements [
-	self header: [ self buildDefinitionReader ].
-	self content: [ self buildDefinitionEditor ]
+
+	self header: [ 
+	self repositoryViewModel isCommittable ifTrue: [ self buildDefinitionReader ] ifFalse: [ self buildErrorMessage ]  ].
+		self content: [ 
+	self repositoryViewModel isCommittable ifTrue: [ self buildDefinitionEditor ] ifFalse: [ self buildErrorMessage ] ]
 ]

@@ -51,6 +51,11 @@ GtGitRepositoryViewModel >> incomingCommits [
 ]
 
 { #category : #accessing }
+GtGitRepositoryViewModel >> isCommittable [
+	^ self repositoryModel isCommittable
+]
+
+{ #category : #accessing }
 GtGitRepositoryViewModel >> isMissing [
 	^ self repositoryModel isMissing
 ]
@@ -99,4 +104,9 @@ GtGitRepositoryViewModel >> status [
 	^ (iceTipRepositoryViewModel
 		ifNotNil: [ :aViewModel | aViewModel status ]
 		ifNil: [ '<missing>' ]) asRopedText
+]
+
+{ #category : #accessing }
+GtGitRepositoryViewModel >> statusModel [
+	^ self repositoryModel statusModel
 ]
