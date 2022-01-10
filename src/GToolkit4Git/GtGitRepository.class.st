@@ -338,7 +338,11 @@ GtGitRepository >> printOn: aStream [
 
 { #category : #accessing }
 GtGitRepository >> pull [
-	^ self repository pull
+	| res |
+	res := self repository pull.
+	Iceberg announcer announce:
+		(IceRepositoryModified for: self repository).
+	^ res
 ]
 
 { #category : #accessing }
