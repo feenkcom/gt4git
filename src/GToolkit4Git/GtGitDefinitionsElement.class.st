@@ -106,8 +106,8 @@ GtGitDefinitionsElement >> editableLabelLook [
 GtGitDefinitionsElement >> editors [
 
 	| repository |
-	self repositoryViewModel hasRepository ifFalse: [ ^#() ].
-	
+	self repositoryViewModel hasRepository ifFalse: [ ^ #(  ) ].
+
 	repository := self repositoryViewModel repositoryModel repository.
 	^ { 
 		  (GtGitDefinitionsEditor new
@@ -147,20 +147,17 @@ GtGitDefinitionsElement >> editors [
 				   container constraintsDo: [ :c | 
 					   c horizontal fitContent.
 					   c vertical fitContent ].
-				   fileBrowser := BrFileSelector new.
+				   fileBrowser := BrFileSelector new folder:
+					                  repository codeDirectory.
 
 				   fileBrowser vExact: 250.
-				   fileBrowser hExact: 500.
+				   fileBrowser hExact: 400.
 
 				   fileBrowser buttonLabel: 'Set'.
 				   fileBrowser okAction: [ :filePath | 
-					   | repo |
-					   repo := IceRepositoryCreator new
-						           location: filePath;
-						           createRepository.
-					   repo register.
+					   repository codeDirectory: (filePath  relativeTo: repository repositoryDirectory) pathString.
 					   Iceberg announcer announce:
-						   (IceRepositoryAnnouncement for: repo).
+						   (IceRepositoryAnnouncement for: repository).
 					   dropdown ifNotNil: [ 
 						   dropdown enqueueTask: (BlTaskAction new action: [ 
 								    dropdown dispatchEvent:
