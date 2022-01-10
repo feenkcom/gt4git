@@ -28,13 +28,15 @@ GtGitRepository >> changes [
 
 { #category : #'api - actions' }
 GtGitRepository >> executeCommit: aCommitMessage [
-	|diff|
-	diff := self repository workingCopyDiff.
-	self workingCopy 
-		commitChanges: diff
+
+	| workingCopyDiff |
+	workingCopyDiff := self workingCopyDiff.
+	self workingCopy
+		commitChanges: workingCopyDiff
 		withMessage: aCommitMessage
 		force: false.
-	Iceberg announcer announce: (IceRepositoryModified for: self repository).
+	Iceberg announcer announce:
+		(IceRepositoryModified for: self repository)
 ]
 
 { #category : #'api - actions' }
