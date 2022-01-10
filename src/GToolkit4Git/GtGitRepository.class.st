@@ -235,6 +235,13 @@ GtGitRepository >> gtPackagesFor: aView context: aContext [
 	^ self repository workingCopy gtPackagesFor: aView
 ]
 
+{ #category : #accessing }
+GtGitRepository >> gtRepositoryDirectoryFor: aView [
+	<gtView>
+	<gtRepositoryView>
+	^ (self repository gtRepositoryDirectoryFor: aView) priority: 40
+]
+
 { #category : #'api - testing' }
 GtGitRepository >> hasChanges [
 	^ self hasWorkingCopy and: [ 
