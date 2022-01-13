@@ -382,7 +382,7 @@ GtIceLepiterExamples >> gitRepositoryACommitEditedPage [
 	
 	gtIceRepository executeCommit: 'Edit Page1'.
 	
-	self assert: gtIceRepository repository  getDeltasForFullDiff isEmpty.
+	self assert: gtIceRepository getDeltasForFullDiff isEmpty.
 	self assert: gtIceRepository workingCopyDiff isEmpty.
 	
 	^ gtIceRepository
@@ -397,6 +397,7 @@ GtIceLepiterExamples >> gitRepositoryACommitNewAddedPage [
 	
 	gtIceRepository executeCommit: 'Add Page1'.
 	
+	self assert: gtIceRepository getDeltasForFullDiff isEmpty.
 	self assert: gtIceRepository workingCopyDiff isEmpty.
 	
 	^ gtIceRepository
@@ -411,6 +412,7 @@ GtIceLepiterExamples >> gitRepositoryACommitNewUnnamedAddedPage [
 	
 	gtIceRepository executeCommit: 'Add Page1 unnamed'.
 	
+	self assert: gtIceRepository getDeltasForFullDiff isEmpty.
 	self assert: gtIceRepository workingCopyDiff isEmpty.
 	
 	^ gtIceRepository
@@ -425,6 +427,7 @@ GtIceLepiterExamples >> gitRepositoryACommitRemovedPage [
 	
 	gtIceRepository executeCommit: 'Remove Page1'.
 	
+	self assert: gtIceRepository getDeltasForFullDiff isEmpty.
 	self assert: gtIceRepository workingCopyDiff isEmpty.
 	
 	^ gtIceRepository
@@ -439,6 +442,7 @@ GtIceLepiterExamples >> gitRepositoryACommitTwoNewUnnamedAddedPage [
 	
 	gtIceRepository executeCommit: 'Add Two Pages'.
 	
+	self assert: gtIceRepository getDeltasForFullDiff isEmpty.
 	self assert: gtIceRepository workingCopyDiff isEmpty.
 	
 	^ gtIceRepository
@@ -488,6 +492,7 @@ GtIceLepiterExamples >> gitRepositoryAWithEmptyCommitedLepiterDatabase [
 	gtIceRepository := self gitRepositoryAWithNewEmptyNotCommitedLepiterDatabase. 
 	gtIceRepository executeCommit: 'Add Two Pages'.
 	
+	self assert: gtIceRepository getDeltasForFullDiff isEmpty.
 	self assert: gtIceRepository workingCopyDiff isEmpty.
 	
 	^ gtIceRepository

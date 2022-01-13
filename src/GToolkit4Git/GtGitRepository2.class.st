@@ -43,6 +43,11 @@ GtGitRepository2 >> executeCommit: aCommitMessage [
 	Iceberg announcer announce: (IceRepositoryModified for: self repository).
 ]
 
+{ #category : #accessing }
+GtGitRepository2 >> getDeltasForFullDiff [
+	^ self repository getDeltasForFullDiff
+]
+
 { #category : #'gt-extensions' }
 GtGitRepository2 >> gtActionFetchFor: anAction [
 	<gtAction>

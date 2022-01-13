@@ -28,13 +28,15 @@ GtGitRepository >> changes [
 
 { #category : #'api - actions' }
 GtGitRepository >> executeCommit: aCommitMessage [
-	|diff|
-	diff := self repository workingCopyDiff.
-	self workingCopy 
-		commitChanges: diff
+
+	| workingCopyDiff |
+	workingCopyDiff := self workingCopyDiff.
+	self workingCopy
+		commitChanges: workingCopyDiff
 		withMessage: aCommitMessage
 		force: false.
-	Iceberg announcer announce: (IceRepositoryModified for: self repository).
+	Iceberg announcer announce:
+		(IceRepositoryModified for: self repository)
 ]
 
 { #category : #'api - actions' }
@@ -235,6 +237,13 @@ GtGitRepository >> gtPackagesFor: aView context: aContext [
 	^ self repository workingCopy gtPackagesFor: aView
 ]
 
+{ #category : #accessing }
+GtGitRepository >> gtRepositoryDirectoryFor: aView [
+	<gtView>
+	<gtRepositoryView>
+	^ (self repository gtRepositoryDirectoryFor: aView) priority: 40
+]
+
 { #category : #'api - testing' }
 GtGitRepository >> hasChanges [
 	^ self hasWorkingCopy and: [ 
@@ -257,11 +266,35 @@ GtGitRepository >> headDescription [
 	^ self repository ifNotNil: #headDescription ifNil: [ '<missing>' ]
 ]
 
+{ #category : #accessing }
+GtGitRepository >> incomingCommits [
+
+	^ self isCommittable
+		  ifTrue: [ self repository incomingCommits ]
+		  ifFalse: [ #(  ) ]
+]
+
 { #category : #initialization }
 GtGitRepository >> initialize [
 	super initialize.
 	announcer := Announcer new.
 	isSubscribed := false.
+]
+
+{ #category : #accessing }
+GtGitRepository >> isCommittable [
+
+	^ (((self hasWorkingCopy and: [ self repository isMissing not ]) 
+		    and: [ 
+			    self repository workingCopy workingCopyState
+				    isUnknownCommitState not ]) and: [ 
+		   self repository workingCopy isDetached not ]) and: [ 
+		  self repository head isDetached not ]
+]
+
+{ #category : #accessing }
+GtGitRepository >> isMissing [
+	^ self repository isMissing
 ]
 
 { #category : #'api - testing' }
@@ -286,6 +319,14 @@ GtGitRepository >> onRepositoryModifiedAnnouncement: anAnnouncement [
 	self announce: anAnnouncement
 ]
 
+{ #category : #accessing }
+GtGitRepository >> outgoingCommits [
+
+	^ self isCommittable
+		  ifTrue: [ self repository outgoingCommits ]
+		  ifFalse: [ #(  ) ]
+]
+
 { #category : #printing }
 GtGitRepository >> printOn: aStream [
 	super printOn: aStream.
@@ -299,7 +340,11 @@ GtGitRepository >> printOn: aStream [
 
 { #category : #accessing }
 GtGitRepository >> pull [
-	^ self repository pull
+	| res |
+	res := self repository pull.
+	Iceberg announcer announce:
+		(IceRepositoryModified for: self repository).
+	^ res
 ]
 
 { #category : #accessing }

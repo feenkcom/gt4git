@@ -62,7 +62,7 @@ IceLibgitRepository >> gtRepositoryDirectoryFor: aView [
 	| status |
 	status := self getStatusByFile.
 	self isMissing ifTrue: [ ^ aView empty ].
-	^ (self repositoryDirectory gtItemsFor: aView)
+	^ (self repositoryDirectory gtTreeFor: aView)
 		  title: 'Repository directory' translated;
 		  priority: 35;
 		  column: 'Tracked' translated icon: [ :each | 
@@ -139,4 +139,16 @@ IceLibgitRepository >> gtTagsFor: aView [
 IceLibgitRepository >> isDirty [
 
 	^ handle ifNil: [ false ] ifNotNil: [ handle isDirty ]
+]
+
+{ #category : #'*GToolkit4Git' }
+IceLibgitRepository >> originUrl [
+	^ self origin url
+]
+
+{ #category : #'*GToolkit4Git' }
+IceLibgitRepository >> setOriginTo: url [
+	(LGitRemote of: self repositoryHandle named: 'origin')
+		lookup;
+		setUrl: url.
 ]

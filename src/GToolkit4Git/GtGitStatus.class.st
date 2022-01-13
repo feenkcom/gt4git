@@ -24,6 +24,23 @@ GtGitStatus >> asElement [
 ]
 
 { #category : #accessing }
+GtGitStatus >> asLabelElement [
+	
+	| element |
+	element := BlElement new
+		           margin: (BlInsets right: 10);
+		           layout: BlLinearLayout horizontal alignCenter;
+		           background: self color;
+		           geometry: (BlRoundedRectangleGeometry cornerRadius: 4);
+		           constraintsDo: [ :c | 
+			           c horizontal fitContent.
+			           c vertical matchParent ].
+	element addChild: self bareIcon asElement asScalableElement.
+	element addChild: (BrLabel new aptitude: BrGlamorousLabelAptitude; text: self label).
+	^ element
+]
+
+{ #category : #accessing }
 GtGitStatus >> bareIcon [
 	^ self icon
 ]
