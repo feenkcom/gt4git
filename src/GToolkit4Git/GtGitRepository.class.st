@@ -299,7 +299,7 @@ GtGitRepository >> isMissing [
 
 { #category : #'api - testing' }
 GtGitRepository >> isModified [
-	^ self hasWorkingCopy and: [ self workingCopy isModified ]
+	^ self repository isModified or: [ self repository isDirty ]
 ]
 
 { #category : #'gt - extensions' }
@@ -401,7 +401,40 @@ GtGitRepository >> status [
 
 { #category : #accessing }
 GtGitRepository >> statusModel [
-	^ (IceTipRepositoryModel on: self repository) statusModel
+	[
+		| entity statusCollection incoming outgoing | 
+		entity := self repository.
+
+		entity isMissing ifTrue: [ ^ {GtGitStatusMissing new} ].
+		
+		entity workingCopy workingCopyState isUnknownCommitState 
+			ifTrue: [ ^ {GtGitStatusUnknownCommitState new message: entity workingCopy workingCopyState description} ].	
+		entity workingCopy isDetached 
+			ifTrue: [  ^ {GtGitStatusDetachedWorkingCopy new} ].
+		(entity head isDetached and: [ entity head tags notEmpty ])
+			ifTrue: [ ^ {GtGitStatusDetachedHead new} ].
+		entity head isDetached 
+			ifTrue: [ ^ {GtGitStatusDetachedHead new}  ].
+
+		entity workingCopy project isUnborn
+			ifTrue: [ ^ {GtGitStatusNoProject new} ].
+
+		entity loadedPackages notEmpty ifFalse: [ ^ {GtGitStatusNotLoaded new} ].
+
+		statusCollection := OrderedCollection new.
+		self isModified ifTrue: [ statusCollection add: GtGitStatusUncommittedChanges new ].
+		
+		incoming := self incomingCommits size.
+		incoming > 0 ifTrue: [ statusCollection add: (GtGitStatusIncoming new count: incoming)].
+		
+		outgoing := self outgoingCommits size.
+		outgoing > 0 ifTrue: [ statusCollection add: (GtGitStatusOutgoing new count: outgoing)].
+
+		
+		^ statusCollection
+	] 
+	on: Error do: [ :error | ^ {GtGitStatusUnknownError new message: error description} ]
+
 ]
 
 { #category : #'api - repository' }
