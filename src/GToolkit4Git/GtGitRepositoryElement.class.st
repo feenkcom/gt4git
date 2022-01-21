@@ -154,7 +154,7 @@ GtGitRepositoryElement >> pushFor: aDropdown on: aListOfCommits [
 	aContainer addChild: (BrButton new
 			 aptitude: BrGlamorousButtonWithIconAptitude;
 			 icon: BrGlamorousVectorIcons accept;
-			 label: 'Commit';
+			 label: 'Push';
 			 margin: (BlInsets
 					  top: 0
 					  left: 0
