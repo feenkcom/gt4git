@@ -159,7 +159,9 @@ GtGitRepositoryElement >> pushFor: aDropdown on: aListOfCommits [
 					  left: 10
 					  bottom: 10
 					  right: 0);
-			 action: [ :aButton | self pushFrom: aButton ]).
+			 action: [ :aButton | 
+				 aButton fireEvent: BrDropdownHideWish new.
+				 self pushFrom: aButton ]).
 	^ aContainer
 ]
 
