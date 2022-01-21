@@ -134,6 +134,39 @@ GtGitRepositoryElement >> pullFrom: aButton [
 ]
 
 { #category : #'private - updating' }
+GtGitRepositoryElement >> pushFor: aDropdown on: aListOfCommits [
+
+	| aContainer |
+	aContainer := BrVerticalPane new
+		              vFitContent;
+		              layout: BlLinearLayout vertical alignCenterRight;
+		              hExact: 600.
+
+	aContainer addChild: (GtPhlowColumnedListView new
+			 title: 'Commits' translated;
+			 items: aListOfCommits;
+			 column: 'Timestamp'
+			 text: [ :aCommit | aCommit timeStamp asStringYMDHM ]
+			 width: 120;
+			 column: 'Commit' text: #shortId width: 70;
+			 column: 'Author' text: #author width: 100;
+			 column: 'Description' text: #comment) asElement.
+	aContainer addChild: (BrButton new
+			 aptitude: BrGlamorousButtonWithIconAptitude;
+			 icon: BrGlamorousVectorIcons accept;
+			 label: 'Push';
+			 margin: (BlInsets
+					  top: 0
+					  left: 0
+					  bottom: 10
+					  right: 10);
+			 action: [ :aButton | 
+				 aButton fireEvent: BrDropdownHideWish new.
+				 self pushFrom: aButton ]).
+	^ aContainer
+]
+
+{ #category : #'private - updating' }
 GtGitRepositoryElement >> pushFrom: aButton [
 	self repositoryViewModel push.
 	aButton phlow fireUpdateWish
@@ -218,7 +251,7 @@ GtGitRepositoryElement >> updateTitleElement [
 { #category : #'private - updating' }
 GtGitRepositoryElement >> updateToolbarElement [
 
-	| look aDropdown incoming outgoing |
+	| look aDropdown outgoing incomingSize |
 	(self hasRepositoryViewModel not or: [ 
 		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
 
@@ -249,24 +282,32 @@ GtGitRepositoryElement >> updateToolbarElement [
 					 self fetchAllRepositoriesFrom: aButton.
 					 aButton phlow fireUpdateWish ]).
 
-	incoming := self repositoryViewModel incomingCommits size.
-	outgoing := self repositoryViewModel outgoingCommits size.
+	incomingSize := self repositoryViewModel incomingCommits size.
+	outgoing := self repositoryViewModel outgoingCommits.
 
 	self repositoryViewModel isMissing ifFalse: [ 
 		toolbarElement addItem: (BrButton new
 				 aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
 				 icon: BrGlamorousVectorIcons down;
-				 label: (incoming > 0
-						  ifTrue: [ incoming asRopedText ]
+				 label: (incomingSize > 0
+						  ifTrue: [ incomingSize asRopedText ]
 						  ifFalse: [ '' ]);
 				 action: [ :aButton | self pullFrom: aButton ]) ].
 
-	outgoing > 0 ifTrue: [ 
-		toolbarElement addItem: (BrButton new
-				 aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
-				 icon: BrGlamorousVectorIcons up;
-				 label: outgoing asRopedText;
-				 action: [ :aButton | self pushFrom: aButton ]) ].
+	outgoing size > 0 ifTrue: [ 
+		toolbarElement addItem: (aDropdown := BrButton new
+				              aptitude: BrGlamorousButtonWithIconAndLabelAptitude
+					              + (BrGlamorousWithDropdownAptitude
+							               handle: [ 
+								               BrButton new
+									               aptitude:
+										               BrGlamorousButtonWithIconAndLabelAptitude
+										               - BrGlamorousButtonExteriorAptitude;
+									               icon: BrGlamorousVectorIcons up;
+									               label: outgoing size asRopedText ]
+							               content: [ self pushFor: aDropdown on: outgoing ]);
+				              icon: BrGlamorousVectorIcons up;
+				              label: outgoing size asRopedText) ].
 
 	self repositoryViewModel needsRepair ifTrue: [ 
 		toolbarElement addItem: (aDropdown := BrButton new
