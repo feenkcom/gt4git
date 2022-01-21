@@ -334,8 +334,8 @@ GtGitRepositoryElement >> updateToolbarElement [
 									               showCommits: outgoing
 									               on: aDropdown
 									               withAction: [ :aButton | 
-									               self pushFrom: aButton ] ]
-							               named: 'Push');
+									               self pushFrom: aButton ]
+									               named: 'Push' ]);
 				              icon: BrGlamorousVectorIcons up;
 				              label: outgoing size asRopedText) ].
 
