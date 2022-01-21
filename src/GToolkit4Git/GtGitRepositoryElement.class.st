@@ -137,21 +137,28 @@ GtGitRepositoryElement >> pullFrom: aButton [
 GtGitRepositoryElement >> pushFor: aDropdown on: aListOfCommits [
 
 	| aContainer |
-	aContainer := BlElement new constraintsDo: [ :c | 
-		              c horizontal fitContent.
-		              c vertical fitContent ].
-	aContainer addChild: (BrSimpleList new
-			 matchParent;
+	aContainer := BrVerticalPane new
+		              vFitContent;
+		              hExact: 600.
+
+	aContainer addChild: (GtPhlowColumnedListView new
+			 title: 'Commits' translated;
 			 items: aListOfCommits;
-			 itemStencil: [ 
-				 BrLabel new
-					 hMatchParent;
-					 beSmallSize;
-					 aptitude: BrGlamorousListLabelAptitude ]).
+			 column: 'Timestamp'
+			 text: [ :aCommit | aCommit timeStamp asStringYMDHM ]
+			 width: 120;
+			 column: 'Commit' text: #shortId width: 70;
+			 column: 'Author' text: #author width: 100;
+			 column: 'Description' text: #comment) asElement.
 	aContainer addChild: (BrButton new
 			 aptitude: BrGlamorousButtonWithIconAptitude;
 			 icon: BrGlamorousVectorIcons accept;
 			 label: 'Commit';
+			 margin: (BlInsets
+					  top: 0
+					  left: 10
+					  bottom: 10
+					  right: 0);
 			 action: [ :aButton | self pushFrom: aButton ]).
 	^ aContainer
 ]
