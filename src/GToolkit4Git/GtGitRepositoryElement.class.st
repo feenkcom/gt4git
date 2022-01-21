@@ -139,7 +139,7 @@ GtGitRepositoryElement >> pushFor: aDropdown on: aListOfCommits [
 	| aContainer |
 	aContainer := BrVerticalPane new
 		              vFitContent;
-		              layout: BlLinearLayout horizontal alignright;
+		              layout: BlLinearLayout vertical alignCenterRight;
 		              hExact: 600.
 
 	aContainer addChild: (GtPhlowColumnedListView new
@@ -157,9 +157,9 @@ GtGitRepositoryElement >> pushFor: aDropdown on: aListOfCommits [
 			 label: 'Commit';
 			 margin: (BlInsets
 					  top: 0
-					  left: 10
+					  left: 0
 					  bottom: 10
-					  right: 0);
+					  right: 10);
 			 action: [ :aButton | 
 				 aButton fireEvent: BrDropdownHideWish new.
 				 self pushFrom: aButton ]).
