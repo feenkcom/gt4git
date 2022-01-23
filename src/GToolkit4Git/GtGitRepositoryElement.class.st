@@ -134,39 +134,6 @@ GtGitRepositoryElement >> pullFrom: aButton [
 ]
 
 { #category : #'private - updating' }
-GtGitRepositoryElement >> pushFor: aDropdown on: aListOfCommits [
-
-	| aContainer |
-	aContainer := BrVerticalPane new
-		              vFitContent;
-		              layout: BlLinearLayout vertical alignCenterRight;
-		              hExact: 600.
-
-	aContainer addChild: (GtPhlowColumnedListView new
-			 title: 'Commits' translated;
-			 items: aListOfCommits;
-			 column: 'Timestamp'
-			 text: [ :aCommit | aCommit timeStamp asStringYMDHM ]
-			 width: 120;
-			 column: 'Commit' text: #shortId width: 70;
-			 column: 'Author' text: #author width: 100;
-			 column: 'Description' text: #comment) asElement.
-	aContainer addChild: (BrButton new
-			 aptitude: BrGlamorousButtonWithIconAptitude;
-			 icon: BrGlamorousVectorIcons accept;
-			 label: 'Push';
-			 margin: (BlInsets
-					  top: 0
-					  left: 0
-					  bottom: 10
-					  right: 10);
-			 action: [ :aButton | 
-				 aButton fireEvent: BrDropdownHideWish new.
-				 self pushFrom: aButton ]).
-	^ aContainer
-]
-
-{ #category : #'private - updating' }
 GtGitRepositoryElement >> pushFrom: aButton [
 	self repositoryViewModel push.
 	aButton phlow fireUpdateWish
@@ -189,6 +156,39 @@ GtGitRepositoryElement >> repositoryViewItems [
 	collector context: context.
 
 	^ collector collect
+]
+
+{ #category : #'private - updating' }
+GtGitRepositoryElement >> showCommits: aListOfCommits on: aDropdown withAction: aBlock named: aString [
+
+	| aContainer |
+	aContainer := BrVerticalPane new
+		              vFitContent;
+		              layout: BlLinearLayout vertical alignCenterRight;
+		              hExact: 600.
+
+	aContainer addChild: (GtPhlowColumnedListView new
+			 title: 'Commits' translated;
+			 items: aListOfCommits;
+			 column: 'Timestamp'
+			 text: [ :aCommit | aCommit timeStamp asStringYMDHM ]
+			 width: 120;
+			 column: 'Commit' text: #shortId width: 70;
+			 column: 'Author' text: #author width: 100;
+			 column: 'Description' text: #comment) asElement.
+	aContainer addChild: (BrButton new
+			 aptitude: BrGlamorousButtonWithIconAptitude;
+			 icon: BrGlamorousVectorIcons accept;
+			 label: aString;
+			 margin: (BlInsets
+					  top: 0
+					  left: 0
+					  bottom: 10
+					  right: 10);
+			 action: [ :aButton | 
+				 aButton fireEvent: BrDropdownHideWish new.
+				 aBlock value: aButton ]).
+	^ aContainer
 ]
 
 { #category : #initialization }
@@ -251,7 +251,7 @@ GtGitRepositoryElement >> updateTitleElement [
 { #category : #'private - updating' }
 GtGitRepositoryElement >> updateToolbarElement [
 
-	| look aDropdown outgoing incomingSize |
+	| look aDropdown outgoing incoming incomingLabel |
 	(self hasRepositoryViewModel not or: [ 
 		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
 
@@ -282,17 +282,41 @@ GtGitRepositoryElement >> updateToolbarElement [
 					 self fetchAllRepositoriesFrom: aButton.
 					 aButton phlow fireUpdateWish ]).
 
-	incomingSize := self repositoryViewModel incomingCommits size.
+	incoming := self repositoryViewModel incomingCommits.
+	incomingLabel := incoming size > 0
+		                 ifTrue: [ incoming size asRopedText ]
+		                 ifFalse: [ '' ].
 	outgoing := self repositoryViewModel outgoingCommits.
 
 	self repositoryViewModel isMissing ifFalse: [ 
-		toolbarElement addItem: (BrButton new
-				 aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
-				 icon: BrGlamorousVectorIcons down;
-				 label: (incomingSize > 0
-						  ifTrue: [ incomingSize asRopedText ]
-						  ifFalse: [ '' ]);
-				 action: [ :aButton | self pullFrom: aButton ]) ].
+		incoming size > 0
+			ifTrue: [ 
+				toolbarElement addItem: (aDropdown := BrButton new
+						              aptitude:
+							              BrGlamorousButtonWithIconAndLabelAptitude
+							              + (BrGlamorousWithDropdownAptitude
+									               handle: [ 
+										               BrButton new
+											               aptitude:
+												               BrGlamorousButtonWithIconAndLabelAptitude
+												               - BrGlamorousButtonExteriorAptitude;
+											               icon: BrGlamorousVectorIcons down;
+											               label: incomingLabel ]
+									               content: [ 
+										               self
+											               showCommits: incoming
+											               on: aDropdown
+											               withAction: [ :aButton | 
+											               self pullFrom: aButton ]
+											               named: 'Pull' ]);
+						              icon: BrGlamorousVectorIcons down;
+						              label: incomingLabel) ]
+			ifFalse: [ 
+				toolbarElement addItem: (BrButton new
+						 aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
+						 icon: BrGlamorousVectorIcons down;
+						 label: incomingLabel;
+						 action: [ :aButton | self pullFrom: aButton ]) ] ].
 
 	outgoing size > 0 ifTrue: [ 
 		toolbarElement addItem: (aDropdown := BrButton new
@@ -305,7 +329,13 @@ GtGitRepositoryElement >> updateToolbarElement [
 										               - BrGlamorousButtonExteriorAptitude;
 									               icon: BrGlamorousVectorIcons up;
 									               label: outgoing size asRopedText ]
-							               content: [ self pushFor: aDropdown on: outgoing ]);
+							               content: [ 
+								               self
+									               showCommits: outgoing
+									               on: aDropdown
+									               withAction: [ :aButton | 
+									               self pushFrom: aButton ]
+									               named: 'Push' ]);
 				              icon: BrGlamorousVectorIcons up;
 				              label: outgoing size asRopedText) ].
 
