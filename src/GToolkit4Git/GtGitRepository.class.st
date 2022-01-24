@@ -329,13 +329,7 @@ GtGitRepository >> outgoingCommits [
 
 { #category : #printing }
 GtGitRepository >> printOn: aStream [
-	super printOn: aStream.
-	self repository ifNil: [ ^ self ].
-	
-	aStream 
-		nextPut: $(;
-		nextPutAll: self repository name;
-		nextPut: $)
+	aStream nextPutAll: self repository name
 ]
 
 { #category : #accessing }
