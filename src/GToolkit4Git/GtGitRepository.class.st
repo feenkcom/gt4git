@@ -362,6 +362,8 @@ GtGitRepository >> rawCommit: aCommitMessage [
 	self repository
 		commitIndexWithMessage: aCommitMessage
 		andParents: (self workingCopy workingCopyState referenceCommits reject: [ :each | each isNoCommit ]).
+	Iceberg announcer announce:
+		(IceRepositoryModified for: self repository)
 ]
 
 { #category : #accessing }
