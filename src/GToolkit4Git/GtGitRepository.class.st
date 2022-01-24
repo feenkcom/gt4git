@@ -223,10 +223,14 @@ GtGitRepository >> gtCommitsFor: aView [
 	<gtView>
 	<gtRepositoryView>
 	self repository repositoryDirectory ifNil: [ ^ aView empty ].
-	^ aView forward
-		title: 'Commits';
-		object: [ self repository branch ];
-		view: #gtCommitsFor:
+	^ (self repository branch gtCommitsFor: aView)
+		  itemContextMenuStencil: [ :element :item | 
+			  BrGlamorousSimpleContextMenuContent new
+				  items: { ('Revert' -> [ :e | 
+						   item revert.
+						   self rawCommit: 'Revert ', item shortId, ' ', item comment.
+						   element phlow fireUpdateWish ]) };
+				  yourself ]
 ]
 
 { #category : #'gt - extensions' }
@@ -349,6 +353,15 @@ GtGitRepository >> push [
 	Iceberg announcer announce:
 		(IceRepositoryModified for: self repository).
 	^ res
+]
+
+{ #category : #accessing }
+GtGitRepository >> rawCommit: aCommitMessage [
+
+	| workingCopyDiff |
+	self repository
+		commitIndexWithMessage: aCommitMessage
+		andParents: (self workingCopy workingCopyState referenceCommits reject: [ :each | each isNoCommit ]).
 ]
 
 { #category : #accessing }
