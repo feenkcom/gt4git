@@ -20,23 +20,27 @@ GtGitNavigationStencil >> announcer [
 { #category : #accessing }
 GtGitNavigationStencil >> create [
 
-	<return: #BrTabGroup>
-	^ GtPhlowCompositeView new
-		  views: (GtPhlowViewsCollector new
-				   fromObject: self;
-				   pragmaName: #gtGitNavigation;
-				   collect);
-		  asElementDo: [ :aTabGroup | 
-			  aTabGroup
-				  background: BrGlamorousColors neutralBackgroundColor;
-				  matchParent ]
+	^ GtGitNavigationElement new
+		  navigationModel: self navigationModel;
+		  addChild: (GtPhlowCompositeView new
+				   views: (GtPhlowViewsCollector new
+						    fromObject: self;
+						    pragmaName: #gtGitNavigation;
+						    collect);
+				   asElementDo: [ :aTabGroup | 
+					   aTabGroup
+						   background: BrGlamorousColors neutralBackgroundColor;
+						   matchParent ])
 ]
 
 { #category : #accessing }
 GtGitNavigationStencil >> createListFor: aView [
 
 	<gtGitNavigation>
-	| element |
+	| items element |
+	items := self navigationModel repositories collect: [ 
+		         :eachIceRepository | 
+		         GtGitRepository new repository: eachIceRepository ].
 	^ aView columnedList
 		  title: 'Repositories';
 		  updateWhen: IceRepositoryAnnouncement in: [ Iceberg announcer ];
@@ -50,12 +54,22 @@ GtGitNavigationStencil >> createListFor: aView [
 			  s ];
 		  actionButtonIcon: BrGlamorousVectorIcons refresh
 		  tooltip: 'Fetch all'
-		  action: [ [ self navigationModel repositories collect: [ :r | r fetch ] ] fork ];
-		  items: [ 
-			  self navigationModel repositories collect: [ :eachIceRepository | 
-					  GtGitRepository new repository: eachIceRepository ] ];
+		  action: [ 
+			  [ self navigationModel repositories collect: [ :r | r fetch ] ]
+				  fork ];
+		  items: [ items ];
 		  send: [ :repo | 
 			  self announce: (GtGitRepositorySelected new repository: repo) ];
+		  actionStencil: [ :anElement | 
+			  GtSpotterDropdownButtonStencil new
+				  object: items;
+				  tooltip: 'Search Repositories';
+				  icon: BrGlamorousVectorIcons search;
+				  actOn: [ :anActOnEvent :anItem | 
+					  anActOnEvent beActed.
+					  self announce: (GtGitRepositorySelected new repository: anItem).
+					  anElement phlow fireUpdateWish ] ]
+		  tooltip: 'Search Repositories';
 		  column: 'Repository' translated
 		  text: [ :each | each name asRopedText glamorousRegularSmallSize ];
 		  column: 'Status' translated stencil: [ :each | 

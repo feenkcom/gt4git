@@ -134,7 +134,8 @@ GtGitElement >> repository: aRepository [
 
 { #category : #accessing }
 GtGitElement >> shortTitle [
-	^ repository name
+
+	^ repository ifNil: [ '' ] ifNotNil: [ repository name ]
 ]
 
 { #category : #accessing }

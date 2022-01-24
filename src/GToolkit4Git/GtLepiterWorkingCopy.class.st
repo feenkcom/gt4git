@@ -48,7 +48,10 @@ GtLepiterWorkingCopy >> databases [
 { #category : #accessing }
 GtLepiterWorkingCopy >> databases: anObject [
 
-	databases := anObject
+	databases := anObject.
+	databases do: [:aDatabase |
+		aDatabase announcer weak when: LeDatabaseAnnouncement send: #onDatabaseChanged: to: self
+	].
 ]
 
 { #category : #'API - changes' }
@@ -111,6 +114,13 @@ GtLepiterWorkingCopy >> lepiterChangesStragegy: aStragegy [
 { #category : #'API - changes' }
 GtLepiterWorkingCopy >> lepiterChangesTo: aCommitish [
 	^ self lepiterChangesStragegy changesTo: aCommitish
+]
+
+{ #category : #'as yet unclassified' }
+GtLepiterWorkingCopy >> onDatabaseChanged: anAnnouncement [
+
+	Iceberg announcer announce:
+		(IceRepositoryModified for: self repository)
 ]
 
 { #category : #accessing }

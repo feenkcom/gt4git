@@ -74,8 +74,8 @@ IceLibgitRepository >> gtRepositoryDirectoryFor: aView [
 					  (status at: relative) = LGitStatusEnum git_status_wt_new
 						  ifTrue: [ BrGlamorousIcons close ]
 						  ifFalse: [ BrGlamorousIcons accept ] ]
-				  ifFalse: [ "exclude parent dir"
-					  relative = '..'
+				  ifFalse: [ "exclude directories"
+					  each isDirectory
 						  ifTrue: [ BrGlamorousIcons empty ]
 						  ifFalse: [ BrGlamorousIcons accept ] ] ];
 		  column: 'Actions' translated stencil: [ :each | 

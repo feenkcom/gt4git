@@ -46,6 +46,11 @@ IceGitCommit >> resolveDelta: aGtDiffDelta [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceGitCommit >> revert [
+	^ self libgitCommit revert = 0
+]
+
+{ #category : #'*GToolkit4Git' }
 IceGitCommit >> snapshotForKnowledgeWithId: anUuid [
 	| inCommitDatabase |
 	inCommitDatabase := self lepiterDatabases detect: [ :anInCommitDatabase |
