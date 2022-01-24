@@ -48,7 +48,12 @@ GtLepiterWorkingCopy >> databases [
 { #category : #accessing }
 GtLepiterWorkingCopy >> databases: anObject [
 
-	databases := anObject
+	databases := anObject.
+	databases do: [:aDatabase |
+		aDatabase announcer weak when: LeDatabaseAnnouncement do: [ :_ |
+			Iceberg announcer announce: (IceRepositoryModified for: self repository)
+		]
+	].
 ]
 
 { #category : #'API - changes' }

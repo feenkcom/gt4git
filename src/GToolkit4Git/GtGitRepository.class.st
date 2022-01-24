@@ -299,7 +299,7 @@ GtGitRepository >> isMissing [
 
 { #category : #'api - testing' }
 GtGitRepository >> isModified [
-	^ self repository isModified or: [ self repository isDirty ]
+	^ (self repository isModified or: [ self repository isDirty ]) or: [ self lepiterWorkingCopy changesToHeadUsingIndex isNotEmpty ]
 ]
 
 { #category : #'gt - extensions' }
