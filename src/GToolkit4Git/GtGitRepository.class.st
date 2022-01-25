@@ -146,14 +146,17 @@ GtGitRepository >> gtActionRepairFor: anAction [
 
 { #category : #'gt - extensions' }
 GtGitRepository >> gtChangesFor: aView context: aContext [
+
 	<gtView>
 	<gtRepositoryView>
-	| aViewModel changes |
+	| aViewModel changes chosen |
+	chosen := Set new.
 
 	aViewModel := aContext
-		at: #repositoryViewModel
-		ifAbsentPut: [ GtGitRepositoryViewModel new repositoryModel: self ].
-	
+		              at: #repositoryViewModel
+		              ifAbsentPut: [ 
+		              GtGitRepositoryViewModel new repositoryModel: self ].
+
 	self lepiterWorkingCopy ifNil: [ ^ aView empty ].
 	changes := self workingCopyDiff treeToShow.
 	(changes isNil or: [ changes isEmpty ]) ifTrue: [ ^ aView empty ].
@@ -165,31 +168,42 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 		  expandUpTo: 3;
 		  priority: 10;
 		  stencil: [ :anIceNode | 
-			  BlElement new
-				  layout: BlLinearLayout horizontal;
-				  constraintsDo: [ :c | 
-					  c horizontal matchParent.
-					  c vertical fitContent ];
-				  margin: (BlInsets all: 3);
-				  constraintsDo: [ :c | c vertical fitContent ];
-				  aptitude: (BrGlamorousWithContextMenuAptitude content: [ 
-							   BrGlamorousSimpleContextMenuContent new
-								   items: { ('Revert changes' -> [ :e | 
-										    self workingCopy diffToReferenceCommit revertChanges:
-												    anIceNode ]) };
-								   yourself ]);
-				  addChild:
-					  (anIceNode value icon asElement constraintsDo: [ :c | 
-						   c linear horizontal alignCenter ]);
-				  addChild: (BrLabel new
-						   aptitude: BrGlamorousLabelAptitude;
-						   text: anIceNode value name asString asRopedText;
-						   padding: (BlInsets
-								    top: 0
-								    left: 6
-								    bottom: 0
-								    right: 3);
-						   constraintsDo: [ :c | c linear horizontal alignCenter ]) ];
+			  | element |
+			  anIceNode value hasChanges ifTrue: [ chosen add: anIceNode ].
+			  element := BlElement new
+				             layout: BlLinearLayout horizontal alignCenterLeft;
+				             constraintsDo: [ :c | 
+					             c horizontal matchParent.
+					             c vertical fitContent ];
+				             margin: (BlInsets all: 3);
+				             constraintsDo: [ :c | c vertical fitContent ];
+				             aptitude:
+					             (BrGlamorousWithContextMenuAptitude content: [ 
+							              BrGlamorousSimpleContextMenuContent new
+								              items: { ('Revert changes' -> [ :e | 
+										               self workingCopy diffToReferenceCommit 
+											               revertChanges: anIceNode ]) };
+								              yourself ]);
+				             addChild:
+					             (anIceNode value icon asElement constraintsDo: [ :c | 
+						              c linear horizontal alignCenter ]);
+				             addChild: (BrLabel new
+						              aptitude: BrGlamorousLabelAptitude;
+						              text: anIceNode value name asString asRopedText;
+						              padding: (BlInsets
+								               top: 0
+								               left: 6
+								               bottom: 0
+								               right: 3);
+						              constraintsDo: [ :c | 
+							              c linear horizontal alignCenter ]).
+			  anIceNode value hasChanges ifTrue: [ 
+				  element addChild: (BrCheckbox new
+						   aptitude: BrGlamorousCheckboxAptitude;
+						   checked: true;
+						   whenCheckedDo: [ chosen add: anIceNode ];
+						   whenUncheckedDo: [ chosen remove: anIceNode ifAbsent: [  ] ]) ].
+			  element ];
 		  actionDropdownButtonLabel: 'Commit'
 		  tooltip: 'Commit changes'
 		  content: [ :aDropdown :aTarget | 
@@ -210,13 +224,14 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 				  label: 'Commit';
 				  disabled: editor text isEmpty;
 				  action: [ 
-					  aViewModel executeCommit: editor editor text asString.
+					  aViewModel
+						  executeCommit: editor editor text asString
+						  withChanges: chosen.
 					  button disable.
 					  aDropdown enqueueTask: (BlTaskAction new action: [ 
 									   aDropdown dispatchEvent:
-											   (BrDropdownHideWish new anchor: aDropdown).
-									   ]).
-					 aDropdown phlow fireUpdateWish ].
+											   (BrDropdownHideWish new anchor: aDropdown) ]).
+					  aDropdown phlow fireUpdateWish ].
 
 			  editor editor
 				  when: BrTextEditorModifiedEvent
