@@ -170,7 +170,7 @@ GtGitRepositoryElement >> showCommits: aListOfCommits on: aDropdown withAction: 
 	aContainer addChild: (GtPhlowColumnedListView new
 			 title: 'Commits' translated;
 			 items: aListOfCommits;
-			 send: [:item | item];
+			 send: [:item | self phlow spawnObject: item];
 			 column: 'Timestamp'
 			 text: [ :aCommit | aCommit timeStamp asStringYMDHM ]
 			 width: 120;
