@@ -55,6 +55,7 @@ GtGitRepository >> executeCommit: aCommitMessage withChanges: changes [
 { #category : #'api - actions' }
 GtGitRepository >> fetch [
 	self repository fetch.
+	Iceberg announcer announce: (IceRepositoryModified for: self repository)
 ]
 
 { #category : #accessing }

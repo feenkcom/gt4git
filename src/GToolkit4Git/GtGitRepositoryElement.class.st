@@ -279,9 +279,7 @@ GtGitRepositoryElement >> updateToolbarElement [
 				 aptitude: BrGlamorousButtonWithIconAptitude;
 				 icon: BrGlamorousVectorIcons refresh;
 				 label: 'Fetch';
-				 action: [ :aButton | 
-					 self fetchAllRepositoriesFrom: aButton.
-					 aButton phlow fireUpdateWish ]).
+				 action: [ :aButton | self fetchAllRepositoriesFrom: aButton ]).
 
 	incoming := self repositoryViewModel incomingCommits.
 	incomingLabel := incoming size > 0
