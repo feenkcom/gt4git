@@ -39,6 +39,19 @@ GtGitRepository >> executeCommit: aCommitMessage [
 		(IceRepositoryModified for: self repository)
 ]
 
+{ #category : #accessing }
+GtGitRepository >> executeCommit: aCommitMessage withChanges: changes [
+
+	| workingCopyDiff |
+	workingCopyDiff := self workingCopyDiff.
+	self workingCopy
+		commitChanges: (workingCopyDiff copyWithOnly: changes)
+		withMessage: aCommitMessage
+		force: false.
+	Iceberg announcer announce:
+		(IceRepositoryModified for: self repository)
+]
+
 { #category : #'api - actions' }
 GtGitRepository >> fetch [
 	self repository fetch.
