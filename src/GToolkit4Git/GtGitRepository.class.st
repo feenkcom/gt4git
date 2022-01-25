@@ -186,7 +186,10 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 								              yourself ]).
 			  anIceNode value hasChanges ifTrue: [ 
 				  element addChild: (BrCheckbox new
-						   aptitude: BrGlamorousCheckboxAptitude;
+						   aptitude: BrGlamorousCheckboxAptitude
+							   +
+								   (BrGlamorousWithLabelTooltipAptitude new text:
+										    'Select for Commit');
 						   checked: true;
 						   whenCheckedDo: [ chosen add: anIceNode ];
 						   margin: (BlInsets right: 8);
