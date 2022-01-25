@@ -170,6 +170,7 @@ GtGitRepositoryElement >> showCommits: aListOfCommits on: aDropdown withAction: 
 	aContainer addChild: (GtPhlowColumnedListView new
 			 title: 'Commits' translated;
 			 items: aListOfCommits;
+			 send: [:item | self phlow spawnObject: item];
 			 column: 'Timestamp'
 			 text: [ :aCommit | aCommit timeStamp asStringYMDHM ]
 			 width: 120;
@@ -278,9 +279,7 @@ GtGitRepositoryElement >> updateToolbarElement [
 				 aptitude: BrGlamorousButtonWithIconAptitude;
 				 icon: BrGlamorousVectorIcons refresh;
 				 label: 'Fetch';
-				 action: [ :aButton | 
-					 self fetchAllRepositoriesFrom: aButton.
-					 aButton phlow fireUpdateWish ]).
+				 action: [ :aButton | self fetchAllRepositoriesFrom: aButton ]).
 
 	incoming := self repositoryViewModel incomingCommits.
 	incomingLabel := incoming size > 0

@@ -39,9 +39,23 @@ GtGitRepository >> executeCommit: aCommitMessage [
 		(IceRepositoryModified for: self repository)
 ]
 
+{ #category : #accessing }
+GtGitRepository >> executeCommit: aCommitMessage withChanges: changes [
+
+	| workingCopyDiff |
+	workingCopyDiff := self workingCopyDiff.
+	self workingCopy
+		commitChanges: (workingCopyDiff copyWithOnly: changes)
+		withMessage: aCommitMessage
+		force: false.
+	Iceberg announcer announce:
+		(IceRepositoryModified for: self repository)
+]
+
 { #category : #'api - actions' }
 GtGitRepository >> fetch [
 	self repository fetch.
+	Iceberg announcer announce: (IceRepositoryModified for: self repository)
 ]
 
 { #category : #accessing }
@@ -133,14 +147,17 @@ GtGitRepository >> gtActionRepairFor: anAction [
 
 { #category : #'gt - extensions' }
 GtGitRepository >> gtChangesFor: aView context: aContext [
+
 	<gtView>
 	<gtRepositoryView>
-	| aViewModel changes |
+	| aViewModel changes chosen |
+	chosen := Set new.
 
 	aViewModel := aContext
-		at: #repositoryViewModel
-		ifAbsentPut: [ GtGitRepositoryViewModel new repositoryModel: self ].
-	
+		              at: #repositoryViewModel
+		              ifAbsentPut: [ 
+		              GtGitRepositoryViewModel new repositoryModel: self ].
+
 	self lepiterWorkingCopy ifNil: [ ^ aView empty ].
 	changes := self workingCopyDiff treeToShow.
 	(changes isNil or: [ changes isEmpty ]) ifTrue: [ ^ aView empty ].
@@ -152,22 +169,36 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 		  expandUpTo: 3;
 		  priority: 10;
 		  stencil: [ :anIceNode | 
-			  BlElement new
-				  layout: BlLinearLayout horizontal;
-				  constraintsDo: [ :c | 
-					  c horizontal matchParent.
-					  c vertical fitContent ];
-				  margin: (BlInsets all: 3);
-				  constraintsDo: [ :c | c vertical fitContent ];
-				  aptitude: (BrGlamorousWithContextMenuAptitude content: [ 
-							   BrGlamorousSimpleContextMenuContent new
-								   items: { ('Revert changes' -> [ :e | 
-										    self workingCopy diffToReferenceCommit revertChanges:
-												    anIceNode ]) };
-								   yourself ]);
+			  | element |
+			  anIceNode value hasChanges ifTrue: [ chosen add: anIceNode ].
+			  element := BlElement new
+				             layout: BlLinearLayout horizontal alignCenterLeft;
+				             constraintsDo: [ :c | 
+					             c horizontal matchParent.
+					             c vertical fitContent ];
+				             margin: (BlInsets all: 3);
+				             constraintsDo: [ :c | c vertical fitContent ];
+				             aptitude:
+					             (BrGlamorousWithContextMenuAptitude content: [ 
+							              BrGlamorousSimpleContextMenuContent new
+								              items: { ('Revert changes' -> [ :e | 
+										               self workingCopy diffToReferenceCommit 
+											               revertChanges: anIceNode ]) };
+								              yourself ]).
+			  anIceNode value hasChanges ifTrue: [ 
+				  element addChild: (BrCheckbox new
+						   aptitude: BrGlamorousCheckboxAptitude
+							   +
+								   (BrGlamorousWithLabelTooltipAptitude new text:
+										    'Select for Commit');
+						   checked: true;
+						   whenCheckedDo: [ chosen add: anIceNode ];
+						   margin: (BlInsets right: 8);
+						   whenUncheckedDo: [ chosen remove: anIceNode ifAbsent: [  ] ]) ].
+			  element
 				  addChild:
 					  (anIceNode value icon asElement constraintsDo: [ :c | 
-						   c linear horizontal alignCenter ]);
+							   c linear horizontal alignCenter ]);
 				  addChild: (BrLabel new
 						   aptitude: BrGlamorousLabelAptitude;
 						   text: anIceNode value name asString asRopedText;
@@ -197,13 +228,14 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 				  label: 'Commit';
 				  disabled: editor text isEmpty;
 				  action: [ 
-					  aViewModel executeCommit: editor editor text asString.
+					  aViewModel
+						  executeCommit: editor editor text asString
+						  withChanges: chosen.
 					  button disable.
 					  aDropdown enqueueTask: (BlTaskAction new action: [ 
 									   aDropdown dispatchEvent:
-											   (BrDropdownHideWish new anchor: aDropdown).
-									   ]).
-					 aDropdown phlow fireUpdateWish ].
+											   (BrDropdownHideWish new anchor: aDropdown) ]).
+					  aDropdown phlow fireUpdateWish ].
 
 			  editor editor
 				  when: BrTextEditorModifiedEvent
@@ -410,40 +442,45 @@ GtGitRepository >> status [
 
 { #category : #accessing }
 GtGitRepository >> statusModel [
-	[
-		| entity statusCollection incoming outgoing | 
-		entity := self repository.
 
-		entity isMissing ifTrue: [ ^ {GtGitStatusMissing new} ].
-		
-		entity workingCopy workingCopyState isUnknownCommitState 
-			ifTrue: [ ^ {GtGitStatusUnknownCommitState new message: entity workingCopy workingCopyState description} ].	
-		entity workingCopy isDetached 
-			ifTrue: [  ^ {GtGitStatusDetachedWorkingCopy new} ].
-		(entity head isDetached and: [ entity head tags notEmpty ])
-			ifTrue: [ ^ {GtGitStatusDetachedHead new} ].
-		entity head isDetached 
-			ifTrue: [ ^ {GtGitStatusDetachedHead new}  ].
+	[ 
+	| entity statusCollection incoming outgoing |
+	entity := self repository.
 
-		entity workingCopy project isUnborn
-			ifTrue: [ ^ {GtGitStatusNoProject new} ].
+	entity isMissing ifTrue: [ ^ { GtGitStatusMissing new } ].
 
-		entity loadedPackages notEmpty ifFalse: [ ^ {GtGitStatusNotLoaded new} ].
+	entity workingCopy workingCopyState isUnknownCommitState ifTrue: [ 
+		^ { (GtGitStatusUnknownCommitState new message:
+			   entity workingCopy workingCopyState description) } ].
+	entity workingCopy isDetached ifTrue: [ 
+		^ { GtGitStatusDetachedWorkingCopy new } ].
+	(entity head isDetached and: [ entity head tags notEmpty ]) ifTrue: [ 
+		^ { GtGitStatusDetachedHead new } ].
+	entity head isDetached ifTrue: [ ^ { GtGitStatusDetachedHead new } ].
 
-		statusCollection := OrderedCollection new.
-		self isModified ifTrue: [ statusCollection add: GtGitStatusUncommittedChanges new ].
-		
-		incoming := self incomingCommits size.
-		incoming > 0 ifTrue: [ statusCollection add: (GtGitStatusIncoming new count: incoming)].
-		
-		outgoing := self outgoingCommits size.
-		outgoing > 0 ifTrue: [ statusCollection add: (GtGitStatusOutgoing new count: outgoing)].
+	entity workingCopy project isUnborn ifTrue: [ 
+		^ { GtGitStatusNoProject new } ].
 
-		
-		^ statusCollection
-	] 
-	on: Error do: [ :error | ^ {GtGitStatusUnknownError new message: error description} ]
+	(entity loadedPackages isEmpty and: [ entity packages notEmpty ]) 
+		ifTrue: [ ^ { GtGitStatusNotLoaded new } ].
 
+	statusCollection := OrderedCollection new.
+	self isModified ifTrue: [ 
+		statusCollection add: GtGitStatusUncommittedChanges new ].
+
+	incoming := self incomingCommits size.
+	incoming > 0 ifTrue: [ 
+		statusCollection add: (GtGitStatusIncoming new count: incoming) ].
+
+	outgoing := self outgoingCommits size.
+	outgoing > 0 ifTrue: [ 
+		statusCollection add: (GtGitStatusOutgoing new count: outgoing) ].
+
+
+	^ statusCollection ]
+		on: Error
+		do: [ :error | 
+			^ { (GtGitStatusUnknownError new message: error description) } ]
 ]
 
 { #category : #'api - repository' }
