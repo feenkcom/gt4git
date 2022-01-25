@@ -55,7 +55,7 @@ GtLepiterPageDefinition >> gtViewJsonContentsFor: aView [
 { #category : #comparing }
 GtLepiterPageDefinition >> hash [
 	^ (super hash 
-		bitXor: self pageUuid)
+		bitXor: self pageUuid hash)
 		bitXor: self pageContents hash
 ]
 
