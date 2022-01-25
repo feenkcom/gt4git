@@ -183,27 +183,27 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 								              items: { ('Revert changes' -> [ :e | 
 										               self workingCopy diffToReferenceCommit 
 											               revertChanges: anIceNode ]) };
-								              yourself ]);
-				             addChild:
-					             (anIceNode value icon asElement constraintsDo: [ :c | 
-						              c linear horizontal alignCenter ]);
-				             addChild: (BrLabel new
-						              aptitude: BrGlamorousLabelAptitude;
-						              text: anIceNode value name asString asRopedText;
-						              padding: (BlInsets
-								               top: 0
-								               left: 6
-								               bottom: 0
-								               right: 3);
-						              constraintsDo: [ :c | 
-							              c linear horizontal alignCenter ]).
+								              yourself ]).
 			  anIceNode value hasChanges ifTrue: [ 
 				  element addChild: (BrCheckbox new
 						   aptitude: BrGlamorousCheckboxAptitude;
 						   checked: true;
 						   whenCheckedDo: [ chosen add: anIceNode ];
+						   margin: (BlInsets right: 8);
 						   whenUncheckedDo: [ chosen remove: anIceNode ifAbsent: [  ] ]) ].
-			  element ];
+			  element
+				  addChild:
+					  (anIceNode value icon asElement constraintsDo: [ :c | 
+							   c linear horizontal alignCenter ]);
+				  addChild: (BrLabel new
+						   aptitude: BrGlamorousLabelAptitude;
+						   text: anIceNode value name asString asRopedText;
+						   padding: (BlInsets
+								    top: 0
+								    left: 6
+								    bottom: 0
+								    right: 3);
+						   constraintsDo: [ :c | c linear horizontal alignCenter ]) ];
 		  actionDropdownButtonLabel: 'Commit'
 		  tooltip: 'Commit changes'
 		  content: [ :aDropdown :aTarget | 
