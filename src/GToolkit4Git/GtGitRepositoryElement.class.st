@@ -129,7 +129,10 @@ GtGitRepositoryElement >> onRepositoryViewModelChanged [
 
 { #category : #'private - updating' }
 GtGitRepositoryElement >> pullFrom: aButton [
-	self repositoryViewModel pull.
+
+	[ self repositoryViewModel pull ]
+		on: IceMergeResolutionRequest
+		do: [ :r | self phlow spawnObject: r merge ].
 	aButton phlow fireUpdateWish
 ]
 
