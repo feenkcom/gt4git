@@ -31,10 +31,17 @@ GtLepiterPageDefinition >> asMCDefinition [
 	| aDatabase aPage |
 	aDatabase := LeDatabase allInstances detect: [ :d | 
 		             d uuid = database databaseId ].
-	aPage := aDatabase pageByUuid: self pageUuid.
-	(aDatabase monitor pageFileReference: aPage)
-		writeStreamDo: [ :s | s truncate. s nextPutAll: self pageContents ].
-	aPage reloadFromPage: (aDatabase monitor storage loadFromFile: (aDatabase monitor pageFileReference: aPage)).
+	aPage := aDatabase pageByUuid: self pageUuid ifAbsent: [ 
+		         | page |
+		         page := LeJsonV4 uniqueInstance deserialize:
+			                 self pageContents readStream.
+		         aDatabase addPage: page.
+		         page ].
+	(aDatabase monitor pageFileReference: aPage) writeStreamDo: [ :s | 
+		s truncate.
+		s nextPutAll: self pageContents ].
+	aPage reloadFromPage: (aDatabase monitor storage loadFromFile:
+			 (aDatabase monitor pageFileReference: aPage)).
 	^ MCMockDefinition token: self key
 ]
 
@@ -127,4 +134,13 @@ GtLepiterPageDefinition >> printOn: aStream [
 	aStream
 		<< self pageUuid asString36;
 		<< ')'
+]
+
+{ #category : #accessing }
+GtLepiterPageDefinition >> removeFrom: aVisitor [
+	| aDatabase aPage |
+	aDatabase := LeDatabase allInstances detect: [ :d | 
+		             d uuid = database databaseId ].
+	aPage := aDatabase pageByUuid: self pageUuid.
+	aDatabase removePage: aPage
 ]
