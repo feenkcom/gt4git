@@ -64,7 +64,7 @@ GtGitRepositoryElement >> initialize [
 
 { #category : #initialization }
 GtGitRepositoryElement >> initializeDefinitionsElement [
-	definitionsElement := GtGitDefinitionsElement new.
+	definitionsElement := BlElement new 
 ]
 
 { #category : #initialization }
@@ -217,7 +217,15 @@ GtGitRepositoryElement >> toolbarElement [
 
 { #category : #'private - updating' }
 GtGitRepositoryElement >> updateDefinitionsElement [
-	definitionsElement repositoryViewModel: self repositoryViewModel
+
+	(self hasRepositoryViewModel not or: [ 
+		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
+
+	self
+		replaceChild: self definitionsElement
+		with: (GtGitDefinitionsElement new repositoryViewModel:
+				 self repositoryViewModel)
+		as: #definitions
 ]
 
 { #category : #'private - updating' }
