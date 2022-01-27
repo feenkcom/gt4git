@@ -46,3 +46,8 @@ IceRepository >> gtViewDiffToReferenceCommitFor: aView [
 		ifNil: [ aView ]
 		ifNotNil: [ self workingCopy gtViewDiffToReferenceCommitFor: aView ]
 ]
+
+{ #category : #'*GToolkit4Git' }
+IceRepository >> packages [
+	^ self workingCopy packages
+]

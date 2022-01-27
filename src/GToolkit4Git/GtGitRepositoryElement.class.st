@@ -64,7 +64,7 @@ GtGitRepositoryElement >> initialize [
 
 { #category : #initialization }
 GtGitRepositoryElement >> initializeDefinitionsElement [
-	definitionsElement := GtGitDefinitionsElement new.
+	definitionsElement := BlElement new 
 ]
 
 { #category : #initialization }
@@ -129,7 +129,10 @@ GtGitRepositoryElement >> onRepositoryViewModelChanged [
 
 { #category : #'private - updating' }
 GtGitRepositoryElement >> pullFrom: aButton [
-	self repositoryViewModel pull.
+
+	[ self repositoryViewModel pull ]
+		on: IceMergeResolutionRequest
+		do: [ :r | self phlow spawnObject: r merge ].
 	aButton phlow fireUpdateWish
 ]
 
@@ -214,7 +217,17 @@ GtGitRepositoryElement >> toolbarElement [
 
 { #category : #'private - updating' }
 GtGitRepositoryElement >> updateDefinitionsElement [
-	definitionsElement repositoryViewModel: self repositoryViewModel
+
+	| elem |
+	(self hasRepositoryViewModel not or: [ 
+		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
+	elem := GtGitDefinitionsElement new repositoryViewModel:
+		        self repositoryViewModel.
+	self
+		replaceChild: self definitionsElement
+		with: elem
+		as: #definitions.
+	definitionsElement := elem
 ]
 
 { #category : #'private - updating' }
