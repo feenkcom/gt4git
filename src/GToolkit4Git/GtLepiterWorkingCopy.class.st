@@ -51,7 +51,7 @@ GtLepiterWorkingCopy >> databases: anObject [
 	databases := anObject.
 	databases do: [:aDatabase |
 		aDatabase announcer weak when: LeAnnouncement send: #onDatabaseChanged: to: self.
-		aDatabase monitor announcer weak when: LeLocalStoreMonitorSaved send: #onDatabaseChanged: to: self
+		"aDatabase monitor announcer weak when: LeLocalStoreMonitorSaved send: #onDatabaseChanged: to: self"
 	].
 ]
 
