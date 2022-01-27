@@ -5,7 +5,8 @@ Class {
 		'pageUuid',
 		'pageTitle',
 		'pageContents',
-		'fileName'
+		'fileName',
+		'database'
 	],
 	#category : #'GToolkit4Git-Lepiter'
 }
@@ -25,8 +26,26 @@ GtLepiterPageDefinition >> accept: aVisitor [
 ]
 
 { #category : #accessing }
+GtLepiterPageDefinition >> asMCDefinition [
+
+	| aDatabase aPage |
+	aDatabase := LeDatabase allInstances detect: [ :d | 
+		             d uuid = database databaseId ].
+	aPage := aDatabase pageByUuid: self pageUuid.
+	(aDatabase monitor pageFileReference: aPage)
+		writeStreamDo: [ :s | s truncate. s nextPutAll: self pageContents ].
+	aPage reloadFromPage: (aDatabase monitor storage loadFromFile: (aDatabase monitor pageFileReference: aPage)).
+	^ MCMockDefinition token: self key
+]
+
+{ #category : #accessing }
 GtLepiterPageDefinition >> contents [
 	^ self pageContents
+]
+
+{ #category : #accessing }
+GtLepiterPageDefinition >> database: aDatabase [
+	database := aDatabase
 ]
 
 { #category : #accessing }

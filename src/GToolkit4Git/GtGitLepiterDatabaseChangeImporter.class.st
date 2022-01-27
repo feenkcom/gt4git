@@ -122,7 +122,7 @@ GtGitLepiterDatabaseChangeImporter >> importOn: aParentNode [
 ]
 
 { #category : #'definitions importing' }
-GtGitLepiterDatabaseChangeImporter >> importPageDefinitionFor: aPageChange on: aPagesNode [
+GtGitLepiterDatabaseChangeImporter >> importPageDefinitionFor: aPageChange on: aPagesNode in: aDatabaseNode [
 	| fileReference pageDefinition page contents |
 	fileReference := version resolveDelta: aPageChange delta.
 	fileReference exists ifFalse: [ ^ self ].
@@ -133,6 +133,7 @@ GtGitLepiterDatabaseChangeImporter >> importPageDefinitionFor: aPageChange on: a
 	pageDefinition := GtLepiterPageDefinition new
 		name: page title;
 		fileName: fileReference basename;
+		database: aDatabaseNode value;
 		pageUuid: page uid;
 		pageContents: contents.
 	aPagesNode addChild: pageDefinition 
@@ -144,7 +145,7 @@ GtGitLepiterDatabaseChangeImporter >> importPageDefinitionsOn: aDatabaseNode [
 	pagesDefinition := GtLepiterPagesDefinition new.
 	pagesNode := aDatabaseNode addChild: pagesDefinition.
 	lepiterDatabaseChange pageChanges do: [ :aPageChange | 
-		self importPageDefinitionFor: aPageChange on: pagesNode ]
+		self importPageDefinitionFor: aPageChange on: pagesNode in: aDatabaseNode ]
 ]
 
 { #category : #accessing }
