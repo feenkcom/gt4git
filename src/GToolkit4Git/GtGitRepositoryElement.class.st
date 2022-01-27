@@ -218,14 +218,16 @@ GtGitRepositoryElement >> toolbarElement [
 { #category : #'private - updating' }
 GtGitRepositoryElement >> updateDefinitionsElement [
 
+	| elem |
 	(self hasRepositoryViewModel not or: [ 
 		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
-
+	elem := GtGitDefinitionsElement new repositoryViewModel:
+		        self repositoryViewModel.
 	self
 		replaceChild: self definitionsElement
-		with: (GtGitDefinitionsElement new repositoryViewModel:
-				 self repositoryViewModel)
-		as: #definitions
+		with: elem
+		as: #definitions.
+	definitionsElement := elem
 ]
 
 { #category : #'private - updating' }
