@@ -11,7 +11,7 @@ GtGitStatusOutgoing >> bareIcon [
 
 { #category : #accessing }
 GtGitStatusOutgoing >> color [
-	^ BrGlamorousColors successBackgroundColor 
+	^ BrGlamorousColors selectedListItemColor 
 ]
 
 { #category : #accessing }
