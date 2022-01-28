@@ -16,5 +16,5 @@ GtGitStatusOutgoing >> color [
 
 { #category : #accessing }
 GtGitStatusOutgoing >> label [
-	^ count asString, ' outgoing changes'
+	^ count asString, ' outgoing ', self changesInflection
 ]

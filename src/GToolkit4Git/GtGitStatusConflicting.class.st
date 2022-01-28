@@ -11,5 +11,5 @@ GtGitStatusConflicting >> color [
 
 { #category : #accessing }
 GtGitStatusConflicting >> label [
-	^ count asString, ' conflicting incoming changes'
+	^ count asString, ' conflicting incoming ', self changesInflection
 ]
