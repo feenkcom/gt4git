@@ -164,7 +164,6 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 	^ aView tree
 		  title: 'Changes';
 		  items: [ changes children ];
-		  updateWhen: IceRepositoryModified in: Iceberg announcer;
 		  children: #children;
 		  expandUpTo: 3;
 		  priority: 10;

@@ -51,7 +51,7 @@ GtLepiterWorkingCopy >> databases: anObject [
 	databases := anObject.
 	databases do: [:aDatabase |
 		aDatabase announcer weak when: LeAnnouncement send: #onDatabaseChanged: to: self.
-		"aDatabase monitor announcer weak when: LeLocalStoreMonitorSaved send: #onDatabaseChanged: to: self"
+		aDatabase monitor announcer weak when: LeLocalStoreMonitorSavedChanges send: #onDatabaseSaved: to: self
 	].
 ]
 
@@ -117,8 +117,18 @@ GtLepiterWorkingCopy >> lepiterChangesTo: aCommitish [
 	^ self lepiterChangesStragegy changesTo: aCommitish
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GtLepiterWorkingCopy >> onDatabaseChanged: anAnnouncement [
+
+	Iceberg announcer announce:
+		(IceRepositoryModified for: self repository)
+]
+
+{ #category : #accessing }
+GtLepiterWorkingCopy >> onDatabaseSaved: anAnnouncement [
+
+	(databases contains: [ :aDatabase | 
+		 aDatabase = anAnnouncement monitor database ]) ifFalse: [ ^ self ].
 
 	Iceberg announcer announce:
 		(IceRepositoryModified for: self repository)
