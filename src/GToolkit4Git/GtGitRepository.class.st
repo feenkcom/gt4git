@@ -26,6 +26,15 @@ GtGitRepository >> changes [
 		ifFalse: [ Array empty ]
 ]
 
+{ #category : #accessing }
+GtGitRepository >> conflictingCommits [
+
+	^ self incomingCommits select: [ :commit | 
+		  (IceMerge new
+			   repository: self repository;
+			   mergeCommit: commit) hasConflicts ]
+]
+
 { #category : #'api - actions' }
 GtGitRepository >> executeCommit: aCommitMessage [
 
@@ -264,9 +273,7 @@ GtGitRepository >> gtCommitsFor: aView [
 		  column: 'Status' stencil: [ :item | 
 			  ((self incomingCommits contains: [ :aCommit | aCommit = item ])
 				   ifTrue: [ 
-					   (IceMerge new
-						    repository: self repository;
-						    mergeCommit: item) hasConflicts
+					   (self conflictingCommits contains: [ :aCommit | aCommit = item ])
 						   ifTrue: [ 
 							   self
 								   statusElementColored:
@@ -502,6 +509,7 @@ GtGitRepository >> statusElementColored: aColor withTooltip: aString [
 { #category : #accessing }
 GtGitRepository >> statusModel [
 
+	| conflicting |
 	[ 
 	| entity statusCollection incoming outgoing |
 	entity := self repository.
@@ -527,7 +535,11 @@ GtGitRepository >> statusModel [
 	self isModified ifTrue: [ 
 		statusCollection add: GtGitStatusUncommittedChanges new ].
 
-	incoming := self incomingCommits size.
+	conflicting := self conflictingCommits size.
+	conflicting > 0 ifTrue: [ 
+		statusCollection add: (GtGitStatusConflicting new count: conflicting) ].
+
+	incoming := self incomingCommits size - conflicting.
 	incoming > 0 ifTrue: [ 
 		statusCollection add: (GtGitStatusIncoming new count: incoming) ].
 
