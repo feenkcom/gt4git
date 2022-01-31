@@ -8,6 +8,14 @@ Class {
 }
 
 { #category : #accessing }
+GtGitStatusWithCount >> changesInflection [
+
+	^ count > 1
+		  ifTrue: [ 'changes' ]
+		  ifFalse: [ 'change' ]
+]
+
+{ #category : #accessing }
 GtGitStatusWithCount >> count [
 	^ count
 ]

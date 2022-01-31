@@ -9,7 +9,8 @@ Class {
 		'labelElement',
 		'lazyTabsElement',
 		'statusElement',
-		'definitionsElement'
+		'definitionsElement',
+		'updater'
 	],
 	#category : #'GToolkit4Git-UI - Element'
 }
@@ -43,6 +44,18 @@ GtGitRepositoryElement >> definitionsElement [
 GtGitRepositoryElement >> fetchAllRepositoriesFrom: aButton [ 
 	self repositoryViewModel fetch.
 	aButton phlow fireUpdateWish
+]
+
+{ #category : #accessing }
+GtGitRepositoryElement >> handleAnnouncement: anAnnouncement [
+
+	(self hasRepositoryViewModel not or: [ 
+		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
+
+	anAnnouncement repository = self repositoryViewModel repositoryModel repository 
+		ifFalse: [ ^ self ].
+
+	updater requestUpdate
 ]
 
 { #category : #initialization }
@@ -202,7 +215,11 @@ GtGitRepositoryElement >> statusElement [
 
 { #category : #initialization }
 GtGitRepositoryElement >> subscribeToSignals [
-	Iceberg announcer weak when: IceRepositoryAnnouncement send: #updateElement to: self
+	updater := BrElementUpdater new.
+	updater postponedDuration: 1 seconds.
+	updater element: self.
+	updater action: [:e | e updateElement. updater resetUpdateRequested ].
+	Iceberg announcer weak when: IceRepositoryAnnouncement send: #handleAnnouncement: to: self
 ]
 
 { #category : #'private - accessing' }

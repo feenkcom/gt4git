@@ -26,6 +26,15 @@ GtGitRepository >> changes [
 		ifFalse: [ Array empty ]
 ]
 
+{ #category : #accessing }
+GtGitRepository >> conflictingCommits [
+
+	^ self incomingCommits select: [ :commit | 
+		  (IceMerge new
+			   repository: self repository;
+			   mergeCommit: commit) hasConflicts ]
+]
+
 { #category : #'api - actions' }
 GtGitRepository >> executeCommit: aCommitMessage [
 
@@ -164,7 +173,6 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 	^ aView tree
 		  title: 'Changes';
 		  items: [ changes children ];
-		  updateWhen: IceRepositoryModified in: Iceberg announcer;
 		  children: #children;
 		  expandUpTo: 3;
 		  priority: 10;
@@ -252,15 +260,65 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 
 { #category : #accessing }
 GtGitRepository >> gtCommitsFor: aView [
+
 	<gtView>
 	<gtRepositoryView>
 	self repository repositoryDirectory ifNil: [ ^ aView empty ].
-	^ (self repository branch gtCommitsFor: aView)
+
+	^ aView columnedList
+		  title: 'Commits' translated;
+		  items: [ 
+			  self repository branch commits , self incomingCommits 
+				  sortDescending: #timeStamp ];
+		  column: 'Status' stencil: [ :item | 
+			  ((self incomingCommits contains: [ :aCommit | aCommit = item ])
+				   ifTrue: [ 
+					   (self conflictingCommits contains: [ :aCommit | aCommit = item ])
+						   ifTrue: [ 
+							   self
+								   statusElementColored:
+								   BrGlamorousColors errorBackgroundColor
+								   withTooltip: 'Conflict' ]
+						   ifFalse: [ 
+							   self
+								   statusElementColored:
+								   BrGlamorousColors successBackgroundColor
+								   withTooltip: 'Incoming' ] ]
+				   ifFalse: [ 
+					   (self outgoingCommits contains: [ :aCommit | aCommit = item ])
+						   ifTrue: [ 
+							   self
+								   statusElementColored:
+								   BrGlamorousColors selectedListItemColor								   withTooltip: 'Outgoing' ]
+						   ifFalse: [ BlElement new ] ])
+				  size: 12 @ 12;
+				  geometry: (BlRoundedRectangleGeometry cornerRadius: 6);
+				  margin: (BlInsets left: 15) ]
+		  width: 40;
+		  column: 'Timestamp'
+		  text: [ :aCommit | aCommit timeStamp asStringYMDHM ]
+		  width: 120;
+		  column: 'Commit' text: #shortId width: 70;
+		  column: 'Author' text: #author width: 100;
+		  column: 'Description' text: #comment;
+		  column: 'Actions' stencil: [ :item | 
+		  | merge |
+		  ((self incomingCommits contains: [ :aCommit | aCommit = item ]) 
+			   and: [ 
+				   (merge := IceMerge new
+					             repository: self repository;
+					             mergeCommit: item) hasConflicts ])
+			  ifTrue: [ 
+				  BrButton new
+					  aptitude: BrGlamorousButtonWithLabelAptitude;
+					  label: 'Merge';
+					  action: [ :aButton | aButton phlow spawnObject: merge ] ]
+			  ifFalse: [ BlElement new size: 0 @ 0 ] ];
 		  itemContextMenuStencil: [ :element :item | 
 			  BrGlamorousSimpleContextMenuContent new
 				  items: { ('Revert' -> [ :e | 
 						   item revert.
-						   self rawCommit: 'Revert ', item shortId, ' ', item comment.
+						   self rawCommit: 'Revert ' , item shortId , ' ' , item comment.
 						   element phlow fireUpdateWish ]) };
 				  yourself ]
 ]
@@ -441,8 +499,17 @@ GtGitRepository >> status [
 ]
 
 { #category : #accessing }
+GtGitRepository >> statusElementColored: aColor withTooltip: aString [
+
+	^ BlElement new
+		  background: aColor;
+		  aptitude: (BrGlamorousWithLabelTooltipAptitude new text: aString)
+]
+
+{ #category : #accessing }
 GtGitRepository >> statusModel [
 
+	| conflicting |
 	[ 
 	| entity statusCollection incoming outgoing |
 	entity := self repository.
@@ -468,7 +535,11 @@ GtGitRepository >> statusModel [
 	self isModified ifTrue: [ 
 		statusCollection add: GtGitStatusUncommittedChanges new ].
 
-	incoming := self incomingCommits size.
+	conflicting := self conflictingCommits size.
+	conflicting > 0 ifTrue: [ 
+		statusCollection add: (GtGitStatusConflicting new count: conflicting) ].
+
+	incoming := self incomingCommits size - conflicting.
 	incoming > 0 ifTrue: [ 
 		statusCollection add: (GtGitStatusIncoming new count: incoming) ].
 

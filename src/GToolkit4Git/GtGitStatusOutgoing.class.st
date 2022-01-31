@@ -11,10 +11,10 @@ GtGitStatusOutgoing >> bareIcon [
 
 { #category : #accessing }
 GtGitStatusOutgoing >> color [
-	^ BrGlamorousColors successBackgroundColor 
+	^ BrGlamorousColors selectedListItemColor 
 ]
 
 { #category : #accessing }
 GtGitStatusOutgoing >> label [
-	^ count asString, ' outgoing changes'
+	^ count asString, ' outgoing ', self changesInflection
 ]
