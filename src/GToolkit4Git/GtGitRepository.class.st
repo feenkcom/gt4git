@@ -175,7 +175,7 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 		  items: [ changes children ];
 		  children: #children;
 		  expandUpTo: 3;
-		  priority: 10;
+		  priority: 1;
 		  stencil: [ :anIceNode | 
 			  | element |
 			  anIceNode value hasChanges ifTrue: [ chosen add: anIceNode ].
@@ -267,6 +267,7 @@ GtGitRepository >> gtCommitsFor: aView [
 
 	^ aView columnedList
 		  title: 'Commits' translated;
+		  priority: 2;
 		  items: [ 
 			  self repository branch commits , self incomingCommits 
 				  sortDescending: #timeStamp ];
