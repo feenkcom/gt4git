@@ -2,7 +2,8 @@ Class {
 	#name : #GtGitNavigationStencil,
 	#superclass : #BrStencil,
 	#instVars : [
-		'navigationModel'
+		'navigationModel',
+		'viewModel'
 	],
 	#category : #'GToolkit4Git-UI'
 }
@@ -43,7 +44,7 @@ GtGitNavigationStencil >> createListFor: aView [
 		         GtGitRepository new repository: eachIceRepository ].
 	^ aView columnedList
 		  title: 'Repositories';
-		  updateWhen: IceRepositoryAnnouncement in: [ Iceberg announcer ];
+		  updateWhen: GtRepositoryListChanged in: GtRepositoryRegistryAnnouncer new;
 		  actionDropdownButtonIcon: BrGlamorousVectorIcons add
 		  tooltip: 'Add Repository'
 		  content: [ :aDropdown :aTarget | 
@@ -71,17 +72,16 @@ GtGitNavigationStencil >> createListFor: aView [
 					  anElement phlow fireUpdateWish ] ]
 		  tooltip: 'Search Repositories';
 		  column: 'Repository' translated
-		  text: [ :each | each name asRopedText glamorousRegularSmallSize ];
-		  column: 'Status' translated stencil: [ :each | 
-			  element := BlElement new
-				             layout: BlLinearLayout horizontal;
-				             constraintsDo: [ :c | 
-					             c vertical fitContent.
-					             c horizontal fitContent ].
-			  each statusModel do: [ :status | 
-				  element addChild: status asElement ].
-			  element ]
+		  text: [ :each | self viewModel nameFor: each ];
+		  column: 'Status' translated stencil: [ :each | self viewModel statusElementFor: each ]
 		  width: 100
+]
+
+{ #category : #accessing }
+GtGitNavigationStencil >> initialize [
+	super initialize.
+	
+	viewModel := GtGitNavigationViewModel new
 ]
 
 { #category : #accessing }
@@ -92,4 +92,9 @@ GtGitNavigationStencil >> navigationModel [
 { #category : #accessing }
 GtGitNavigationStencil >> navigationModel: aGtGitNavigationModel [
 	navigationModel := aGtGitNavigationModel
+]
+
+{ #category : #accessing }
+GtGitNavigationStencil >> viewModel [
+	^ viewModel
 ]

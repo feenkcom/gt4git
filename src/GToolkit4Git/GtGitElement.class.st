@@ -129,7 +129,8 @@ GtGitElement >> refreshView [
 { #category : #accessing }
 GtGitElement >> repository: aRepository [
 	repository := aRepository.
-	self initializeView
+	self initializeView.
+	repository viewModel announcer weak when: GtRepositoryModified send: #onNavigationModelChange: to: self
 ]
 
 { #category : #accessing }

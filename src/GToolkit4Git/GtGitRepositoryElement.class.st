@@ -49,9 +49,9 @@ GtGitRepositoryElement >> fetchAllRepositoriesFrom: aButton [
 { #category : #accessing }
 GtGitRepositoryElement >> handleAnnouncement: anAnnouncement [
 
+	self halt.
 	(self hasRepositoryViewModel not or: [ 
 		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
-
 	anAnnouncement repository = self repositoryViewModel repositoryModel repository 
 		ifFalse: [ ^ self ].
 
