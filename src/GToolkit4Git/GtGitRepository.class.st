@@ -271,14 +271,14 @@ GtGitRepository >> gtCommitButtonsFor: item [
 				 label: 'Merge';
 				 action: [ :aButton | aButton phlow spawnObject: merge ]) ].
 
-	(self outgoingCommits size > 1 and: [ 
+	"(self outgoingCommits size > 1 and: [ 
 		 self outgoingCommits first = item ]) ifTrue: [ 
 		container addChild: (BrButton new
 				 aptitude: BrGlamorousButtonWithLabelAptitude;
 				 label: 'Squash';
 				 action: [ :aButton | 
 					 self squash.
-					 aButton phlow fireUpdateWish ]) ].
+					 aButton phlow fireUpdateWish ]) ]."
 	^ container constraintsDo: [ :c | c horizontal matchParent ]
 ]
 
