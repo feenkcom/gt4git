@@ -271,7 +271,7 @@ GtGitRepository >> gtCommitButtonsFor: item [
 				 label: 'Merge';
 				 action: [ :aButton | aButton phlow spawnObject: merge ]) ].
 
-	(self outgoingCommits isNotEmpty and: [ 
+	(self outgoingCommits size > 1 and: [ 
 		 self outgoingCommits first = item ]) ifTrue: [ 
 		container addChild: (BrButton new
 				 aptitude: BrGlamorousButtonWithLabelAptitude;

@@ -120,11 +120,10 @@ GtGitRepositoryViewModel >> onRepositoryModelChanged [
 
 { #category : #accessing }
 GtGitRepositoryViewModel >> onRepositoryModified: anAnnouncement [
-	(self hasRepository and: [ self repositoryModel name = 'gt4git' ]) ifTrue: [self halt ].
+
 	(self hasRepository and: [ 
 		 anAnnouncement repository = self repositoryModel repository ]) 
 		ifTrue: [ 
-			self halt.
 			self announce:
 				(GtRepositoryModified for: self repositoryModel) ]
 ]

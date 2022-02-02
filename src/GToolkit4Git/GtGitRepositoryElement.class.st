@@ -49,11 +49,10 @@ GtGitRepositoryElement >> fetchAllRepositoriesFrom: aButton [
 { #category : #accessing }
 GtGitRepositoryElement >> handleAnnouncement: anAnnouncement [
 
-	self halt.
 	(self hasRepositoryViewModel not or: [ 
 		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
 	anAnnouncement repository = self repositoryViewModel repositoryModel repository 
-		ifFalse: [ ^ self ].
+		ifFalse: [ ^ self ]. 
 
 	updater requestUpdate
 ]
@@ -214,11 +213,19 @@ GtGitRepositoryElement >> statusElement [
 
 { #category : #initialization }
 GtGitRepositoryElement >> subscribeToSignals [
+
+	(updater isNotNil or: [ self repositoryViewModel hasRepository not ]) 
+		ifTrue: [ ^ self ].
 	updater := BrElementUpdater new.
 	updater postponedDuration: 1 seconds.
 	updater element: self.
-	updater action: [:e | e updateElement. updater resetUpdateRequested ].
-	self repositoryViewModel weak when: GtRepositoryModified send: #handleAnnouncement: to: self
+	updater action: [ :e | 
+		e updateElement.
+		updater resetUpdateRequested ].
+	self repositoryViewModel weak
+		when: GtRepositoryModified
+		send: #handleAnnouncement:
+		to: self
 ]
 
 { #category : #'private - accessing' }
