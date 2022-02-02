@@ -1,11 +1,12 @@
 Class {
 	#name : #GtGitRepositoryViewModel,
 	#superclass : #Object,
-	#traits : 'TGtGitWithRepositoryModel',
-	#classTraits : 'TGtGitWithRepositoryModel classTrait',
+	#traits : 'TGtGitWithRepositoryModel + TGtAnnouncer',
+	#classTraits : 'TGtGitWithRepositoryModel classTrait + TGtAnnouncer classTrait',
 	#instVars : [
 		'iceTipRepositoryViewModel',
-		'commitMessage'
+		'commitMessage',
+		'announcer'
 	],
 	#category : #'GToolkit4Git-UI - View Model'
 }
@@ -14,6 +15,11 @@ Class {
 GtGitRepositoryViewModel >> addPackage: aSymbol [
 	
 	self repositoryModel workingCopy addPackageNamed: aSymbol
+]
+
+{ #category : #announcer }
+GtGitRepositoryViewModel >> announcer [
+	^ announcer
 ]
 
 { #category : #'api - accessing' }
@@ -58,6 +64,30 @@ GtGitRepositoryViewModel >> incomingCommits [
 ]
 
 { #category : #accessing }
+GtGitRepositoryViewModel >> initialize [
+
+	super initialize.
+
+	announcer := Announcer new.
+	Iceberg announcer weak
+		when: IceRepositoryModified
+		send: #onRepositoryModified:
+		to: self.
+	Iceberg announcer weak
+		when: IceCommited
+		send: #onRepositoryModified:
+		to: self.
+	Iceberg announcer weak
+		when: IcePushed
+		send: #onRepositoryModified:
+		to: self.
+	Iceberg announcer weak
+		when: IceMergeConflictResolved
+		send: #onRepositoryModified:
+		to: self
+]
+
+{ #category : #accessing }
 GtGitRepositoryViewModel >> isCommittable [
 	^ self repositoryModel isCommittable
 ]
@@ -81,9 +111,22 @@ GtGitRepositoryViewModel >> needsRepair [
 
 { #category : #'api - repository model' }
 GtGitRepositoryViewModel >> onRepositoryModelChanged [
+
 	"Is sent when a new repository model is assigned to the view model"
-	
-	iceTipRepositoryViewModel := IceTipRepositoryModel on: self repositoryModel repository
+
+	iceTipRepositoryViewModel := IceTipRepositoryModel on:
+		                             self repositoryModel repository.
+]
+
+{ #category : #accessing }
+GtGitRepositoryViewModel >> onRepositoryModified: anAnnouncement [
+	(self hasRepository and: [ self repositoryModel name = 'gt4git' ]) ifTrue: [self halt ].
+	(self hasRepository and: [ 
+		 anAnnouncement repository = self repositoryModel repository ]) 
+		ifTrue: [ 
+			self halt.
+			self announce:
+				(GtRepositoryModified for: self repositoryModel) ]
 ]
 
 { #category : #accessing }

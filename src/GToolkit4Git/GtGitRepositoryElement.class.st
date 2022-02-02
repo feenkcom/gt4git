@@ -61,23 +61,22 @@ GtGitRepositoryElement >> handleAnnouncement: anAnnouncement [
 { #category : #initialization }
 GtGitRepositoryElement >> initialize [
 	super initialize.
-	self subscribeToSignals.
 	self initializeToolbarElement.
 	self initializeLazyTabsElement.
 	self initializeDefinitionsElement.
-	self initializeStatusElement.
+	"self initializeStatusElement."
 	
 	self addChild: self toolbarElement as: #toolbar.
 	self addChild: self definitionsElement as: #definitions.
 	self addChild: self lazyTabsElement as: #lazyTabs.
-	self addChild: self statusElement as: #status.
+	"self addChild: self statusElement as: #status."
 	
 	self matchParent.
 ]
 
 { #category : #initialization }
 GtGitRepositoryElement >> initializeDefinitionsElement [
-	definitionsElement := BlElement new 
+	definitionsElement := BlElement new
 ]
 
 { #category : #initialization }
@@ -219,7 +218,7 @@ GtGitRepositoryElement >> subscribeToSignals [
 	updater postponedDuration: 1 seconds.
 	updater element: self.
 	updater action: [:e | e updateElement. updater resetUpdateRequested ].
-	Iceberg announcer weak when: IceRepositoryAnnouncement send: #handleAnnouncement: to: self
+	self repositoryViewModel weak when: GtRepositoryModified send: #handleAnnouncement: to: self
 ]
 
 { #category : #'private - accessing' }
@@ -253,7 +252,8 @@ GtGitRepositoryElement >> updateElement [
 	self updateToolbarElement.
 	self updateDefinitionsElement.
 	self updateTitleElement.
-	self updateStatusElement.
+	"self updateStatusElement."
+	self subscribeToSignals.
 ]
 
 { #category : #'private - updating' }
