@@ -175,7 +175,7 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 		  items: [ changes children ];
 		  children: #children;
 		  expandUpTo: 3;
-		  priority: 10;
+		  priority: 1;
 		  stencil: [ :anIceNode | 
 			  | element |
 			  anIceNode value hasChanges ifTrue: [ chosen add: anIceNode ].
@@ -267,29 +267,32 @@ GtGitRepository >> gtCommitsFor: aView [
 
 	^ aView columnedList
 		  title: 'Commits' translated;
+		  priority: 2;
 		  items: [ 
 			  self repository branch commits , self incomingCommits 
 				  sortDescending: #timeStamp ];
 		  column: 'Status' stencil: [ :item | 
 			  ((self incomingCommits contains: [ :aCommit | aCommit = item ])
 				   ifTrue: [ 
-					   (self conflictingCommits contains: [ :aCommit | aCommit = item ])
+					   (self conflictingCommits contains: [ :aCommit | 
+							    aCommit = item ])
 						   ifTrue: [ 
 							   self
 								   statusElementColored:
-								   BrGlamorousColors errorBackgroundColor
+									   BrGlamorousColors errorBackgroundColor
 								   withTooltip: 'Conflict' ]
 						   ifFalse: [ 
 							   self
 								   statusElementColored:
-								   BrGlamorousColors successBackgroundColor
+									   BrGlamorousColors successBackgroundColor
 								   withTooltip: 'Incoming' ] ]
 				   ifFalse: [ 
 					   (self outgoingCommits contains: [ :aCommit | aCommit = item ])
 						   ifTrue: [ 
 							   self
 								   statusElementColored:
-								   BrGlamorousColors selectedListItemColor								   withTooltip: 'Outgoing' ]
+									   BrGlamorousColors selectedListItemColor
+								   withTooltip: 'Outgoing' ]
 						   ifFalse: [ BlElement new ] ])
 				  size: 12 @ 12;
 				  geometry: (BlRoundedRectangleGeometry cornerRadius: 6);
@@ -302,18 +305,19 @@ GtGitRepository >> gtCommitsFor: aView [
 		  column: 'Author' text: #author width: 100;
 		  column: 'Description' text: #comment;
 		  column: 'Actions' stencil: [ :item | 
-		  | merge |
-		  ((self incomingCommits contains: [ :aCommit | aCommit = item ]) 
-			   and: [ 
-				   (merge := IceMerge new
-					             repository: self repository;
-					             mergeCommit: item) hasConflicts ])
-			  ifTrue: [ 
-				  BrButton new
-					  aptitude: BrGlamorousButtonWithLabelAptitude;
-					  label: 'Merge';
-					  action: [ :aButton | aButton phlow spawnObject: merge ] ]
-			  ifFalse: [ BlElement new size: 0 @ 0 ] ];
+			  | merge |
+			  ((self incomingCommits contains: [ :aCommit | aCommit = item ]) 
+				   and: [ 
+					   (merge := IceMerge new
+						             repository: self repository;
+						             mergeCommit: item) hasConflicts ])
+				  ifTrue: [ 
+					  BrButton new
+						  aptitude: BrGlamorousButtonWithLabelAptitude;
+						  label: 'Merge';
+						  action: [ :aButton | aButton phlow spawnObject: merge ] ]
+				  ifFalse: [ BlElement new size: 0 @ 0 ] ]
+		  width: 150;
 		  itemContextMenuStencil: [ :element :item | 
 			  BrGlamorousSimpleContextMenuContent new
 				  items: { ('Revert' -> [ :e | 
