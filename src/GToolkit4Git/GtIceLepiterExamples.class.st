@@ -486,6 +486,7 @@ GtIceLepiterExamples >> gitRepositoryARemoveExistingPage [
 { #category : #examples }
 GtIceLepiterExamples >> gitRepositoryAWithEmptyCommitedLepiterDatabase [
 	<gtExample>
+	<noTest>
 	<after: #cleanUpRepositoriesAndDatabases>
 	| gtIceRepository |
 	
