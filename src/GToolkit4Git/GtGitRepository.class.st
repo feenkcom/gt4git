@@ -170,6 +170,10 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 	self lepiterWorkingCopy ifNil: [ ^ aView empty ].
 	changes := self workingCopyDiff treeToShow.
 	(changes isNil or: [ changes isEmpty ]) ifTrue: [ ^ aView empty ].
+
+	changes do: [ :change | 
+		change value hasChanges ifTrue: [ chosen add: change ] ].
+
 	^ aView tree
 		  title: 'Changes';
 		  items: [ changes children ];
@@ -178,7 +182,6 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 		  priority: 1;
 		  stencil: [ :anIceNode | 
 			  | element |
-			  anIceNode value hasChanges ifTrue: [ chosen add: anIceNode ].
 			  element := BlElement new
 				             layout: BlLinearLayout horizontal alignCenterLeft;
 				             constraintsDo: [ :c | 
