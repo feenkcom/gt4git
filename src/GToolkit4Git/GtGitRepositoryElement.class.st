@@ -51,7 +51,7 @@ GtGitRepositoryElement >> handleAnnouncement: anAnnouncement [
 
 	(self hasRepositoryViewModel not or: [ 
 		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
-	anAnnouncement repository = self repositoryViewModel repositoryModel repository 
+	anAnnouncement repository = self repositoryViewModel repositoryModel 
 		ifFalse: [ ^ self ]. 
 
 	updater requestUpdate
