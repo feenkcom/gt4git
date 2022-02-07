@@ -38,13 +38,11 @@ GtGitNavigationStencil >> create [
 GtGitNavigationStencil >> createListFor: aView [
 
 	<gtGitNavigation>
-	| items element |
-	items := self navigationModel repositories collect: [ 
-		         :eachIceRepository | 
-		         GtGitRepository new repository: eachIceRepository ].
+	| element |
 	^ aView columnedList
 		  title: 'Repositories';
-		  updateWhen: GtRepositoryListChanged in: GtRepositoryRegistryAnnouncer new;
+		  updateWhen: GtRepositoryListChanged
+		  in: GtRepositoryRegistryAnnouncer new;
 		  actionDropdownButtonIcon: BrGlamorousVectorIcons add
 		  tooltip: 'Add Repository'
 		  content: [ :aDropdown :aTarget | 
@@ -58,12 +56,12 @@ GtGitNavigationStencil >> createListFor: aView [
 		  action: [ 
 			  [ self navigationModel repositories collect: [ :r | r fetch ] ]
 				  fork ];
-		  items: [ items ];
+		  items: [ self repositories ];
 		  send: [ :repo | 
 			  self announce: (GtGitRepositorySelected new repository: repo) ];
 		  actionStencil: [ :anElement | 
 			  GtSpotterDropdownButtonStencil new
-				  object: items;
+				  valuable: [ self repositories ];
 				  tooltip: 'Search Repositories';
 				  icon: BrGlamorousVectorIcons search;
 				  actOn: [ :anActOnEvent :anItem | 
@@ -73,7 +71,8 @@ GtGitNavigationStencil >> createListFor: aView [
 		  tooltip: 'Search Repositories';
 		  column: 'Repository' translated
 		  text: [ :each | self viewModel nameFor: each ];
-		  column: 'Status' translated stencil: [ :each | self viewModel statusElementFor: each ]
+		  column: 'Status' translated
+		  stencil: [ :each | self viewModel statusElementFor: each ]
 		  width: 100
 ]
 
@@ -92,6 +91,13 @@ GtGitNavigationStencil >> navigationModel [
 { #category : #accessing }
 GtGitNavigationStencil >> navigationModel: aGtGitNavigationModel [
 	navigationModel := aGtGitNavigationModel
+]
+
+{ #category : #accessing }
+GtGitNavigationStencil >> repositories [
+
+	^ self navigationModel repositories collect: [ :eachIceRepository | 
+		  GtGitRepository new repository: eachIceRepository ]
 ]
 
 { #category : #accessing }

@@ -26,7 +26,7 @@ GtGitNavigationViewModel >> nameFor: aRepository [
 { #category : #accessing }
 GtGitNavigationViewModel >> statusElementFor: aRepository [
 
-	^ statusElements
+	^ (statusElements
 		  at: aRepository
-		  ifAbsentPut: [ GtGitStatusElement new repository: aRepository ]
+		  ifAbsentPut: [ GtGitStatusElement new repository: aRepository ]) removeFromParent
 ]

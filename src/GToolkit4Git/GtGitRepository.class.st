@@ -288,6 +288,16 @@ GtGitRepository >> gtCommitButtonsFor: item [
 				 action: [ :aButton | 
 					 self squash.
 					 aButton phlow fireUpdateWish ]) ]."
+
+	(self incomingCommits size > 0 and: [ 
+		 self incomingCommits first = item ]) ifTrue: [ 
+		container addChild: (BrButton new
+				 aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
+				 label: self incomingCommits size asString;
+				 icon: BrGlamorousVectorIcons down;
+				 action: [ :aButton | 
+					 self pull.
+					 aButton phlow fireUpdateWish ]) ].
 	^ container constraintsDo: [ :c | c horizontal matchParent ]
 ]
 
