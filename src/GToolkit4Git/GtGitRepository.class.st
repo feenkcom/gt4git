@@ -436,7 +436,11 @@ GtGitRepository >> isMissing [
 
 { #category : #'api - testing' }
 GtGitRepository >> isModified [
-	^ (self repository isModified or: [ self repository isDirty ]) or: [ self lepiterWorkingCopy changesToHeadUsingIndex isNotEmpty ]
+
+	^ (self repository isModified or: [ 
+		   self lepiterWorkingCopy hasDatabases and: [ 
+			   self repository isDirty ] ]) or: [ 
+		  self lepiterWorkingCopy changesToHeadUsingIndex isNotEmpty ]
 ]
 
 { #category : #'gt - extensions' }

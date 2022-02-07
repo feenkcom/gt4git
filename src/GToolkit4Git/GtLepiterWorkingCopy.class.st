@@ -80,6 +80,11 @@ GtLepiterWorkingCopy >> fileSystem [
 ]
 
 { #category : #accessing }
+GtLepiterWorkingCopy >> hasDatabases [
+	^ databases size > 0
+]
+
+{ #category : #accessing }
 GtLepiterWorkingCopy >> icebergWorkingCopy [
 	^ self repository workingCopy
 ]
