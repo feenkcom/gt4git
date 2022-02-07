@@ -24,7 +24,7 @@ IceWorkingCopy >> gtPackagesFor: aView [
 				  ifFalse: [ GtInspectorTool forObject: aPackage ] ];
 		  actionStencil: [ :anElement | 
 			  GtSpotterDropdownButtonStencil new
-				  object: RPackage organizer packages;
+				  valuable: [ RPackage organizer packages ];
 				  tooltip: 'Add Package';
 				  icon: BrGlamorousVectorIcons add;
 				  actOn: [ :anActOnEvent :anItem | 

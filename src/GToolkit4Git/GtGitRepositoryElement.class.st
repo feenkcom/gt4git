@@ -10,7 +10,8 @@ Class {
 		'lazyTabsElement',
 		'statusElement',
 		'definitionsElement',
-		'updater'
+		'updater',
+		'navigationModel'
 	],
 	#category : #'GToolkit4Git-UI - Element'
 }
@@ -51,9 +52,8 @@ GtGitRepositoryElement >> handleAnnouncement: anAnnouncement [
 
 	(self hasRepositoryViewModel not or: [ 
 		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
-
-	anAnnouncement repository = self repositoryViewModel repositoryModel repository 
-		ifFalse: [ ^ self ].
+	anAnnouncement repository = self repositoryViewModel repositoryModel 
+		ifFalse: [ ^ self ]. 
 
 	updater requestUpdate
 ]
@@ -61,23 +61,22 @@ GtGitRepositoryElement >> handleAnnouncement: anAnnouncement [
 { #category : #initialization }
 GtGitRepositoryElement >> initialize [
 	super initialize.
-	self subscribeToSignals.
 	self initializeToolbarElement.
 	self initializeLazyTabsElement.
 	self initializeDefinitionsElement.
-	self initializeStatusElement.
+	"self initializeStatusElement."
 	
 	self addChild: self toolbarElement as: #toolbar.
 	self addChild: self definitionsElement as: #definitions.
 	self addChild: self lazyTabsElement as: #lazyTabs.
-	self addChild: self statusElement as: #status.
+	"self addChild: self statusElement as: #status."
 	
 	self matchParent.
 ]
 
 { #category : #initialization }
 GtGitRepositoryElement >> initializeDefinitionsElement [
-	definitionsElement := BlElement new 
+	definitionsElement := BlElement new
 ]
 
 { #category : #initialization }
@@ -116,6 +115,11 @@ GtGitRepositoryElement >> labelElement [
 { #category : #'private - accessing' }
 GtGitRepositoryElement >> lazyTabsElement [
 	^ lazyTabsElement
+]
+
+{ #category : #accessing }
+GtGitRepositoryElement >> navigationModel: aNavigationModel [
+	navigationModel := aNavigationModel
 ]
 
 { #category : #'private - updating' }
@@ -215,11 +219,19 @@ GtGitRepositoryElement >> statusElement [
 
 { #category : #initialization }
 GtGitRepositoryElement >> subscribeToSignals [
+
+	(updater isNotNil or: [ self repositoryViewModel hasRepository not ]) 
+		ifTrue: [ ^ self ].
 	updater := BrElementUpdater new.
 	updater postponedDuration: 1 seconds.
 	updater element: self.
-	updater action: [:e | e updateElement. updater resetUpdateRequested ].
-	Iceberg announcer weak when: IceRepositoryAnnouncement send: #handleAnnouncement: to: self
+	updater action: [ :e | 
+		e updateElement.
+		updater resetUpdateRequested ].
+	self repositoryViewModel weak
+		when: GtRepositoryModified
+		send: #handleAnnouncement:
+		to: self
 ]
 
 { #category : #'private - accessing' }
@@ -253,7 +265,8 @@ GtGitRepositoryElement >> updateElement [
 	self updateToolbarElement.
 	self updateDefinitionsElement.
 	self updateTitleElement.
-	self updateStatusElement.
+	"self updateStatusElement."
+	self subscribeToSignals.
 ]
 
 { #category : #'private - updating' }
@@ -282,9 +295,11 @@ GtGitRepositoryElement >> updateTitleElement [
 { #category : #'private - updating' }
 GtGitRepositoryElement >> updateToolbarElement [
 
-	| look aDropdown outgoing incoming incomingLabel |
+	| look aDropdown outgoing incoming incomingLabel localDelete |
 	(self hasRepositoryViewModel not or: [ 
 		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
+
+	localDelete := false.
 
 	toolbarElement removeAllItems.
 	toolbarElement
@@ -295,6 +310,37 @@ GtGitRepositoryElement >> updateToolbarElement [
 							                  aLabel padding: BlInsets empty ]);
 				                 beHugeSize;
 				                 text: '');
+		addItem: (GtPreviewChangeButton new
+				 icon: BrGlamorousVectorIcons remove;
+				 label: 'Remove';
+				 changeAction: [ :aButton | 
+					 localDelete
+						 ifTrue: [ self repositoryViewModel remove ]
+						 ifFalse: [ self repositoryViewModel forget ].
+					 navigationModel announce:
+							 (GtGitRepositorySelected new repository: nil).
+					 aButton phlow fireUpdateWish ];
+				 changeStencil: [ 
+					 BrVerticalPane new
+						 hFitContent;
+						 vFitContent;
+						 margin: (BlInsets all: 10);
+						 addChild: (BrLabel new
+								  aptitude: BrGlamorousLabelAptitude new glamorousRegularFont;
+								  text: 'Remove repository?' asRopedText);
+						 addChild: (BrHorizontalPane new
+								  hFitContent;
+								  vFitContent;
+								  alignCenterLeft;
+								  margin: (BlInsets top: 5);
+								  addChild: (BrCheckbox new
+										   aptitude: BrGlamorousCheckboxAptitude;
+										   whenCheckedDo: [ localDelete := true ];
+										   margin: (BlInsets right: 8);
+										   whenUncheckedDo: [ localDelete := false ]);
+								  addChild: (BrLabel new
+										   aptitude: BrLabelAptitude new glamorousRegularFont;
+										   text: 'Remove repository from disk')) ]);
 		addItem: (BrFrame new
 				 vFitContent;
 				 hMatchParent);

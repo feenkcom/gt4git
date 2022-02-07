@@ -5,9 +5,10 @@ Class {
 		'ownerEditor',
 		'projectEditor',
 		'aDropdown',
-		'repoGroup'
+		'repoGroup',
+		'onCreated'
 	],
-	#category : 'GToolkit4Git-Inspector Integration'
+	#category : #'GToolkit4Git-Inspector Integration'
 }
 
 { #category : #accessing }
@@ -58,6 +59,7 @@ GtGitGithubPageFormStencil >> createCloneButton [
 				location: self projectLocation ;
 				createRepository.
 		repo register.
+		self onCreated value: repo.
 		Iceberg announcer announce: (IceRepositoryAnnouncement for: repo).
 		aDropdown ifNotNil: [
 			aDropdown enqueueTask:
@@ -102,6 +104,17 @@ GtGitGithubPageFormStencil >> createUrl [
 { #category : #accessing }
 GtGitGithubPageFormStencil >> dropdown: anObject [ 
 	aDropdown := anObject
+]
+
+{ #category : #accessing }
+GtGitGithubPageFormStencil >> onCreated [
+
+	^ onCreated ifNil: [ [ :repo |  ] ]
+]
+
+{ #category : #accessing }
+GtGitGithubPageFormStencil >> onCreated: aBlock [
+	onCreated := aBlock
 ]
 
 { #category : #accessing }

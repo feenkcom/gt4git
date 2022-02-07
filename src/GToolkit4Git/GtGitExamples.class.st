@@ -1,7 +1,7 @@
 Class {
 	#name : #GtGitExamples,
 	#superclass : #Object,
-	#category : 'GToolkit4Git-Model'
+	#category : #'GToolkit4Git-Model'
 }
 
 { #category : #'examples - repositories - model' }
@@ -29,15 +29,6 @@ GtGitExamples >> basicRepositoriesTool [
 	aTool := GtGitRepositoriesTool new.
 	self assert: aTool repositoriesViewModel isNil.
 	^ aTool
-]
-
-{ #category : #'examples - repositories - model' }
-GtGitExamples >> basicRepositoriesViewModel [
-	<gtExample>
-	| aViewModel |
-	aViewModel := GtGitRepositoriesViewModel new.
-	self assert: aViewModel hasRepositories not.
-	^ aViewModel
 ]
 
 { #category : #'examples - repository - model' }
@@ -80,55 +71,12 @@ GtGitExamples >> mockRepository [
 ]
 
 { #category : #'examples - repositories - model' }
-GtGitExamples >> repositoriesElement [
-	<gtExample>
-	| anElement aViewModel |
-	anElement := self basicRepositoriesElement.
-	aViewModel := self repositoriesViewModel.
-	anElement repositoriesViewModel: aViewModel.
-	self assert: anElement repositoriesViewModel equals: aViewModel.
-	^ anElement
-]
-
-{ #category : #'examples - repositories - model' }
 GtGitExamples >> repositoriesModel [
 	<gtExample>
 	| aModel |
 	aModel := GtGitRepositories default.
 	self assert: aModel collection isNotNil.
 	^ aModel
-]
-
-{ #category : #'examples - repositories - model' }
-GtGitExamples >> repositoriesTool [
-	<gtExample>
-	| aTool aViewModel |
-	aTool := self basicRepositoriesTool.
-	aViewModel := self repositoriesViewModel.
-	aTool repositoriesViewModel: aViewModel.
-	self assert: aTool repositoriesViewModel equals: aViewModel.
-	^ aTool
-]
-
-{ #category : #'examples - repositories - model' }
-GtGitExamples >> repositoriesTool_asElement [
-	<gtExample>
-	| aTool anElement |
-	aTool := self repositoriesTool.
-	anElement := aTool asElementDo: [ :e | e ].
-	self assert: anElement isNotNil.
-	^ anElement
-]
-
-{ #category : #'examples - repositories - model' }
-GtGitExamples >> repositoriesViewModel [
-	<gtExample>
-	| aViewModel aModel |
-	aViewModel := self basicRepositoriesViewModel.
-	aModel := self repositoriesModel.
-	aViewModel repositoriesModel: aModel.
-	self assert: aViewModel repositoriesModel equals: aModel.
-	^ aViewModel
 ]
 
 { #category : #'examples - repository - model' }

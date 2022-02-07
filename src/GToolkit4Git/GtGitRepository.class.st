@@ -8,7 +8,8 @@ Class {
 		'announcer',
 		'isSubscribed',
 		'lepiterWorkingCopy',
-		'status'
+		'status',
+		'viewModel'
 	],
 	#category : #'GToolkit4Git-Model'
 }
@@ -65,6 +66,11 @@ GtGitRepository >> executeCommit: aCommitMessage withChanges: changes [
 GtGitRepository >> fetch [
 	self repository fetch.
 	Iceberg announcer announce: (IceRepositoryModified for: self repository)
+]
+
+{ #category : #accessing }
+GtGitRepository >> forget [
+	self repository forget
 ]
 
 { #category : #accessing }
@@ -162,18 +168,15 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 	| aViewModel changes chosen |
 	chosen := Set new.
 
-	aViewModel := aContext
-		              at: #repositoryViewModel
-		              ifAbsentPut: [ 
-		              GtGitRepositoryViewModel new repositoryModel: self ].
+	aViewModel :=self viewModel.
 
 	self lepiterWorkingCopy ifNil: [ ^ aView empty ].
 	changes := self workingCopyDiff treeToShow.
 	(changes isNil or: [ changes isEmpty ]) ifTrue: [ ^ aView empty ].
-
+	
 	changes do: [ :change | 
 		change value hasChanges ifTrue: [ chosen add: change ] ].
-
+		
 	^ aView tree
 		  title: 'Changes';
 		  items: [ changes children ];
@@ -262,6 +265,51 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 ]
 
 { #category : #accessing }
+GtGitRepository >> gtCommitButtonsFor: item [
+
+	| container merge |
+	container := BlElement new height: 24.
+
+	((self incomingCommits contains: [ :aCommit | aCommit = item ]) and: [ 
+		 (merge := IceMerge new
+			           repository: self repository;
+			           mergeCommit: item) hasConflicts ]) ifTrue: [ 
+		container addChild: (BrButton new
+				 aptitude: BrGlamorousButtonWithLabelAptitude;
+				 label: 'Merge';
+				 action: [ :aButton | aButton phlow spawnObject: merge ]) ].
+
+	(self outgoingCommits size > 0 and: [ 
+		 self outgoingCommits first = item ]) ifTrue: [ 
+		container addChild: (BrButton new
+				 aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
+				 label: self outgoingCommits size asString;
+				 icon: BrGlamorousVectorIcons up;
+				 action: [ :aButton | 
+					 self push.
+					 aButton phlow fireUpdateWish ]) ].
+	"(self outgoingCommits size > 1 and: [ 
+		 self outgoingCommits first = item ]) ifTrue: [ 
+		container addChild: (BrButton new
+				 aptitude: BrGlamorousButtonWithLabelAptitude;
+				 label: 'Squash';
+				 action: [ :aButton | 
+					 self squash.
+					 aButton phlow fireUpdateWish ]) ]."
+
+	(self incomingCommits size > 0 and: [ 
+		 self incomingCommits first = item ]) ifTrue: [ 
+		container addChild: (BrButton new
+				 aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
+				 label: self incomingCommits size asString;
+				 icon: BrGlamorousVectorIcons down;
+				 action: [ :aButton | 
+					 self pull.
+					 aButton phlow fireUpdateWish ]) ].
+	^ container constraintsDo: [ :c | c horizontal matchParent ]
+]
+
+{ #category : #accessing }
 GtGitRepository >> gtCommitsFor: aView [
 
 	<gtView>
@@ -272,7 +320,7 @@ GtGitRepository >> gtCommitsFor: aView [
 		  title: 'Commits' translated;
 		  priority: 2;
 		  items: [ 
-			  self repository branch commits , self incomingCommits 
+			  self repository head commits , self incomingCommits 
 				  sortDescending: #timeStamp ];
 		  column: 'Status' stencil: [ :item | 
 			  ((self incomingCommits contains: [ :aCommit | aCommit = item ])
@@ -307,19 +355,7 @@ GtGitRepository >> gtCommitsFor: aView [
 		  column: 'Commit' text: #shortId width: 70;
 		  column: 'Author' text: #author width: 100;
 		  column: 'Description' text: #comment;
-		  column: 'Actions' stencil: [ :item | 
-			  | merge |
-			  ((self incomingCommits contains: [ :aCommit | aCommit = item ]) 
-				   and: [ 
-					   (merge := IceMerge new
-						             repository: self repository;
-						             mergeCommit: item) hasConflicts ])
-				  ifTrue: [ 
-					  BrButton new
-						  aptitude: BrGlamorousButtonWithLabelAptitude;
-						  label: 'Merge';
-						  action: [ :aButton | aButton phlow spawnObject: merge ] ]
-				  ifFalse: [ BlElement new size: 0 @ 0 ] ]
+		  column: 'Actions' stencil: [ :item | self gtCommitButtonsFor: item ]
 		  width: 150;
 		  itemContextMenuStencil: [ :element :item | 
 			  BrGlamorousSimpleContextMenuContent new
@@ -400,7 +436,11 @@ GtGitRepository >> isMissing [
 
 { #category : #'api - testing' }
 GtGitRepository >> isModified [
-	^ (self repository isModified or: [ self repository isDirty ]) or: [ self lepiterWorkingCopy changesToHeadUsingIndex isNotEmpty ]
+
+	^ (self repository isModified or: [ 
+		   self lepiterWorkingCopy hasDatabases and: [ 
+			   self repository isDirty ] ]) or: [ 
+		  self lepiterWorkingCopy changesToHeadUsingIndex isNotEmpty ]
 ]
 
 { #category : #'gt - extensions' }
@@ -464,6 +504,11 @@ GtGitRepository >> rawCommit: aCommitMessage [
 ]
 
 { #category : #accessing }
+GtGitRepository >> remove [
+	self repository delete
+]
+
+{ #category : #accessing }
 GtGitRepository >> repairActions [
 
 	^ GtGitRepairAction subclasses select: [ :sc | 
@@ -487,17 +532,30 @@ GtGitRepository >> repository: aRepository [
 	repository == aRepository ifTrue: [ ^ self ].
 	
 	repository := aRepository.
-	
-	isSubscribed ifTrue: [ ^ self ].
-	
-	Iceberg announcer weak
-		when: IceRepositoryModified
-		send: #onRepositoryModifiedAnnouncement:
-		to: self.
 		
 	lepiterWorkingCopy := GtLepiterWorkingCopy new 
 		repository: aRepository; 
 		updateDatabases.
+]
+
+{ #category : #accessing }
+GtGitRepository >> squash [
+
+	| target message |
+	^ self notYetImplemented."
+	
+	target := self repository branch commits detect: [ :commit | 
+		          (self outgoingCommits contains: [ :aCommit | 
+			           aCommit = commit ]) not ].
+			           
+	message := Character cr join: (self outgoingCommits collect: #comment).
+
+	self repository repositoryHandle
+		resetTo: target libgitCommit
+		resetType: LGitResetTypeEnum git_reset_soft
+		checkoutOptions: LGitCheckoutOptions defaults.
+		
+	self rawCommit: message."
 ]
 
 { #category : #accessing }
@@ -559,6 +617,11 @@ GtGitRepository >> statusModel [
 		on: Error
 		do: [ :error | 
 			^ { (GtGitStatusUnknownError new message: error description) } ]
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> viewModel [
+	^ viewModel ifNil: [ viewModel := GtGitRepositoryViewModel new repositoryModel: self ]
 ]
 
 { #category : #'api - repository' }

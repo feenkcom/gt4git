@@ -2,7 +2,8 @@ Class {
 	#name : #GtGitNavigationStencil,
 	#superclass : #BrStencil,
 	#instVars : [
-		'navigationModel'
+		'navigationModel',
+		'viewModel'
 	],
 	#category : #'GToolkit4Git-UI'
 }
@@ -37,13 +38,11 @@ GtGitNavigationStencil >> create [
 GtGitNavigationStencil >> createListFor: aView [
 
 	<gtGitNavigation>
-	| items element |
-	items := self navigationModel repositories collect: [ 
-		         :eachIceRepository | 
-		         GtGitRepository new repository: eachIceRepository ].
+	| element |
 	^ aView columnedList
 		  title: 'Repositories';
-		  updateWhen: IceRepositoryAnnouncement in: [ Iceberg announcer ];
+		  updateWhen: GtRepositoryListChanged
+		  in: GtRepositoryRegistryAnnouncer new;
 		  actionDropdownButtonIcon: BrGlamorousVectorIcons add
 		  tooltip: 'Add Repository'
 		  content: [ :aDropdown :aTarget | 
@@ -51,18 +50,19 @@ GtGitNavigationStencil >> createListFor: aView [
 			  s := GtGitAddRepositoryStencil new.
 			  s dropdown: aDropdown.
 			  s repoGroup: self.
+			  s onCreated: [:repo | self announce: (GtGitRepositorySelected new repository: (GtGitRepository new repository: repo))].
 			  s ];
 		  actionButtonIcon: BrGlamorousVectorIcons refresh
 		  tooltip: 'Fetch all'
 		  action: [ 
 			  [ self navigationModel repositories collect: [ :r | r fetch ] ]
 				  fork ];
-		  items: [ items ];
+		  items: [ self repositories ];
 		  send: [ :repo | 
 			  self announce: (GtGitRepositorySelected new repository: repo) ];
 		  actionStencil: [ :anElement | 
 			  GtSpotterDropdownButtonStencil new
-				  object: items;
+				  valuable: [ self repositories ];
 				  tooltip: 'Search Repositories';
 				  icon: BrGlamorousVectorIcons search;
 				  actOn: [ :anActOnEvent :anItem | 
@@ -71,17 +71,17 @@ GtGitNavigationStencil >> createListFor: aView [
 					  anElement phlow fireUpdateWish ] ]
 		  tooltip: 'Search Repositories';
 		  column: 'Repository' translated
-		  text: [ :each | each name asRopedText glamorousRegularSmallSize ];
-		  column: 'Status' translated stencil: [ :each | 
-			  element := BlElement new
-				             layout: BlLinearLayout horizontal;
-				             constraintsDo: [ :c | 
-					             c vertical fitContent.
-					             c horizontal fitContent ].
-			  each statusModel do: [ :status | 
-				  element addChild: status asElement ].
-			  element ]
+		  text: [ :each | self viewModel nameFor: each ];
+		  column: 'Status' translated
+		  stencil: [ :each | self viewModel statusElementFor: each ]
 		  width: 100
+]
+
+{ #category : #accessing }
+GtGitNavigationStencil >> initialize [
+	super initialize.
+	
+	viewModel := GtGitNavigationViewModel new
 ]
 
 { #category : #accessing }
@@ -92,4 +92,16 @@ GtGitNavigationStencil >> navigationModel [
 { #category : #accessing }
 GtGitNavigationStencil >> navigationModel: aGtGitNavigationModel [
 	navigationModel := aGtGitNavigationModel
+]
+
+{ #category : #accessing }
+GtGitNavigationStencil >> repositories [
+
+	^ self navigationModel repositories collect: [ :eachIceRepository | 
+		  GtGitRepository new repository: eachIceRepository ]
+]
+
+{ #category : #accessing }
+GtGitNavigationStencil >> viewModel [
+	^ viewModel
 ]
