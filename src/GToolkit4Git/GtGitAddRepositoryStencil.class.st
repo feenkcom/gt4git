@@ -5,9 +5,10 @@ Class {
 		'pager',
 		'pagerContainer',
 		'dropdown',
-		'repoGroup'
+		'repoGroup',
+		'onCreated'
 	],
-	#category : 'GToolkit4Git-Inspector Integration'
+	#category : #'GToolkit4Git-Inspector Integration'
 }
 
 { #category : #accessing }
@@ -26,6 +27,7 @@ GtGitAddRepositoryStencil >> githubPage [
 	stencil := GtGitGithubPageFormStencil new.
 	stencil dropdown: dropdown.
 	stencil repoGroup: repoGroup.
+	stencil onCreated: self onCreated.
 	^ stencil create.
 ]
 
@@ -88,6 +90,7 @@ GtGitAddRepositoryStencil >> localPage [
 			createRepository.
 			repo register.
 			Iceberg announcer announce: (IceRepositoryAnnouncement for: repo).
+		self onCreated value: repo.
 		dropdown ifNotNil: [
 			dropdown enqueueTask:
 				(BlTaskAction new
@@ -99,6 +102,17 @@ GtGitAddRepositoryStencil >> localPage [
 	container addChild: fileBrowser.
 	^ container
 	
+]
+
+{ #category : #accessing }
+GtGitAddRepositoryStencil >> onCreated [
+
+	^ onCreated ifNil: [ [ :repo |  ] ]
+]
+
+{ #category : #accessing }
+GtGitAddRepositoryStencil >> onCreated: aBlock [
+	onCreated := aBlock
 ]
 
 { #category : #accessing }

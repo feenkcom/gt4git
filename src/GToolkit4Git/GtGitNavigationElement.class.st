@@ -31,9 +31,12 @@ GtGitNavigationElement >> navigationModel: aGtGitNavigationModel [
 { #category : #accessing }
 GtGitNavigationElement >> selectRepository: aRepositoryAnnouncement [
 
+	aRepositoryAnnouncement repository ifNil: [ ^ self ].
+
 	suppressed ifFalse: [ 
 		suppressed := true.
-		self allChildrenBreadthFirstDetect: [ :aChild | 
+		self
+			allChildrenBreadthFirstDetect: [ :aChild | 
 			aChild isKindOf: BrColumnedList ]
 			ifFound: [ :aList | 
 				aList viewModel items doWithIndex: [ :each :index | 

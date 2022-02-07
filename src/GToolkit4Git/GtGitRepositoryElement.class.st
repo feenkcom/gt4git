@@ -10,7 +10,8 @@ Class {
 		'lazyTabsElement',
 		'statusElement',
 		'definitionsElement',
-		'updater'
+		'updater',
+		'navigationModel'
 	],
 	#category : #'GToolkit4Git-UI - Element'
 }
@@ -114,6 +115,11 @@ GtGitRepositoryElement >> labelElement [
 { #category : #'private - accessing' }
 GtGitRepositoryElement >> lazyTabsElement [
 	^ lazyTabsElement
+]
+
+{ #category : #accessing }
+GtGitRepositoryElement >> navigationModel: aNavigationModel [
+	navigationModel := aNavigationModel
 ]
 
 { #category : #'private - updating' }
@@ -302,6 +308,19 @@ GtGitRepositoryElement >> updateToolbarElement [
 							                  aLabel padding: BlInsets empty ]);
 				                 beHugeSize;
 				                 text: '');
+		addItem: (GtPreviewChangeButton new
+				 icon: BrGlamorousVectorIcons remove;
+				 label: 'Remove';
+				 changeAction: [ :aButton | 
+					 self repositoryViewModel remove.
+					 navigationModel announce: (GtGitRepositorySelected new repository: nil).
+					 aButton phlow fireUpdateWish ];
+				 changeStencil: [ 
+					 BrLabel new
+						 margin: (BlInsets all: 10);
+						 aptitude: BrGlamorousLabelAptitude new glamorousRegularFont;
+						 text:
+							 'Remove repository? It will be deleted from disk.' asRopedText ]);
 		addItem: (BrFrame new
 				 vFitContent;
 				 hMatchParent);

@@ -10,7 +10,7 @@ Class {
 		'navigationModel',
 		'repository'
 	],
-	#category : #'GToolkit4Git-UI'
+	#category : #'GToolkit4Git-UI - Element'
 }
 
 { #category : #'instance creation' }
@@ -48,6 +48,7 @@ GtGitElement >> initializeContentElement [
 		aViewModel repositoryModel: repository].
 	
 	contentElement := GtGitRepositoryElement new.
+	contentElement navigationModel: navigationModel.
 	contentElement repositoryViewModel: aViewModel.
 ]
 

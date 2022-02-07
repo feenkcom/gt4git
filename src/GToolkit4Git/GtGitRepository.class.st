@@ -492,6 +492,11 @@ GtGitRepository >> rawCommit: aCommitMessage [
 ]
 
 { #category : #accessing }
+GtGitRepository >> remove [
+	self repository delete
+]
+
+{ #category : #accessing }
 GtGitRepository >> repairActions [
 
 	^ GtGitRepairAction subclasses select: [ :sc | 

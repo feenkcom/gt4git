@@ -144,6 +144,11 @@ GtGitRepositoryViewModel >> push [
 ]
 
 { #category : #accessing }
+GtGitRepositoryViewModel >> remove [
+	self repositoryModel remove
+]
+
+{ #category : #accessing }
 GtGitRepositoryViewModel >> repairStencilFor: aDropdown [
 	^ self repositoryModel repairStencil dropdown: aDropdown
 ]
