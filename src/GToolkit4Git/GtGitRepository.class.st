@@ -293,7 +293,7 @@ GtGitRepository >> gtCommitsFor: aView [
 		  title: 'Commits' translated;
 		  priority: 2;
 		  items: [ 
-			  self repository branch commits , self incomingCommits 
+			  self repository head commits , self incomingCommits 
 				  sortDescending: #timeStamp ];
 		  column: 'Status' stencil: [ :item | 
 			  ((self incomingCommits contains: [ :aCommit | aCommit = item ])
