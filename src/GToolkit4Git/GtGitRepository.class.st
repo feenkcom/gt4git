@@ -69,6 +69,11 @@ GtGitRepository >> fetch [
 ]
 
 { #category : #accessing }
+GtGitRepository >> forget [
+	self repository forget
+]
+
+{ #category : #accessing }
 GtGitRepository >> gtActionFetchFor: anAction [
 	<gtAction>
 	^ anAction button

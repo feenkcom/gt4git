@@ -51,6 +51,11 @@ GtGitRepositoryViewModel >> fetch [
 	self repositoryModel fetch
 ]
 
+{ #category : #accessing }
+GtGitRepositoryViewModel >> forget [
+	repositoryModel forget
+]
+
 { #category : #'api - repository' }
 GtGitRepositoryViewModel >> headDescription [
 	^ self hasRepository 

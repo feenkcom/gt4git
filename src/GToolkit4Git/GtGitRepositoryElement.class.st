@@ -295,9 +295,11 @@ GtGitRepositoryElement >> updateTitleElement [
 { #category : #'private - updating' }
 GtGitRepositoryElement >> updateToolbarElement [
 
-	| look aDropdown outgoing incoming incomingLabel |
+	| look aDropdown outgoing incoming incomingLabel localDelete |
 	(self hasRepositoryViewModel not or: [ 
 		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
+
+	localDelete := false.
 
 	toolbarElement removeAllItems.
 	toolbarElement
@@ -312,15 +314,33 @@ GtGitRepositoryElement >> updateToolbarElement [
 				 icon: BrGlamorousVectorIcons remove;
 				 label: 'Remove';
 				 changeAction: [ :aButton | 
-					 self repositoryViewModel remove.
-					 navigationModel announce: (GtGitRepositorySelected new repository: nil).
+					 localDelete
+						 ifTrue: [ self repositoryViewModel remove ]
+						 ifFalse: [ self repositoryViewModel forget ].
+					 navigationModel announce:
+							 (GtGitRepositorySelected new repository: nil).
 					 aButton phlow fireUpdateWish ];
 				 changeStencil: [ 
-					 BrLabel new
+					 BrVerticalPane new
+						 hFitContent;
+						 vFitContent;
 						 margin: (BlInsets all: 10);
-						 aptitude: BrGlamorousLabelAptitude new glamorousRegularFont;
-						 text:
-							 'Remove repository? It will be deleted from disk.' asRopedText ]);
+						 addChild: (BrLabel new
+								  aptitude: BrGlamorousLabelAptitude new glamorousRegularFont;
+								  text: 'Remove repository?' asRopedText);
+						 addChild: (BrHorizontalPane new
+								  hFitContent;
+								  vFitContent;
+								  alignCenterLeft;
+								  margin: (BlInsets top: 5);
+								  addChild: (BrCheckbox new
+										   aptitude: BrGlamorousCheckboxAptitude;
+										   whenCheckedDo: [ localDelete := true ];
+										   margin: (BlInsets right: 8);
+										   whenUncheckedDo: [ localDelete := false ]);
+								  addChild: (BrLabel new
+										   aptitude: BrLabelAptitude new glamorousRegularFont;
+										   text: 'Remove repository from disk')) ]);
 		addItem: (BrFrame new
 				 vFitContent;
 				 hMatchParent);
