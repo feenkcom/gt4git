@@ -271,6 +271,15 @@ GtGitRepository >> gtCommitButtonsFor: item [
 				 label: 'Merge';
 				 action: [ :aButton | aButton phlow spawnObject: merge ]) ].
 
+	(self outgoingCommits size > 0 and: [ 
+		 self outgoingCommits first = item ]) ifTrue: [ 
+		container addChild: (BrButton new
+				 aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
+				 label: self outgoingCommits size asString;
+				 icon: BrGlamorousVectorIcons up;
+				 action: [ :aButton | 
+					 self push.
+					 aButton phlow fireUpdateWish ]) ].
 	"(self outgoingCommits size > 1 and: [ 
 		 self outgoingCommits first = item ]) ifTrue: [ 
 		container addChild: (BrButton new
