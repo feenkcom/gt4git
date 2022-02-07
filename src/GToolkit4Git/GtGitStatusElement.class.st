@@ -18,9 +18,10 @@ GtGitStatusElement >> initialize [
 { #category : #accessing }
 GtGitStatusElement >> initializeOn: aRepository [
 
+	[ 
 	self removeChildren.
 	aRepository statusModel do: [ :status | 
-		self addChild: status asElement ]
+		self addChild: status asElement ] ] asAsyncFuture await
 ]
 
 { #category : #accessing }
