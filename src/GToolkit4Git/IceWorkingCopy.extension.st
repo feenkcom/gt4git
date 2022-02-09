@@ -13,6 +13,8 @@ IceWorkingCopy >> gtPackagesFor: aView [
 			  BrGlamorousSimpleContextMenuContent new
 				  items: { ('Remove' -> [ :e | 
 						   item remove.
+					  Iceberg announcer announce:
+							  (IceRepositoryModified new repository: self repository).
 						   element phlow fireUpdateWish ]) };
 				  yourself ];
 		  updateWhen: IceRepositoryModified in: Iceberg announcer;
