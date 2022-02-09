@@ -31,6 +31,30 @@ GtGitRepositoryElement >> addPackageNamed: aString [
 	self repositoryViewModel addPackage: aString asSymbol
 ]
 
+{ #category : #accessing }
+GtGitRepositoryElement >> createBaselineButtonFor: aPager in: aDropdown [
+	<gtGitEnhancement>
+
+	^ BrButton new
+		  aptitude: BrGlamorousButtonWithLabelAptitude;
+		  margin: (BlInsets all: 5);
+		  label: 'Create a baseline';
+		  action: [ 
+			  | element |
+			  element := GtPharoCreateBaselineElement new.
+			  element behaviorBlock: [ :cls | 
+					  self repository workingCopy addPackageNamed: cls package name.
+					  Iceberg announcer announce:
+							  (IceRepositoryModified new repository: self repository).
+					  aDropdown fireEvent: BrDropdownHideWish new ].
+			  element forBaselineDefinition.
+			  aPager addPage: (BrPagerPageElement new
+						   layout: BlLinearLayout vertical alignCenter;
+						   weight: 1.0;
+						   addChild: element).
+			  aPager scrollToLast ]
+]
+
 { #category : #initialization }
 GtGitRepositoryElement >> defaultLayout [
 	^ BlLinearLayout vertical
@@ -157,6 +181,11 @@ GtGitRepositoryElement >> pullFrom: aButton [
 GtGitRepositoryElement >> pushFrom: aButton [
 	self repositoryViewModel push.
 	aButton phlow fireUpdateWish
+]
+
+{ #category : #'private - updating' }
+GtGitRepositoryElement >> repository [
+	^ self repositoryViewModel repositoryModel repository
 ]
 
 { #category : #'private - updating' }
@@ -428,5 +457,21 @@ GtGitRepositoryElement >> updateToolbarElement [
 							               content: [ 
 							               self repositoryViewModel repairStencilFor:
 								               aDropdown ]);
-				              label: 'Repair') ]
+				              label: 'Repair') ].
+				               
+		toolbarElement addItem: (aDropdown := BrButton new
+				              aptitude:
+					              BrGlamorousButtonWithLabelAptitude
+					              + (BrGlamorousWithDropdownAptitude
+							               handle: [ 
+								               BrButton new
+									               aptitude:
+										               BrGlamorousButtonWithLabelAptitude
+										               - BrGlamorousButtonExteriorAptitude;
+									               label: 'Enhancements' ]
+							               content: [ 
+							               self enhancementsFor:
+								               aDropdown ]);
+				              label: 'Enhancements')
+				              
 ]
