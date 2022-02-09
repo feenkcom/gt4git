@@ -55,7 +55,7 @@ GtGitNavigationStencil >> createListFor: aView [
 		  actionButtonIcon: BrGlamorousVectorIcons refresh
 		  tooltip: 'Fetch all'
 		  action: [ 
-			  [ self navigationModel repositories collect: [ :r | r fetch ] ]
+			  [ self repositories collect: [ :r | r fetch ] ]
 				  fork ];
 		  items: [ self repositories ];
 		  send: [ :repo | 
