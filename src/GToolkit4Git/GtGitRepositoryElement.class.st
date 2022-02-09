@@ -65,6 +65,30 @@ GtGitRepositoryElement >> definitionsElement [
 	^ definitionsElement
 ]
 
+{ #category : #'private - updating' }
+GtGitRepositoryElement >> enhancementsFor: aDropdown [
+
+	| pager contentElement |
+	pager := BrPager new.
+	pager fitContent.
+
+	contentElement := BrVerticalPane new constraintsDo: [ :c | 
+		                  c horizontal exact: 400.
+		                  c vertical exact: 200  ].
+
+	(Pragma allNamed: #gtGitEnhancement) do: [ :pragma | 
+		contentElement addChild:
+			(self perform: pragma methodSelector withArguments: { 
+					 pager.
+					 aDropdown }) ].
+
+	pager addPage: (BrPagerPageElement new
+			 layout: BlLinearLayout vertical alignCenter;
+			 weight: 1.0;
+			 addChild: contentElement).
+	^ pager
+]
+
 { #category : #initialization }
 GtGitRepositoryElement >> fetchAllRepositoriesFrom: aButton [ 
 	self repositoryViewModel fetch.

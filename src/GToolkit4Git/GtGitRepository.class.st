@@ -402,67 +402,6 @@ GtGitRepository >> gtCommitsFor: aView [
 				  yourself ]
 ]
 
-{ #category : #accessing }
-GtGitRepository >> gtEnhancementsFor: aView [
-
-	<gtRepositoryView>
-	| aDropdown |
-	^ aView explicit
-		  title: 'Enhancements' translated;
-		  stencil: [ 
-			  BlElement new
-				  layout: BlFrameLayout new;
-				  constraintsDo: [ :c | 
-					  c horizontal matchParent.
-					  c vertical matchParent ];
-				  addChild: (BrVerticalPane new
-						   constraintsDo: [ :c | 
-							   c frame horizontal alignCenter.
-							   c horizontal fitContent.
-							   c vertical fitContent ];
-						   addChild: (BrButton new
-								    aptitude:
-									    BrGlamorousButtonWithLabelAptitude
-									    + (BrGlamorousWithDropdownAptitude
-											     handle: [ 
-												     aDropdown := BrButton new
-													                  aptitude:
-														                  BrGlamorousButtonWithLabelAptitude
-														                  - BrGlamorousButtonExteriorAptitude;
-													                  label: 'Set source directory' ]
-											     content: [ 
-												     GtGitRepositoryRepairStencil new
-													     repository: self repository;
-													     dropdown: aDropdown ]);
-								    margin: (BlInsets all: 5);
-								    label: 'Set source directory');
-						   addChild: (BrButton new
-								    aptitude:
-									    BrGlamorousButtonWithLabelAptitude
-									    + (BrGlamorousWithDropdownAptitude
-											     handle: [ 
-												     aDropdown := BrButton new
-													                  aptitude:
-														                  BrGlamorousButtonWithLabelAptitude
-														                  - BrGlamorousButtonExteriorAptitude;
-													                  label: 'Create a baseline' ]
-											     content: [ 
-												     | element |
-												     element := GtPharoCreateBaselineElement new.
-												     element behaviorBlock: [ :cls | 
-													     self repository workingCopy addPackageNamed:
-														     cls package name.
-														 Iceberg announcer announce: (IceRepositoryModified new repository: self repository).
-													     aDropdown fireEvent: BrDropdownHideWish new ].
-												     element forBaselineDefinition ]);
-								    margin: (BlInsets all: 5);
-								    label: 'Create a baseline')";
-						   addChild: (BrButton new
-								    aptitude: BrGlamorousButtonWithLabelAptitude;
-								    margin: (BlInsets all: 5);
-								    label: 'Add Lepiter database to repository')") ]
-]
-
 { #category : #'gt - extensions' }
 GtGitRepository >> gtPackagesFor: aView context: aContext [
 	<gtView>
