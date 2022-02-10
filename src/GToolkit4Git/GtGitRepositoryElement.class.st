@@ -25,6 +25,24 @@ GtGitRepositoryElement class >> on: each [
 	^ self new repositoryViewModel: aViewModel
 ]
 
+{ #category : #accessing }
+GtGitRepositoryElement >> addNewDatabaseInDirectory: aDirectory [
+
+	| aDatabase aFileLocator |
+	aFileLocator := aDirectory gtWithClosestFileLocatorParent.
+	aDatabase := LeLocalStoreLoad current loadAndMonitorFrom:
+		             aFileLocator.
+
+	LeDatabasesRegistry uniqueInstance ensureDatabase addDB: aDatabase.
+
+	LeDatabasesRegistry defaultLogicalDatabase properties 
+		addRegisteredDirectory: aFileLocator.
+
+	self repository addFileToIndex:
+		(aDirectory relativeTo: self repository repositoryDirectory).
+	self repositoryViewModel repositoryModel lepiterWorkingCopy addDB: aDatabase. 
+]
+
 { #category : #initialization }
 GtGitRepositoryElement >> addPackageNamed: aString [ 
 	
@@ -33,26 +51,42 @@ GtGitRepositoryElement >> addPackageNamed: aString [
 
 { #category : #accessing }
 GtGitRepositoryElement >> createBaselineButtonFor: aPager in: aDropdown [
-	<gtGitEnhancement>
 
-	^ BrButton new
-		  aptitude: BrGlamorousButtonWithLabelAptitude;
-		  margin: (BlInsets all: 5);
-		  label: 'Create a baseline';
-		  action: [ 
-			  | element |
-			  element := GtPharoCreateBaselineElement new.
-			  element behaviorBlock: [ :cls | 
+	<gtGitEnhancement>
+	^ self
+		  pagerButtonLabelled: 'Create a baseline'
+		  spawningElement: [ 
+			  GtPharoCreateBaselineElement new
+				  behaviorBlock: [ :cls | 
 					  self repository workingCopy addPackageNamed: cls package name.
 					  Iceberg announcer announce:
 							  (IceRepositoryModified new repository: self repository).
-					  aDropdown fireEvent: BrDropdownHideWish new ].
-			  element forBaselineDefinition.
-			  aPager addPage: (BrPagerPageElement new
-						   layout: BlLinearLayout vertical alignCenter;
-						   weight: 1.0;
-						   addChild: element).
-			  aPager scrollToLast ]
+					  aDropdown fireEvent: BrDropdownHideWish new ];
+				  forBaselineDefinition ]
+		  inPager: aPager
+]
+
+{ #category : #accessing }
+GtGitRepositoryElement >> createDatabaseButtonFor: aPager in: aDropdown [
+
+	<gtGitEnhancement>
+	^ self
+		  pagerButtonLabelled: 'Add a new Lepiter Database'
+		  spawningElement: [ 
+			  BrFileSelector new
+				  folder: self repository repositoryDirectory;
+				  fileFilterBlock: [ :aFile | aFile isDirectory ];
+				  okAction: [ :aDirectory :aButton | 
+					  aDirectory isDirectory ifTrue: [ 
+							  aDropdown fireEvent: BrDropdownHideWish new.
+							  self addNewDatabaseInDirectory: aDirectory.
+							  Iceberg announcer announce:
+									  (IceRepositoryModified new repository: self repository).
+							  aDropdown phlow fireUpdateWish ] ];
+				  buttonLabel: 'Add database';
+				  padding: (BlInsets all: 20);
+				  matchParent ]
+		  inPager: aPager
 ]
 
 { #category : #initialization }
@@ -72,9 +106,12 @@ GtGitRepositoryElement >> enhancementsFor: aDropdown [
 	pager := BrPager new.
 	pager fitContent.
 
-	contentElement := BrVerticalPane new constraintsDo: [ :c | 
-		                  c horizontal exact: 400.
-		                  c vertical exact: 200  ].
+	contentElement := BrVerticalPane new
+		                  constraintsDo: [ :c | 
+			                  c frame horizontal alignLeft.
+			                  c horizontal exact: 400.
+			                  c vertical exact: 200 ];
+		                  padding: (BlInsets all: 10).
 
 	(Pragma allNamed: #gtGitEnhancement) do: [ :pragma | 
 		contentElement addChild:
@@ -190,6 +227,21 @@ GtGitRepositoryElement >> onRepositoryViewModelChanged [
 	wish to perform an operation that requires an announcement, but keep in mind that this is not the most efficient way"
 
 	self updateElement.
+]
+
+{ #category : #accessing }
+GtGitRepositoryElement >> pagerButtonLabelled: aString spawningElement: aBlockCreatingElement inPager: aPager [
+
+	^ BrButton new
+		  aptitude: BrGlamorousButtonWithLabelAptitude;
+		  margin: (BlInsets all: 5);
+		  label: aString;
+		  action: [ 
+			  aPager addPage: (BrPagerPageElement new
+						   layout: BlLinearLayout vertical alignCenter;
+						   weight: 1.0;
+						   addChild: aBlockCreatingElement value).
+			  aPager scrollToLast ]
 ]
 
 { #category : #'private - updating' }
