@@ -399,19 +399,21 @@ GtGitRepository >> gtCommitsFor: aView [
 
 	<gtView>
 	<gtRepositoryView>
+	| conflicts |
 	self repository repositoryDirectory ifNil: [ ^ aView empty ].
+
+	conflicts := self conflictingCommits.
 
 	^ aView columnedList
 		  title: 'Commits' translated;
 		  priority: 2;
 		  items: [ 
-			  self repository head commits , self incomingCommits 
+			  self incomingCommits , self repository head commits 
 				  sortDescending: #timeStamp ];
 		  column: 'Status' stencil: [ :item | 
 			  ((self incomingCommits contains: [ :aCommit | aCommit = item ])
 				   ifTrue: [ 
-					   (self conflictingCommits contains: [ :aCommit | 
-							    aCommit = item ])
+					   (conflicts contains: [ :aCommit | aCommit = item ])
 						   ifTrue: [ 
 							   self
 								   statusElementColored:
@@ -440,7 +442,9 @@ GtGitRepository >> gtCommitsFor: aView [
 		  column: 'Commit' text: #shortId width: 70;
 		  column: 'Author' text: #author width: 100;
 		  column: 'Description' text: #comment;
-		  column: 'Actions' stencil: [ :item | self gtCommitButtonsFor: item ]
+		  column: 'Actions'
+		  stencil: [ :item | 
+		  self gtCommitButtonsFor: item withConflicts: conflicts ]
 		  width: 150;
 		  itemContextMenuStencil: [ :element :item | 
 			  BrGlamorousSimpleContextMenuContent new
