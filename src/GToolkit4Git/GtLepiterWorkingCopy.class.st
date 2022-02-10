@@ -61,7 +61,7 @@ GtLepiterWorkingCopy >> databases [
 
 { #category : #accessing }
 GtLepiterWorkingCopy >> databases: anObject [
-	databases := anObject asOrderedCollection.
+	databases := anObject asSet.
 	databases do: [ :aDatabase | 
 		aDatabase announcer weak
 			when: LeAnnouncement
@@ -142,6 +142,8 @@ GtLepiterWorkingCopy >> lepiterChangesTo: aCommitish [
 
 { #category : #accessing }
 GtLepiterWorkingCopy >> onDatabaseChanged: anAnnouncement [
+	(anAnnouncement isKindOf: LeDatabaseUnloadAnnouncement) ifTrue: [ 
+		databases remove: anAnnouncement database ifAbsent: [] ].
 
 	Iceberg announcer announce:
 		(IceRepositoryModified for: self repository)
