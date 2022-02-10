@@ -353,15 +353,12 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 ]
 
 { #category : #accessing }
-GtGitRepository >> gtCommitButtonsFor: item [
+GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts [
 
 	| container merge |
 	container := BlElement new height: 24.
 
-	((self incomingCommits contains: [ :aCommit | aCommit = item ]) and: [ 
-		 (merge := IceMerge new
-			           repository: self repository;
-			           mergeCommit: item) hasConflicts ]) ifTrue: [ 
+	(conflicts contains: [ :aCommit | aCommit = item ]) ifTrue: [ 
 		container addChild: (BrButton new
 				 aptitude: BrGlamorousButtonWithLabelAptitude;
 				 label: 'Merge';
