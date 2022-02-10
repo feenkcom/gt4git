@@ -17,8 +17,7 @@ GtGitDefinitionsListReader >> create [
 						   fitContent;
 						   aptitude: lookStencil create;
 						   focusability: BlFocusability none;
-						   yourself ]
-				   in: [ :aLook |  ];
+						   yourself ];
 				   yourself);
 		  namedTags: self getValue
 ]

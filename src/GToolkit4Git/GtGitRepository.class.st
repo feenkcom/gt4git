@@ -14,10 +14,57 @@ Class {
 	#category : #'GToolkit4Git-Model'
 }
 
+{ #category : #accessing }
+GtGitRepository >> addBaseline: aBaselineName [
+
+	(RBAddPackageChange addPackageNamed: aBaselineName) execute.
+	(RBAddClassChange definition:
+		 'BaselineOf subclass: #' , aBaselineName , '
+	instanceVariableNames: ''''
+	classVariableNames: ''''
+	poolDictionaries: ''''
+	package: ''' , aBaselineName , '''') execute.
+	(RBAddMethodChange
+		 compile: 'baseline: spec
+	<baseline>'
+		 in: aBaselineName asClass
+		 classified: #baseline) execute.
+
+	self repository workingCopy addPackageNamed: aBaselineName.
+	Iceberg announcer announce:
+		(IceRepositoryModified new repository: self repository)
+]
+
+{ #category : #accessing }
+GtGitRepository >> addDatabase: aDatabaseName [
+
+	| aDatabase aFileLocator |
+	aFileLocator := self repository repositoryDirectory / aDatabaseName.
+	aFileLocator createDirectory.
+	aDatabase := LeLocalStoreLoad current loadAndMonitorFrom:
+		             aFileLocator.
+
+	LeDatabasesRegistry uniqueInstance ensureDatabase addDB: aDatabase.
+
+	LeDatabasesRegistry defaultLogicalDatabase properties 
+		addRegisteredDirectory: aFileLocator.
+
+	self repository addFileToIndex:
+		(aFileLocator relativeTo: self repository repositoryDirectory).
+	self lepiterWorkingCopy addDB: aDatabase.
+	Iceberg announcer announce:
+		(IceRepositoryModified new repository: self repository)
+]
+
 { #category : #announcer }
 GtGitRepository >> announcer [
 	<return: #Announcer>
 	^ announcer
+]
+
+{ #category : #accessing }
+GtGitRepository >> baselines [
+	^ (self repository workingCopy packages select: [:aPackage | aPackage isMetacelloBaseline ]) collect: [:aPackage | aPackage name ]
 ]
 
 { #category : #'api - repository' }
@@ -547,6 +594,20 @@ GtGitRepository >> rawCommit: aCommitMessage [
 { #category : #accessing }
 GtGitRepository >> remove [
 	self repository delete
+]
+
+{ #category : #accessing }
+GtGitRepository >> removeBaseline: aBaseline [
+
+	self repository workingCopy removePackageNamed: aBaseline.
+	self repository workingCopy refreshPackages.
+	Iceberg announcer announce:
+		(IceRepositoryModified new repository: self repository)
+]
+
+{ #category : #accessing }
+GtGitRepository >> removeDatabase: aDatabase [
+	aDatabase unload.
 ]
 
 { #category : #accessing }

@@ -25,24 +25,6 @@ GtGitRepositoryElement class >> on: each [
 	^ self new repositoryViewModel: aViewModel
 ]
 
-{ #category : #accessing }
-GtGitRepositoryElement >> addNewDatabaseInDirectory: aDirectory [
-
-	| aDatabase aFileLocator |
-	aFileLocator := aDirectory gtWithClosestFileLocatorParent.
-	aDatabase := LeLocalStoreLoad current loadAndMonitorFrom:
-		             aFileLocator.
-
-	LeDatabasesRegistry uniqueInstance ensureDatabase addDB: aDatabase.
-
-	LeDatabasesRegistry defaultLogicalDatabase properties 
-		addRegisteredDirectory: aFileLocator.
-
-	self repository addFileToIndex:
-		(aDirectory relativeTo: self repository repositoryDirectory).
-	self repositoryViewModel repositoryModel lepiterWorkingCopy addDB: aDatabase. 
-]
-
 { #category : #initialization }
 GtGitRepositoryElement >> addPackageNamed: aString [ 
 	
