@@ -25,6 +25,24 @@ GtGitRepositoryElement class >> on: each [
 	^ self new repositoryViewModel: aViewModel
 ]
 
+{ #category : #accessing }
+GtGitRepositoryElement >> addNewDatabaseInDirectory: aDirectory [
+
+	| aDatabase aFileLocator |
+	aFileLocator := aDirectory gtWithClosestFileLocatorParent.
+	aDatabase := LeLocalStoreLoad current loadAndMonitorFrom:
+		             aFileLocator.
+
+	LeDatabasesRegistry uniqueInstance ensureDatabase addDB: aDatabase.
+
+	LeDatabasesRegistry defaultLogicalDatabase properties 
+		addRegisteredDirectory: aFileLocator.
+
+	self repository addFileToIndex:
+		(aDirectory relativeTo: self repository repositoryDirectory).
+	self repositoryViewModel repositoryModel lepiterWorkingCopy addDB: aDatabase. 
+]
+
 { #category : #initialization }
 GtGitRepositoryElement >> addPackageNamed: aString [ 
 	
@@ -53,6 +71,39 @@ GtGitRepositoryElement >> createBaselineButtonFor: aPager in: aDropdown [
 						   weight: 1.0;
 						   addChild: element).
 			  aPager scrollToLast ]
+]
+
+{ #category : #accessing }
+GtGitRepositoryElement >> createDatabaseButtonFor: aPager in: aDropdown [
+
+	<gtGitEnhancement>
+	| buttonElement fileSelector |
+	fileSelector := BrFileSelector new
+		                folder: self repository repositoryDirectory;
+		                fileFilterBlock: [ :aFile | aFile isDirectory ];
+		                okAction: [ :aDirectory :aButton | 
+			                aDirectory isDirectory ifTrue: [ 
+					                aDropdown fireEvent: BrDropdownHideWish new.
+					                self addNewDatabaseInDirectory: aDirectory.
+					                Iceberg announcer announce:
+							                (IceRepositoryModified new repository:
+									                 self repository).
+					                buttonElement phlow fireUpdateWish ] ];
+		                buttonLabel: 'Add database';
+		                padding: (BlInsets all: 20);
+		                matchParent.
+
+	buttonElement := BrButton new
+		                 aptitude: BrGlamorousButtonWithLabelAptitude;
+		                 icon: BrGlamorousVectorIcons add;
+		                 label: 'Add a new Lepiter Database';
+		                 action: [ 
+			                 aPager addPage: (BrPagerPageElement new
+						                  layout: BlLinearLayout vertical alignCenter;
+						                  weight: 1.0;
+						                  addChild: fileSelector).
+			                 aPager scrollToLast ].
+	^ buttonElement
 ]
 
 { #category : #initialization }
