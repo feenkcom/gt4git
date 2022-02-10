@@ -95,6 +95,16 @@ GtGitDefinitionsElement >> buttonMargin [
 ]
 
 { #category : #accessing }
+GtGitDefinitionsElement >> databasesReader [
+
+	<gtGitEnhancement>
+	^ { (GtGitDefinitionsReader new
+		   title: 'Databases';
+		   repository: self repositoryViewModel repositoryModel;
+		   getSelector: #databases) }
+]
+
+{ #category : #accessing }
 GtGitDefinitionsElement >> editableLabelLook [
 	^ BrGlamorousEditableLabelAptitude new
 		glamorousCodeFont;
@@ -183,17 +193,22 @@ GtGitDefinitionsElement >> initialize [
 
 { #category : #accessing }
 GtGitDefinitionsElement >> readers [
-	self repositoryViewModel hasRepository ifFalse: [ ^#() ].
 
-	^ { 
-		  (GtGitDefinitionsReader new
-			   title: 'Branch';
-			   repository: self repositoryViewModel repositoryModel repository;
-			   getSelector: #branchName).
-		  (GtGitDefinitionsReader new
-			   title: 'Origin';
-			   repository: self repositoryViewModel repositoryModel repository;
-			   getSelector: #originUrl)}
+	| readers |
+	self repositoryViewModel hasRepository ifFalse: [ ^ #(  ) ].
+
+	readers := (Pragma allNamed: #gtGitEnhancement) collect: [ :pragma | 
+		           self perform: pragma methodSelector ].
+
+	^ readers asOrderedCollection addAll: { 
+			  (GtGitDefinitionsReader new
+				   title: 'Branch';
+				   repository: self repositoryViewModel repositoryModel repository;
+				   getSelector: #branchName).
+			  (GtGitDefinitionsReader new
+				   title: 'Origin';
+				   repository: self repositoryViewModel repositoryModel repository;
+				   getSelector: #originUrl) }
 ]
 
 { #category : #accessing }

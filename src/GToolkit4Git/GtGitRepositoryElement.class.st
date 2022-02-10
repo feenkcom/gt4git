@@ -49,46 +49,6 @@ GtGitRepositoryElement >> addPackageNamed: aString [
 	self repositoryViewModel addPackage: aString asSymbol
 ]
 
-{ #category : #accessing }
-GtGitRepositoryElement >> createBaselineButtonFor: aPager in: aDropdown [
-
-	<gtGitEnhancement>
-	^ self
-		  pagerButtonLabelled: 'Create a baseline'
-		  spawningElement: [ 
-			  GtPharoCreateBaselineElement new
-				  behaviorBlock: [ :cls | 
-					  self repository workingCopy addPackageNamed: cls package name.
-					  Iceberg announcer announce:
-							  (IceRepositoryModified new repository: self repository).
-					  aDropdown fireEvent: BrDropdownHideWish new ];
-				  forBaselineDefinition ]
-		  inPager: aPager
-]
-
-{ #category : #accessing }
-GtGitRepositoryElement >> createDatabaseButtonFor: aPager in: aDropdown [
-
-	<gtGitEnhancement>
-	^ self
-		  pagerButtonLabelled: 'Add a new Lepiter Database'
-		  spawningElement: [ 
-			  BrFileSelector new
-				  folder: self repository repositoryDirectory;
-				  fileFilterBlock: [ :aFile | aFile isDirectory ];
-				  okAction: [ :aDirectory :aButton | 
-					  aDirectory isDirectory ifTrue: [ 
-							  aDropdown fireEvent: BrDropdownHideWish new.
-							  self addNewDatabaseInDirectory: aDirectory.
-							  Iceberg announcer announce:
-									  (IceRepositoryModified new repository: self repository).
-							  aDropdown phlow fireUpdateWish ] ];
-				  buttonLabel: 'Add database';
-				  padding: (BlInsets all: 20);
-				  matchParent ]
-		  inPager: aPager
-]
-
 { #category : #initialization }
 GtGitRepositoryElement >> defaultLayout [
 	^ BlLinearLayout vertical
@@ -97,33 +57,6 @@ GtGitRepositoryElement >> defaultLayout [
 { #category : #initialization }
 GtGitRepositoryElement >> definitionsElement [
 	^ definitionsElement
-]
-
-{ #category : #'private - updating' }
-GtGitRepositoryElement >> enhancementsFor: aDropdown [
-
-	| pager contentElement |
-	pager := BrPager new.
-	pager fitContent.
-
-	contentElement := BrVerticalPane new
-		                  constraintsDo: [ :c | 
-			                  c frame horizontal alignLeft.
-			                  c horizontal exact: 400.
-			                  c vertical exact: 200 ];
-		                  padding: (BlInsets all: 10).
-
-	(Pragma allNamed: #gtGitEnhancement) do: [ :pragma | 
-		contentElement addChild:
-			(self perform: pragma methodSelector withArguments: { 
-					 pager.
-					 aDropdown }) ].
-
-	pager addPage: (BrPagerPageElement new
-			 layout: BlLinearLayout vertical alignCenter;
-			 weight: 1.0;
-			 addChild: contentElement).
-	^ pager
 ]
 
 { #category : #initialization }
@@ -533,21 +466,6 @@ GtGitRepositoryElement >> updateToolbarElement [
 							               content: [ 
 							               self repositoryViewModel repairStencilFor:
 								               aDropdown ]);
-				              label: 'Repair') ].
-				               
-		toolbarElement addItem: (aDropdown := BrButton new
-				              aptitude:
-					              BrGlamorousButtonWithLabelAptitude
-					              + (BrGlamorousWithDropdownAptitude
-							               handle: [ 
-								               BrButton new
-									               aptitude:
-										               BrGlamorousButtonWithLabelAptitude
-										               - BrGlamorousButtonExteriorAptitude;
-									               label: 'Enhancements' ]
-							               content: [ 
-							               self enhancementsFor:
-								               aDropdown ]);
-				              label: 'Enhancements')
+				              label: 'Repair') ]
 				              
 ]

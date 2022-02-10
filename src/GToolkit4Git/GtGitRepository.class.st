@@ -36,6 +36,11 @@ GtGitRepository >> conflictingCommits [
 			   mergeCommit: commit) hasConflicts ]
 ]
 
+{ #category : #accessing }
+GtGitRepository >> databases [
+	^ self lepiterWorkingCopy databases
+]
+
 { #category : #'api - actions' }
 GtGitRepository >> executeCommit: aCommitMessage [
 

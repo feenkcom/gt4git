@@ -454,7 +454,7 @@ GtIceLepiterExamples >> gitRepositoryAEditExistingPage [
 	<after: #cleanUpRepositoriesAndDatabases>
 	| gtIceRepository targetDatabase targetPage |
 	gtIceRepository := self gitRepositoryACommitNewAddedPage.
-	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 	
 	targetPage := targetDatabase pageNamed: 'Page1'.
 	targetPage children first updateString: 'Updated Snippet1 Text'.
@@ -470,7 +470,7 @@ GtIceLepiterExamples >> gitRepositoryARemoveExistingPage [
 	<after: #cleanUpRepositoriesAndDatabases>
 	| gtIceRepository targetDatabase targetPage |
 	gtIceRepository := self gitRepositoryACommitNewAddedPage.
-	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 	
 	targetPage := targetDatabase pageNamed: 'Page1'.
 	targetPage removeSelf.
@@ -505,7 +505,7 @@ GtIceLepiterExamples >> gitRepositoryAWithNewAddedPage [
 	<after: #cleanUpRepositoriesAndDatabases>
 	| gtIceRepository targetDatabase newPage |
 	gtIceRepository := self gitRepositoryAWithEmptyCommitedLepiterDatabase.
-	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 	
 	newPage := LePage named: 'Page1'.
 	newPage addSnippet: (LeTextSnippet string: 'Snippet1').
@@ -528,9 +528,9 @@ GtIceLepiterExamples >> gitRepositoryAWithNewEmptyNotCommitedLepiterDatabase [
 	
 	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
 	self assert: lepiterWorkingCopy databases size equals: 1.
-	targetDatabase := lepiterWorkingCopy databases first.
+	targetDatabase := lepiterWorkingCopy databases anyOne.
 	self 
-		assert: lepiterWorkingCopy databases first databaseName 
+		assert: lepiterWorkingCopy databases anyOne databaseName 
 		equals: 'database-a'.
 	
 	diff := lepiterWorkingCopy diffToReferenceCommit.
@@ -557,7 +557,7 @@ GtIceLepiterExamples >> gitRepositoryAWithNewPageWithAttachment [
 	<after: #cleanUpRepositoriesAndDatabases>
 	| gtIceRepository targetDatabase newPage diff databaseNode pagesNode attachmentsNode |
 	gtIceRepository := self gitRepositoryAWithEmptyCommitedLepiterDatabase.
-	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 	
 	newPage := self createNewPageWithAttachmentIn: targetDatabase.
 	
@@ -594,7 +594,7 @@ GtIceLepiterExamples >> gitRepositoryAWithNewUnnamedAddedPage [
 	<after: #cleanUpRepositoriesAndDatabases>
 	| gtIceRepository targetDatabase newPage deltas |
 	gtIceRepository := self gitRepositoryAWithEmptyCommitedLepiterDatabase.
-	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 	
 	newPage := LePage unnamedPage.
 	newPage addSnippet: (LeTextSnippet string: 'Block1 in Unnamed Page').
@@ -614,7 +614,7 @@ GtIceLepiterExamples >> gitRepositoryAWithTwoNewUnnamedAddedPage [
 	<after: #cleanUpRepositoriesAndDatabases>
 	| gtIceRepository targetDatabase newPage1 newPage2 diff databaseNode pagesNode deltas |
 	gtIceRepository := self gitRepositoryAWithEmptyCommitedLepiterDatabase.
-	targetDatabase := gtIceRepository lepiterWorkingCopy databases first.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 	
 	newPage1 := LePage unnamedPage.
 	newPage1 addSnippet: (LeTextSnippet string: 'Block1 in Unnamed Page2').
