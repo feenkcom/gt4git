@@ -45,3 +45,10 @@ IceWorkingCopy >> gtViewDiffToReferenceCommitFor: aView [
 		gtViewInspectorDiffFor: aView)
 			priority: 19
 ]
+
+{ #category : #'*GToolkit4Git' }
+IceWorkingCopy >> removePackageNamed: aPackageName [
+	^ (RPackage organizer
+			packageNamed: aPackageName
+			ifAbsent: [ ^ self ]) removeFromSystem
+]

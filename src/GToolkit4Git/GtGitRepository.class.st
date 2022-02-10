@@ -14,10 +14,57 @@ Class {
 	#category : #'GToolkit4Git-Model'
 }
 
+{ #category : #accessing }
+GtGitRepository >> addBaseline: aBaselineName [
+
+	(RBAddPackageChange addPackageNamed: aBaselineName) execute.
+	(RBAddClassChange definition:
+		 'BaselineOf subclass: #' , aBaselineName , '
+	instanceVariableNames: ''''
+	classVariableNames: ''''
+	poolDictionaries: ''''
+	package: ''' , aBaselineName , '''') execute.
+	(RBAddMethodChange
+		 compile: 'baseline: spec
+	<baseline>'
+		 in: aBaselineName asClass
+		 classified: #baseline) execute.
+
+	self repository workingCopy addPackageNamed: aBaselineName.
+	Iceberg announcer announce:
+		(IceRepositoryModified new repository: self repository)
+]
+
+{ #category : #accessing }
+GtGitRepository >> addDatabase: aDatabaseName [
+
+	| aDatabase aFileLocator |
+	aFileLocator := self repository repositoryDirectory / aDatabaseName.
+	aFileLocator createDirectory.
+	aDatabase := LeLocalStoreLoad current loadAndMonitorFrom:
+		             aFileLocator.
+
+	LeDatabasesRegistry uniqueInstance ensureDatabase addDB: aDatabase.
+
+	LeDatabasesRegistry defaultLogicalDatabase properties 
+		addRegisteredDirectory: aFileLocator.
+
+	self repository addFileToIndex:
+		(aFileLocator relativeTo: self repository repositoryDirectory).
+	self lepiterWorkingCopy addDB: aDatabase.
+	Iceberg announcer announce:
+		(IceRepositoryModified new repository: self repository)
+]
+
 { #category : #announcer }
 GtGitRepository >> announcer [
 	<return: #Announcer>
 	^ announcer
+]
+
+{ #category : #accessing }
+GtGitRepository >> baselines [
+	^ (self repository workingCopy packages select: [:aPackage | aPackage isMetacelloBaseline ]) collect: [:aPackage | aPackage name ]
 ]
 
 { #category : #'api - repository' }
@@ -34,6 +81,11 @@ GtGitRepository >> conflictingCommits [
 		  (IceMerge new
 			   repository: self repository;
 			   mergeCommit: commit) hasConflicts ]
+]
+
+{ #category : #accessing }
+GtGitRepository >> databases [
+	^ self lepiterWorkingCopy databases
 ]
 
 { #category : #'api - actions' }
@@ -301,15 +353,12 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 ]
 
 { #category : #accessing }
-GtGitRepository >> gtCommitButtonsFor: item [
+GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts [
 
 	| container merge |
 	container := BlElement new height: 24.
 
-	((self incomingCommits contains: [ :aCommit | aCommit = item ]) and: [ 
-		 (merge := IceMerge new
-			           repository: self repository;
-			           mergeCommit: item) hasConflicts ]) ifTrue: [ 
+	(conflicts contains: [ :aCommit | aCommit = item ]) ifTrue: [ 
 		container addChild: (BrButton new
 				 aptitude: BrGlamorousButtonWithLabelAptitude;
 				 label: 'Merge';
@@ -350,19 +399,21 @@ GtGitRepository >> gtCommitsFor: aView [
 
 	<gtView>
 	<gtRepositoryView>
+	| conflicts |
 	self repository repositoryDirectory ifNil: [ ^ aView empty ].
+
+	conflicts := self conflictingCommits.
 
 	^ aView columnedList
 		  title: 'Commits' translated;
 		  priority: 2;
 		  items: [ 
-			  self repository head commits , self incomingCommits 
+			  self incomingCommits , self repository head commits 
 				  sortDescending: #timeStamp ];
 		  column: 'Status' stencil: [ :item | 
 			  ((self incomingCommits contains: [ :aCommit | aCommit = item ])
 				   ifTrue: [ 
-					   (self conflictingCommits contains: [ :aCommit | 
-							    aCommit = item ])
+					   (conflicts contains: [ :aCommit | aCommit = item ])
 						   ifTrue: [ 
 							   self
 								   statusElementColored:
@@ -391,7 +442,9 @@ GtGitRepository >> gtCommitsFor: aView [
 		  column: 'Commit' text: #shortId width: 70;
 		  column: 'Author' text: #author width: 100;
 		  column: 'Description' text: #comment;
-		  column: 'Actions' stencil: [ :item | self gtCommitButtonsFor: item ]
+		  column: 'Actions'
+		  stencil: [ :item | 
+		  self gtCommitButtonsFor: item withConflicts: conflicts ]
 		  width: 150;
 		  itemContextMenuStencil: [ :element :item | 
 			  BrGlamorousSimpleContextMenuContent new
@@ -542,6 +595,20 @@ GtGitRepository >> rawCommit: aCommitMessage [
 { #category : #accessing }
 GtGitRepository >> remove [
 	self repository delete
+]
+
+{ #category : #accessing }
+GtGitRepository >> removeBaseline: aBaseline [
+
+	self repository workingCopy removePackageNamed: aBaseline.
+	self repository workingCopy refreshPackages.
+	Iceberg announcer announce:
+		(IceRepositoryModified new repository: self repository)
+]
+
+{ #category : #accessing }
+GtGitRepository >> removeDatabase: aDatabase [
+	aDatabase unload.
 ]
 
 { #category : #accessing }
