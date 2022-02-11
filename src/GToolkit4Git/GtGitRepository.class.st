@@ -256,15 +256,17 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 	| aViewModel changes chosen |
 	chosen := Set new.
 
-	aViewModel :=self viewModel.
+	aViewModel := self viewModel.
 
 	self lepiterWorkingCopy ifNil: [ ^ aView empty ].
 	changes := self workingCopyDiff treeToShow.
-	(changes isNil or: [ changes isEmpty ]) ifTrue: [ ^ aView empty ].
-	
+	(changes isNil or: [ changes isEmpty ]) ifTrue: [ 
+		self repository isModified ifTrue: [ self refreshDirtyPackages ].
+		^ aView empty ].
+
 	changes do: [ :change | 
 		change value hasChanges ifTrue: [ chosen add: change ] ].
-		
+
 	^ aView tree
 		  title: 'Changes';
 		  items: [ changes children ];
@@ -590,6 +592,15 @@ GtGitRepository >> rawCommit: aCommitMessage [
 		andParents: (self workingCopy workingCopyState referenceCommits reject: [ :each | each isNoCommit ]).
 	Iceberg announcer announce:
 		(IceRepositoryModified for: self repository)
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> refreshDirtyPackages [
+
+	self repository workingCopy refreshDirtyPackages.
+	self repository isModified ifFalse: [ 
+		Iceberg announcer announce:
+			(IceRepositoryModified new repository: self repository) ]
 ]
 
 { #category : #accessing }
