@@ -31,15 +31,45 @@ GtGitDefinitionsElement >> addDefinitionEditorShortcutsTo: aPropertiesElement [
 ]
 
 { #category : #accessing }
+GtGitDefinitionsElement >> addNewDatabaseInDirectory: aDirectory [
+
+	| aDatabase aFileLocator |
+	aFileLocator := aDirectory gtWithClosestFileLocatorParent.
+	aDatabase := LeLocalStoreLoad current loadAndMonitorFrom:
+		             aFileLocator.
+
+	LeDatabasesRegistry uniqueInstance ensureDatabase addDB: aDatabase.
+
+	LeDatabasesRegistry defaultLogicalDatabase properties 
+		addRegisteredDirectory: aFileLocator.
+
+	self repository addFileToIndex:
+		(aDirectory relativeTo: self repository repositoryDirectory).
+	self repositoryViewModel repositoryModel lepiterWorkingCopy addDB:
+		aDatabase
+]
+
+{ #category : #accessing }
 GtGitDefinitionsElement >> baselinesEditor [
+
 	<gtGitEnhancement>
-	
 	^ GtGitDefinitionsListEditor new
-		title: 'Baselines';
-		repository: self repositoryViewModel repositoryModel;
-		getSelector: #baselines;
-		addSelector: #addBaseline:;
-		removeSelector: #removeBaseline:
+		  title: 'Baselines';
+		  repository: self repositoryViewModel repositoryModel;
+		  getSelector: #baselines;
+		  addSelector: #addBaseline:;
+		  removeSelector: #removeBaseline:;
+		  contentBlock: [ :aDropdown :_ | 
+			  GtPharoCreateBaselineElement new
+				  behaviorBlock: [ :cls | 
+					  self repository workingCopy addPackageNamed: cls package name.
+					  Iceberg announcer announce:
+							  (IceRepositoryModified new repository: self repository).
+					  aDropdown fireEvent: BrDropdownHideWish new ];
+				  forBaselineDefinition ];
+		  spawnOn: [ :aPhlow :aValue | 
+			  aPhlow spawnTool:
+				  (GtPackageCoderTool package: (RPackage named: aValue)) ]
 ]
 
 { #category : #accessing }
@@ -108,14 +138,29 @@ GtGitDefinitionsElement >> buttonMargin [
 
 { #category : #accessing }
 GtGitDefinitionsElement >> databasesEditor [
+
 	<gtGitEnhancement>
-	
 	^ GtGitDefinitionsListEditor new
-		title: 'Databases';
-		repository: self repositoryViewModel repositoryModel;
-		getSelector: #databases;
-		addSelector: #addDatabase:;
-		removeSelector: #removeDatabase:
+		  title: 'Databases';
+		  repository: self repositoryViewModel repositoryModel;
+		  getSelector: #databases;
+		  addSelector: #addDatabase:;
+		  removeSelector: #removeDatabase:;
+		  contentBlock: [ :aDropdown :_ | 
+			  BrFileSelector new
+				  folder: self repository repositoryDirectory;
+				  fileFilterBlock: [ :aFile | aFile isDirectory ];
+				  okAction: [ :aDirectory :aButton | 
+					  aDirectory isDirectory ifTrue: [ 
+							  aDropdown fireEvent: BrDropdownHideWish new.
+							  self addNewDatabaseInDirectory: aDirectory.
+							  Iceberg announcer announce:
+									  (IceRepositoryModified new repository: self repository).
+							  aDropdown phlow fireUpdateWish ] ];
+				  buttonLabel: 'Add database';
+				  padding: (BlInsets all: 20);
+				  matchParent ];
+		  spawnOn: [ :aPhlow :aValue | aPhlow spawnObject: aValue ]
 ]
 
 { #category : #accessing }
@@ -251,6 +296,12 @@ GtGitDefinitionsElement >> readonlyLabelLook [
 					aStyle
 						border: (BlBorder paint: self theme button hoveredBorderColor width: 1) ]);
 		yourself
+]
+
+{ #category : #accessing }
+GtGitDefinitionsElement >> repository [
+
+	^ self repositoryViewModel repositoryModel repository
 ]
 
 { #category : #accessing }
