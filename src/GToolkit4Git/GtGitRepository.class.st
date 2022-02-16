@@ -296,9 +296,9 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 								   (BrGlamorousWithLabelTooltipAptitude new text:
 										    'Select for Commit');
 						   checked: true;
-						   whenCheckedDo: [ chosen add: anIceNode ];
+						   whenCheckedDo: [ chosen add: anIceNode value ];
 						   margin: (BlInsets right: 8);
-						   whenUncheckedDo: [ chosen remove: anIceNode ifAbsent: [  ] ]) ].
+						   whenUncheckedDo: [ chosen remove: anIceNode value ifAbsent: [ ] ]) ].
 			  element
 				  addChild:
 					  (anIceNode value icon asElement constraintsDo: [ :c | 
