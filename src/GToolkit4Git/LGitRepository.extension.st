@@ -22,6 +22,21 @@ LGitRepository >> getDeltasFromHead: aHead options: anLGitDiffOptions [
 ]
 
 { #category : #'*GToolkit4Git' }
+LGitRepository >> getDeltasFromHead: aHead options: anLGitDiffOptions into: aDiffPointer [
+
+	| tree |
+	
+	tree := aHead treeFor: self.
+	
+	aDiffPointer 
+		diffTreeToWorkdir: tree 
+		inRepo: self
+		options: anLGitDiffOptions.
+	
+	^ aDiffPointer deltas
+]
+
+{ #category : #'*GToolkit4Git' }
 LGitRepository >> isDirty [
 
 	| out head |
