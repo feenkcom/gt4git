@@ -97,6 +97,7 @@ GtGitRepository >> baselinesDescription [
 			  | aTagger |
 			  aTagger := BrTagger new.
 			  aTagger
+				  margin: (BlInsets left: 7);
 				  hMatchParent;
 				  vFitContent.
 			  aForm hMatchParent.
@@ -154,6 +155,7 @@ GtGitRepository >> branchDescription [
 			  GtStringsCompletionStrategy new completions:
 					  (GtPrefixTree withAll:
 							   (repository allBranches collect: [ :branch | branch name ])) ];
+		  blocStencil: self defaultMagritteStencil;
 		  addCondition: [ :aValue | (aValue includesSubstring: '..') not ]
 		  labelled: 'May not contain ".."';
 		  addCondition: [ :aValue | (aValue includesAny: '~^:?*[\') not ]
@@ -170,7 +172,7 @@ GtGitRepository >> branchDescription [
 		  addCondition: [ :aValue | (aValue includesSubstring: '//') not ]
 		  labelled: 'May not contain multiple consecutive slashes';
 		  comment:
-			  'A branch name. If you set it to a non-existant branch, a new one will be created.'
+		  'A branch name. If you set it to a non-existant branch, a new one will be created.'
 ]
 
 { #category : #'api - repository' }
@@ -198,10 +200,18 @@ GtGitRepository >> codeDirectoryDescription [
 { #category : #accessing }
 GtGitRepository >> conflictingCommits [
 
-	^ self incomingCommits select: [ :commit | 
-		  (IceMerge new
-			   repository: self repository;
-			   mergeCommit: commit) hasConflicts ]
+	| index commits |
+	self incomingCommits ifEmpty: [ ^ OrderedCollection new ].
+	index := 1.
+	commits := OrderedCollection new.
+	[ 
+	(IceMerge new
+		 repository: self repository;
+		 mergeCommit: (self incomingCommits at: index)) hasConflicts ] 
+		whileTrue: [ 
+			index := index + 1.
+			commits add: (self incomingCommits at: index) ].
+	^ commits
 ]
 
 { #category : #accessing }
@@ -222,6 +232,7 @@ GtGitRepository >> databasesDescription [
 			  | aTagger |
 			  aTagger := BrTagger new.
 			  aTagger
+				  margin: (BlInsets left: 7);
 				  hMatchParent;
 				  vFitContent.
 			  aForm hMatchParent.
@@ -272,6 +283,48 @@ GtGitRepository >> databasesDescription [
 					  anElementSink ] ]
 ]
 
+{ #category : #accessing }
+GtGitRepository >> defaultMagritteStencil [
+
+	^ [ :aMemento :aDescription | 
+	  | anEditor |
+	  anEditor := BrEditor new.
+	  anEditor
+		  aptitude:
+			  (BrGlamorousRegularEditorAptitude new glamorousCodeFont 
+				   fontSize: 10);
+		  addAptitude: (BrStyleCommonAptitude new
+				   default: [ :aStyle | 
+					   aStyle background: BrGlamorousColors backdropColor ];
+				   focused: [ :aStyle | 
+					   aStyle
+						   background: Color white;
+						   border:
+							   (BlBorder
+								    paint: BrGlamorousColors focusedEditorBorderColor
+								    width: 1) ]);
+		  geometry: (BlRoundedRectangleGeometry cornerRadius: 4);
+		  vFitContent;
+		  hFitContentLimited;
+		  margin: (BlInsets all: 4);
+		  constraintsDo: [ :c | 
+			  c grid vertical alignCenter.
+			  c minWidth: 20 ];
+		  withAsyncSinkDo: [ :anElementSink | 
+			  anElementSink
+				  sink: AsyncPeakSink new;
+				  whenUpdate: [ :theEditor :aSink | 
+					  theEditor text: aSink value currentValue ].
+			  (aMemento readObservableValueUsing: aDescription) observe:
+				  anElementSink ].
+
+	  anEditor editor when: BrTextEditorModifiedEvent do: [ :anEvent | 
+		  | aPromise |
+		  aMemento write: anEvent text asString using: aDescription ].
+
+	  anEditor ]
+]
+
 { #category : #'api - actions' }
 GtGitRepository >> executeCommit: aCommitMessage [
 
@@ -310,22 +363,20 @@ GtGitRepository >> fileFormatDescription [
 	<magritteDescription>
 	^ MASingleOptionDescription new
 		  label: 'File Format';
+		  display: #description;
 		  accessor: (MAPluggableAccessor
 				   read: [ :aModel | 
-					   (IceBasicProject onRepository: aModel) repositoryProperties
-						   fileFormat = IceLibgitTonelWriter
-						   ifTrue: [ 'Tonel' ]
-						   ifFalse: [ 'Filetree' ] ]
+					   repository project repositoryProperties fileFormat ]
 				   write: [ :aModel :aValue | 
 					   | model |
-					   model := IceBasicProject onRepository: aModel.
-					   model fileFormat: (aValue = 'Tonel'
+					   repository project fileFormat: (aValue = 'Tonel'
 								    ifTrue: [ IceLibgitTonelWriter ]
 								    ifFalse: [ IceLibgitFiletreeWriter ]).
-					   repository workingCopy project: model.
 					   Iceberg announcer announce:
 							   (IceRepositoryModified for: repository) ]);
-		  options: #( 'Tonel' 'Filetree' )
+		  options: { 
+				  IceLibgitTonelWriter.
+				  IceLibgitFiletreeWriter }
 ]
 
 { #category : #accessing }
@@ -525,10 +576,11 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 		  content: [ :aDropdown :aTarget | 
 			  | editor button |
 			  editor := BrEditor new
+				            aptitude: BrGlamorousRegularEditorAptitude;
+				            text: aViewModel commitMessage;
 				            hMatchParent;
 				            vFitContentLimited;
-				            aptitude: BrGlamorousRegularEditorAptitude;
-				            text: aViewModel commitMessage.
+				            requestFocus.
 			  editor selecter
 				  all;
 				  select.
@@ -765,6 +817,7 @@ GtGitRepository >> originDescription [
 	<magritteDescription>
 	^ MAStringDescription new
 		  label: 'Origin';
+		  blocStencil: self defaultMagritteStencil;
 		  accessor: (MAPluggableAccessor
 				   read: [ :aModel | aModel repository originUrl ]
 				   write: [ :aModel :aValue | 

@@ -146,7 +146,7 @@ IceLibgitRepository >> isDirty [
 
 { #category : #'*GToolkit4Git' }
 IceLibgitRepository >> makeSafe [
- self commitCache beThreadSafe
+ self commitCache ensureThreadSafe
 ]
 
 { #category : #'*GToolkit4Git' }
