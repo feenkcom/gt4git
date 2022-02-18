@@ -864,7 +864,7 @@ GtGitRepository >> repository: aRepository [
 
 	repository == aRepository ifTrue: [ ^ self ].
 	
-	repository := aRepository.
+	repository := aRepository makeSafe.
 		
 	lepiterWorkingCopy := GtLepiterWorkingCopy new 
 		repository: aRepository; 
