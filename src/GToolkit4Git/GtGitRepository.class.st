@@ -56,6 +56,24 @@ GtGitRepository >> addDatabase: aDatabaseName [
 		(IceRepositoryModified new repository: self repository)
 ]
 
+{ #category : #accessing }
+GtGitRepository >> addNewDatabaseInDirectory: aDirectory [
+
+	| aDatabase aFileLocator |
+	aFileLocator := aDirectory gtWithClosestFileLocatorParent.
+	aDatabase := LeLocalStoreLoad current loadAndMonitorFrom:
+		             aFileLocator.
+
+	LeDatabasesRegistry uniqueInstance ensureDatabase addDB: aDatabase.
+
+	LeDatabasesRegistry defaultLogicalDatabase properties 
+		addRegisteredDirectory: aFileLocator.
+
+	self repository addFileToIndex:
+		(aDirectory relativeTo: self repository repositoryDirectory).
+	self lepiterWorkingCopy addDB: aDatabase
+]
+
 { #category : #announcer }
 GtGitRepository >> announcer [
 	<return: #Announcer>
@@ -68,6 +86,60 @@ GtGitRepository >> baselines [
 ]
 
 { #category : #accessing }
+GtGitRepository >> baselinesDescription [
+
+	<magritteDescription>
+	^ MAToManyRelationDescription new
+		  label: 'Baselines';
+		  accessor: #baselines;
+		  blocListStencil: [ :aMemento :aDescription :aForm | 
+			  | aTagger |
+			  aTagger := BrTagger new.
+			  aTagger
+				  hMatchParent;
+				  vFitContent.
+			  aForm hMatchParent.
+			  aTagger aptitude:
+				  (BrGlamorousTaggerEditableAptitude new tagLabel: [ :aTag | 
+					   | aLabel |
+					   aLabel := BrEditableLabel new
+						             text: aTag name;
+						             aptitude: (BrGlamorousEditableLabelAptitude new
+								              glamorousCodeFont;
+								              defaultForeground: Color black;
+								              fontSize: 10).
+
+					   (GtCompletionController
+						    on: aLabel
+						    strategy: GtClassesCompletionStrategy new) install.
+
+					   aLabel ]).
+			  aTagger when: BrTaggerAddTagRequest do: [ :aRequest | 
+				  aMemento
+					  write: ((aTagger tags collect: #name)
+							   add: aRequest tag name;
+							   yourself)
+					  using: aDescription ].
+			  aTagger when: BrTaggerRemoveTagRequest do: [ :aRequest | 
+				  aMemento
+					  write: ((aTagger tags collect: #name)
+							   remove: aRequest tag name;
+							   yourself)
+					  using: aDescription ].
+			  aTagger withAsyncSinkDo: [ :anElementSink | 
+				  anElementSink
+					  sink: AsyncPeakSink new;
+					  whenUpdate: [ :theTagger :aSink | 
+						  | theValues theTexts |
+						  theValues := aSink value currentValue.
+						  theTexts := theValues collect: [ :each | 
+								              aDescription displayStringFor: each ].
+						  theTagger namedTags: theTexts ].
+				  (aMemento readObservableValueUsing: aDescription) observe:
+					  anElementSink ] ]
+]
+
+{ #category : #accessing }
 GtGitRepository >> branchDescription [
 
 	<magritteDescription>
@@ -77,8 +149,27 @@ GtGitRepository >> branchDescription [
 				   read: [ :aModel | aModel repository branchName ]
 				   write: [ :aModel :aValue | 
 					   aModel repository checkoutBranch: aValue ]);
-		  addCondition: [ :aValue | false  ]
-		  labelled: 'Must be an existing branch name'
+		  blocCompletion: [ 
+			  GtStringsCompletionStrategy new completions:
+					  (GtPrefixTree withAll:
+							   (repository allBranches collect: [ :branch | branch name ])) ];
+		  addCondition: [ :aValue | (aValue includesSubstring: '..') not ]
+		  labelled: 'May not contain ".."';
+		  addCondition: [ :aValue | (aValue includesAny: '~^:?*[\') not ]
+		  labelled: 'May not contain any of "~^:?*[\"';
+		  addCondition: [ :aValue | (aValue endsWith: '.') not ]
+		  labelled: 'May not end with a dot';
+		  addCondition: [ :aValue | 
+			  ((aValue beginsWith: '/') or: [ aValue endsWith: '/' ]) not ]
+		  labelled: 'May not start or end with a slash';
+		  addCondition: [ :aValue | (aValue includesSubstring: '@{') not ]
+		  labelled: 'May not contain the sequence "@{"';
+		  addCondition: [ :aValue | (aValue = '@') not ]
+		  labelled: 'May not just be an "@" charater';
+		  addCondition: [ :aValue | (aValue includesSubstring: '//') not ]
+		  labelled: 'May not contain multiple consecutive slashes';
+		  comment:
+			  'A branch name. If you set it to a non-existant branch, a new one will be created.'
 ]
 
 { #category : #'api - repository' }
@@ -86,6 +177,21 @@ GtGitRepository >> changes [
 	^ self isModified
 		ifTrue: [ self workingCopy diffToReferenceCommit treeToShow children ]
 		ifFalse: [ Array empty ]
+]
+
+{ #category : #accessing }
+GtGitRepository >> codeDirectoryDescription [
+
+	<magritteDescription>
+	^ MADirectoryDescription new
+		  label: 'Code Directory';
+		  kind: AbstractFileReference;
+		  display: #pathString;
+		  accessor: (MAPluggableAccessor
+				   read: [ :aModel | 
+					   aModel repository codeDirectory asFileReference ]
+				   write: [ :aModel :aValue | 
+					   aModel repository checkoutBranch: aValue ])
 ]
 
 { #category : #accessing }
@@ -100,6 +206,69 @@ GtGitRepository >> conflictingCommits [
 { #category : #accessing }
 GtGitRepository >> databases [
 	^ self lepiterWorkingCopy databases
+]
+
+{ #category : #accessing }
+GtGitRepository >> databasesDescription [
+
+	<magritteDescription>
+	^ MAToManyRelationDescription new
+		  label: 'Databases';
+		  accessor: (MAPluggableAccessor
+				   read: [ :aModel | aModel databases asOrderedCollection ]
+				   write: [ :aModel :aValue | aModel addDatabase: aValue ]);
+		  blocListStencil: [ :aMemento :aDescription :aForm | 
+			  | aTagger |
+			  aTagger := BrTagger new.
+			  aTagger
+				  hMatchParent;
+				  vFitContent.
+			  aForm hMatchParent.
+			  aTagger aptitude: (BrGlamorousTaggerEditableDropdownAptitude new
+					   tagLabel: [ :aTag | 
+						   BrEditableLabel new
+							   text: aTag name;
+							   aptitude: (BrGlamorousEditableLabelAptitude new
+									    glamorousCodeFont;
+									    defaultForeground: Color black;
+									    fontSize: 10) ];
+					   content: [ :aDropdown :_ | 
+						   BrFileSelector new
+							   folder: self repository repositoryDirectory;
+							   fileFilterBlock: [ :aFile | aFile isDirectory ];
+							   okAction: [ :aDirectory :aButton | 
+								   aDirectory isDirectory ifTrue: [ 
+										   aDropdown fireEvent: BrDropdownHideWish new.
+										   self addNewDatabaseInDirectory: aDirectory.
+										   Iceberg announcer announce:
+												   (IceRepositoryModified new repository: self repository).
+										   aDropdown phlow fireUpdateWish ] ];
+							   buttonLabel: 'Add database';
+							   padding: (BlInsets all: 20);
+							   matchParent ]).
+			  aTagger when: BrTaggerAddTagRequest do: [ :aRequest | 
+				  aMemento
+					  write: ((aTagger tags collect: #name)
+							   add: aRequest tag name;
+							   yourself)
+					  using: aDescription ].
+			  aTagger when: BrTaggerRemoveTagRequest do: [ :aRequest | 
+				  aMemento
+					  write: ((aTagger tags collect: #name)
+							   remove: aRequest tag name;
+							   yourself)
+					  using: aDescription ].
+			  aTagger withAsyncSinkDo: [ :anElementSink | 
+				  anElementSink
+					  sink: AsyncPeakSink new;
+					  whenUpdate: [ :theTagger :aSink | 
+						  | theValues theTexts |
+						  theValues := aSink value currentValue.
+						  theTexts := theValues collect: [ :each | 
+								              aDescription displayStringFor: each ].
+						  theTagger namedTags: theTexts ].
+				  (aMemento readObservableValueUsing: aDescription) observe:
+					  anElementSink ] ]
 ]
 
 { #category : #'api - actions' }
@@ -132,6 +301,30 @@ GtGitRepository >> executeCommit: aCommitMessage withChanges: changes [
 GtGitRepository >> fetch [
 	self repository fetch.
 	Iceberg announcer announce: (IceRepositoryModified for: self repository)
+]
+
+{ #category : #accessing }
+GtGitRepository >> fileFormatDescription [
+
+	<magritteDescription>
+	^ MASingleOptionDescription new
+		  label: 'File Format';
+		  accessor: (MAPluggableAccessor
+				   read: [ :aModel | 
+					   (IceBasicProject onRepository: aModel) repositoryProperties
+						   fileFormat = IceLibgitTonelWriter
+						   ifTrue: [ 'Tonel' ]
+						   ifFalse: [ 'Filetree' ] ]
+				   write: [ :aModel :aValue | 
+					   | model |
+					   model := IceBasicProject onRepository: aModel.
+					   model fileFormat: (aValue = 'Tonel'
+								    ifTrue: [ IceLibgitTonelWriter ]
+								    ifFalse: [ IceLibgitFiletreeWriter ]).
+					   repository workingCopy project: model.
+					   Iceberg announcer announce:
+							   (IceRepositoryModified for: repository) ]);
+		  options: #( 'Tonel' 'Filetree' )
 ]
 
 { #category : #accessing }
@@ -563,6 +756,18 @@ GtGitRepository >> onRepositoryModifiedAnnouncement: anAnnouncement [
 	anAnnouncement repository = self repository ifTrue: [ ^ self ].
 	
 	self announce: anAnnouncement
+]
+
+{ #category : #accessing }
+GtGitRepository >> originDescription [
+
+	<magritteDescription>
+	^ MAStringDescription new
+		  label: 'Origin';
+		  accessor: (MAPluggableAccessor
+				   read: [ :aModel | aModel repository originUrl ]
+				   write: [ :aModel :aValue | 
+					   aModel repository setOriginTo: aValue ])
 ]
 
 { #category : #accessing }
