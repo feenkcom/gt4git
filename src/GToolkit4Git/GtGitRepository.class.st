@@ -56,6 +56,24 @@ GtGitRepository >> addDatabase: aDatabaseName [
 		(IceRepositoryModified new repository: self repository)
 ]
 
+{ #category : #accessing }
+GtGitRepository >> addNewDatabaseInDirectory: aDirectory [
+
+	| aDatabase aFileLocator |
+	aFileLocator := aDirectory gtWithClosestFileLocatorParent.
+	aDatabase := LeLocalStoreLoad current loadAndMonitorFrom:
+		             aFileLocator.
+
+	LeDatabasesRegistry uniqueInstance ensureDatabase addDB: aDatabase.
+
+	LeDatabasesRegistry defaultLogicalDatabase properties 
+		addRegisteredDirectory: aFileLocator.
+
+	self repository addFileToIndex:
+		(aDirectory relativeTo: self repository repositoryDirectory).
+	self lepiterWorkingCopy addDB: aDatabase
+]
+
 { #category : #announcer }
 GtGitRepository >> announcer [
 	<return: #Announcer>
@@ -197,24 +215,60 @@ GtGitRepository >> databasesDescription [
 	^ MAToManyRelationDescription new
 		  label: 'Databases';
 		  accessor: (MAPluggableAccessor
-				   read: [ :aModel | aModel databases ]
-				   write: [ :aModel :aValue | 
-					   aModel addDatabase: aValue ])";
-		  blocListStencil: [:aMemento :aDescription :aForm | 
-			  BrFileSelector new
-				  folder: self repository repositoryDirectory;
-				  fileFilterBlock: [ :aFile | aFile isDirectory ];
-				  okAction: [ :aDirectory :aButton | 
-					  aDirectory isDirectory ifTrue: [ 
-							  aForm fireEvent: BrDropdownHideWish new.
-							  self addNewDatabaseInDirectory: aDirectory.
-							  Iceberg announcer announce:
-									  (IceRepositoryModified new repository: self repository).
-							  aForm phlow fireUpdateWish ] ];
-				  buttonLabel: 'Add database';
-				  padding: (BlInsets all: 20);
-				  matchParent
-		  ]"
+				   read: [ :aModel | aModel databases asOrderedCollection ]
+				   write: [ :aModel :aValue | aModel addDatabase: aValue ]);
+		  blocListStencil: [ :aMemento :aDescription :aForm | 
+			  | aTagger |
+			  aTagger := BrTagger new.
+			  aTagger
+				  hMatchParent;
+				  vFitContent.
+			  aForm hMatchParent.
+			  aTagger aptitude: (BrGlamorousTaggerEditableDropdownAptitude new
+					   tagLabel: [ :aTag | 
+						   BrEditableLabel new
+							   text: aTag name;
+							   aptitude: (BrGlamorousEditableLabelAptitude new
+									    glamorousCodeFont;
+									    defaultForeground: Color black;
+									    fontSize: 10) ];
+					   content: [ :aDropdown :_ | 
+						   BrFileSelector new
+							   folder: self repository repositoryDirectory;
+							   fileFilterBlock: [ :aFile | aFile isDirectory ];
+							   okAction: [ :aDirectory :aButton | 
+								   aDirectory isDirectory ifTrue: [ 
+										   aDropdown fireEvent: BrDropdownHideWish new.
+										   self addNewDatabaseInDirectory: aDirectory.
+										   Iceberg announcer announce:
+												   (IceRepositoryModified new repository: self repository).
+										   aDropdown phlow fireUpdateWish ] ];
+							   buttonLabel: 'Add database';
+							   padding: (BlInsets all: 20);
+							   matchParent ]).
+			  aTagger when: BrTaggerAddTagRequest do: [ :aRequest | 
+				  aMemento
+					  write: ((aTagger tags collect: #name)
+							   add: aRequest tag name;
+							   yourself)
+					  using: aDescription ].
+			  aTagger when: BrTaggerRemoveTagRequest do: [ :aRequest | 
+				  aMemento
+					  write: ((aTagger tags collect: #name)
+							   remove: aRequest tag name;
+							   yourself)
+					  using: aDescription ].
+			  aTagger withAsyncSinkDo: [ :anElementSink | 
+				  anElementSink
+					  sink: AsyncPeakSink new;
+					  whenUpdate: [ :theTagger :aSink | 
+						  | theValues theTexts |
+						  theValues := aSink value currentValue.
+						  theTexts := theValues collect: [ :each | 
+								              aDescription displayStringFor: each ].
+						  theTagger namedTags: theTexts ].
+				  (aMemento readObservableValueUsing: aDescription) observe:
+					  anElementSink ] ]
 ]
 
 { #category : #'api - actions' }
