@@ -524,10 +524,11 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 		  content: [ :aDropdown :aTarget | 
 			  | editor button |
 			  editor := BrEditor new
+				            aptitude: BrGlamorousRegularEditorAptitude;
+				            text: aViewModel commitMessage;
 				            hMatchParent;
 				            vFitContentLimited;
-				            aptitude: BrGlamorousRegularEditorAptitude;
-				            text: aViewModel commitMessage.
+				            requestFocus.
 			  editor selecter
 				  all;
 				  select.
