@@ -82,7 +82,7 @@ GtGitRepository >> announcer [
 
 { #category : #accessing }
 GtGitRepository >> baselines [
-	^ (self repository workingCopy packages select: [:aPackage | aPackage isMetacelloBaseline ]) collect: [:aPackage | aPackage name ]
+	^ ((self repository workingCopy packages select: [:aPackage | aPackage isMetacelloBaseline ]) collect: [:aPackage | aPackage name ]) asOrderedCollection
 ]
 
 { #category : #accessing }
@@ -92,6 +92,7 @@ GtGitRepository >> baselinesDescription [
 	^ MAToManyRelationDescription new
 		  label: 'Baselines';
 		  accessor: #baselines;
+		  classes: { String };
 		  blocListStencil: [ :aMemento :aDescription :aForm | 
 			  | aTagger |
 			  aTagger := BrTagger new.
@@ -865,7 +866,7 @@ GtGitRepository >> repository: aRepository [
 
 	repository == aRepository ifTrue: [ ^ self ].
 	
-	repository := aRepository.
+	repository := aRepository makeSafe.
 		
 	lepiterWorkingCopy := GtLepiterWorkingCopy new 
 		repository: aRepository; 

@@ -145,6 +145,11 @@ IceLibgitRepository >> isDirty [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceLibgitRepository >> makeSafe [
+ self commitCache beThreadSafe
+]
+
+{ #category : #'*GToolkit4Git' }
 IceLibgitRepository >> originUrl [
 	^ self origin url
 ]
