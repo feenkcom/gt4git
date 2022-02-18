@@ -200,10 +200,18 @@ GtGitRepository >> codeDirectoryDescription [
 { #category : #accessing }
 GtGitRepository >> conflictingCommits [
 
-	^ self incomingCommits select: [ :commit | 
-		  (IceMerge new
-			   repository: self repository;
-			   mergeCommit: commit) hasConflicts ]
+	| index commits |
+	self incomingCommits ifEmpty: [ ^ OrderedCollection new ].
+	index := 1.
+	commits := OrderedCollection new.
+	[ 
+	(IceMerge new
+		 repository: self repository;
+		 mergeCommit: (self incomingCommits at: index)) hasConflicts ] 
+		whileTrue: [ 
+			index := index + 1.
+			commits add: (self incomingCommits at: index) ].
+	^ commits
 ]
 
 { #category : #accessing }
