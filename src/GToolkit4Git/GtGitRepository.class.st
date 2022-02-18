@@ -131,13 +131,18 @@ GtGitRepository >> branchDescription [
 				   read: [ :aModel | aModel repository branchName ]
 				   write: [ :aModel :aValue | 
 					   aModel repository checkoutBranch: aValue ]);
+		  blocCompletion: [ 
+			  GtStringsCompletionStrategy new completions:
+					  (GtPrefixTree withAll:
+							   (repository allBranches collect: [ :branch | branch name ])) ];
 		  addCondition: [ :aValue | (aValue includesSubstring: '..') not ]
 		  labelled: 'May not contain ".."';
 		  addCondition: [ :aValue | (aValue includesAny: '~^:?*[\') not ]
 		  labelled: 'May not contain any of "~^:?*[\"';
 		  addCondition: [ :aValue | (aValue endsWith: '.') not ]
 		  labelled: 'May not end with a dot';
-		  addCondition: [ :aValue | ((aValue beginsWith: '/') or: [aValue endsWith: '/']) not ]
+		  addCondition: [ :aValue | 
+			  ((aValue beginsWith: '/') or: [ aValue endsWith: '/' ]) not ]
 		  labelled: 'May not start or end with a slash';
 		  addCondition: [ :aValue | (aValue includesSubstring: '@{') not ]
 		  labelled: 'May not contain the sequence "@{"';
@@ -145,7 +150,8 @@ GtGitRepository >> branchDescription [
 		  labelled: 'May not just be an "@" charater';
 		  addCondition: [ :aValue | (aValue includesSubstring: '//') not ]
 		  labelled: 'May not contain multiple consecutive slashes';
-		  comment: 'A branch name. If you set it to a non-existant branch, a new one will be created.'
+		  comment:
+			  'A branch name. If you set it to a non-existant branch, a new one will be created.'
 ]
 
 { #category : #'api - repository' }
@@ -193,7 +199,7 @@ GtGitRepository >> databasesDescription [
 		  accessor: (MAPluggableAccessor
 				   read: [ :aModel | aModel databases ]
 				   write: [ :aModel :aValue | 
-					   aModel addDatabase: aValue ]);
+					   aModel addDatabase: aValue ])";
 		  blocListStencil: [:aMemento :aDescription :aForm | 
 			  BrFileSelector new
 				  folder: self repository repositoryDirectory;
@@ -208,7 +214,7 @@ GtGitRepository >> databasesDescription [
 				  buttonLabel: 'Add database';
 				  padding: (BlInsets all: 20);
 				  matchParent
-		  ]
+		  ]"
 ]
 
 { #category : #'api - actions' }
