@@ -310,22 +310,20 @@ GtGitRepository >> fileFormatDescription [
 	<magritteDescription>
 	^ MASingleOptionDescription new
 		  label: 'File Format';
+		  display: #description;
 		  accessor: (MAPluggableAccessor
 				   read: [ :aModel | 
-					   (IceBasicProject onRepository: aModel) repositoryProperties
-						   fileFormat = IceLibgitTonelWriter
-						   ifTrue: [ 'Tonel' ]
-						   ifFalse: [ 'Filetree' ] ]
+					   repository project repositoryProperties fileFormat ]
 				   write: [ :aModel :aValue | 
 					   | model |
-					   model := IceBasicProject onRepository: aModel.
-					   model fileFormat: (aValue = 'Tonel'
+					   repository project fileFormat: (aValue = 'Tonel'
 								    ifTrue: [ IceLibgitTonelWriter ]
 								    ifFalse: [ IceLibgitFiletreeWriter ]).
-					   repository workingCopy project: model.
 					   Iceberg announcer announce:
 							   (IceRepositoryModified for: repository) ]);
-		  options: #( 'Tonel' 'Filetree' )
+		  options: { 
+				  IceLibgitTonelWriter.
+				  IceLibgitFiletreeWriter }
 ]
 
 { #category : #accessing }
