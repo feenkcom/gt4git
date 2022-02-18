@@ -67,6 +67,20 @@ GtGitRepository >> baselines [
 	^ (self repository workingCopy packages select: [:aPackage | aPackage isMetacelloBaseline ]) collect: [:aPackage | aPackage name ]
 ]
 
+{ #category : #accessing }
+GtGitRepository >> branchDescription [
+
+	<magritteDescription>
+	^ MAStringDescription new
+		  label: 'Branch';
+		  accessor: (MAPluggableAccessor
+				   read: [ :aModel | aModel repository branchName ]
+				   write: [ :aModel :aValue | 
+					   aModel repository checkoutBranch: aValue ]);
+		  addCondition: [ :aValue | false  ]
+		  labelled: 'Must be an existing branch name'
+]
+
 { #category : #'api - repository' }
 GtGitRepository >> changes [
 	^ self isModified
