@@ -92,7 +92,16 @@ GtGitRepository >> baselinesDescription [
 	^ MAToManyRelationDescription new
 		  label: 'Baselines';
 		  priority: 6;
-		  accessor: #baselines;
+		  accessor:
+			  (MAPluggableAccessor
+				   read: #baselines
+				   write: [ :aModel :aValue | 
+					   aModel baselines
+						   removeAllFoundIn: aValue;
+						   collect: [ :baseline | self removeBaseline: baseline ].
+					   aValue
+						   removeAllFoundIn: aModel baselines;
+						   collect: [ :baseline | self addBaseline: baseline ] ]);
 		  classes: { String };
 		  blocListStencil: [ :aMemento :aDescription :aForm | 
 			  | aTagger |
@@ -116,6 +125,12 @@ GtGitRepository >> baselinesDescription [
 						   (GtCompletionController
 							    on: aLabel
 							    strategy: GtClassesCompletionStrategy new) install.
+
+						   aLabel
+							   whenKey: BlKeyCombination primaryB
+							   labelDo: [ :aShortcutEvent :aShortcut | 
+								   aTagger phlow spawnTool:
+									   (GtPackageCoderTool package: (RPackage named: aTag name)) ].
 
 						   aLabel ]).
 			  aTagger when: BrTaggerAddTagRequest do: [ :aRequest | 
@@ -198,7 +213,9 @@ GtGitRepository >> codeDirectoryDescription [
 				   read: [ :aModel | 
 					   aModel repository codeDirectory asFileReference ]
 				   write: [ :aModel :aValue | 
-					   aModel repository checkoutBranch: aValue ])
+					   repository codeDirectory:
+							   (aValue relativeTo: repository repositoryDirectory)
+								   pathString ])
 ]
 
 { #category : #accessing }
@@ -230,9 +247,20 @@ GtGitRepository >> databasesDescription [
 	^ MAToManyRelationDescription new
 		  label: 'Databases';
 		  priority: 5;
+		  classes: { 
+				  LeDatabase.
+				  FileLocator };
 		  accessor: (MAPluggableAccessor
 				   read: [ :aModel | aModel databases asOrderedCollection ]
-				   write: [ :aModel :aValue | aModel addDatabase: aValue ]);
+				   write: [ :aModel :aValue | 
+					   | databasesToAdd databasesToRemove |
+					   aModel databases asOrderedCollection
+						   removeAllFoundIn: aValue;
+						   collect: [ :database | self removeDatabase: database ].
+					   aValue
+						   removeAllFoundIn: aModel databases;
+						   collect: [ :database | 
+							   self addNewDatabaseInDirectory: database ] ]);
 		  blocListStencil: [ :aMemento :aDescription :aForm | 
 			  | aTagger |
 			  aTagger := BrTagger new.
@@ -245,11 +273,14 @@ GtGitRepository >> databasesDescription [
 					   margin: (BlInsets right: 5);
 					   tagLabel: [ :aTag | 
 						   BrEditableLabel new
-							   text: aTag name;
+							   text: (aDescription displayStringFor: aTag name);
 							   aptitude: (BrGlamorousEditableLabelAptitude new
 									    glamorousCodeFont;
 									    defaultForeground: Color black;
-									    fontSize: 10) ];
+									    fontSize: 10);
+							   whenKey: BlKeyCombination primaryB
+							   labelDo: [ :aShortcutEvent :aShortcut | 
+							   aTagger phlow spawnObject: aTag name ] ];
 					   content: [ :aDropdown :_ | 
 						   BrFileSelector new
 							   folder: self repository repositoryDirectory;
@@ -257,9 +288,11 @@ GtGitRepository >> databasesDescription [
 							   okAction: [ :aDirectory :aButton | 
 								   aDirectory isDirectory ifTrue: [ 
 										   aDropdown fireEvent: BrDropdownHideWish new.
-										   self addNewDatabaseInDirectory: aDirectory.
-										   Iceberg announcer announce:
-												   (IceRepositoryModified new repository: self repository).
+										   aMemento
+											   write: ((aTagger tags collect: #name)
+													    add: aDirectory;
+													    yourself)
+											   using: aDescription.
 										   aDropdown phlow fireUpdateWish ] ];
 							   buttonLabel: 'Add database';
 							   padding: (BlInsets all: 20);
@@ -280,11 +313,9 @@ GtGitRepository >> databasesDescription [
 				  anElementSink
 					  sink: AsyncPeakSink new;
 					  whenUpdate: [ :theTagger :aSink | 
-						  | theValues theTexts |
+						  | theValues |
 						  theValues := aSink value currentValue.
-						  theTexts := theValues collect: [ :each | 
-								              aDescription displayStringFor: each ].
-						  theTagger namedTags: theTexts ].
+						  theTagger namedTags: theValues ].
 				  (aMemento readObservableValueUsing: aDescription) observe:
 					  anElementSink ] ]
 ]
@@ -295,6 +326,7 @@ GtGitRepository >> defaultMagritteStencil [
 	^ [ :aMemento :aDescription | 
 	  | anEditor |
 	  anEditor := BrEditor new.
+	  aDescription isReadOnly ifTrue: [ anEditor beReadOnlyWithSelection ].
 	  anEditor
 		  aptitude:
 			  (BrGlamorousRegularEditorAptitude new glamorousCodeFont 
