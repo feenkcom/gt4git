@@ -1,6 +1,15 @@
 Extension { #name : #LGitIndex }
 
 { #category : #'*GToolkit4Git' }
+LGitIndex >> index_remove_bypath: index path: path [
+	
+	^ self
+		ffiCallSafely:
+			#(LGitReturnCodeEnum git_index_remove_bypath #(self, String path))
+		options: #(optMayGC optCoerceNilToNull)
+]
+
+{ #category : #'*GToolkit4Git' }
 LGitIndex >> index_remove_directory: index dir: path stage: stage [
 
 	^ self

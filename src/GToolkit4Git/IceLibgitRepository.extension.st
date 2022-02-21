@@ -83,10 +83,10 @@ IceLibgitRepository >> gtRepositoryDirectoryFor: aView [
 						  ifFalse: [ BrGlamorousIcons accept ] ] ];
 		  column: 'Actions' translated stencil: [ :each | 
 			  | relative |
-			  
 			  relative := each relativeTo: self repositoryDirectory.
 			  ((status includesKey: relative pathString) and: [ 
-					   (status at: relative pathString) = LGitStatusEnum git_status_wt_new ]) 
+					   (status at: relative pathString)
+					   = LGitStatusEnum git_status_wt_new ])
 				  ifTrue: [ 
 					  BrButton new
 						  aptitude: BrGlamorousButtonWithIconAptitude;
@@ -97,7 +97,16 @@ IceLibgitRepository >> gtRepositoryDirectoryFor: aView [
 							  self index
 								  addPath: relative;
 								  addToGitIndex ] ]
-					ifFalse: [ BrGlamorousIcons empty asElement ] ];
+				  ifFalse: [ 
+					  BrButton new
+						  aptitude: BrGlamorousButtonWithIconAptitude;
+						  icon: BrGlamorousVectorIcons remove;
+						  label: 'Remove ' , relative pathString;
+						  beTinySize;
+						  action: [ :_ | 
+							  each isDirectory
+								  ifTrue: [ self index removeDirectoryFromIndex: relative pathString ]
+								  ifFalse: [ self index removeFileFromIndex: relative pathString ] ] ] ];
 		  actionButtonIcon: BrGlamorousIcons go
 		  tooltip: 'Open in OS'
 		  action: [ WebBrowser openOn: self location fullName ]
