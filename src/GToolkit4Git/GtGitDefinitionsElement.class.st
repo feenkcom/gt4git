@@ -53,38 +53,30 @@ GtGitDefinitionsElement >> addNewDatabaseInDirectory: aDirectory [
 GtGitDefinitionsElement >> buildDefinitionEditor [
 
 	| theProperties |
-	theProperties := BlElement new
-		                 layout: (BlGridLayout new columnCount: 2);
-		                 constraintsDo: [ :c | 
-			                 c horizontal matchParent.
-			                 c vertical fitContent ].
+	theProperties := BrHorizontalGrid new constraintsDo: [ :c | 
+		                 c horizontal matchParent.
+		                 c vertical fitContent ].
 
 	self addDefinitionEditorShortcutsTo: theProperties.
 
-	theProperties addChild: self repositoryViewModel repositoryModel asGtMagritteViewModel asElement.
+	theProperties addChild:
+		self repositoryModel asGtMagritteViewModel asElement.
 
 	^ theProperties
 ]
 
 { #category : #accessing }
 GtGitDefinitionsElement >> buildDefinitionReader [
+
 	| theProperties theReaders |
+	theProperties := BrHorizontalGrid new constraintsDo: [ :c | 
+		                 c horizontal matchParent.
+		                 c vertical fitContent ].
 
-	theProperties := BlElement new
-		layout: (BlGridLayout new columnCount: 2);
-		constraintsDo: [ :c |
-			c horizontal matchParent.
-			c vertical fitContent ].
-
-	theReaders := self readers.
-	theReaders := theReaders first: (2 min: theReaders size).
-	theReaders do: [ :eachEditor |
-		theProperties addChildren: { 
-				(self buildSectionLabel: eachEditor title).
-				(eachEditor
-					aptitude: [ self readonlyLabelLook ];
-					margin: self buttonMargin;
-					asElement) } ].
+	theProperties addChild:
+		(self repositoryModel asGtMagritteViewModelWithDescription:
+			 self repositoryModel branchDescription beReadOnly
+			 , self repositoryModel originDescription beReadOnly) asElement.
 
 	^ theProperties
 ]
@@ -129,23 +121,6 @@ GtGitDefinitionsElement >> initialize [
 ]
 
 { #category : #accessing }
-GtGitDefinitionsElement >> readers [
-
-	| readers |
-	self repositoryViewModel hasRepository ifFalse: [ ^ #(  ) ].
-
-	^ { 
-		  (GtGitDefinitionsReader new
-			   title: 'Branch';
-			   repository: self repositoryViewModel repositoryModel repository;
-			   getSelector: #branchName).
-		  (GtGitDefinitionsReader new
-			   title: 'Origin';
-			   repository: self repositoryViewModel repositoryModel repository;
-			   getSelector: #originUrl) }
-]
-
-{ #category : #accessing }
 GtGitDefinitionsElement >> readonlyLabelLook [
 	^ BrGlamorousEditorAptitude new
 		glamorousCodeFont;
@@ -167,6 +142,11 @@ GtGitDefinitionsElement >> readonlyLabelLook [
 GtGitDefinitionsElement >> repository [
 
 	^ self repositoryViewModel repositoryModel repository
+]
+
+{ #category : #accessing }
+GtGitDefinitionsElement >> repositoryModel [
+	^ self repositoryViewModel repositoryModel
 ]
 
 { #category : #accessing }

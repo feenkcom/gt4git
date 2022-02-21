@@ -326,6 +326,7 @@ GtGitRepository >> defaultMagritteStencil [
 	^ [ :aMemento :aDescription | 
 	  | anEditor |
 	  anEditor := BrEditor new.
+	  aDescription isReadOnly ifTrue: [ anEditor beReadOnlyWithSelection ].
 	  anEditor
 		  aptitude:
 			  (BrGlamorousRegularEditorAptitude new glamorousCodeFont 
