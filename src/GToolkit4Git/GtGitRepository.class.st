@@ -91,6 +91,7 @@ GtGitRepository >> baselinesDescription [
 	<magritteDescription>
 	^ MAToManyRelationDescription new
 		  label: 'Baselines';
+		  priority: 6;
 		  accessor: #baselines;
 		  classes: { String };
 		  blocListStencil: [ :aMemento :aDescription :aForm | 
@@ -148,6 +149,7 @@ GtGitRepository >> branchDescription [
 	<magritteDescription>
 	^ MAStringDescription new
 		  label: 'Branch';
+		  priority: 1;
 		  accessor: (MAPluggableAccessor
 				   read: [ :aModel | aModel repository branchName ]
 				   write: [ :aModel :aValue | 
@@ -189,6 +191,7 @@ GtGitRepository >> codeDirectoryDescription [
 	<magritteDescription>
 	^ MADirectoryDescription new
 		  label: 'Code Directory';
+		  priority: 4;
 		  kind: AbstractFileReference;
 		  display: #pathString;
 		  accessor: (MAPluggableAccessor
@@ -226,6 +229,7 @@ GtGitRepository >> databasesDescription [
 	<magritteDescription>
 	^ MAToManyRelationDescription new
 		  label: 'Databases';
+		  priority: 5;
 		  accessor: (MAPluggableAccessor
 				   read: [ :aModel | aModel databases asOrderedCollection ]
 				   write: [ :aModel :aValue | aModel addDatabase: aValue ]);
@@ -365,6 +369,7 @@ GtGitRepository >> fileFormatDescription [
 	<magritteDescription>
 	^ MASingleOptionDescription new
 		  label: 'File Format';
+		  priority: 3;
 		  display: #description;
 		  accessor: (MAPluggableAccessor
 				   read: [ :aModel | 
@@ -819,6 +824,7 @@ GtGitRepository >> originDescription [
 	<magritteDescription>
 	^ MAStringDescription new
 		  label: 'Origin';
+		  priority: 2;
 		  blocStencil: self defaultMagritteStencil;
 		  accessor: (MAPluggableAccessor
 				   read: [ :aModel | aModel repository originUrl ]
