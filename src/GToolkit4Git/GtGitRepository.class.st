@@ -97,25 +97,26 @@ GtGitRepository >> baselinesDescription [
 			  | aTagger |
 			  aTagger := BrTagger new.
 			  aTagger
-				  margin: (BlInsets left: 7);
+				  margin: ((BlInsets left: 7) withBottom: 4);
 				  hMatchParent;
 				  vFitContent.
 			  aForm hMatchParent.
-			  aTagger aptitude:
-				  (BrGlamorousTaggerEditableAptitude new tagLabel: [ :aTag | 
-					   | aLabel |
-					   aLabel := BrEditableLabel new
-						             text: aTag name;
-						             aptitude: (BrGlamorousEditableLabelAptitude new
-								              glamorousCodeFont;
-								              defaultForeground: Color black;
-								              fontSize: 10).
+			  aTagger aptitude: (BrGlamorousTaggerEditableAptitude new
+					   margin: (BlInsets right: 5);
+					   tagLabel: [ :aTag | 
+						   | aLabel |
+						   aLabel := BrEditableLabel new
+							             text: aTag name;
+							             aptitude: (BrGlamorousEditableLabelAptitude new
+									              glamorousCodeFont;
+									              defaultForeground: Color black;
+									              fontSize: 10).
 
-					   (GtCompletionController
-						    on: aLabel
-						    strategy: GtClassesCompletionStrategy new) install.
+						   (GtCompletionController
+							    on: aLabel
+							    strategy: GtClassesCompletionStrategy new) install.
 
-					   aLabel ]).
+						   aLabel ]).
 			  aTagger when: BrTaggerAddTagRequest do: [ :aRequest | 
 				  aMemento
 					  write: ((aTagger tags collect: #name)
@@ -232,11 +233,12 @@ GtGitRepository >> databasesDescription [
 			  | aTagger |
 			  aTagger := BrTagger new.
 			  aTagger
-				  margin: (BlInsets left: 7);
+				  margin: ((BlInsets left: 7) withBottom: 4);
 				  hMatchParent;
 				  vFitContent.
 			  aForm hMatchParent.
 			  aTagger aptitude: (BrGlamorousTaggerEditableDropdownAptitude new
+					   margin: (BlInsets right: 5);
 					   tagLabel: [ :aTag | 
 						   BrEditableLabel new
 							   text: aTag name;
