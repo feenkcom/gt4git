@@ -91,31 +91,33 @@ GtGitRepository >> baselinesDescription [
 	<magritteDescription>
 	^ MAToManyRelationDescription new
 		  label: 'Baselines';
+		  priority: 6;
 		  accessor: #baselines;
 		  classes: { String };
 		  blocListStencil: [ :aMemento :aDescription :aForm | 
 			  | aTagger |
 			  aTagger := BrTagger new.
 			  aTagger
-				  margin: (BlInsets left: 7);
+				  margin: ((BlInsets left: 7) withBottom: 4);
 				  hMatchParent;
 				  vFitContent.
 			  aForm hMatchParent.
-			  aTagger aptitude:
-				  (BrGlamorousTaggerEditableAptitude new tagLabel: [ :aTag | 
-					   | aLabel |
-					   aLabel := BrEditableLabel new
-						             text: aTag name;
-						             aptitude: (BrGlamorousEditableLabelAptitude new
-								              glamorousCodeFont;
-								              defaultForeground: Color black;
-								              fontSize: 10).
+			  aTagger aptitude: (BrGlamorousTaggerEditableAptitude new
+					   margin: (BlInsets right: 5);
+					   tagLabel: [ :aTag | 
+						   | aLabel |
+						   aLabel := BrEditableLabel new
+							             text: aTag name;
+							             aptitude: (BrGlamorousEditableLabelAptitude new
+									              glamorousCodeFont;
+									              defaultForeground: Color black;
+									              fontSize: 10).
 
-					   (GtCompletionController
-						    on: aLabel
-						    strategy: GtClassesCompletionStrategy new) install.
+						   (GtCompletionController
+							    on: aLabel
+							    strategy: GtClassesCompletionStrategy new) install.
 
-					   aLabel ]).
+						   aLabel ]).
 			  aTagger when: BrTaggerAddTagRequest do: [ :aRequest | 
 				  aMemento
 					  write: ((aTagger tags collect: #name)
@@ -147,6 +149,7 @@ GtGitRepository >> branchDescription [
 	<magritteDescription>
 	^ MAStringDescription new
 		  label: 'Branch';
+		  priority: 1;
 		  accessor: (MAPluggableAccessor
 				   read: [ :aModel | aModel repository branchName ]
 				   write: [ :aModel :aValue | 
@@ -188,6 +191,7 @@ GtGitRepository >> codeDirectoryDescription [
 	<magritteDescription>
 	^ MADirectoryDescription new
 		  label: 'Code Directory';
+		  priority: 4;
 		  kind: AbstractFileReference;
 		  display: #pathString;
 		  accessor: (MAPluggableAccessor
@@ -225,6 +229,7 @@ GtGitRepository >> databasesDescription [
 	<magritteDescription>
 	^ MAToManyRelationDescription new
 		  label: 'Databases';
+		  priority: 5;
 		  accessor: (MAPluggableAccessor
 				   read: [ :aModel | aModel databases asOrderedCollection ]
 				   write: [ :aModel :aValue | aModel addDatabase: aValue ]);
@@ -232,11 +237,12 @@ GtGitRepository >> databasesDescription [
 			  | aTagger |
 			  aTagger := BrTagger new.
 			  aTagger
-				  margin: (BlInsets left: 7);
+				  margin: ((BlInsets left: 7) withBottom: 4);
 				  hMatchParent;
 				  vFitContent.
 			  aForm hMatchParent.
 			  aTagger aptitude: (BrGlamorousTaggerEditableDropdownAptitude new
+					   margin: (BlInsets right: 5);
 					   tagLabel: [ :aTag | 
 						   BrEditableLabel new
 							   text: aTag name;
@@ -363,6 +369,7 @@ GtGitRepository >> fileFormatDescription [
 	<magritteDescription>
 	^ MASingleOptionDescription new
 		  label: 'File Format';
+		  priority: 3;
 		  display: #description;
 		  accessor: (MAPluggableAccessor
 				   read: [ :aModel | 
@@ -817,6 +824,7 @@ GtGitRepository >> originDescription [
 	<magritteDescription>
 	^ MAStringDescription new
 		  label: 'Origin';
+		  priority: 2;
 		  blocStencil: self defaultMagritteStencil;
 		  accessor: (MAPluggableAccessor
 				   read: [ :aModel | aModel repository originUrl ]
