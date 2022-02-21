@@ -50,29 +50,6 @@ GtGitDefinitionsElement >> addNewDatabaseInDirectory: aDirectory [
 ]
 
 { #category : #accessing }
-GtGitDefinitionsElement >> baselinesEditor [
-
-	<gtGitEnhancement>
-	^ GtGitDefinitionsListEditor new
-		  title: 'Baselines';
-		  repository: self repositoryViewModel repositoryModel;
-		  getSelector: #baselines;
-		  addSelector: #addBaseline:;
-		  removeSelector: #removeBaseline:;
-		  contentBlock: [ :aDropdown :_ | 
-			  GtPharoCreateBaselineElement new
-				  behaviorBlock: [ :cls | 
-					  self repository workingCopy addPackageNamed: cls package name.
-					  Iceberg announcer announce:
-							  (IceRepositoryModified new repository: self repository).
-					  aDropdown fireEvent: BrDropdownHideWish new ];
-				  forBaselineDefinition ];
-		  spawnOn: [ :aPhlow :aValue | 
-			  aPhlow spawnTool:
-				  (GtPackageCoderTool package: (RPackage named: aValue)) ]
-]
-
-{ #category : #accessing }
 GtGitDefinitionsElement >> buildDefinitionEditor [
 
 	| theProperties |
@@ -84,10 +61,7 @@ GtGitDefinitionsElement >> buildDefinitionEditor [
 
 	self addDefinitionEditorShortcutsTo: theProperties.
 
-	self editors do: [ :eachEditor | 
-		theProperties addChildren: { 
-				(self buildSectionLabel: eachEditor title).
-				eachEditor asElement } ].
+	theProperties addChild: self repositoryViewModel repositoryModel asGtMagritteViewModel asElement.
 
 	^ theProperties
 ]
@@ -137,120 +111,11 @@ GtGitDefinitionsElement >> buttonMargin [
 ]
 
 { #category : #accessing }
-GtGitDefinitionsElement >> databasesEditor [
-
-	<gtGitEnhancement>
-	^ GtGitDefinitionsListEditor new
-		  title: 'Databases';
-		  repository: self repositoryViewModel repositoryModel;
-		  getSelector: #databases;
-		  addSelector: #addDatabase:;
-		  removeSelector: #removeDatabase:;
-		  contentBlock: [ :aDropdown :_ | 
-			  BrFileSelector new
-				  folder: self repository repositoryDirectory;
-				  fileFilterBlock: [ :aFile | aFile isDirectory ];
-				  okAction: [ :aDirectory :aButton | 
-					  aDirectory isDirectory ifTrue: [ 
-							  aDropdown fireEvent: BrDropdownHideWish new.
-							  self addNewDatabaseInDirectory: aDirectory.
-							  Iceberg announcer announce:
-									  (IceRepositoryModified new repository: self repository).
-							  aDropdown phlow fireUpdateWish ] ];
-				  buttonLabel: 'Add database';
-				  padding: (BlInsets all: 20);
-				  matchParent ];
-		  spawnOn: [ :aPhlow :aValue | aPhlow spawnObject: aValue ]
-]
-
-{ #category : #accessing }
 GtGitDefinitionsElement >> editableLabelLook [
 	^ BrGlamorousEditableLabelAptitude new
 		glamorousCodeFont;
 		defaultForeground: Color black;
 		fontSize: 10
-]
-
-{ #category : #accessing }
-GtGitDefinitionsElement >> editors [
-
-	| repository staticEditors |
-	self repositoryViewModel hasRepository ifFalse: [ ^ #(  ) ].
-
-	repository := self repositoryViewModel repositoryModel repository.
-	staticEditors := { 
-		                 (GtGitDefinitionsEditor new
-			                  title: 'Branch';
-			                  repository: repository;
-			                  getSelector: #branchName;
-			                  completions:
-				                  (repository allBranches collect: [ :branch | 
-						                   branch name ]);
-			                  setSelector: #checkoutBranch:).
-		                 (GtGitDefinitionsEditor new
-			                  title: 'Origin';
-			                  repository: repository;
-			                  getSelector: #originUrl;
-			                  setSelector: #setOriginTo:).
-		                 (GtGitDefinitionsStaticDropdownEditor new
-			                  title: 'File Format';
-			                  value: repository writerClass description;
-			                  options: { 'Tonel'. 'Filetree' };
-			                  action: [ :format | 
-				                  | model |
-				                  model := IceBasicProject onRepository:
-						                           repository.
-				                  model fileFormat: (format = 'Tonel'
-							                   ifTrue: [ IceLibgitTonelWriter ]
-							                   ifFalse: [ IceLibgitFiletreeWriter ]).
-				                  repository workingCopy project: model.
-				                  Iceberg announcer announce:
-						                  (IceRepositoryModified for: repository) ]).
-		                 (GtGitDefinitionsDropdownEditor new
-			                  title: 'Code Directory';
-			                  value: repository codeDirectory;
-			                  contentBlock: [ :dropdown | 
-				                  | fileBrowser container |
-				                  container := BlElement new
-					                               layout:
-						                               (BlGridLayout new columnCount: 1);
-					                               padding: (BlInsets all: 8);
-					                               aptitude:
-						                               BrWidgetContainerAptitude.
-				                  container constraintsDo: [ :c | 
-					                  c horizontal fitContent.
-					                  c vertical fitContent ].
-				                  fileBrowser := BrFileSelector new folder:
-					                                 repository codeDirectory.
-
-				                  fileBrowser vExact: 250.
-				                  fileBrowser hExact: 400.
-
-				                  fileBrowser buttonLabel: 'Set'.
-				                  fileBrowser okAction: [ :filePath | 
-					                  repository codeDirectory:
-						                  (filePath relativeTo:
-							                   repository repositoryDirectory) pathString.
-					                  Iceberg announcer announce:
-						                  (IceRepositoryAnnouncement for: repository).
-					                  dropdown ifNotNil: [ 
-						                  dropdown enqueueTask:
-							                  (BlTaskAction new action: [ 
-								                   dropdown dispatchEvent:
-									                   (BrDropdownHideWish new anchor: dropdown) ]) ] ].
-
-				                  fileBrowser fileFilterBlock: [ :aFileReference | 
-					                  aFileReference isDirectory and: [ 
-						                  (FileSystemDirectoryEntry reference:
-							                   aFileReference) isHidden not ] ].
-				                  container addChild: fileBrowser.
-				                  container ]) } asOrderedCollection.
-
-	staticEditors addAll:
-		((Pragma allNamed: #gtGitEnhancement) collect: [ :pragma | 
-			 self perform: pragma methodSelector ]).
-
-	^ staticEditors
 ]
 
 { #category : #accessing }

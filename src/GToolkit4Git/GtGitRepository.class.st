@@ -92,7 +92,15 @@ GtGitRepository >> baselinesDescription [
 	^ MAToManyRelationDescription new
 		  label: 'Baselines';
 		  priority: 6;
-		  accessor: #baselines;
+		  accessor: (MAPluggableAccessor
+				   read: #baselines
+				   write: [ :aModel :aValue | 
+					   aModel baselines
+						   removeAllFoundIn: aValue;
+						   collect: [ :baseline | self removeBaseline: baseline ].
+					   aValue
+						   removeAllFoundIn: aModel baselines;
+						   collect: [ :baseline | self addBaseline: baseline ] ]);
 		  classes: { String };
 		  blocListStencil: [ :aMemento :aDescription :aForm | 
 			  | aTagger |
@@ -198,7 +206,9 @@ GtGitRepository >> codeDirectoryDescription [
 				   read: [ :aModel | 
 					   aModel repository codeDirectory asFileReference ]
 				   write: [ :aModel :aValue | 
-					   aModel repository checkoutBranch: aValue ])
+					   repository codeDirectory:
+							   (aValue relativeTo: repository repositoryDirectory)
+								   pathString ])
 ]
 
 { #category : #accessing }
@@ -230,9 +240,20 @@ GtGitRepository >> databasesDescription [
 	^ MAToManyRelationDescription new
 		  label: 'Databases';
 		  priority: 5;
+		  classes: { 
+				  LeDatabase.
+				  FileLocator };
 		  accessor: (MAPluggableAccessor
 				   read: [ :aModel | aModel databases asOrderedCollection ]
-				   write: [ :aModel :aValue | aModel addDatabase: aValue ]);
+				   write: [ :aModel :aValue | 
+					   | databasesToAdd databasesToRemove |
+					   aModel databases asOrderedCollection
+						   removeAllFoundIn: aValue;
+						   collect: [ :database | self removeDatabase: database ].
+					   aValue
+						   removeAllFoundIn: aModel databases;
+						   collect: [ :database | 
+							   self addNewDatabaseInDirectory: database ] ]);
 		  blocListStencil: [ :aMemento :aDescription :aForm | 
 			  | aTagger |
 			  aTagger := BrTagger new.
@@ -257,9 +278,11 @@ GtGitRepository >> databasesDescription [
 							   okAction: [ :aDirectory :aButton | 
 								   aDirectory isDirectory ifTrue: [ 
 										   aDropdown fireEvent: BrDropdownHideWish new.
-										   self addNewDatabaseInDirectory: aDirectory.
-										   Iceberg announcer announce:
-												   (IceRepositoryModified new repository: self repository).
+										   aMemento
+											   write: ((aTagger tags collect: #name)
+													    add: aDirectory;
+													    yourself)
+											   using: aDescription.
 										   aDropdown phlow fireUpdateWish ] ];
 							   buttonLabel: 'Add database';
 							   padding: (BlInsets all: 20);
