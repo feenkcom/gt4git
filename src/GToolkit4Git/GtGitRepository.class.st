@@ -92,7 +92,8 @@ GtGitRepository >> baselinesDescription [
 	^ MAToManyRelationDescription new
 		  label: 'Baselines';
 		  priority: 6;
-		  accessor: (MAPluggableAccessor
+		  accessor:
+			  (MAPluggableAccessor
 				   read: #baselines
 				   write: [ :aModel :aValue | 
 					   aModel baselines
@@ -124,6 +125,12 @@ GtGitRepository >> baselinesDescription [
 						   (GtCompletionController
 							    on: aLabel
 							    strategy: GtClassesCompletionStrategy new) install.
+
+						   aLabel
+							   whenKey: BlKeyCombination primaryB
+							   labelDo: [ :aShortcutEvent :aShortcut | 
+								   aTagger phlow spawnTool:
+									   (GtPackageCoderTool package: (RPackage named: aTag name)) ].
 
 						   aLabel ]).
 			  aTagger when: BrTaggerAddTagRequest do: [ :aRequest | 
@@ -266,11 +273,14 @@ GtGitRepository >> databasesDescription [
 					   margin: (BlInsets right: 5);
 					   tagLabel: [ :aTag | 
 						   BrEditableLabel new
-							   text: aTag name;
+							   text: (aDescription displayStringFor: aTag name);
 							   aptitude: (BrGlamorousEditableLabelAptitude new
 									    glamorousCodeFont;
 									    defaultForeground: Color black;
-									    fontSize: 10) ];
+									    fontSize: 10);
+							   whenKey: BlKeyCombination primaryB
+							   labelDo: [ :aShortcutEvent :aShortcut | 
+							   aTagger phlow spawnObject: aTag name ] ];
 					   content: [ :aDropdown :_ | 
 						   BrFileSelector new
 							   folder: self repository repositoryDirectory;
@@ -303,11 +313,9 @@ GtGitRepository >> databasesDescription [
 				  anElementSink
 					  sink: AsyncPeakSink new;
 					  whenUpdate: [ :theTagger :aSink | 
-						  | theValues theTexts |
+						  | theValues |
 						  theValues := aSink value currentValue.
-						  theTexts := theValues collect: [ :each | 
-								              aDescription displayStringFor: each ].
-						  theTagger namedTags: theTexts ].
+						  theTagger namedTags: theValues ].
 				  (aMemento readObservableValueUsing: aDescription) observe:
 					  anElementSink ] ]
 ]
