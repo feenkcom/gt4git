@@ -13,8 +13,7 @@ IceLibgitRepository >> configureUpstreamIfNecessary [
 	self branch
 		pushBranchToRemote: aRemote
 		gitRemote: gitRemote
-		progress: IcePushTransferProgress new.
-	self branch setUpstream: aRemote
+		progress: IcePushTransferProgress new
 ]
 
 { #category : #'*GToolkit4Git' }
