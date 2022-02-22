@@ -135,7 +135,11 @@ GtGitRepositoryViewModel >> onRepositoryModified: anAnnouncement [
 
 { #category : #accessing }
 GtGitRepositoryViewModel >> outgoingCommits [
-	^ self repositoryModel outgoingCommits
+
+	^ (self repositoryModel isCommittable not or: [ 
+		   self repositoryModel repository branch hasUpstream ])
+		  ifTrue: [ self repositoryModel outgoingCommits ]
+		  ifFalse: [ self repositoryModel repository head commits ]
 ]
 
 { #category : #accessing }

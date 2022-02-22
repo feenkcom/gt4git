@@ -1,6 +1,22 @@
 Extension { #name : #IceLibgitRepository }
 
 { #category : #'*GToolkit4Git' }
+IceLibgitRepository >> configureUpstreamIfNecessary [
+
+	| aRemote gitRemote |
+	self branch isUnbornBranch ifTrue: [ ^ self ].
+	self branch hasUpstream ifTrue: [ ^ self ].
+	aRemote := self remoteNamed: 'origin'.
+	gitRemote := (LGitRemote
+		              of: self repositoryHandle
+		              named: aRemote name) lookup.
+	self branch
+		pushBranchToRemote: aRemote
+		gitRemote: gitRemote
+		progress: IcePushTransferProgress new
+]
+
+{ #category : #'*GToolkit4Git' }
 IceLibgitRepository >> getDeltasForFullDiff [
 	"Return the deltas including untracked files.
 	This makes it possible to create a full diff of what changed."

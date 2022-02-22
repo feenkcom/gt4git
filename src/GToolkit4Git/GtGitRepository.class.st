@@ -665,11 +665,11 @@ GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts [
 				 label: 'Merge';
 				 action: [ :aButton | aButton phlow spawnObject: merge ]) ].
 
-	(self outgoingCommits size > 0 and: [ 
-		 self outgoingCommits first = item ]) ifTrue: [ 
+	(self viewModel outgoingCommits size > 0 and: [ 
+		 self viewModel outgoingCommits first = item ]) ifTrue: [ 
 		container addChild: (BrButton new
 				 aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
-				 label: self outgoingCommits size asString;
+				 label: self viewModel outgoingCommits size asString;
 				 icon: BrGlamorousVectorIcons up;
 				 action: [ :aButton | 
 					 self push.
@@ -726,7 +726,7 @@ GtGitRepository >> gtCommitsFor: aView [
 									   BrGlamorousColors successBackgroundColor
 								   withTooltip: 'Incoming' ] ]
 				   ifFalse: [ 
-					   (self outgoingCommits contains: [ :aCommit | aCommit = item ])
+					   (self viewModel outgoingCommits contains: [ :aCommit | aCommit = item ])
 						   ifTrue: [ 
 							   self
 								   statusElementColored:
@@ -890,6 +890,7 @@ GtGitRepository >> pull [
 GtGitRepository >> push [
 
 	| res |
+	self repository configureUpstreamIfNecessary.
 	res := self repository push.
 	Iceberg announcer announce:
 		(IceRepositoryModified for: self repository).
@@ -957,12 +958,12 @@ GtGitRepository >> repository [
 GtGitRepository >> repository: aRepository [
 
 	repository == aRepository ifTrue: [ ^ self ].
-	
+
 	repository := aRepository makeSafe.
-		
-	lepiterWorkingCopy := GtLepiterWorkingCopy new 
-		repository: aRepository; 
-		updateDatabases.
+
+	lepiterWorkingCopy := GtLepiterWorkingCopy new
+		                      repository: aRepository;
+		                      updateDatabases
 ]
 
 { #category : #accessing }
