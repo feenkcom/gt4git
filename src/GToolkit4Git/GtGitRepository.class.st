@@ -702,6 +702,8 @@ GtGitRepository >> gtCommitsFor: aView [
 	<gtRepositoryView>
 	| conflicts |
 	self repository repositoryDirectory ifNil: [ ^ aView empty ].
+	
+	self repository configureUpstreamIfNecessary.
 
 	conflicts := self conflictingCommits.
 
@@ -957,12 +959,13 @@ GtGitRepository >> repository [
 GtGitRepository >> repository: aRepository [
 
 	repository == aRepository ifTrue: [ ^ self ].
-	
+
 	repository := aRepository makeSafe.
-		
-	lepiterWorkingCopy := GtLepiterWorkingCopy new 
-		repository: aRepository; 
-		updateDatabases.
+	self isCommittable ifTrue: [ repository configureUpstreamIfNecessary ].
+
+	lepiterWorkingCopy := GtLepiterWorkingCopy new
+		                      repository: aRepository;
+		                      updateDatabases
 ]
 
 { #category : #accessing }
