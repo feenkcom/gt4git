@@ -48,27 +48,32 @@ GtGitGithubPageFormStencil >> create [
 
 { #category : #accessing }
 GtGitGithubPageFormStencil >> createCloneButton [
-	|filler cloneButton|
+
+	| filler cloneButton |
 	cloneButton := BrButton new.
-	cloneButton aptitude: (BrGlamorousButtonRectangularAptitude + (BrGlamorousButtonLabelAptitude new selectedColor: Color black)).
+	cloneButton aptitude: BrGlamorousButtonRectangularAptitude
+		+ (BrGlamorousButtonLabelAptitude new selectedColor: Color black).
 	cloneButton label: 'Clone'.
 	cloneButton action: [ 
-		|repo|	
-		repo := IceRepositoryCreator new 
-				remote: (IceGitRemote url: ownerEditor text asString);
-				location: self projectLocation ;
-				createRepository.
+		| repo |
+		repo := IceRepositoryCreator new
+			        remote: (IceGitRemote url: ownerEditor text asString);
+			        location: self projectLocation;
+			        createRepository.
 		repo register.
-		self onCreated value: repo.
-		Iceberg announcer announce: (IceRepositoryAnnouncement for: repo).
-		aDropdown ifNotNil: [
-			aDropdown enqueueTask:
-				(BlTaskAction new
-					action:[ aDropdown dispatchEvent: 
-						(BrDropdownHideWish new anchor: aDropdown) ])]].
+		Iceberg announcer announce: (IceRepositoryCreated for: repo).
+		aDropdown ifNotNil: [ 
+			aDropdown enqueueTask: (BlTaskAction new action: [ 
+					 aDropdown dispatchEvent:
+						 (BrDropdownHideWish new anchor: aDropdown) ]) ].
+		self onCreated value: repo ].
 	filler := BlElement new.
-	cloneButton constraintsDo: [:c | c grid vertical alignTop. c grid horizontal alignRight].
-	^ {filler . cloneButton}
+	cloneButton constraintsDo: [ :c | 
+		c grid vertical alignTop.
+		c grid horizontal alignRight ].
+	^ { 
+		  filler.
+		  cloneButton }
 ]
 
 { #category : #accessing }
