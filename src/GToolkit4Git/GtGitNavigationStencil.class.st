@@ -50,13 +50,14 @@ GtGitNavigationStencil >> createListFor: aView [
 			  s := GtGitAddRepositoryStencil new.
 			  s dropdown: aDropdown.
 			  s repoGroup: self.
-			  s onCreated: [:repo | self announce: (GtGitRepositorySelected new repository: (GtGitRepository new repository: repo))].
+			  s onCreated: [ :repo | 
+					  self announcer announce:
+							  (GtGitRepositoryAddedAndSelected new repository:
+									   (GtGitRepository new repository: repo)) ].
 			  s ];
 		  actionButtonIcon: BrGlamorousVectorIcons refresh
 		  tooltip: 'Fetch all'
-		  action: [ 
-			  [ self repositories collect: [ :r | r fetch ] ]
-				  fork ];
+		  action: [ [ self repositories collect: [ :r | r fetch ] ] fork ];
 		  items: [ self repositories ];
 		  send: [ :repo | 
 			  self announce: (GtGitRepositorySelected new repository: repo) ];
