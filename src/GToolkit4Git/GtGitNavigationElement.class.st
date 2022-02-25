@@ -11,6 +11,24 @@ Class {
 }
 
 { #category : #accessing }
+GtGitNavigationElement >> addAndSelectRepository: aRepositoryAnnouncement [
+
+	aRepositoryAnnouncement repository ifNil: [ ^ self ].
+
+	suppressed ifFalse: [ 
+		suppressed := true.
+		self
+			allChildrenBreadthFirstDetect: [ :aChild | 
+			aChild isKindOf: BrColumnedList ]
+			ifFound: [ :aList | 
+				aList viewModel items add: aRepositoryAnnouncement repository.
+				aList selectOne: aList viewModel itemCount.
+				aList scrollToIndex: aList viewModel itemCount ] ].
+
+	suppressed := false
+]
+
+{ #category : #accessing }
 GtGitNavigationElement >> announcer [
 	^ navigationModel announcer
 ]
@@ -25,6 +43,7 @@ GtGitNavigationElement >> initialize [
 { #category : #accessing }
 GtGitNavigationElement >> navigationModel: aGtGitNavigationModel [
 	navigationModel := aGtGitNavigationModel.
+	self announcer weak when: GtGitRepositoryAddedAndSelected send: #addAndSelectRepository: to: self.
 	self announcer weak when: GtGitRepositorySelected send: #selectRepository: to: self
 ]
 
