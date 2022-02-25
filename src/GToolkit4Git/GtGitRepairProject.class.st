@@ -10,6 +10,14 @@ GtGitRepairProject class >> iceTipClass [
 ]
 
 { #category : #accessing }
+GtGitRepairProject >> help [
+	^ self class iceTipClass help , '
+
+Add a new source folder (e.g., called "src"), select it, and click on OK to add the missing project metadata.'
+	
+]
+
+{ #category : #accessing }
 GtGitRepairProject >> repairStencil [
 
 	| container srcSelector |
@@ -21,7 +29,7 @@ GtGitRepairProject >> repairStencil [
 	container addChild: (BrEditor new
 			 aptitude: BrGlamorousRegularEditorAptitude new;
 			 vFitContent;
-			 text: self class iceTipClass help).
+			 text: self help).
 	container addChild: srcSelector.
 	srcSelector okAction: [ :srcFolder | 
 		| model |
