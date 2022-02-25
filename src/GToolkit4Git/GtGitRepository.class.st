@@ -14,6 +14,16 @@ Class {
 	#category : #'GToolkit4Git-Model'
 }
 
+{ #category : #'instance creation' }
+GtGitRepository class >> forClass: aClass [
+	^ self forPackage: aClass package
+]
+
+{ #category : #'instance creation' }
+GtGitRepository class >> forPackage: aPackage [
+	^ self new repository: (IceRepository registry detect: [:aRepo | aRepo workingCopy loadedPackages anySatisfy: [:icePackage | icePackage package = aPackage name ] ])
+]
+
 { #category : #accessing }
 GtGitRepository >> addBaseline: aBaselineName [
 
