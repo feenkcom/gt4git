@@ -19,6 +19,11 @@ GtGitElement class >> onRepository: aRepository [
 ]
 
 { #category : #accessing }
+GtGitElement >> asElementDo: aBlock [
+	^ aBlock value: self
+]
+
+{ #category : #accessing }
 GtGitElement >> contentElement [
 	^ contentElement
 ]
