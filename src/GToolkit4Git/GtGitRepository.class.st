@@ -92,7 +92,7 @@ GtGitRepository >> announcer [
 
 { #category : #accessing }
 GtGitRepository >> baselines [
-	^ ((self repository workingCopy packages select: [:aPackage | aPackage isMetacelloBaseline ]) collect: [:aPackage | aPackage name ]) asOrderedCollection
+	^ ((self repository workingCopy loadedPackages select: [:aPackage | aPackage isMetacelloBaseline ]) collect: [:aPackage | aPackage name ]) asOrderedCollection
 ]
 
 { #category : #accessing }
@@ -140,7 +140,8 @@ GtGitRepository >> baselinesDescription [
 							   whenKey: BlKeyCombination primaryB
 							   labelDo: [ :aShortcutEvent :aShortcut | 
 								   aTagger phlow spawnTool:
-									   (GtPackageCoderTool package: (RPackage named: aTag name)) ].
+									   (GtMethodCoderTool compiledMethod:
+										    (aTag name asClass methodDict at: #baseline:)) ].
 
 						   aLabel ]).
 			  aTagger when: BrTaggerAddTagRequest do: [ :aRequest | 
