@@ -30,10 +30,12 @@ GtLepiterWorkingCopy >> canRevertChanges [
 
 { #category : #'API - changes' }
 GtLepiterWorkingCopy >> changesTo: aCommitish [
+
 	| lepiterChanges codeChanges |
 	lepiterChanges := self lepiterChangesTo: aCommitish.
 	codeChanges := self codeChangesTo: aCommitish.
-	^ lepiterChanges asArray, codeChanges asArray
+	^ lepiterChanges asArray , codeChanges asArray
+	  , { (IceGitChange on: 'README.md') }
 ]
 
 { #category : #accessing }
