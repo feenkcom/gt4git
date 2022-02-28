@@ -21,7 +21,9 @@ GtGitRepository class >> forClass: aClass [
 
 { #category : #'instance creation' }
 GtGitRepository class >> forPackage: aPackage [
-	^ self new repository: (IceRepository registry detect: [:aRepo | aRepo workingCopy loadedPackages anySatisfy: [:icePackage | icePackage package = aPackage name ] ])
+	| repository |
+	repository := IceRepository registry detect: [:aRepo | aRepo workingCopy loadedPackages anySatisfy: [:icePackage | icePackage package = aPackage name ] ] ifNone: [ nil ].
+	^ repository ifNotNil: [ self new repository: repository ]
 ]
 
 { #category : #accessing }
@@ -794,7 +796,7 @@ GtGitRepository >> gtReadmeFor: aView context: aContext [
 					  :s | 
 					  s truncate.
 					  s nextPutAll:
-							  aTab viewContentElement children first children first text
+							  aTab viewContentElement children first text
 								  asString ].
 			  self repository addFileToIndex: 'README.md'.
 			  Iceberg announcer announce:
