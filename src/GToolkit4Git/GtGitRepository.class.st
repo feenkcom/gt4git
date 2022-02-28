@@ -798,7 +798,7 @@ GtGitRepository >> gtReadmeFor: aView context: aContext [
 								  asString ].
 			  self repository addFileToIndex: 'README.md'.
 			  Iceberg announcer announce:
-					  IceRepositoryModified new repository self repository ]
+					  (IceRepositoryModified new repository: self repository) ]
 ]
 
 { #category : #accessing }
