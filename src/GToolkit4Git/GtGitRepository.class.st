@@ -794,7 +794,7 @@ GtGitRepository >> gtReadmeFor: aView context: aContext [
 					  :s | 
 					  s truncate.
 					  s nextPutAll:
-							  aTab viewContentElement children first children first text
+							  aTab viewContentElement children first text
 								  asString ].
 			  self repository addFileToIndex: 'README.md'.
 			  Iceberg announcer announce:
