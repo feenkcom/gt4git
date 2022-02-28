@@ -782,7 +782,8 @@ GtGitRepository >> gtReadmeFor: aView context: aContext [
 
 	<gtView>
 	<gtRepositoryView>
-	self hasWorkingCopy ifFalse: [ ^ aView empty ].
+	(self hasWorkingCopy not or: [ self repository isMissing ]) 
+		ifTrue: [ ^ aView empty ].
 
 	^ aView textEditor
 		  title: 'README';
@@ -796,8 +797,7 @@ GtGitRepository >> gtReadmeFor: aView context: aContext [
 					  :s | 
 					  s truncate.
 					  s nextPutAll:
-							  aTab viewContentElement children first text
-								  asString ].
+							  aTab viewContentElement children first text asString ].
 			  self repository addFileToIndex: 'README.md'.
 			  Iceberg announcer announce:
 					  (IceRepositoryModified new repository: self repository) ]

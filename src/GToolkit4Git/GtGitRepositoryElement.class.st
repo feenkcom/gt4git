@@ -81,8 +81,7 @@ GtGitRepositoryElement >> initializeDefinitionsElement [
 
 { #category : #initialization }
 GtGitRepositoryElement >> initializeLazyTabsElement [
-	lazyTabsElement := BlLazyElement new
-		withGlamorousPreview;
+	lazyTabsElement := BrLazyWidget new
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent ]
@@ -302,7 +301,9 @@ GtGitRepositoryElement >> updateStatusElement [
 
 { #category : #'private - updating' }
 GtGitRepositoryElement >> updateTabsElement [
-	self lazyTabsElement elementBuilder: [ self newRepositoryViewTabs id: #tabs ]
+
+	self lazyTabsElement content: [ :aFrame | 
+		aFrame addChild: (self newRepositoryViewTabs id: #tabs) ]
 ]
 
 { #category : #'private - updating' }
