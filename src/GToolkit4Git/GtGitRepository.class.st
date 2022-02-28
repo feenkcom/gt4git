@@ -94,7 +94,7 @@ GtGitRepository >> announcer [
 
 { #category : #accessing }
 GtGitRepository >> baselines [
-	^ ((self repository workingCopy packages select: [:aPackage | aPackage isMetacelloBaseline ]) collect: [:aPackage | aPackage name ]) asOrderedCollection
+	^ ((self repository workingCopy loadedPackages select: [:aPackage | aPackage isMetacelloBaseline ]) collect: [:aPackage | aPackage name ]) asOrderedCollection
 ]
 
 { #category : #accessing }
@@ -142,7 +142,8 @@ GtGitRepository >> baselinesDescription [
 							   whenKey: BlKeyCombination primaryB
 							   labelDo: [ :aShortcutEvent :aShortcut | 
 								   aTagger phlow spawnTool:
-									   (GtPackageCoderTool package: (RPackage named: aTag name)) ].
+									   (GtMethodCoderTool compiledMethod:
+										    (aTag name asClass methodDict at: #baseline:)) ].
 
 						   aLabel ]).
 			  aTagger when: BrTaggerAddTagRequest do: [ :aRequest | 
@@ -774,6 +775,32 @@ GtGitRepository >> gtPackagesFor: aView context: aContext [
 	<gtRepositoryView>
 	self hasWorkingCopy ifFalse: [ ^ aView empty ].
 	^ self repository workingCopy gtPackagesFor: aView
+]
+
+{ #category : #accessing }
+GtGitRepository >> gtReadmeFor: aView context: aContext [
+
+	<gtView>
+	<gtRepositoryView>
+	self hasWorkingCopy ifFalse: [ ^ aView empty ].
+
+	^ aView textEditor
+		  title: 'README';
+		  priority: 2;
+		  text: [ 
+			  (self repository repositoryDirectory / 'README.md') contents ];
+		  actionButtonIcon: BrGlamorousVectorIcons accept
+		  tooltip: 'Save README'
+		  action: [ :aToggle :aTab | 
+			  self repository repositoryDirectory / 'README.md' writeStreamDo: [ 
+					  :s | 
+					  s truncate.
+					  s nextPutAll:
+							  aTab viewContentElement children first text
+								  asString ].
+			  self repository addFileToIndex: 'README.md'.
+			  Iceberg announcer announce:
+					  (IceRepositoryModified new repository: self repository) ]
 ]
 
 { #category : #accessing }
