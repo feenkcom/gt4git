@@ -776,6 +776,26 @@ GtGitRepository >> gtPackagesFor: aView context: aContext [
 ]
 
 { #category : #accessing }
+GtGitRepository >> gtReadmeFor: aView context: aContext [
+	<gtView>
+	<gtRepositoryView>
+	self hasWorkingCopy ifFalse: [ ^ aView empty ].
+	
+	^ aView textEditor
+		title: 'README';
+		priority: 2;
+		text: [ (self repository repositoryDirectory / 'README.md') contents ];		
+		actionButtonIcon: BrGlamorousVectorIcons accept 
+			tooltip: 'Save README' 
+			action: [ :aToggle :aTab |
+			self repository repositoryDirectory / 'README.md' writeStreamDo: [:s |
+				s truncate.
+				s nextPutAll: aTab viewContentElement children first children first text asString
+			].
+			self repository addFileToIndex: 'README.md'  ]
+]
+
+{ #category : #accessing }
 GtGitRepository >> gtRepositoryDirectoryFor: aView [
 	<gtView>
 	<gtRepositoryView>
