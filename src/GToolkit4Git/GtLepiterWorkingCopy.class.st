@@ -100,6 +100,11 @@ GtLepiterWorkingCopy >> fileSystem [
 ]
 
 { #category : #accessing }
+GtLepiterWorkingCopy >> gtAllLoadedExamples [
+	^ self icebergWorkingCopy gtAllLoadedExamples
+]
+
+{ #category : #accessing }
 GtLepiterWorkingCopy >> hasDatabases [
 	^ databases size > 0
 ]

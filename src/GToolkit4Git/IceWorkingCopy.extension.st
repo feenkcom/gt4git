@@ -1,6 +1,18 @@
 Extension { #name : #IceWorkingCopy }
 
 { #category : #'*GToolkit4Git' }
+IceWorkingCopy >> gtAllLoadedExamples [
+	^ self loadedPackages flatCollect: [ :anIcePackage |
+		| rPackage |
+		rPackage := RPackage organizer
+			packageNamed: anIcePackage name
+			ifAbsent: [ nil ].
+		rPackage 
+			ifNil: [ #() ]
+			ifNotNil: [ rPackage gtExamplesAllContained ] ]
+]
+
+{ #category : #'*GToolkit4Git' }
 IceWorkingCopy >> gtPackagesFor: aView [
 
 	<gtView>
