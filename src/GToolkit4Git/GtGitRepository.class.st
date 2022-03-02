@@ -559,6 +559,11 @@ GtGitRepository >> gtActionRepairFor: anAction [
 			GtGitRepositoryRepairStencil new repository:repository; dropdown: aDropdown ].
 ]
 
+{ #category : #accessing }
+GtGitRepository >> gtAllLoadedExamples [
+	^ self lepiterWorkingCopy gtAllLoadedExamples
+]
+
 { #category : #'gt - extensions' }
 GtGitRepository >> gtChangesFor: aView context: aContext [
 
@@ -767,6 +772,18 @@ GtGitRepository >> gtCommitsFor: aView [
 						   self rawCommit: 'Revert ' , item shortId , ' ' , item comment.
 						   element phlow fireUpdateWish ]) };
 				  yourself ]
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> gtExamplesFor: aView [
+	<gtView>
+	<gtRepositoryView>
+	
+	^ aView forward 
+		title: 'Examples';
+		priority: 20;
+		object: [ GtExampleGroup withAll: self gtAllLoadedExamples];
+		view: #gtExamplesFor:
 ]
 
 { #category : #'gt - extensions' }
