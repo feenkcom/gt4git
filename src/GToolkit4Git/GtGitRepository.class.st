@@ -1077,9 +1077,6 @@ GtGitRepository >> statusModel [
 	entity workingCopy project isUnborn ifTrue: [ 
 		^ { GtGitStatusNoProject new } ].
 
-	(entity loadedPackages isEmpty and: [ entity packages notEmpty ]) 
-		ifTrue: [ ^ { GtGitStatusNotLoaded new } ].
-
 	statusCollection := OrderedCollection new.
 	self isModified ifTrue: [ 
 		statusCollection add: GtGitStatusUncommittedChanges new ].
