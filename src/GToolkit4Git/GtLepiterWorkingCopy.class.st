@@ -226,3 +226,8 @@ GtLepiterWorkingCopy >> updateDatabases [
 GtLepiterWorkingCopy >> useCheckAllStragegy [
 	self lepiterChangesStragegy: GtLepiterWorkingCopyChangesCheckAllStrategy new
 ]
+
+{ #category : #accessing }
+GtLepiterWorkingCopy >> writerClass [
+	^ self icebergWorkingCopy writerClass
+]
