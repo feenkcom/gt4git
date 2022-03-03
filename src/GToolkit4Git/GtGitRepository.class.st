@@ -22,8 +22,18 @@ GtGitRepository class >> forClass: aClass [
 { #category : #'instance creation' }
 GtGitRepository class >> forPackage: aPackage [
 	| repository |
-	repository := IceRepository registry detect: [:aRepo | aRepo workingCopy loadedPackages anySatisfy: [:icePackage | icePackage package = aPackage name ] ] ifNone: [ nil ].
-	^ repository ifNotNil: [ self new repository: repository ]
+	
+	repository := IceRepository registry detect: [ :aRepo | 
+		aRepo workingCopy loadedPackages anySatisfy: [ :icePackage | 
+			icePackage package = aPackage name ] ] ifNone: [ nil ].
+	^ repository ifNotNil: [ 
+		self new repository: repository ]
+]
+
+{ #category : #'instance creation' }
+GtGitRepository class >> fromIcebergRepository: anIceRepository [
+	^ self new 
+		repository: anIceRepository
 ]
 
 { #category : #accessing }
@@ -434,6 +444,11 @@ GtGitRepository >> fileFormatDescription [
 { #category : #accessing }
 GtGitRepository >> forget [
 	self repository forget
+]
+
+{ #category : #accessing }
+GtGitRepository >> getDeltasForFullDiff [
+	^ self repository getDeltasForFullDiff
 ]
 
 { #category : #accessing }
