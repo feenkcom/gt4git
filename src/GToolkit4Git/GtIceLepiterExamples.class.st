@@ -339,7 +339,7 @@ GtIceLepiterExamples >> createIcebergRepositoryNamed: aRepositoryName withLepite
 	before creating the gt git repo, in order for the diff logic to work."
 	LeDatabasesRegistry defaultLogicalDatabase addDB: database.
 	
-	gtRepository := GtGitRepository2 fromIcebergRepository: iceRepository.
+	gtRepository := GtGitRepository fromIcebergRepository: iceRepository.
 	"self assertLepiterDatabase: database inFolderNamed: 'lepiter'."
 
 	self lepiterDatabases at: aDatabaseName put: database.
