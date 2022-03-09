@@ -1,6 +1,6 @@
 # GT for Git
 
-is a tool for working with Git inside [the Glamorous Toolkit](https://gtoolkit.com).
+is a tool for working with Git inside [the Glamorous Toolkit](https://gtoolkit.com). Its primary use is as part of the Glamorous Toolkit as a whole.
 
 ## How to load
 
