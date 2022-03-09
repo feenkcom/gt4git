@@ -820,13 +820,16 @@ GtGitRepository >> gtReadmeFor: aView context: aContext [
 
 	readme := self repository repositoryDirectory / 'README.md'.
 
-	^ aView textEditor
+	^ aView explicit
 		  title: 'README';
 		  priority: 2;
-		  text: [ 
-			  readme exists
-				  ifTrue: [ readme contents ]
-				  ifFalse: [ '' ] ];
+		  stencil: [ 
+			  | snippet snippetViewModel |
+			  snippet := LeTextSnippet string: (readme exists
+						              ifTrue: [ readme contents ]
+						              ifFalse: [ '' ]).
+			  snippetViewModel := snippet asSnippetViewModel.
+			  ((snippetViewModel snippetView needsEmbellishments: false) asElement snippetViewModel: snippetViewModel) vMatchParent  ];
 		  actionButtonIcon: BrGlamorousVectorIcons accept
 		  tooltip: 'Save README'
 		  action: [ :aToggle :aTab | 
