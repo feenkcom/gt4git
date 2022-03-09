@@ -814,19 +814,23 @@ GtGitRepository >> gtReadmeFor: aView context: aContext [
 
 	<gtView>
 	<gtRepositoryView>
-	(self hasWorkingCopy not or: [ self repository isMissing ]) 
-		ifTrue: [ ^ aView empty ].
+	| readme |
+	(self hasWorkingCopy not or: [ self repository isMissing ]) ifTrue: [ 
+		^ aView empty ].
+
+	readme := self repository repositoryDirectory / 'README.md'.
 
 	^ aView textEditor
 		  title: 'README';
 		  priority: 2;
 		  text: [ 
-			  (self repository repositoryDirectory / 'README.md') contents ];
+			  readme exists
+				  ifTrue: [ readme contents ]
+				  ifFalse: [ '' ] ];
 		  actionButtonIcon: BrGlamorousVectorIcons accept
 		  tooltip: 'Save README'
 		  action: [ :aToggle :aTab | 
-			  self repository repositoryDirectory / 'README.md' writeStreamDo: [ 
-					  :s | 
+			  readme writeStreamDo: [ :s | 
 					  s truncate.
 					  s nextPutAll:
 							  aTab viewContentElement children first text asString ].
