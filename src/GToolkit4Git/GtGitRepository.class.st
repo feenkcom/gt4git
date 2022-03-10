@@ -837,17 +837,30 @@ GtGitRepository >> gtReadmeFor: aView context: aContext [
 						              ifTrue: [ readme contents ]
 						              ifFalse: [ '' ]).
 			  snippetViewModel := snippet asSnippetViewModel.
-			  ((snippetViewModel snippetView needsEmbellishments: false) asElement snippetViewModel: snippetViewModel) vMatchParent  ];
+			  snippetViewModel coderViewModel addShortcut:
+					  (BrEditorShortcut lineEnding combination:
+							   (LeSnippetElement keyboardShortcut: #NewLine)).
+			  snippetViewModel coderViewModel addShortcut: (BlShortcutWithAction new
+						   combination: BlKeyCombination primaryS;
+						   action: [ :anEvent | 
+							   readme writeStreamDo: [ :s | 
+									   s truncate.
+									   s nextPutAll: anEvent currentTarget text asString ].
+							   self repository addFileToIndex: 'README.md'.
+							   Iceberg announcer announce:
+									   (IceRepositoryModified new repository: self repository) ]).
+			  ((snippetViewModel snippetView needsEmbellishments: false)
+				   asElement snippetViewModel: snippetViewModel) vMatchParent ];
 		  actionButtonIcon: BrGlamorousVectorIcons accept
 		  tooltip: 'Save README'
 		  action: [ :aToggle :aTab | 
 			  readme writeStreamDo: [ :s | 
-					  s truncate.
-					  s nextPutAll:
-							  aTab viewContentElement children first text asString ].
+				  s truncate.
+				  s nextPutAll:
+					  aTab viewContentElement children first text asString ].
 			  self repository addFileToIndex: 'README.md'.
 			  Iceberg announcer announce:
-					  (IceRepositoryModified new repository: self repository) ]
+				  (IceRepositoryModified new repository: self repository) ]
 ]
 
 { #category : #accessing }
