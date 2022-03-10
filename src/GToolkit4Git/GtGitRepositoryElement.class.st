@@ -202,9 +202,9 @@ GtGitRepositoryElement >> showCommits: aListOfCommits on: aDropdown withAction: 
 
 	| aContainer |
 	aContainer := BrVerticalPane new
-		              vFitContent;
-		              layout: BlLinearLayout vertical alignCenterRight;
-		              hExact: 600.
+		              vFitContentLimited;
+		              hExact: 600;
+		              alignCenterRight.
 
 	aContainer addChild: (GtPhlowColumnedListView new
 			 title: 'Commits' translated;
@@ -221,7 +221,7 @@ GtGitRepositoryElement >> showCommits: aListOfCommits on: aDropdown withAction: 
 			 icon: BrGlamorousVectorIcons accept;
 			 label: aString;
 			 margin: (BlInsets
-					  top: 0
+					  top: 10
 					  left: 0
 					  bottom: 10
 					  right: 10);
