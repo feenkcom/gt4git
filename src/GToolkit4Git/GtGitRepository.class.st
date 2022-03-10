@@ -629,7 +629,8 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 						   checked: true;
 						   whenCheckedDo: [ chosen add: anIceNode value ];
 						   margin: (BlInsets right: 8);
-						   whenUncheckedDo: [ chosen remove: anIceNode value ifAbsent: [ ] ]) ].
+						   whenUncheckedDo: [ 
+							   chosen remove: anIceNode value ifAbsent: [  ] ]) ].
 			  element
 				  addChild:
 					  (anIceNode value icon asElement constraintsDo: [ :c | 
@@ -646,7 +647,7 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 		  actionDropdownButtonLabel: 'Commit'
 		  tooltip: 'Commit changes'
 		  content: [ :aDropdown :aTarget | 
-			  | editor button |
+			  | editor button saveAction |
 			  editor := BrEditor new
 				            aptitude: BrGlamorousRegularEditorAptitude;
 				            text: aViewModel commitMessage;
@@ -657,21 +658,28 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 				  all;
 				  select.
 
+			  saveAction := [ 
+			                aViewModel
+				                executeCommit: editor editor text asString
+				                withChanges: chosen.
+			                button disable.
+			                aDropdown enqueueTask:
+				                (BlTaskAction new action: [ 
+					                 aDropdown dispatchEvent:
+						                 (BrDropdownHideWish new anchor: aDropdown) ]).
+			                aDropdown phlow fireUpdateWish ].
+
+			  editor addEditorShortcut: (BlShortcutWithAction new
+					   combination: BlKeyCombination primaryS;
+					   action: saveAction).
+
 			  button := BrButton new.
 			  button
 				  aptitude: BrGlamorousButtonWithIconAptitude;
 				  icon: BrGlamorousVectorIcons accept;
 				  label: 'Commit';
 				  disabled: editor text isEmpty;
-				  action: [ 
-					  aViewModel
-						  executeCommit: editor editor text asString
-						  withChanges: chosen.
-					  button disable.
-					  aDropdown enqueueTask: (BlTaskAction new action: [ 
-									   aDropdown dispatchEvent:
-											   (BrDropdownHideWish new anchor: aDropdown) ]).
-					  aDropdown phlow fireUpdateWish ].
+				  action: saveAction.
 
 			  editor editor
 				  when: BrTextEditorModifiedEvent
