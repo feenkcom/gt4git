@@ -629,7 +629,8 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 						   checked: true;
 						   whenCheckedDo: [ chosen add: anIceNode value ];
 						   margin: (BlInsets right: 8);
-						   whenUncheckedDo: [ chosen remove: anIceNode value ifAbsent: [ ] ]) ].
+						   whenUncheckedDo: [ 
+							   chosen remove: anIceNode value ifAbsent: [  ] ]) ].
 			  element
 				  addChild:
 					  (anIceNode value icon asElement constraintsDo: [ :c | 
@@ -646,7 +647,7 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 		  actionDropdownButtonLabel: 'Commit'
 		  tooltip: 'Commit changes'
 		  content: [ :aDropdown :aTarget | 
-			  | editor button |
+			  | editor button saveAction |
 			  editor := BrEditor new
 				            aptitude: BrGlamorousRegularEditorAptitude;
 				            text: aViewModel commitMessage;
@@ -657,21 +658,28 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 				  all;
 				  select.
 
+			  saveAction := [ 
+			                aViewModel
+				                executeCommit: editor editor text asString
+				                withChanges: chosen.
+			                button disable.
+			                aDropdown enqueueTask:
+				                (BlTaskAction new action: [ 
+					                 aDropdown dispatchEvent:
+						                 (BrDropdownHideWish new anchor: aDropdown) ]).
+			                aDropdown phlow fireUpdateWish ].
+
+			  editor addEditorShortcut: (BlShortcutWithAction new
+					   combination: BlKeyCombination primaryS;
+					   action: saveAction).
+
 			  button := BrButton new.
 			  button
 				  aptitude: BrGlamorousButtonWithIconAptitude;
 				  icon: BrGlamorousVectorIcons accept;
 				  label: 'Commit';
 				  disabled: editor text isEmpty;
-				  action: [ 
-					  aViewModel
-						  executeCommit: editor editor text asString
-						  withChanges: chosen.
-					  button disable.
-					  aDropdown enqueueTask: (BlTaskAction new action: [ 
-									   aDropdown dispatchEvent:
-											   (BrDropdownHideWish new anchor: aDropdown) ]).
-					  aDropdown phlow fireUpdateWish ].
+				  action: saveAction.
 
 			  editor editor
 				  when: BrTextEditorModifiedEvent
@@ -829,17 +837,30 @@ GtGitRepository >> gtReadmeFor: aView context: aContext [
 						              ifTrue: [ readme contents ]
 						              ifFalse: [ '' ]).
 			  snippetViewModel := snippet asSnippetViewModel.
-			  ((snippetViewModel snippetView needsEmbellishments: false) asElement snippetViewModel: snippetViewModel) vMatchParent  ];
+			  snippetViewModel coderViewModel addShortcut:
+					  (BrEditorShortcut lineEnding combination:
+							   (LeSnippetElement keyboardShortcut: #NewLine)).
+			  snippetViewModel coderViewModel addShortcut: (BlShortcutWithAction new
+						   combination: BlKeyCombination primaryS;
+						   action: [ :anEvent | 
+							   readme writeStreamDo: [ :s | 
+									   s truncate.
+									   s nextPutAll: anEvent currentTarget text asString ].
+							   self repository addFileToIndex: 'README.md'.
+							   Iceberg announcer announce:
+									   (IceRepositoryModified new repository: self repository) ]).
+			  ((snippetViewModel snippetView needsEmbellishments: false)
+				   asElement snippetViewModel: snippetViewModel) vMatchParent ];
 		  actionButtonIcon: BrGlamorousVectorIcons accept
 		  tooltip: 'Save README'
 		  action: [ :aToggle :aTab | 
 			  readme writeStreamDo: [ :s | 
-					  s truncate.
-					  s nextPutAll:
-							  aTab viewContentElement children first text asString ].
+				  s truncate.
+				  s nextPutAll:
+					  aTab viewContentElement children first text asString ].
 			  self repository addFileToIndex: 'README.md'.
 			  Iceberg announcer announce:
-					  (IceRepositoryModified new repository: self repository) ]
+				  (IceRepositoryModified new repository: self repository) ]
 ]
 
 { #category : #accessing }
