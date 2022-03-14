@@ -368,8 +368,9 @@ GtIceLepiterExamples >> createNewPageWithAttachmentIn: aDatabase [
 
 { #category : #'setUp-tearDown' }
 GtIceLepiterExamples >> detachLepiterDatabases [
+	"we use remove db unchecked to make sure it always works, no matter the state"
 	self lepiterDatabases do: [ :aDatabase |
-		LeDatabasesRegistry defaultLogicalDatabase removeDB: aDatabase ].
+		LeDatabasesRegistry defaultLogicalDatabase removeDBUnchecked: aDatabase ].
 	self lepiterDatabases removeAll.
 ]
 
