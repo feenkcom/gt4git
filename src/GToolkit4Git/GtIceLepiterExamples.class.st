@@ -335,11 +335,9 @@ GtIceLepiterExamples >> createIcebergRepositoryNamed: aRepositoryName withLepite
 		saveDelay: 0 seconds.
 	database databaseName: aDatabaseName.
 	
-	"The current mechanism requires a database to be registered
-	before creating the gt git repo, in order for the diff logic to work."
-	LeDatabasesRegistry defaultLogicalDatabase addDB: database.
-	
 	gtRepository := GtGitRepository fromIcebergRepository: iceRepository.
+	gtRepository lepiterWorkingCopy: (GtLepiterWorkingCopy new
+		                      repository: iceRepository; databases: { database }).
 	"self assertLepiterDatabase: database inFolderNamed: 'lepiter'."
 
 	self lepiterDatabases at: aDatabaseName put: database.
@@ -368,9 +366,6 @@ GtIceLepiterExamples >> createNewPageWithAttachmentIn: aDatabase [
 
 { #category : #'setUp-tearDown' }
 GtIceLepiterExamples >> detachLepiterDatabases [
-	"we use remove db unchecked to make sure it always works, no matter the state"
-	self lepiterDatabases do: [ :aDatabase |
-		LeDatabasesRegistry defaultLogicalDatabase removeDBUnchecked: aDatabase ].
 	self lepiterDatabases removeAll.
 ]
 

@@ -937,6 +937,11 @@ GtGitRepository >> lepiterWorkingCopy [
 	^ lepiterWorkingCopy
 ]
 
+{ #category : #accessing }
+GtGitRepository >> lepiterWorkingCopy: aLepiterWorkingCopy [
+	lepiterWorkingCopy := aLepiterWorkingCopy
+]
+
 { #category : #'api - repository' }
 GtGitRepository >> name [
 	^ self repository ifNotNil: #name ifNil: [ '<missing>' ]
