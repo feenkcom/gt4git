@@ -12,7 +12,7 @@ GtGitDiscardAndLoad class >> iceTipClass [
 { #category : #accessing }
 GtGitDiscardAndLoad >> repairStencil [
 
-	| container model |
+	| container |
 	container := BrVerticalPane new.
 	container matchParent.
 	container padding: (BlInsets all: 10).
