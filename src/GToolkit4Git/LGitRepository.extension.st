@@ -19,7 +19,7 @@ LGitRepository >> getDeltasFromHead: aHead options: anLGitDiffOptions into: aDif
 LGitRepository >> isDirty [
 
 	| out head |
-	out := LGitDiff newPointer autoRelease; repository: self.
+	out := LGitDiff of: self.
 	head := self head.
 	out diffTreeToWorkdir: (self revparse: head name) tree inRepo: self.
 

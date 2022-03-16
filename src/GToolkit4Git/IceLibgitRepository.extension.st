@@ -24,7 +24,7 @@ IceLibgitRepository >> getDeltasForFullDiff [
 
 	| out |
 	self handleLibgitError: [ 
-		out := LGitDiff newPointer autoRelease; repository: self.
+		out := LGitDiff of: self.
 		^ (self repositoryHandle 
 			getDeltasFromHead: self head
 			options: (LGitDiffOptions defaults
