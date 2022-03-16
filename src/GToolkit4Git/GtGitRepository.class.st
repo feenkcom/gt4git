@@ -430,7 +430,6 @@ GtGitRepository >> fileFormatDescription [
 				   read: [ :aModel | 
 					   repository project repositoryProperties fileFormat ]
 				   write: [ :aModel :aValue | 
-					   | model |
 					   repository project fileFormat: (aValue = 'Tonel'
 								    ifTrue: [ IceLibgitTonelWriter ]
 								    ifFalse: [ IceLibgitFiletreeWriter ]).
@@ -1004,7 +1003,6 @@ GtGitRepository >> push [
 { #category : #accessing }
 GtGitRepository >> rawCommit: aCommitMessage [
 
-	| workingCopyDiff |
 	self repository
 		commitIndexWithMessage: aCommitMessage
 		andParents: (self workingCopy workingCopyState referenceCommits reject: [ :each | each isNoCommit ]).
@@ -1073,9 +1071,9 @@ GtGitRepository >> repository: aRepository [
 { #category : #accessing }
 GtGitRepository >> squash [
 
-	| target message |
-	^ self notYetImplemented."
+	^ self notYetImplemented
 	
+	"| target message |
 	target := self repository branch commits detect: [ :commit | 
 		          (self outgoingCommits contains: [ :aCommit | 
 			           aCommit = commit ]) not ].
