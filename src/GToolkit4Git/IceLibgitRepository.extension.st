@@ -13,7 +13,8 @@ IceLibgitRepository >> configureUpstreamIfNecessary [
 	self branch
 		pushBranchToRemote: aRemote
 		gitRemote: gitRemote
-		progress: IcePushTransferProgress new
+		progress: IcePushTransferProgress new.
+	self branch setUpstreamIfMissing: aRemote
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -23,7 +24,7 @@ IceLibgitRepository >> getDeltasForFullDiff [
 
 	| out |
 	self handleLibgitError: [ 
-		out := LGitDiff newPointer autoRelease; repository: self.
+		out := LGitDiff of: self.
 		^ (self repositoryHandle 
 			getDeltasFromHead: self head
 			options: (LGitDiffOptions defaults
