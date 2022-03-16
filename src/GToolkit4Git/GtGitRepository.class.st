@@ -749,8 +749,7 @@ GtGitRepository >> gtCommitsFor: aView [
 		  title: 'Commits' translated;
 		  priority: 2;
 		  items: [ 
-			  self incomingCommits , self repository head commits 
-				  sortDescending: #timeStamp ];
+			  (AsyncSequenceStream forCollection: self incomingCommits) merge: self repository head commitStream ];
 		  column: 'Status' stencil: [ :item | 
 			  ((self incomingCommits contains: [ :aCommit | aCommit = item ])
 				   ifTrue: [ 
@@ -983,7 +982,7 @@ GtGitRepository >> printOn: aStream [
 { #category : #accessing }
 GtGitRepository >> pull [
 	| res |
-	res := self repository pull.
+	res := self repository configureUpstreamIfNecessary pull.
 	Iceberg announcer announce:
 		(IceRepositoryModified for: self repository).
 	^ res

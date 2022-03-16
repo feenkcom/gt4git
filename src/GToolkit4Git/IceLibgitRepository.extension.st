@@ -22,17 +22,19 @@ IceLibgitRepository >> getDeltasForFullDiff [
 	"Return the deltas including untracked files.
 	This makes it possible to create a full diff of what changed."
 
-	| out |
+	| out res |
 	self handleLibgitError: [ 
-		out := LGitDiff newPointer autoRelease; repository: self.
-		^ (self repositoryHandle 
+		out := LGitDiff of: self.
+		res := (self repositoryHandle 
 			getDeltasFromHead: self head
 			options: (LGitDiffOptions defaults
 				prim_flags: (LGitDiffOptionTypeEnum git_diff_include_untracked value 
 					bitXor: LGitDiffOptionTypeEnum git_diff_recurse_untracked_dirs value))
 			into: out) 
 					collect: [ :delta | 
-						GtGitDelta from: delta in: self ] ]
+						GtGitDelta from: delta in: self ].
+		out free.
+		^ res ]
 ]
 
 { #category : #'*GToolkit4Git' }
