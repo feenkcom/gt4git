@@ -1,27 +1,6 @@
 Extension { #name : #LGitRepository }
 
 { #category : #'*GToolkit4Git' }
-LGitRepository >> getDeltasFromHead: aHead [
-	^ self getDeltasFromHead: aHead options: LGitDiffOptions defaults
-]
-
-{ #category : #'*GToolkit4Git' }
-LGitRepository >> getDeltasFromHead: aHead options: anLGitDiffOptions [
-
-	| out tree |
-	out := LGitDiff newPointer autoRelease; repository: self.
-	
-	tree := aHead treeFor: self.
-	
-	out 
-		diffTreeToWorkdir: tree 
-		inRepo: self
-		options: anLGitDiffOptions.
-	
-	^ out deltas
-]
-
-{ #category : #'*GToolkit4Git' }
 LGitRepository >> getDeltasFromHead: aHead options: anLGitDiffOptions into: aDiffPointer [
 
 	| tree |
