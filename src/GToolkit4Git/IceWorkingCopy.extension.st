@@ -59,6 +59,22 @@ IceWorkingCopy >> gtViewDiffToReferenceCommitFor: aView [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceWorkingCopy >> notifyPackageModified: aString [
+
+	self flag: #pharoTodo. "we cannot use #includesPackageNamed: as is because it can happen 
+	that a package is present in a commit but not in image yet?"
+
+	self shouldIgnoreNotifications ifTrue: [ ^ false ].
+
+	(self includesInWorkingCopyPackageNamed: aString) ifTrue: [ 
+		| package |
+		package := self packageNamed: aString.
+		package isDirty ifFalse: [ package beDirty ].
+		^ true ].
+	^ false
+]
+
+{ #category : #'*GToolkit4Git' }
 IceWorkingCopy >> removePackageNamed: aPackageName [
 	^ (RPackage organizer
 			packageNamed: aPackageName

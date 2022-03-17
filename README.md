@@ -4,4 +4,4 @@ is a tool for working with Git inside [the Glamorous Toolkit](https://gtoolkit.c
 
 ## How to load
 
-The ideal way to load the code is by loading the entire [Glamorous Toolkit project](https://github.com/feenkcom/gtoolkit).
+The ideal way to load the code is by loading the entire [Glamorous Toolkit project](https://github.com/feenkcom/gtoolkit). 
