@@ -1,35 +1,8 @@
 Class {
 	#name : #GtGitExamples,
 	#superclass : #Object,
-	#category : #'GToolkit4Git-Model'
+	#category : #'GToolkit4Git-Model-Examples'
 }
-
-{ #category : #'examples - repositories - model' }
-GtGitExamples >> basicRepositoriesElement [
-	<gtExample>
-	| anElement |
-	anElement := GtGitRepositoriesElement new.
-	^ anElement
-]
-
-{ #category : #'examples - repositories - model' }
-GtGitExamples >> basicRepositoriesModel [
-	<gtExample>
-	| aModel |
-	aModel := GtGitRepositories new.
-	self assert: aModel collection isNotNil.
-	self assert: aModel collection isEmpty.
-	^ aModel
-]
-
-{ #category : #'examples - repositories - model' }
-GtGitExamples >> basicRepositoriesTool [
-	<gtExample>
-	| aTool |
-	aTool := GtGitRepositoriesTool new.
-	self assert: aTool repositoriesViewModel isNil.
-	^ aTool
-]
 
 { #category : #'examples - repository - model' }
 GtGitExamples >> basicRepositoryElement [
@@ -68,15 +41,6 @@ GtGitExamples >> mockRepository [
 			name: 'gt4git-mock' ].
 	self assert: aRepository isNotNil.
 	^ aRepository
-]
-
-{ #category : #'examples - repositories - model' }
-GtGitExamples >> repositoriesModel [
-	<gtExample>
-	| aModel |
-	aModel := GtGitRepositories default.
-	self assert: aModel collection isNotNil.
-	^ aModel
 ]
 
 { #category : #'examples - repository - model' }
