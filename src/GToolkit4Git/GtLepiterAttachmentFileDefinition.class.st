@@ -29,6 +29,11 @@ GtLepiterAttachmentFileDefinition >> binaryContents: anObject [
 ]
 
 { #category : #accessing }
+GtLepiterAttachmentFileDefinition >> canBeBrowsed [
+	^ false
+]
+
+{ #category : #accessing }
 GtLepiterAttachmentFileDefinition >> contents [
 
 	^ binaryContents

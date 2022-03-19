@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #accessing }
+GtLepiterDefinition >> canBeBrowsed [
+	^ false
+]
+
+{ #category : #accessing }
 GtLepiterDefinition >> removeFrom: anObject [
 	"noop"
 ]

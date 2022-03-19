@@ -33,8 +33,7 @@ GtLepiterPageDefinition >> asMCDefinition [
 		             d uuid = database databaseId ].
 	aPage := aDatabase pageByUuid: self pageUuid ifAbsent: [ 
 		         | page |
-		         page := LeJsonV4 uniqueInstance deserialize:
-			                 self pageContents readStream.
+		         page := self asPage.
 		         aDatabase addPage: page.
 		         page ].
 	(aDatabase monitor pageFileReference: aPage) writeStreamDo: [ :s | 
@@ -43,6 +42,18 @@ GtLepiterPageDefinition >> asMCDefinition [
 	aPage reloadFromPage: (aDatabase monitor storage loadFromFile:
 			 (aDatabase monitor pageFileReference: aPage)).
 	^ MCMockDefinition token: self key
+]
+
+{ #category : #accessing }
+GtLepiterPageDefinition >> asPage [
+
+	^ LeJsonV4 uniqueInstance deserialize:
+			          self pageContents readStream
+]
+
+{ #category : #accessing }
+GtLepiterPageDefinition >> canBeBrowsed [
+	^ true
 ]
 
 { #category : #accessing }
@@ -143,4 +154,14 @@ GtLepiterPageDefinition >> removeFrom: aVisitor [
 		             d uuid = database databaseId ].
 	aPage := aDatabase pageByUuid: self pageUuid.
 	aDatabase removePage: aPage
+]
+
+{ #category : #accessing }
+GtLepiterPageDefinition >> toolIn: aRepository [
+
+	| aDatabase aPage |
+	aDatabase := LeDatabase allInstances detect: [ :d | 
+		             d uuid = database databaseId ].
+	aPage := aDatabase pageByUuid: self pageUuid ifAbsent: [ self asPage ].
+	^ LePagePhlowTool page: aPage
 ]

@@ -12,3 +12,8 @@ IceOperation >> gtViewDiffFor: aView [
 				to: self leftContents;
 				create ]
 ]
+
+{ #category : #'*GToolkit4Git' }
+IceOperation >> tool [
+	^ self leftDefinition tool
+]
