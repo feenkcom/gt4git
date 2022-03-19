@@ -17,6 +17,11 @@ GtLepiterLinksDefinition >> = anotherDefinition [
 ]
 
 { #category : #accessing }
+GtLepiterLinksDefinition >> canBeBrowsed [
+	^ true
+]
+
+{ #category : #accessing }
 GtLepiterLinksDefinition >> contents [ 
 	^ self linksContents
 ]

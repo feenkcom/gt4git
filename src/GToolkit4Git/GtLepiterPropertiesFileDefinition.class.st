@@ -51,3 +51,8 @@ GtLepiterPropertiesFileDefinition >> hash [
 		bitXor: self fileName hash)
 		bitXor: self fileContents hash
 ]
+
+{ #category : #accessing }
+GtLepiterPropertiesFileDefinition >> toolIn: aRepository [
+	^ GtInspectorTool forObject: self fileName asFileReference  
+]

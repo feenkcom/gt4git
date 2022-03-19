@@ -15,6 +15,17 @@ GtLepiterDatabaseDefinition >> accept: aVisitor [
 ]
 
 { #category : #accessing }
+GtLepiterDatabaseDefinition >> asDatabase [
+	^ LeDatabase allInstances detect: [ :d | 
+		             d uuid = self databaseId ].
+]
+
+{ #category : #accessing }
+GtLepiterDatabaseDefinition >> canBeBrowsed [
+	^ true
+]
+
+{ #category : #accessing }
 GtLepiterDatabaseDefinition >> databaseId [
 
 	^ databaseId
@@ -57,4 +68,9 @@ GtLepiterDatabaseDefinition >> printOn: aStream [
 		<< ', ';
 		<< self databaseId asString36;
 		<< ')'
+]
+
+{ #category : #accessing }
+GtLepiterDatabaseDefinition >> toolIn: aRepository [
+	^ self asDatabase asPhlowTool
 ]
