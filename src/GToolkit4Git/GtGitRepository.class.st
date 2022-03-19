@@ -258,6 +258,20 @@ GtGitRepository >> conflictingCommits [
 	^ commits
 ]
 
+{ #category : #'gt - extensions' }
+GtGitRepository >> contextMenuOptionsFor: anIceNode [
+
+	| options |
+	options := { ('Revert changes' -> [ :e | 
+	            self workingCopy diffToReferenceCommit revertChanges:
+		            anIceNode ]) } asOrderedCollection.
+	anIceNode value canBeBrowsed ifTrue: [ 
+		options addFirst: 'Browse'
+			-> [ :e | 
+			e phlow spawnTool: (anIceNode value definition toolIn: self) ] ].
+	^ options
+]
+
 { #category : #accessing }
 GtGitRepository >> databases [
 	^ self lepiterWorkingCopy databases
@@ -604,7 +618,8 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 		  expandUpTo: 3;
 		  priority: 1;
 		  stencil: [ :anIceNode | 
-			  | element |
+			  | element contextMenuOptions |
+			  contextMenuOptions := self contextMenuOptionsFor: anIceNode.
 			  element := BlElement new
 				             layout: BlLinearLayout horizontal alignCenterLeft;
 				             constraintsDo: [ :c | 
@@ -615,14 +630,7 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 				             aptitude:
 					             (BrGlamorousWithContextMenuAptitude content: [ 
 							              BrGlamorousSimpleContextMenuContent new
-								              items: { 
-										              ('Browse' -> [ :e | 
-											               anIceNode value canBeBrowsed ifTrue: [ 
-													               e phlow spawnTool:
-															               (anIceNode value definition toolIn: self) ] ]).
-										              ('Revert changes' -> [ :e | 
-											               self workingCopy diffToReferenceCommit 
-												               revertChanges: anIceNode ]) };
+								              items: contextMenuOptions;
 								              yourself ]).
 			  anIceNode value hasChanges ifTrue: [ 
 				  element addChild: (BrCheckbox new
