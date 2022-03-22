@@ -39,7 +39,7 @@ GtLepiterPageDefinition >> asMCDefinition [
 	(aDatabase monitor pageFileReference: aPage) writeStreamDo: [ :s | 
 		s truncate.
 		s nextPutAll: self pageContents ].
-	aPage reloadFromPage: (aDatabase monitor storage loadFromFile:
+	aPage newReloadFromPage: (aDatabase monitor storage loadFromFile:
 			 (aDatabase monitor pageFileReference: aPage)).
 	^ MCMockDefinition token: self key
 ]
