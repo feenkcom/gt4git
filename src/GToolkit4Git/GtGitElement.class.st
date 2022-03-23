@@ -42,7 +42,7 @@ GtGitElement >> initialize [
 	self layout: BlLinearLayout horizontal.
 	self addAptitude: BrLayoutResizerAptitude inherit.
 	self initializeView.
-	self navigationModel: GtGitNavigationModel new.
+	self navigationModel: self defaultNavigationModel.
 ]
 
 { #category : #accessing }
@@ -87,7 +87,6 @@ GtGitElement >> initializeView [
 
 	self initializeContentElement.
 	self initializeSidebarElement.
-	self initializeNavigationModel.
 
 	self removeChildren.
 	self addChild: self sidebarElement as: #sidebar.
