@@ -64,12 +64,10 @@ GtGitRepositoryElement >> initialize [
 	self initializeToolbarElement.
 	self initializeLazyTabsElement.
 	self initializeDefinitionsElement.
-	"self initializeStatusElement."
 	
 	self addChild: self toolbarElement as: #toolbar.
 	self addChild: self definitionsElement as: #definitions.
 	self addChild: self lazyTabsElement as: #lazyTabs.
-	"self addChild: self statusElement as: #status."
 	
 	self matchParent.
 ]
@@ -85,14 +83,6 @@ GtGitRepositoryElement >> initializeLazyTabsElement [
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent ]
-]
-
-{ #category : #initialization }
-GtGitRepositoryElement >> initializeStatusElement [
-
-	statusElement := BlElement new
-		                 layout: BlLinearLayout horizontal alignCenterLeft;
-		                 constraintsDo: [:c | c horizontal fitContent. c vertical fitContent ]
 ]
 
 { #category : #initialization }
@@ -284,19 +274,7 @@ GtGitRepositoryElement >> updateElement [
 	self updateToolbarElement.
 	self updateDefinitionsElement.
 	self updateTitleElement.
-	"self updateStatusElement."
 	self subscribeToSignals.
-]
-
-{ #category : #'private - updating' }
-GtGitRepositoryElement >> updateStatusElement [
-
-	(self hasRepositoryViewModel not or: [ 
-		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
-	self statusElement removeChildren.
-	self repositoryViewModel repositoryModel statusModel do: [ :status | 
-		self statusElement
-			addChild: status asLabelElement ]
 ]
 
 { #category : #'private - updating' }
