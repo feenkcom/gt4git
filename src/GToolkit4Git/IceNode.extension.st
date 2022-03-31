@@ -79,7 +79,7 @@ IceNode >> gtViewNodeValuesTreeFor: aView [
 	
 	^ aView tree
 		title: 'Node values';
-		priority: 20;
+		priority: 25;
 		items: [ { self } ];
 		children: [ :each | each children ];
 		itemText: [ :aNode | aNode value gtDisplayString ];
