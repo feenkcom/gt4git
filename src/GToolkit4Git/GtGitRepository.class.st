@@ -532,7 +532,10 @@ GtGitRepository >> gtActionPullFor: anAction [
 { #category : #accessing }
 GtGitRepository >> gtActionPushFor: anAction [
 	<gtAction>
-	(IceTipRepositoryModel on: self icebergRepository) isDetached ifTrue: [ ^ anAction ].
+	
+	(IceTipRepositoryModel on: self icebergRepository) isDetached 
+		ifTrue: [ ^ anAction noAction ].
+	
 	^ anAction button
 		label: 'Push';
 		priority: 4;
@@ -578,7 +581,8 @@ GtGitRepository >> gtActionRefreshFor: anAction [
 GtGitRepository >> gtActionRepairFor: anAction [
 	<gtAction>
 	(GtGitRepairAction subclasses 
-		select: [:sc | sc iceTipClass isAvailableFor: icebergRepository]) size = 0 ifTrue: [ ^ anAction ].
+		select: [:sc | sc iceTipClass isAvailableFor: icebergRepository]) size = 0 
+			ifTrue: [ ^ anAction noAction ].
 	^ anAction dropdown
 		label: 'Repair';
 		content: [:aDropdown | 
