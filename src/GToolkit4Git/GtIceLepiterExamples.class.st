@@ -337,7 +337,8 @@ GtIceLepiterExamples >> createIcebergRepositoryNamed: aRepositoryName withLepite
 	
 	gtRepository := GtGitRepository fromIcebergRepository: iceRepository.
 	gtRepository lepiterWorkingCopy: (GtLepiterWorkingCopy new
-		                      repository: iceRepository; databases: { database }).
+		icebergRepository: iceRepository; 
+		databases: { database }).
 	"self assertLepiterDatabase: database inFolderNamed: 'lepiter'."
 
 	self lepiterDatabases at: aDatabaseName put: database.

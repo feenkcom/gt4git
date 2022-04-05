@@ -1069,15 +1069,15 @@ GtGitRepository >> repository [
 ]
 
 { #category : #'api - accessing' }
-GtGitRepository >> repository: aRepository [
+GtGitRepository >> repository: anIcebergRepository [
 
-	repository == aRepository ifTrue: [ ^ self ].
+	repository == anIcebergRepository ifTrue: [ ^ self ].
 
-	repository := aRepository makeSafe.
+	repository := anIcebergRepository makeSafe.
 
 	lepiterWorkingCopy := GtLepiterWorkingCopy new
-		                      repository: aRepository;
-		                      updateDatabases
+		icebergRepository: anIcebergRepository;
+		updateDatabases
 ]
 
 { #category : #accessing }

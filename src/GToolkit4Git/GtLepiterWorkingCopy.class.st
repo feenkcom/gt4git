@@ -3,7 +3,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'databases',
-		'repository',
+		'icebergRepository',
 		'lepiterChangesStragegy'
 	],
 	#category : #'GToolkit4Git-Lepiter'
@@ -47,7 +47,7 @@ GtLepiterWorkingCopy >> changesToHeadUsingIndex [
 		databases: self databases;
 		icebergRepository: self repository.
 	
-	^ changesBuilder changesFromDeltas: self repository getDeltasForFullDiff 
+	^ changesBuilder changesFromDeltas: self icebergRepository getDeltasForFullDiff 
 ]
 
 { #category : #'API - changes' }
@@ -110,8 +110,20 @@ GtLepiterWorkingCopy >> hasDatabases [
 ]
 
 { #category : #accessing }
+GtLepiterWorkingCopy >> icebergRepository [
+
+	^ icebergRepository
+]
+
+{ #category : #accessing }
+GtLepiterWorkingCopy >> icebergRepository: anIcebergRepository [
+
+	icebergRepository := anIcebergRepository
+]
+
+{ #category : #accessing }
 GtLepiterWorkingCopy >> icebergWorkingCopy [
-	^ self repository workingCopy
+	^ self icebergRepository workingCopy
 ]
 
 { #category : #testing }
@@ -184,13 +196,7 @@ GtLepiterWorkingCopy >> referenceCommit [
 { #category : #accessing }
 GtLepiterWorkingCopy >> repository [
 
-	^ repository
-]
-
-{ #category : #accessing }
-GtLepiterWorkingCopy >> repository: anObject [
-
-	repository := anObject
+	^ self icebergRepository
 ]
 
 { #category : #accessing }
@@ -216,9 +222,9 @@ GtLepiterWorkingCopy >> updateDatabases [
 	| allDatabases |
 	allDatabases := LeDatabasesRegistry default 
 		defaultLogicalDatabase databases.
-	self repository repositoryDirectory ifNotNil: [ 
+	self icebergRepository repositoryDirectory ifNotNil: [ 
 		self databases: (allDatabases select: [ :aDatabase | 
-			 self repository repositoryDirectory 
+			 self icebergRepository repositoryDirectory 
 			 	contains: aDatabase monitor localRoot ]) ]
 ]
 
