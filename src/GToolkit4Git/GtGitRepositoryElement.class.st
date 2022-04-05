@@ -31,6 +31,43 @@ GtGitRepositoryElement >> addPackageNamed: aString [
 	self repositoryViewModel addPackage: aString asSymbol
 ]
 
+{ #category : #'private - updating' }
+GtGitRepositoryElement >> createRemoveRepositoryAction [
+	| localDelete |
+	localDelete := false.
+	
+	^ GtPreviewChangeButton new
+		icon: BrGlamorousVectorIcons remove;
+		label: 'Remove';
+		changeAction: [ :aButton | 
+			localDelete
+				ifTrue: [ self repositoryViewModel remove ]
+				ifFalse: [ self repositoryViewModel forget ].
+			navigationModel announce: (GtGitRepositorySelected new repository: nil).
+			aButton phlow fireUpdateWish ];
+		changeStencil: [ 
+			BrVerticalPane new
+				hFitContent;
+				vFitContent;
+				margin: (BlInsets all: 10);
+				addChild: (BrLabel new
+					aptitude: BrGlamorousLabelAptitude new glamorousRegularFont;
+					text: 'Remove repository?' asRopedText);
+				addChild: (BrHorizontalPane new
+					hFitContent;
+					vFitContent;
+					alignCenterLeft;
+					margin: (BlInsets top: 5);
+					addChild: (BrCheckbox new
+						aptitude: BrGlamorousCheckboxAptitude;
+						whenCheckedDo: [ localDelete := true ];
+						margin: (BlInsets right: 8);
+						whenUncheckedDo: [ localDelete := false ]);
+					addChild: (BrLabel new
+						aptitude: BrLabelAptitude new glamorousRegularFont;
+						text: 'Remove repository from disk')) ]
+]
+
 { #category : #initialization }
 GtGitRepositoryElement >> defaultLayout [
 	^ BlLinearLayout vertical
@@ -89,11 +126,10 @@ GtGitRepositoryElement >> initializeLazyTabsElement [
 GtGitRepositoryElement >> initializeToolbarElement [
 
 	toolbarElement := BrToolbar new
-		                  aptitude:
-			                  (BrGlamorousToolbarAptitude new spacing: 0);
-		                  vFitContent;
-		                  hMatchParent;
-		                  margin: (BlInsets bottom: 5)
+		aptitude: (BrGlamorousToolbarAptitude new spacing: 0);
+		vFitContent;
+		hMatchParent;
+		margin: (BlInsets bottom: 5)
 ]
 
 { #category : #'private - accessing' }
@@ -294,11 +330,10 @@ GtGitRepositoryElement >> updateTitleElement [
 { #category : #'private - updating' }
 GtGitRepositoryElement >> updateToolbarElement [
 
-	| look aDropdown outgoing incoming incomingLabel localDelete |
+	| aDropdown outgoing incoming incomingLabel |
 	(self hasRepositoryViewModel not or: [ 
 		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
 
-	localDelete := false.
 
 	toolbarElement removeAllItems.
 	toolbarElement
@@ -309,37 +344,7 @@ GtGitRepositoryElement >> updateToolbarElement [
 							                  aLabel padding: BlInsets empty ]);
 				                 beHugeSize;
 				                 text: '');
-		addItem: (GtPreviewChangeButton new
-				 icon: BrGlamorousVectorIcons remove;
-				 label: 'Remove';
-				 changeAction: [ :aButton | 
-					 localDelete
-						 ifTrue: [ self repositoryViewModel remove ]
-						 ifFalse: [ self repositoryViewModel forget ].
-					 navigationModel announce:
-							 (GtGitRepositorySelected new repository: nil).
-					 aButton phlow fireUpdateWish ];
-				 changeStencil: [ 
-					 BrVerticalPane new
-						 hFitContent;
-						 vFitContent;
-						 margin: (BlInsets all: 10);
-						 addChild: (BrLabel new
-								  aptitude: BrGlamorousLabelAptitude new glamorousRegularFont;
-								  text: 'Remove repository?' asRopedText);
-						 addChild: (BrHorizontalPane new
-								  hFitContent;
-								  vFitContent;
-								  alignCenterLeft;
-								  margin: (BlInsets top: 5);
-								  addChild: (BrCheckbox new
-										   aptitude: BrGlamorousCheckboxAptitude;
-										   whenCheckedDo: [ localDelete := true ];
-										   margin: (BlInsets right: 8);
-										   whenUncheckedDo: [ localDelete := false ]);
-								  addChild: (BrLabel new
-										   aptitude: BrLabelAptitude new glamorousRegularFont;
-										   text: 'Remove repository from disk')) ]);
+		addItem: self createRemoveRepositoryAction;
 		addItem: (BrFrame new
 				 vFitContent;
 				 hMatchParent);
