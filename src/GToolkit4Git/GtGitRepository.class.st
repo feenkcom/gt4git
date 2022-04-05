@@ -4,7 +4,7 @@ Class {
 	#traits : 'TGtAnnouncer',
 	#classTraits : 'TGtAnnouncer classTrait',
 	#instVars : [
-		'repository',
+		'icebergRepository',
 		'announcer',
 		'isSubscribed',
 		'lepiterWorkingCopy',
@@ -27,13 +27,13 @@ GtGitRepository class >> forPackage: aPackage [
 		aRepo workingCopy loadedPackages anySatisfy: [ :icePackage | 
 			icePackage package = aPackage name ] ] ifNone: [ nil ].
 	^ repository ifNotNil: [ 
-		self new repository: repository ]
+		self fromIcebergRepository: repository ]
 ]
 
 { #category : #'instance creation' }
 GtGitRepository class >> fromIcebergRepository: anIceRepository [
 	^ self new 
-		repository: anIceRepository
+		icebergRepository: anIceRepository
 ]
 
 { #category : #accessing }
@@ -52,7 +52,7 @@ GtGitRepository >> addBaseline: aBaselineName [
 		 in: aBaselineName asClass
 		 classified: #baseline) execute.
 
-	self repository workingCopy addPackageNamed: aBaselineName.
+	self icebergWorkingCopy addPackageNamed: aBaselineName.
 	Iceberg announcer announce:
 		(IceRepositoryModified new repository: self repository)
 ]
@@ -61,21 +61,21 @@ GtGitRepository >> addBaseline: aBaselineName [
 GtGitRepository >> addDatabase: aDatabaseName [
 
 	| aDatabase aFileLocator |
-	aFileLocator := self repository repositoryDirectory / aDatabaseName.
+	aFileLocator := self icebergRepository repositoryDirectory / aDatabaseName.
 	aFileLocator createDirectory.
-	aDatabase := LeLocalStoreLoad current loadAndMonitorFrom:
-		             aFileLocator.
+	aDatabase := LeLocalStoreLoad current 
+		loadAndMonitorFrom: aFileLocator.
 
 	LeDatabasesRegistry uniqueInstance ensureDatabase addDB: aDatabase.
 
 	LeDatabasesRegistry defaultLogicalDatabase properties 
 		addRegisteredDirectory: aFileLocator.
 
-	self repository addFileToIndex:
-		(aFileLocator relativeTo: self repository repositoryDirectory).
+	self icebergRepository addFileToIndex:
+		(aFileLocator relativeTo: self icebergRepository repositoryDirectory).
 	self lepiterWorkingCopy addDB: aDatabase.
 	Iceberg announcer announce:
-		(IceRepositoryModified new repository: self repository)
+		(IceRepositoryModified new repository: self icebergRepository)
 ]
 
 { #category : #accessing }
@@ -83,16 +83,16 @@ GtGitRepository >> addNewDatabaseInDirectory: aDirectory [
 
 	| aDatabase aFileLocator |
 	aFileLocator := aDirectory gtWithClosestFileLocatorParent.
-	aDatabase := LeLocalStoreLoad current loadAndMonitorFrom:
-		             aFileLocator.
+	aDatabase := LeLocalStoreLoad current 
+		loadAndMonitorFrom: aFileLocator.
 
 	LeDatabasesRegistry uniqueInstance ensureDatabase addDB: aDatabase.
 
 	LeDatabasesRegistry defaultLogicalDatabase properties 
 		addRegisteredDirectory: aFileLocator.
 
-	self repository addFileToIndex:
-		(aDirectory relativeTo: self repository repositoryDirectory).
+	self icebergRepository addFileToIndex:
+		(aDirectory relativeTo: self icebergRepository repositoryDirectory).
 	self lepiterWorkingCopy addDB: aDatabase
 ]
 
@@ -104,7 +104,9 @@ GtGitRepository >> announcer [
 
 { #category : #accessing }
 GtGitRepository >> baselines [
-	^ ((self repository workingCopy loadedPackages select: [:aPackage | aPackage isMetacelloBaseline ]) collect: [:aPackage | aPackage name ]) asOrderedCollection
+	^ ((self icebergWorkingCopy loadedPackages 
+		select: [ :aPackage | aPackage isMetacelloBaseline ]) 
+		collect: [ :aPackage | aPackage name ]) asOrderedCollection
 ]
 
 { #category : #accessing }
@@ -195,7 +197,7 @@ GtGitRepository >> branchDescription [
 		  blocCompletion: [ 
 			  GtStringsCompletionStrategy new completions:
 					  (GtPrefixTree withAll:
-							   (repository allBranches collect: [ :branch | branch name ])) ];
+							   (icebergRepository allBranches collect: [ :branch | branch name ])) ];
 		  blocStencil: self defaultMagritteStencil;
 		  addCondition: [ :aValue | (aValue includesSubstring: '..') not ]
 		  labelled: 'May not contain ".."';
@@ -219,7 +221,7 @@ GtGitRepository >> branchDescription [
 { #category : #'api - repository' }
 GtGitRepository >> changes [
 	^ self isModified
-		ifTrue: [ self workingCopy diffToReferenceCommit treeToShow children ]
+		ifTrue: [ self icebergWorkingCopy diffToReferenceCommit treeToShow children ]
 		ifFalse: [ Array empty ]
 ]
 
@@ -236,8 +238,8 @@ GtGitRepository >> codeDirectoryDescription [
 				   read: [ :aModel | 
 					   aModel repository codeDirectory asFileReference ]
 				   write: [ :aModel :aValue | 
-					   repository codeDirectory:
-							   (aValue relativeTo: repository repositoryDirectory)
+					   icebergRepository codeDirectory:
+							   (aValue relativeTo: icebergRepository repositoryDirectory)
 								   pathString ])
 ]
 
@@ -250,7 +252,7 @@ GtGitRepository >> conflictingCommits [
 	commits := OrderedCollection new.
 	[ 
 	(IceMerge new
-		 repository: self repository;
+		 repository: self icebergRepository;
 		 mergeCommit: (self incomingCommits at: index)) hasConflicts ] 
 		whileTrue: [ 
 			index := index + 1.
@@ -263,11 +265,10 @@ GtGitRepository >> contextMenuOptionsFor: anIceNode [
 
 	| options |
 	options := { ('Revert changes' -> [ :e | 
-	            self workingCopy diffToReferenceCommit revertChanges:
+	            self icebergWorkingCopy diffToReferenceCommit revertChanges:
 		            anIceNode ]) } asOrderedCollection.
 	anIceNode value canBeBrowsed ifTrue: [ 
-		options addFirst: 'Browse'
-			-> [ :e | 
+		options addFirst: 'Browse' -> [ :e | 
 			e phlow spawnTool: (anIceNode value definition toolIn: self) ] ].
 	^ options
 ]
@@ -394,7 +395,6 @@ GtGitRepository >> defaultMagritteStencil [
 				  anElementSink ].
 
 	  anEditor editor when: BrTextEditorModifiedEvent do: [ :anEvent | 
-		  | aPromise |
 		  aMemento write: anEvent text asString using: aDescription ].
 
 	  anEditor ]
@@ -405,12 +405,12 @@ GtGitRepository >> executeCommit: aCommitMessage [
 
 	| workingCopyDiff |
 	workingCopyDiff := self workingCopyDiff.
-	self workingCopy
+	self icebergWorkingCopy
 		commitChanges: workingCopyDiff
 		withMessage: aCommitMessage
 		force: false.
 	Iceberg announcer announce:
-		(IceRepositoryModified for: self repository)
+		(IceRepositoryModified for: self icebergRepository)
 ]
 
 { #category : #accessing }
@@ -418,18 +418,18 @@ GtGitRepository >> executeCommit: aCommitMessage withChanges: changes [
 
 	| workingCopyDiff |
 	workingCopyDiff := self workingCopyDiff.
-	self workingCopy
+	self icebergWorkingCopy
 		commitChanges: (workingCopyDiff copyWithOnly: changes)
 		withMessage: aCommitMessage
 		force: false.
 	Iceberg announcer announce:
-		(IceRepositoryModified for: self repository)
+		(IceRepositoryModified for: self icebergRepository)
 ]
 
 { #category : #'api - actions' }
 GtGitRepository >> fetch [
-	self repository fetch.
-	Iceberg announcer announce: (IceRepositoryModified for: self repository)
+	self icebergRepository fetch.
+	Iceberg announcer announce: (IceRepositoryModified for: self icebergRepository)
 ]
 
 { #category : #accessing }
@@ -442,13 +442,13 @@ GtGitRepository >> fileFormatDescription [
 		  display: #description;
 		  accessor: (MAPluggableAccessor
 				   read: [ :aModel | 
-					   repository project repositoryProperties fileFormat ]
+					   icebergRepository project repositoryProperties fileFormat ]
 				   write: [ :aModel :aValue | 
-					   repository project fileFormat: (aValue = 'Tonel'
+					   icebergRepository project fileFormat: (aValue = 'Tonel'
 								    ifTrue: [ IceLibgitTonelWriter ]
 								    ifFalse: [ IceLibgitFiletreeWriter ]).
 					   Iceberg announcer announce:
-							   (IceRepositoryModified for: repository) ]);
+							   (IceRepositoryModified for: icebergRepository) ]);
 		  options: { 
 				  IceLibgitTonelWriter.
 				  IceLibgitFiletreeWriter }
@@ -456,12 +456,12 @@ GtGitRepository >> fileFormatDescription [
 
 { #category : #accessing }
 GtGitRepository >> forget [
-	self repository forget
+	self icebergRepository forget
 ]
 
 { #category : #accessing }
 GtGitRepository >> getDeltasForFullDiff [
-	^ self repository getDeltasForFullDiff
+	^ self icebergRepository getDeltasForFullDiff
 ]
 
 { #category : #accessing }
@@ -507,8 +507,8 @@ GtGitRepository >> gtActionFetchFor: anAction [
 		label: 'Fetch';
 		priority: 2;
 		action: [ :aButton |
-			(IceTipRepositoryModel on: self repository) fetch.
-			Iceberg announcer announce: (IceRepositoryModified for: self repository).
+			(IceTipRepositoryModel on: self icebergRepository) fetch.
+			Iceberg announcer announce: (IceRepositoryModified for: self icebergRepository).
 			aButton phlow fireUpdateWish ]
 ]
 
@@ -516,30 +516,30 @@ GtGitRepository >> gtActionFetchFor: anAction [
 GtGitRepository >> gtActionPullFor: anAction [
 
 	<gtAction>
-	(IceTipRepositoryModel on: self repository) isDetached ifTrue: [ 
+	(IceTipRepositoryModel on: self icebergRepository) isDetached ifTrue: [ 
 		^ anAction ].
 	^ anAction button
 		  label: 'Pull';
 		  priority: 3;
 		  action: [ :aButton | 
-			  [ self repository pull ]
+			  [ self icebergRepository pull ]
 				  on: IceMergeResolutionRequest
 				  do: [ :r | aButton phlow spawnObject: r merge ].
 			  Iceberg announcer announce:
-					  (IceRepositoryModified for: self repository).
+					  (IceRepositoryModified for: self icebergRepository).
 			  aButton phlow fireUpdateWish ]
 ]
 
 { #category : #accessing }
 GtGitRepository >> gtActionPushFor: anAction [
 	<gtAction>
-	(IceTipRepositoryModel on:self repository) isDetached ifTrue: [ ^ anAction ].
+	(IceTipRepositoryModel on: self icebergRepository) isDetached ifTrue: [ ^ anAction ].
 	^ anAction button
 		label: 'Push';
 		priority: 4;
 		action: [ :aButton | 
-			self repository push.
-			Iceberg announcer announce: (IceRepositoryModified for: self repository).
+			self icebergRepository push.
+			Iceberg announcer announce: (IceRepositoryModified for: self icebergRepository).
 			
 			aButton phlow fireUpdateWish ]
 ]
@@ -555,23 +555,22 @@ GtGitRepository >> gtActionRefreshFor: anAction [
 			"Aim to only recalculate the dirty flag for packages that are marked as dirty.
 			We skip packages that are not marked as dirty."
 
-			| icebergRepository diff dirtyPackages |
-			icebergRepository := self repository.
-			icebergRepository isModified ifTrue: [ 
+			| diff dirtyPackages |
+			self icebergRepository isModified ifTrue: [ 
 				"If the repository is not marked as modified no action is needed here"
 
 
-			"We compite the diff but only recalculate the status for dirty packages"
-			diff := IceDiff new
-				sourceVersion: icebergRepository workingCopy;
-				targetVersion: icebergRepository workingCopy referenceCommit;
-				buildFull.
+				"We compite the diff but only recalculate the status for dirty packages"
+				diff := IceDiff new
+					sourceVersion: self icebergRepository workingCopy;
+					targetVersion: self icebergRepository workingCopy referenceCommit;
+					buildFull.
 		
-			dirtyPackages:= icebergRepository loadedPackages 
-				select: [ :each | each isDirty ].
-			dirtyPackages do: [ :each |
-				each beDirty: (diff includesPackageNamed: each name) ].
-				Iceberg announcer announce: (IceRepositoryModified for: self repository)]. 
+				dirtyPackages := self icebergRepository loadedPackages 
+					select: [ :each | each isDirty ].
+				dirtyPackages do: [ :each |
+					each beDirty: (diff includesPackageNamed: each name) ].
+					Iceberg announcer announce: (IceRepositoryModified for: self icebergRepository) ]. 
 				
 			aButton phlow fireUpdateWish ]. 
 ]
@@ -580,11 +579,11 @@ GtGitRepository >> gtActionRefreshFor: anAction [
 GtGitRepository >> gtActionRepairFor: anAction [
 	<gtAction>
 	(GtGitRepairAction subclasses 
-		select: [:sc | sc iceTipClass isAvailableFor: repository]) size = 0 ifTrue: [ ^ anAction ].
+		select: [:sc | sc iceTipClass isAvailableFor: icebergRepository]) size = 0 ifTrue: [ ^ anAction ].
 	^ anAction dropdown
 		label: 'Repair';
 		content: [:aDropdown | 
-			GtGitRepositoryRepairStencil new repository:repository; dropdown: aDropdown ].
+			GtGitRepositoryRepairStencil new repository: icebergRepository; dropdown: aDropdown ].
 ]
 
 { #category : #accessing }
@@ -825,7 +824,7 @@ GtGitRepository >> gtPackagesFor: aView context: aContext [
 	<gtView>
 	<gtRepositoryView>
 	self hasWorkingCopy ifFalse: [ ^ aView empty ].
-	^ self repository workingCopy gtPackagesFor: aView
+	^ self icebergWorkingCopy gtPackagesFor: aView
 ]
 
 { #category : #accessing }
@@ -834,10 +833,10 @@ GtGitRepository >> gtReadmeFor: aView context: aContext [
 	<gtView>
 	<gtRepositoryView>
 	| readme |
-	(self hasWorkingCopy not or: [ self repository isMissing ]) ifTrue: [ 
+	(self hasWorkingCopy not or: [ self icebergRepository isMissing ]) ifTrue: [ 
 		^ aView empty ].
 
-	readme := self repository repositoryDirectory / 'README.md'.
+	readme := self icebergRepository repositoryDirectory / 'README.md'.
 
 	^ aView explicit
 		  title: 'README';
@@ -878,7 +877,7 @@ GtGitRepository >> gtReadmeFor: aView context: aContext [
 GtGitRepository >> gtRepositoryDirectoryFor: aView [
 	<gtView>
 	<gtRepositoryView>
-	^ (self repository gtRepositoryDirectoryFor: aView) priority: 40
+	^ (self icebergRepository gtRepositoryDirectoryFor: aView) priority: 40
 ]
 
 { #category : #'api - testing' }
@@ -890,25 +889,47 @@ GtGitRepository >> hasChanges [
 
 { #category : #'api - testing' }
 GtGitRepository >> hasRepository [
-	^ self repository isNotNil
+	^ self icebergRepository isNotNil
 ]
 
 { #category : #'api - testing' }
 GtGitRepository >> hasWorkingCopy [
-	^ self hasRepository and: [ self repository workingCopy isNotNil ]
+	^ self hasRepository and: [ self icebergRepository workingCopy isNotNil ]
 ]
 
 { #category : #'api - repository' }
 GtGitRepository >> headDescription [
-	^ self repository ifNotNil: #headDescription ifNil: [ '<missing>' ]
+	^ self icebergRepository ifNotNil: #headDescription ifNil: [ '<missing>' ]
+]
+
+{ #category : #'api - accessing' }
+GtGitRepository >> icebergRepository [
+	^ icebergRepository
+]
+
+{ #category : #'api - accessing' }
+GtGitRepository >> icebergRepository: anIcebergRepository [
+
+	icebergRepository == anIcebergRepository ifTrue: [ ^ self ].
+
+	icebergRepository := anIcebergRepository makeSafe.
+
+	lepiterWorkingCopy := GtLepiterWorkingCopy new
+		icebergRepository: anIcebergRepository;
+		updateDatabases
+]
+
+{ #category : #'api - repository' }
+GtGitRepository >> icebergWorkingCopy [
+	^ self icebergRepository workingCopy
 ]
 
 { #category : #accessing }
 GtGitRepository >> incomingCommits [
 
 	^ self isCommittable
-		  ifTrue: [ self repository incomingCommits ]
-		  ifFalse: [ #(  ) ]
+		  ifTrue: [ self icebergRepository incomingCommits ]
+		  ifFalse: [ #() ]
 ]
 
 { #category : #initialization }
@@ -921,25 +942,25 @@ GtGitRepository >> initialize [
 { #category : #accessing }
 GtGitRepository >> isCommittable [
 
-	^ (((self hasWorkingCopy and: [ self repository isMissing not ]) 
+	^ (((self hasWorkingCopy and: [ self icebergRepository isMissing not ]) 
 		    and: [ 
-			    self repository workingCopy workingCopyState
+			    self icebergRepository workingCopy workingCopyState
 				    isUnknownCommitState not ]) and: [ 
-		   self repository workingCopy isDetached not ]) and: [ 
-		  self repository head isDetached not ]
+		   self icebergRepository workingCopy isDetached not ]) and: [ 
+		  self icebergRepository head isDetached not ]
 ]
 
 { #category : #accessing }
 GtGitRepository >> isMissing [
-	^ self repository isMissing
+	^ self icebergRepository isMissing
 ]
 
 { #category : #'api - testing' }
 GtGitRepository >> isModified [
 
-	^ (self repository isModified or: [ 
+	^ (self icebergRepository isModified or: [ 
 		   self lepiterWorkingCopy hasDatabases and: [ 
-			   self repository isDirty ] ]) or: [ 
+			   self icebergRepository isDirty ] ]) or: [ 
 		  self lepiterWorkingCopy changesToHeadUsingIndex isNotEmpty ]
 ]
 
@@ -955,12 +976,12 @@ GtGitRepository >> lepiterWorkingCopy: aLepiterWorkingCopy [
 
 { #category : #'api - repository' }
 GtGitRepository >> name [
-	^ self repository ifNotNil: #name ifNil: [ '<missing>' ]
+	^ self icebergRepository ifNotNil: #name ifNil: [ '<missing>' ]
 ]
 
 { #category : #'private - announcement handling' }
 GtGitRepository >> onRepositoryModifiedAnnouncement: anAnnouncement [
-	anAnnouncement repository = self repository ifTrue: [ ^ self ].
+	anAnnouncement repository = self icebergRepository ifTrue: [ ^ self ].
 	
 	self announce: anAnnouncement
 ]
@@ -983,21 +1004,21 @@ GtGitRepository >> originDescription [
 GtGitRepository >> outgoingCommits [
 
 	^ self isCommittable
-		  ifTrue: [ self repository outgoingCommits ]
+		  ifTrue: [ self icebergRepository outgoingCommits ]
 		  ifFalse: [ #(  ) ]
 ]
 
 { #category : #printing }
 GtGitRepository >> printOn: aStream [
-	aStream nextPutAll: self repository name
+	aStream nextPutAll: self icebergRepository name
 ]
 
 { #category : #accessing }
 GtGitRepository >> pull [
 	| res |
-	res := self repository configureUpstreamIfNecessary pull.
+	res := self icebergRepository configureUpstreamIfNecessary pull.
 	Iceberg announcer announce:
-		(IceRepositoryModified for: self repository).
+		(IceRepositoryModified for: self icebergRepository).
 	^ res
 ]
 
@@ -1005,44 +1026,44 @@ GtGitRepository >> pull [
 GtGitRepository >> push [
 
 	| res |
-	self repository configureUpstreamIfNecessary.
-	res := self repository push.
+	self icebergRepository configureUpstreamIfNecessary.
+	res := self icebergRepository push.
 	Iceberg announcer announce:
-		(IceRepositoryModified for: self repository).
+		(IceRepositoryModified for: self icebergRepository).
 	^ res
 ]
 
 { #category : #accessing }
 GtGitRepository >> rawCommit: aCommitMessage [
 
-	self repository
+	self icebergRepository
 		commitIndexWithMessage: aCommitMessage
-		andParents: (self workingCopy workingCopyState referenceCommits reject: [ :each | each isNoCommit ]).
+		andParents: (self icebergWorkingCopy workingCopyState referenceCommits reject: [ :each | each isNoCommit ]).
 	Iceberg announcer announce:
-		(IceRepositoryModified for: self repository)
+		(IceRepositoryModified for: self icebergRepository)
 ]
 
 { #category : #'gt - extensions' }
 GtGitRepository >> refreshDirtyPackages [
 
-	self repository workingCopy refreshDirtyPackages.
-	self repository isModified ifFalse: [ 
+	self icebergRepository workingCopy refreshDirtyPackages.
+	self icebergRepository isModified ifFalse: [ 
 		Iceberg announcer announce:
-			(IceRepositoryModified new repository: self repository) ]
+			(IceRepositoryModified new repository: self icebergRepository) ]
 ]
 
 { #category : #accessing }
 GtGitRepository >> remove [
-	self repository delete
+	self icebergRepository delete
 ]
 
 { #category : #accessing }
 GtGitRepository >> removeBaseline: aBaseline [
 
-	self repository workingCopy removePackageNamed: aBaseline.
-	self repository workingCopy refreshPackages.
+	self icebergRepository workingCopy removePackageNamed: aBaseline.
+	self icebergRepository workingCopy refreshPackages.
 	Iceberg announcer announce:
-		(IceRepositoryModified new repository: self repository)
+		(IceRepositoryModified new repository: self icebergRepository)
 ]
 
 { #category : #accessing }
@@ -1054,30 +1075,23 @@ GtGitRepository >> removeDatabase: aDatabase [
 GtGitRepository >> repairActions [
 
 	^ GtGitRepairAction subclasses select: [ :sc | 
-		  sc iceTipClass isAvailableFor: self repository ]
+		  sc iceTipClass isAvailableFor: self icebergRepository ]
 ]
 
 { #category : #accessing }
 GtGitRepository >> repairStencil [
 
-	^ GtGitRepositoryRepairStencil new repository: repository
+	^ GtGitRepositoryRepairStencil new repository: icebergRepository
 ]
 
 { #category : #'api - accessing' }
 GtGitRepository >> repository [
-	^ repository
+	^ icebergRepository
 ]
 
 { #category : #'api - accessing' }
 GtGitRepository >> repository: anIcebergRepository [
-
-	repository == anIcebergRepository ifTrue: [ ^ self ].
-
-	repository := anIcebergRepository makeSafe.
-
-	lepiterWorkingCopy := GtLepiterWorkingCopy new
-		icebergRepository: anIcebergRepository;
-		updateDatabases
+	self icebergRepository: anIcebergRepository
 ]
 
 { #category : #accessing }
@@ -1102,7 +1116,7 @@ GtGitRepository >> squash [
 
 { #category : #accessing }
 GtGitRepository >> status [
-	^ status ifNil: [ status := (IceTipRepositoryModel on: self repository) status ]
+	^ status ifNil: [ status := (IceTipRepositoryModel on: self icebergRepository) status ]
 ]
 
 { #category : #accessing }
@@ -1119,7 +1133,7 @@ GtGitRepository >> statusModel [
 	| conflicting |
 	[ 
 	| entity statusCollection incoming outgoing |
-	entity := self repository.
+	entity := self icebergRepository.
 
 	entity isMissing ifTrue: [ ^ { GtGitStatusMissing new } ].
 
@@ -1165,7 +1179,7 @@ GtGitRepository >> viewModel [
 
 { #category : #'api - repository' }
 GtGitRepository >> workingCopy [
-	^ self repository workingCopy
+	^ self icebergWorkingCopy
 ]
 
 { #category : #'gt - extensions' }

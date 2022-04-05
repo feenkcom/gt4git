@@ -20,7 +20,7 @@ Class {
 GtGitRepositoryElement class >> on: each [ 
 	| aViewModel |
 	aViewModel := GtGitRepositoryViewModel new.
-	aViewModel repositoryModel: (GtGitRepository new repository: each).
+	aViewModel repositoryModel: (GtGitRepository fromIcebergRepository: each).
 	
 	^ self new repositoryViewModel: aViewModel
 ]
