@@ -514,19 +514,18 @@ GtGitRepository >> gtActionFetchFor: anAction [
 
 { #category : #accessing }
 GtGitRepository >> gtActionPullFor: anAction [
-
 	<gtAction>
+	
 	(IceTipRepositoryModel on: self icebergRepository) isDetached ifTrue: [ 
-		^ anAction ].
+		^ anAction noAction ].
+	
 	^ anAction button
 		  label: 'Pull';
 		  priority: 3;
 		  action: [ :aButton | 
-			  [ self icebergRepository pull ]
+			  [ self pull ]
 				  on: IceMergeResolutionRequest
 				  do: [ :r | aButton phlow spawnObject: r merge ].
-			  Iceberg announcer announce:
-					  (IceRepositoryModified for: self icebergRepository).
 			  aButton phlow fireUpdateWish ]
 ]
 
