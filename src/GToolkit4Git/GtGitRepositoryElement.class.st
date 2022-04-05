@@ -32,7 +32,98 @@ GtGitRepositoryElement >> addPackageNamed: aString [
 ]
 
 { #category : #'private - updating' }
-GtGitRepositoryElement >> createRemoveRepositoryAction [
+GtGitRepositoryElement >> createActionsHeaderSeparator [
+	^ BrFrame new
+			vFitContent;
+			hMatchParent
+]
+
+{ #category : #'building - actions' }
+GtGitRepositoryElement >> createFetchRepositoryButton [
+	^ BrButton new
+		aptitude: BrGlamorousButtonWithIconAptitude;
+		icon: BrGlamorousVectorIcons refresh;
+		label: 'Fetch';
+		action: [ :aButton | 
+			self fetchAllRepositoriesFrom: aButton ]
+]
+
+{ #category : #'building - actions' }
+GtGitRepositoryElement >> createInspectRepositoryButton [
+	^ BrButton new
+		aptitude: BrGlamorousButtonWithIconAptitude;
+		icon: BrGlamorousVectorIcons inspect;
+		label: 'Inspect';
+		action: [ :aButton | 
+			aButton phlow 
+				spawnObject: self repositoryViewModel repositoryModel ]
+]
+
+{ #category : #'building - actions' }
+GtGitRepositoryElement >> createPullRepositoryWithIncomingCommits: aListOfIncomingCommits [
+	| dropdownButton incomingLabel |
+	
+	incomingLabel := aListOfIncomingCommits size asRopedText.
+	
+	dropdownButton := BrButton new.
+	dropdownButton
+		aptitude: BrGlamorousButtonWithIconAndLabelAptitude
+			+ (BrGlamorousWithDropdownAptitude
+				handle: [ 
+					BrButton new
+						aptitude: BrGlamorousButtonWithIconAndLabelAptitude
+							- BrGlamorousButtonExteriorAptitude;
+						icon: BrGlamorousVectorIcons down;
+						label: incomingLabel ]
+				content: [ 
+					self
+						showCommits: aListOfIncomingCommits
+						on: dropdownButton
+						withAction: [ :aButton | 
+							self pullFrom: aButton ]
+						named: 'Pull' ]);
+		icon: BrGlamorousVectorIcons down;
+		label: incomingLabel.
+	^ dropdownButton
+]
+
+{ #category : #'building - actions' }
+GtGitRepositoryElement >> createPullRepositoryWithNoIncommingCommitsButton [
+	^ BrButton new
+			aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
+			icon: BrGlamorousVectorIcons down;
+			label: '';
+			action: [ :aButton | self pullFrom: aButton ]
+]
+
+{ #category : #'building - actions' }
+GtGitRepositoryElement >> createPushButtonForCommits: aListOfOutgoingCommits [
+	| dropdownButton |
+	dropdownButton := BrButton new.
+	dropdownButton
+		aptitude: BrGlamorousButtonWithIconAndLabelAptitude
+			+ (BrGlamorousWithDropdownAptitude
+				 handle: [ 
+					BrButton new
+						aptitude: BrGlamorousButtonWithIconAndLabelAptitude
+							- BrGlamorousButtonExteriorAptitude;
+						icon: BrGlamorousVectorIcons up;
+						label: aListOfOutgoingCommits size asRopedText ]
+				content: [ 
+					self
+						showCommits: aListOfOutgoingCommits
+						on: dropdownButton
+						withAction: [ :aButton | 
+							self pushFrom: aButton ]
+						named: 'Push' ]);
+		icon: BrGlamorousVectorIcons up;
+		label: aListOfOutgoingCommits size asRopedText.
+		
+	^ dropdownButton
+]
+
+{ #category : #'building - actions' }
+GtGitRepositoryElement >> createRemoveRepositoryButton [
 	| localDelete |
 	localDelete := false.
 	
@@ -66,6 +157,36 @@ GtGitRepositoryElement >> createRemoveRepositoryAction [
 					addChild: (BrLabel new
 						aptitude: BrLabelAptitude new glamorousRegularFont;
 						text: 'Remove repository from disk')) ]
+]
+
+{ #category : #'building - actions' }
+GtGitRepositoryElement >> createRepairRepositoryButton [
+	| dropdownButton |
+	dropdownButton := BrButton new.
+	dropdownButton
+		aptitude: BrGlamorousButtonWithLabelAptitude
+			+ (BrGlamorousWithDropdownAptitude
+				handle: [ 
+					BrButton new
+						aptitude: BrGlamorousButtonWithLabelAptitude
+							- BrGlamorousButtonExteriorAptitude;
+						label: 'Repair' ]
+				content: [ 
+					self repositoryViewModel repairStencilFor: dropdownButton ]);
+		label: 'Repair'.
+	^ dropdownButton
+				              
+]
+
+{ #category : #'private - updating' }
+GtGitRepositoryElement >> createRepositoryLabelElement [
+	^ BrLabel new
+		aptitude: (BrGlamorousLabelAptitude new
+			bold;
+			labelDo: [ :aLabel | 
+				aLabel padding: BlInsets empty ]);
+		beHugeSize;
+		text: ''
 ]
 
 { #category : #initialization }
@@ -329,109 +450,31 @@ GtGitRepositoryElement >> updateTitleElement [
 
 { #category : #'private - updating' }
 GtGitRepositoryElement >> updateToolbarElement [
-
-	| aDropdown outgoing incoming incomingLabel |
+	| outgoingCommits incomingCommits |
+	
 	(self hasRepositoryViewModel not or: [ 
 		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
 
-
 	toolbarElement removeAllItems.
 	toolbarElement
-		addItem: (labelElement := BrLabel new
-				                 aptitude: (BrGlamorousLabelAptitude new
-						                  bold;
-						                  labelDo: [ :aLabel | 
-							                  aLabel padding: BlInsets empty ]);
-				                 beHugeSize;
-				                 text: '');
-		addItem: self createRemoveRepositoryAction;
-		addItem: (BrFrame new
-				 vFitContent;
-				 hMatchParent);
-		addItem: (BrButton new
-				 aptitude: BrGlamorousButtonWithIconAptitude;
-				 icon: BrGlamorousVectorIcons inspect;
-				 label: 'Inspect';
-				 action: [ :aButton | 
-					 aButton phlow spawnObject:
-							 self repositoryViewModel repositoryModel ]);
-		addItem: (BrButton new
-				 aptitude: BrGlamorousButtonWithIconAptitude;
-				 icon: BrGlamorousVectorIcons refresh;
-				 label: 'Fetch';
-				 action: [ :aButton | self fetchAllRepositoriesFrom: aButton ]).
+		addItem: (labelElement := self createRepositoryLabelElement);
+		addItem: self createRemoveRepositoryButton;
+		addItem: self createActionsHeaderSeparator;
+		addItem: self createInspectRepositoryButton;
+		addItem: self createFetchRepositoryButton.
 
-	incoming := self repositoryViewModel incomingCommits.
-	incomingLabel := incoming size > 0
-		                 ifTrue: [ incoming size asRopedText ]
-		                 ifFalse: [ '' ].
-	outgoing := self repositoryViewModel outgoingCommits.
+	incomingCommits := self repositoryViewModel incomingCommits.
+	outgoingCommits := self repositoryViewModel outgoingCommits.
 
 	self repositoryViewModel isMissing ifFalse: [ 
-		incoming size > 0
-			ifTrue: [ 
-				toolbarElement addItem: (aDropdown := BrButton new
-						              aptitude:
-							              BrGlamorousButtonWithIconAndLabelAptitude
-							              + (BrGlamorousWithDropdownAptitude
-									               handle: [ 
-										               BrButton new
-											               aptitude:
-												               BrGlamorousButtonWithIconAndLabelAptitude
-												               - BrGlamorousButtonExteriorAptitude;
-											               icon: BrGlamorousVectorIcons down;
-											               label: incomingLabel ]
-									               content: [ 
-										               self
-											               showCommits: incoming
-											               on: aDropdown
-											               withAction: [ :aButton | 
-											               self pullFrom: aButton ]
-											               named: 'Pull' ]);
-						              icon: BrGlamorousVectorIcons down;
-						              label: incomingLabel) ]
-			ifFalse: [ 
-				toolbarElement addItem: (BrButton new
-						 aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
-						 icon: BrGlamorousVectorIcons down;
-						 label: incomingLabel;
-						 action: [ :aButton | self pullFrom: aButton ]) ] ].
+		toolbarElement addItem: (incomingCommits isNotEmpty
+			ifTrue: [ self createPullRepositoryWithIncomingCommits: incomingCommits ]
+			ifFalse: [ self createPullRepositoryWithNoIncommingCommitsButton ]) ].
 
-	outgoing size > 0 ifTrue: [ 
-		toolbarElement addItem: (aDropdown := BrButton new
-				              aptitude: BrGlamorousButtonWithIconAndLabelAptitude
-					              + (BrGlamorousWithDropdownAptitude
-							               handle: [ 
-								               BrButton new
-									               aptitude:
-										               BrGlamorousButtonWithIconAndLabelAptitude
-										               - BrGlamorousButtonExteriorAptitude;
-									               icon: BrGlamorousVectorIcons up;
-									               label: outgoing size asRopedText ]
-							               content: [ 
-								               self
-									               showCommits: outgoing
-									               on: aDropdown
-									               withAction: [ :aButton | 
-									               self pushFrom: aButton ]
-									               named: 'Push' ]);
-				              icon: BrGlamorousVectorIcons up;
-				              label: outgoing size asRopedText) ].
+	outgoingCommits isNotEmpty ifTrue: [ 
+		toolbarElement addItem: (self createPushButtonForCommits: outgoingCommits) ].
 
 	self repositoryViewModel needsRepair ifTrue: [ 
-		toolbarElement addItem: (aDropdown := BrButton new
-				              aptitude:
-					              BrGlamorousButtonWithLabelAptitude
-					              + (BrGlamorousWithDropdownAptitude
-							               handle: [ 
-								               BrButton new
-									               aptitude:
-										               BrGlamorousButtonWithLabelAptitude
-										               - BrGlamorousButtonExteriorAptitude;
-									               label: 'Repair' ]
-							               content: [ 
-							               self repositoryViewModel repairStencilFor:
-								               aDropdown ]);
-				              label: 'Repair') ]
+		toolbarElement addItem: self createRepairRepositoryButton ]
 				              
 ]
