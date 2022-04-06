@@ -28,6 +28,13 @@ GtLepiterWorkingCopy >> canRevertChanges [
 	^ true
 ]
 
+{ #category : #accessing }
+GtLepiterWorkingCopy >> changesFromCommit: anIceCommit [
+	"Delegate for now to the iceberg working copy.
+	This does not take into account any Lepiter changes for now"
+	^ self icebergWorkingCopy changesFromCommit: anIceCommit
+]
+
 { #category : #'API - changes' }
 GtLepiterWorkingCopy >> changesTo: aCommitish [
 
@@ -157,6 +164,16 @@ GtLepiterWorkingCopy >> lepiterChangesStragegy: aStragegy [
 { #category : #'API - changes' }
 GtLepiterWorkingCopy >> lepiterChangesTo: aCommitish [
 	^ self lepiterChangesStragegy changesTo: aCommitish
+]
+
+{ #category : #'as yet unclassified' }
+GtLepiterWorkingCopy >> loadLepiterChangesInWorkingCopyFrom: aTree [
+	| visitor |
+	
+	visitor := GtGitLepiterMergeToChangeTreeVisitor new
+		lepiterWorkingCopy: self.
+	aTree accept: visitor.
+	^ visitor
 ]
 
 { #category : #merging }
