@@ -1182,6 +1182,8 @@ GtGitRepository >> viewModel [
 
 { #category : #'api - repository' }
 GtGitRepository >> workingCopy [
+	"In several places this is used as a IceGitRepository.
+	That is why this method returns the Iceberg working copy."
 	^ self icebergWorkingCopy
 ]
 

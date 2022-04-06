@@ -3,15 +3,20 @@ Extension { #name : #IceGitCommit }
 { #category : #'*GToolkit4Git' }
 IceGitCommit >> gtChangesFor: aView [
 	<gtView>
-	^ (IceDiff from: self to:self parent) gtViewInspectorDiffFor: aView
+	^ aView forward
+		title: 'Changes';
+		object: [ IceDiff from: self to:self parent ];
+		view: #gtViewInspectorDiffFor:
 ]
 
 { #category : #'*GToolkit4Git' }
 IceGitCommit >> gtFileSystemItemsFor: aView [
 	<gtView>
-	^ (self fileSystem gtItemsFor: aView)
+	^ aView forward
 		title: 'File system' translated;
-		priority: 70
+		priority: 70;
+		object: [ self fileSystem ];
+		view: #gtItemsFor:
 ]
 
 { #category : #'*GToolkit4Git' }
