@@ -413,7 +413,7 @@ GtGitRepository >> executeCommit: aCommitMessage [
 		(IceRepositoryModified for: self icebergRepository)
 ]
 
-{ #category : #accessing }
+{ #category : #'api - actions' }
 GtGitRepository >> executeCommit: aCommitMessage withChanges: changes [
 
 	| workingCopyDiff |
@@ -454,7 +454,7 @@ GtGitRepository >> fileFormatDescription [
 				  IceLibgitFiletreeWriter }
 ]
 
-{ #category : #accessing }
+{ #category : #'api - actions' }
 GtGitRepository >> forget [
 	self icebergRepository forget
 ]
@@ -464,7 +464,7 @@ GtGitRepository >> getDeltasForFullDiff [
 	^ self icebergRepository getDeltasForFullDiff
 ]
 
-{ #category : #accessing }
+{ #category : #'gt - extensions' }
 GtGitRepository >> gtActionEnhancementsFor: anAction [
 
 	<gtAction>
@@ -500,7 +500,7 @@ GtGitRepository >> gtActionEnhancementsFor: anAction [
 												     element forBaselineDefinition ]);" ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt - extensions' }
 GtGitRepository >> gtActionFetchFor: anAction [
 	<gtAction>
 	^ anAction button
@@ -512,7 +512,7 @@ GtGitRepository >> gtActionFetchFor: anAction [
 			aButton phlow fireUpdateWish ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt - extensions' }
 GtGitRepository >> gtActionPullFor: anAction [
 	<gtAction>
 	
@@ -529,7 +529,7 @@ GtGitRepository >> gtActionPullFor: anAction [
 			  aButton phlow fireUpdateWish ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt - extensions' }
 GtGitRepository >> gtActionPushFor: anAction [
 	<gtAction>
 	
@@ -546,7 +546,7 @@ GtGitRepository >> gtActionPushFor: anAction [
 			aButton phlow fireUpdateWish ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt - extensions' }
 GtGitRepository >> gtActionRefreshFor: anAction [
 	<gtAction>
 	^ anAction button
@@ -577,7 +577,7 @@ GtGitRepository >> gtActionRefreshFor: anAction [
 			aButton phlow fireUpdateWish ]. 
 ]
 
-{ #category : #accessing }
+{ #category : #'gt - extensions' }
 GtGitRepository >> gtActionRepairFor: anAction [
 	<gtAction>
 	(GtGitRepairAction subclasses 
@@ -589,7 +589,7 @@ GtGitRepository >> gtActionRepairFor: anAction [
 			GtGitRepositoryRepairStencil new repository: icebergRepository; dropdown: aDropdown ].
 ]
 
-{ #category : #accessing }
+{ #category : #'gt - extensions' }
 GtGitRepository >> gtAllLoadedExamples [
 	^ self lepiterWorkingCopy gtAllLoadedExamples
 ]
@@ -708,7 +708,7 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 						  button } ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt - extensions' }
 GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts [
 
 	| container merge |
@@ -750,7 +750,7 @@ GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts [
 	^ container constraintsDo: [ :c | c horizontal matchParent ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt - extensions' }
 GtGitRepository >> gtCommitsFor: aView [
 
 	<gtView>
@@ -830,7 +830,7 @@ GtGitRepository >> gtPackagesFor: aView context: aContext [
 	^ self icebergWorkingCopy gtPackagesFor: aView
 ]
 
-{ #category : #accessing }
+{ #category : #'gt - extensions' }
 GtGitRepository >> gtReadmeFor: aView context: aContext [
 
 	<gtView>
@@ -876,7 +876,7 @@ GtGitRepository >> gtReadmeFor: aView context: aContext [
 				  (IceRepositoryModified new repository: self repository) ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt - extensions' }
 GtGitRepository >> gtRepositoryDirectoryFor: aView [
 	<gtView>
 	<gtRepositoryView>
@@ -942,7 +942,7 @@ GtGitRepository >> initialize [
 	isSubscribed := false.
 ]
 
-{ #category : #accessing }
+{ #category : #'api - testing' }
 GtGitRepository >> isCommittable [
 
 	^ (((self hasWorkingCopy and: [ self icebergRepository isMissing not ]) 
@@ -953,7 +953,7 @@ GtGitRepository >> isCommittable [
 		  self icebergRepository head isDetached not ]
 ]
 
-{ #category : #accessing }
+{ #category : #'api - testing' }
 GtGitRepository >> isMissing [
 	^ self icebergRepository isMissing
 ]
@@ -1016,7 +1016,7 @@ GtGitRepository >> printOn: aStream [
 	aStream nextPutAll: self icebergRepository name
 ]
 
-{ #category : #accessing }
+{ #category : #'api - actions' }
 GtGitRepository >> pull [
 	| res |
 	res := self icebergRepository configureUpstreamIfNecessary pull.
@@ -1025,7 +1025,7 @@ GtGitRepository >> pull [
 	^ res
 ]
 
-{ #category : #accessing }
+{ #category : #'api - actions' }
 GtGitRepository >> push [
 
 	| res |
@@ -1097,7 +1097,7 @@ GtGitRepository >> repository: anIcebergRepository [
 	self icebergRepository: anIcebergRepository
 ]
 
-{ #category : #accessing }
+{ #category : #'api - actions' }
 GtGitRepository >> squash [
 
 	^ self notYetImplemented
