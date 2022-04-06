@@ -46,12 +46,12 @@ GtGitRepositoryViewModel >> executeCommit: aCommitMessage withChanges: changes [
 	self repositoryModel executeCommit: aCommitMessage withChanges: changes.
 ]
 
-{ #category : #accessing }
+{ #category : #'api - actions' }
 GtGitRepositoryViewModel >> fetch [
 	self repositoryModel fetch
 ]
 
-{ #category : #accessing }
+{ #category : #'api - actions' }
 GtGitRepositoryViewModel >> forget [
 	repositoryModel forget
 ]
@@ -68,7 +68,7 @@ GtGitRepositoryViewModel >> incomingCommits [
 	^ self repositoryModel incomingCommits
 ]
 
-{ #category : #accessing }
+{ #category : #initialization }
 GtGitRepositoryViewModel >> initialize [
 
 	super initialize.
@@ -92,12 +92,12 @@ GtGitRepositoryViewModel >> initialize [
 		to: self
 ]
 
-{ #category : #accessing }
+{ #category : #testing }
 GtGitRepositoryViewModel >> isCommittable [
 	^ self repositoryModel isCommittable
 ]
 
-{ #category : #accessing }
+{ #category : #testing }
 GtGitRepositoryViewModel >> isMissing [
 	^ self repositoryModel isMissing
 ]
@@ -109,7 +109,7 @@ GtGitRepositoryViewModel >> name [
 		ifFalse: [ '<missing>' ]) asRopedText
 ]
 
-{ #category : #accessing }
+{ #category : #testing }
 GtGitRepositoryViewModel >> needsRepair [
 	^ self repositoryModel repairActions size > 0 
 ]
@@ -123,7 +123,7 @@ GtGitRepositoryViewModel >> onRepositoryModelChanged [
 		                             self repositoryModel repository.
 ]
 
-{ #category : #accessing }
+{ #category : #callbacks }
 GtGitRepositoryViewModel >> onRepositoryModified: anAnnouncement [
 
 	(self hasRepository and: [ 
@@ -142,17 +142,17 @@ GtGitRepositoryViewModel >> outgoingCommits [
 		  ifFalse: [ self repositoryModel repository head commits ]
 ]
 
-{ #category : #accessing }
+{ #category : #'api - actions' }
 GtGitRepositoryViewModel >> pull [
 	self repositoryModel pull
 ]
 
-{ #category : #accessing }
+{ #category : #'api - actions' }
 GtGitRepositoryViewModel >> push [
 	self repositoryModel push
 ]
 
-{ #category : #accessing }
+{ #category : #'api - actions' }
 GtGitRepositoryViewModel >> remove [
 	self repositoryModel remove
 ]
