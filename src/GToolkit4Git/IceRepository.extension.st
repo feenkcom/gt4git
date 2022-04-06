@@ -19,6 +19,12 @@ IceRepository >> gtPackagesFor: aView [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceRepository >> gtPullInWorkingCopy: aLepiterWorkingCopy [
+	"A copy of the #pull method to support a Lepiter-aware pull."
+	self branch gtPullInWorkingCopy: aLepiterWorkingCopy
+]
+
+{ #category : #'*GToolkit4Git' }
 IceRepository >> gtRemoteBranchesFor: aView [
 	<gtView>
 	^ aView list

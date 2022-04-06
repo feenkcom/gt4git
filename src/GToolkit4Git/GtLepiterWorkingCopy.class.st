@@ -159,6 +159,13 @@ GtLepiterWorkingCopy >> lepiterChangesTo: aCommitish [
 	^ self lepiterChangesStragegy changesTo: aCommitish
 ]
 
+{ #category : #merging }
+GtLepiterWorkingCopy >> mergeCommit: aCommit [
+	
+	^ self icebergWorkingCopy workingCopyState 
+		gtMergeCommit: aCommit forRepository: self
+]
+
 { #category : #accessing }
 GtLepiterWorkingCopy >> onDatabaseChanged: anAnnouncement [
 	(anAnnouncement isKindOf: LeDatabaseUnloadAnnouncement) ifTrue: [ 
