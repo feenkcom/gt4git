@@ -42,7 +42,7 @@ GtGitLepiterMergeToChangeTreeVisitor >> visitDirectoryDefinition: anIceDirectory
 	self lepiterWorkingCopy databases 
 		detect:  [ :aDatabase |
 			(self relativePathForDatabase: aDatabase) = anIceDirectoryDefinition path ]
-		ifFound: [ :aDatabase | aDatabase monitor primitiveReload.  ^ self  ].
+		ifFound: [ :aDatabase | aDatabase monitor primitiveReloadWithPageDeletion.  ^ self  ].
 
 	self visitChildrenOf: currentNode
 ]
