@@ -50,7 +50,7 @@ GtGitAddToRepositoryElement >> onPackageAdded [
 						 when: BlClickEvent do: [ :_ | 
 							 aRepository workingCopy addPackageNamed: self package name.
 							 self phlow spawnTool: (GtGitElement new repository:
-											  (GtGitRepository new repository: aRepository)) ] ])
+											  (GtGitRepository fromIcebergRepository: aRepository)) ] ])
 ]
 
 { #category : #accessing }

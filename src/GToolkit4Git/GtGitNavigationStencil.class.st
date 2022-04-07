@@ -38,7 +38,7 @@ GtGitNavigationStencil >> create [
 GtGitNavigationStencil >> createListFor: aView [
 
 	<gtGitNavigation>
-	| element |
+	
 	^ aView columnedList
 		  title: 'Repositories';
 		  updateWhen: GtRepositoryListChanged
@@ -53,7 +53,7 @@ GtGitNavigationStencil >> createListFor: aView [
 			  s onCreated: [ :repo | 
 					  self announcer announce:
 							  (GtGitRepositoryAddedAndSelected new repository:
-									   (GtGitRepository new repository: repo)) ].
+									   (GtGitRepository fromIcebergRepository: repo)) ].
 			  s ];
 		  actionButtonIcon: BrGlamorousVectorIcons refresh
 		  tooltip: 'Fetch all'
@@ -99,7 +99,7 @@ GtGitNavigationStencil >> navigationModel: aGtGitNavigationModel [
 GtGitNavigationStencil >> repositories [
 
 	^ self navigationModel repositories collect: [ :eachIceRepository | 
-		  GtGitRepository new repository: eachIceRepository ]
+		  GtGitRepository fromIcebergRepository: eachIceRepository ]
 ]
 
 { #category : #accessing }
