@@ -246,17 +246,20 @@ GtGitRepository >> codeDirectoryDescription [
 { #category : #accessing }
 GtGitRepository >> conflictingCommits [
 
-	| index commits |
-	self incomingCommits ifEmpty: [ ^ OrderedCollection new ].
+	| index commits currentIncomingCommits |
+	currentIncomingCommits := self incomingCommits.
+	currentIncomingCommits ifEmpty: [ ^ OrderedCollection new ].
 	index := 1.
+	
 	commits := OrderedCollection new.
 	[ 
-	(IceMerge new
-		 repository: self icebergRepository;
-		 mergeCommit: (self incomingCommits at: index)) hasConflicts ] 
-		whileTrue: [ 
-			index := index + 1.
-			commits add: (self incomingCommits at: index) ].
+	 index <= currentIncomingCommits size 
+	 	and: [ (IceMerge new
+			 repository: self icebergRepository;
+		 	mergeCommit: (currentIncomingCommits at: index)) hasConflicts ]
+	] whileTrue: [ 
+		commits add: (currentIncomingCommits at: index).
+		index := index + 1 ].
 	^ commits
 ]
 
@@ -712,7 +715,9 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts [
 
 	| container merge |
-	container := BlElement new height: 24.
+	container := BrHorizontalPane new 
+		vExact: 24;
+		hMatchParent.
 
 	(conflicts contains: [ :aCommit | aCommit = item ]) ifTrue: [ 
 		container addChild: (BrButton new
@@ -747,7 +752,7 @@ GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts [
 				 action: [ :aButton | 
 					 self pull.
 					 aButton phlow fireUpdateWish ]) ].
-	^ container constraintsDo: [ :c | c horizontal matchParent ]
+	^ container
 ]
 
 { #category : #'gt - extensions' }
@@ -792,15 +797,15 @@ GtGitRepository >> gtCommitsFor: aView [
 				  margin: (BlInsets left: 15) ]
 		  width: 40;
 		  column: 'Timestamp'
-		  text: [ :aCommit | aCommit timeStamp asStringYMDHM ]
-		  width: 120;
+		  	text: [ :aCommit | aCommit timeStamp asStringYMDHM ]
+		  	width: 120;
 		  column: 'Commit' text: #shortId width: 70;
 		  column: 'Author' text: #author width: 100;
 		  column: 'Description' text: #comment;
-		  column: 'Actions'
-		  stencil: [ :item | 
-		  self gtCommitButtonsFor: item withConflicts: conflicts ]
-		  width: 150;
+		  column: 'Actions' 
+		  	stencil: [ :item | 
+		 	 	self gtCommitButtonsFor: item withConflicts: conflicts ]
+		  	width: 150;
 		  itemContextMenuStencil: [ :element :item | 
 			  BrGlamorousSimpleContextMenuContent new
 				  items: { ('Revert' -> [ :e | 
