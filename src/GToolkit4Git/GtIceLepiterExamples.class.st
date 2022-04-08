@@ -166,8 +166,12 @@ GtIceLepiterExamples >> assertDiff: diff withChildrenCount: aChildrenCount andFu
 
 { #category : #assertions }
 GtIceLepiterExamples >> assertNoChangesInRepository: aGtIceRepository [
-	self assert: aGtIceRepository getDeltasForFullDiff isEmpty.
-	self assert: aGtIceRepository workingCopyDiff isEmpty.
+	self 
+		assert: aGtIceRepository getDeltasForFullDiff isEmpty
+		description: 'There should be no deltas'.
+	self 
+		assert: aGtIceRepository workingCopyDiff isEmpty
+		description: 'The diff with the working copy should be empty.'.
 ]
 
 { #category : #assertions }
@@ -341,6 +345,10 @@ GtIceLepiterExamples >> createIcebergRepositoryNamed: aRepositoryName withLepite
 		saveDelay: 0 seconds.
 	database databaseName: aDatabaseName.
 	
+	"The current mechanism requires a database to be registered
+	before creating the gt git repo, in order for the diff logic to work."
+	"LeDatabasesRegistry defaultLogicalDatabase addDB: database."
+	
 	gtRepository := GtGitRepository fromIcebergRepository: iceRepository.
 	gtRepository lepiterWorkingCopy: (GtLepiterWorkingCopy new
 		icebergRepository: iceRepository; 
@@ -373,6 +381,9 @@ GtIceLepiterExamples >> createNewPageWithAttachmentIn: aDatabase [
 
 { #category : #'setUp-tearDown' }
 GtIceLepiterExamples >> detachLepiterDatabases [
+	"self lepiterDatabases do: [ :aDatabase |
+		LeDatabasesRegistry defaultLogicalDatabase removeDB: aDatabase ]."
+	
 	self lepiterDatabases removeAll.
 ]
 
@@ -453,6 +464,7 @@ GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMai
 { #category : #'examples - checkout' }
 GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_mergeSecondBranch [
 	<gtExample>
+	<noTest>
 	
 	| gtIceRepository targetDatabase existingPage targetPage |
 	gtIceRepository := self gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch.
