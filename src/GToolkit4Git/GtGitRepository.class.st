@@ -36,7 +36,7 @@ GtGitRepository class >> fromIcebergRepository: anIceRepository [
 		icebergRepository: anIceRepository
 ]
 
-{ #category : #accessing }
+{ #category : #'api - actions adding/removing' }
 GtGitRepository >> addBaseline: aBaselineName [
 
 	(RBAddPackageChange addPackageNamed: aBaselineName) execute.
@@ -57,7 +57,7 @@ GtGitRepository >> addBaseline: aBaselineName [
 		(IceRepositoryModified new repository: self repository)
 ]
 
-{ #category : #accessing }
+{ #category : #'api - actions adding/removing' }
 GtGitRepository >> addDatabase: aDatabaseName [
 
 	| aDatabase aFileLocator |
@@ -78,7 +78,7 @@ GtGitRepository >> addDatabase: aDatabaseName [
 		(IceRepositoryModified new repository: self icebergRepository)
 ]
 
-{ #category : #accessing }
+{ #category : #'api - actions adding/removing' }
 GtGitRepository >> addNewDatabaseInDirectory: aDirectory [
 
 	| aDatabase aFileLocator |
@@ -109,7 +109,7 @@ GtGitRepository >> baselines [
 		collect: [ :aPackage | aPackage name ]) asOrderedCollection
 ]
 
-{ #category : #accessing }
+{ #category : #magritte }
 GtGitRepository >> baselinesDescription [
 
 	<magritteDescription>
@@ -183,7 +183,7 @@ GtGitRepository >> baselinesDescription [
 					  anElementSink ] ]
 ]
 
-{ #category : #accessing }
+{ #category : #magritte }
 GtGitRepository >> branchDescription [
 
 	<magritteDescription>
@@ -225,7 +225,7 @@ GtGitRepository >> changes [
 		ifFalse: [ Array empty ]
 ]
 
-{ #category : #accessing }
+{ #category : #magritte }
 GtGitRepository >> codeDirectoryDescription [
 
 	<magritteDescription>
@@ -281,7 +281,7 @@ GtGitRepository >> databases [
 	^ self lepiterWorkingCopy databases
 ]
 
-{ #category : #accessing }
+{ #category : #magritte }
 GtGitRepository >> databasesDescription [
 
 	<magritteDescription>
@@ -361,7 +361,7 @@ GtGitRepository >> databasesDescription [
 					  anElementSink ] ]
 ]
 
-{ #category : #accessing }
+{ #category : #magritte }
 GtGitRepository >> defaultMagritteStencil [
 
 	^ [ :aMemento :aDescription | 
@@ -435,7 +435,7 @@ GtGitRepository >> fetch [
 	Iceberg announcer announce: (IceRepositoryModified for: self icebergRepository)
 ]
 
-{ #category : #accessing }
+{ #category : #magritte }
 GtGitRepository >> fileFormatDescription [
 
 	<magritteDescription>
@@ -462,7 +462,7 @@ GtGitRepository >> forget [
 	self icebergRepository forget
 ]
 
-{ #category : #accessing }
+{ #category : #'api - repository' }
 GtGitRepository >> getDeltasForFullDiff [
 	^ self icebergRepository getDeltasForFullDiff
 ]
@@ -905,12 +905,12 @@ GtGitRepository >> icebergRepository: anIcebergRepository [
 		updateDatabases
 ]
 
-{ #category : #'api - repository' }
+{ #category : #'api - accessing' }
 GtGitRepository >> icebergWorkingCopy [
 	^ self icebergRepository workingCopy
 ]
 
-{ #category : #accessing }
+{ #category : #'api - repository' }
 GtGitRepository >> incomingCommits [
 
 	^ self isCommittable
@@ -955,7 +955,7 @@ GtGitRepository >> lepiterWorkingCopy [
 	^ lepiterWorkingCopy
 ]
 
-{ #category : #accessing }
+{ #category : #'api - accessing' }
 GtGitRepository >> lepiterWorkingCopy: aLepiterWorkingCopy [
 	lepiterWorkingCopy := aLepiterWorkingCopy
 ]
@@ -972,7 +972,7 @@ GtGitRepository >> onRepositoryModifiedAnnouncement: anAnnouncement [
 	self announce: anAnnouncement
 ]
 
-{ #category : #accessing }
+{ #category : #magritte }
 GtGitRepository >> originDescription [
 
 	<magritteDescription>
@@ -986,7 +986,7 @@ GtGitRepository >> originDescription [
 					   aModel repository setOriginTo: aValue ])
 ]
 
-{ #category : #accessing }
+{ #category : #'api - repository' }
 GtGitRepository >> outgoingCommits [
 
 	^ self isCommittable
@@ -1038,12 +1038,12 @@ GtGitRepository >> refreshDirtyPackages [
 			(IceRepositoryModified new repository: self icebergRepository) ]
 ]
 
-{ #category : #accessing }
+{ #category : #'api - actions' }
 GtGitRepository >> remove [
 	self icebergRepository delete
 ]
 
-{ #category : #accessing }
+{ #category : #'api - actions adding/removing' }
 GtGitRepository >> removeBaseline: aBaseline [
 
 	self icebergRepository workingCopy removePackageNamed: aBaseline.
@@ -1052,7 +1052,7 @@ GtGitRepository >> removeBaseline: aBaseline [
 		(IceRepositoryModified new repository: self icebergRepository)
 ]
 
-{ #category : #accessing }
+{ #category : #'api - actions adding/removing' }
 GtGitRepository >> removeDatabase: aDatabase [
 	aDatabase unload.
 ]
@@ -1163,7 +1163,7 @@ GtGitRepository >> viewModel [
 	^ viewModel ifNil: [ viewModel := GtGitRepositoryViewModel new repositoryModel: self ]
 ]
 
-{ #category : #'api - repository' }
+{ #category : #'api - accessing' }
 GtGitRepository >> workingCopy [
 	"In several places this is used as a IceGitRepository.
 	That is why this method returns the Iceberg working copy."

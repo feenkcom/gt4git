@@ -5,7 +5,7 @@ Class {
 		'lepiterDatabases',
 		'repositories'
 	],
-	#category : #'GToolkit4Git-Lepiter-Examples'
+	#category : #'GToolkit4Git-Examples'
 }
 
 { #category : #'assertions - pages' }
