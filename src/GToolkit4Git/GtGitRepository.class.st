@@ -468,42 +468,6 @@ GtGitRepository >> getDeltasForFullDiff [
 ]
 
 { #category : #'gt - extensions' }
-GtGitRepository >> gtActionEnhancementsFor: anAction [
-
-	<gtAction>
-
-	^ anAction dropdown
-		  label: 'Enhancements';
-		  priority: 3;
-		  action: [ :aDropdown | 
-			  BrVerticalPane new
-				  constraintsDo: [ :c | 
-					  c frame horizontal alignCenter.
-					  c horizontal fitContent.
-					  c vertical fitContent ];
-				  addChild: (BrButton new
-						   aptitude: BrGlamorousButtonWithLabelAptitude;
-						   margin: (BlInsets all: 5);
-						   label: 'Set source directory');
-				  addChild: (BrButton new
-						   aptitude: BrGlamorousButtonWithLabelAptitude;
-						   margin: (BlInsets all: 5);
-						   label: 'Create a baseline')
-			  "
-											     content: [ 
-												     GtGitRepositoryRepairStencil new
-													     repository: self repository;
-													     dropdown: aDropdown ]);" " element |
-												     element := GtPharoCreateBaselineElement new.
-												     element behaviorBlock: [ :cls | 
-													     self repository workingCopy addPackageNamed:
-														     cls package name.
-														 Iceberg announcer announce: (IceRepositoryModified new repository: self repository).
-													     aDropdown fireEvent: BrDropdownHideWish new ].
-												     element forBaselineDefinition ]);" ]
-]
-
-{ #category : #'gt - extensions' }
 GtGitRepository >> gtActionFetchFor: anAction [
 	<gtAction>
 	^ anAction button
