@@ -13,6 +13,15 @@ IceCommitish >> gtDiffTo: aCommitish [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceCommitish >> gtLepiterAwareCheckoutWithWorkingCopy: aLepiterWorkingCopy [
+	
+	self checkout: (GtGitIceCheckoutAlreadyLoadedContent new
+		lepiterWorkingCopy: aLepiterWorkingCopy;
+		committish: self;
+		yourself)
+]
+
+{ #category : #'*GToolkit4Git' }
 IceCommitish >> treeFor: aRepository [
 	^ (aRepository revparse: self gitRef) tree
 ]
