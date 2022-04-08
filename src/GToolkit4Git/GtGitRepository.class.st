@@ -53,8 +53,7 @@ GtGitRepository >> addBaseline: aBaselineName [
 		 classified: #baseline) execute.
 
 	self icebergWorkingCopy addPackageNamed: aBaselineName.
-	Iceberg announcer announce:
-		(IceRepositoryModified new repository: self repository)
+	self announceRepositoryModified.
 ]
 
 { #category : #'api - actions adding/removing' }
@@ -74,8 +73,7 @@ GtGitRepository >> addDatabase: aDatabaseName [
 	self icebergRepository addFileToIndex:
 		(aFileLocator relativeTo: self icebergRepository repositoryDirectory).
 	self lepiterWorkingCopy addDB: aDatabase.
-	Iceberg announcer announce:
-		(IceRepositoryModified new repository: self icebergRepository)
+	self announceRepositoryModified.
 ]
 
 { #category : #'api - actions adding/removing' }
@@ -94,6 +92,12 @@ GtGitRepository >> addNewDatabaseInDirectory: aDirectory [
 	self icebergRepository addFileToIndex:
 		(aDirectory relativeTo: self icebergRepository repositoryDirectory).
 	self lepiterWorkingCopy addDB: aDatabase
+]
+
+{ #category : #announcer }
+GtGitRepository >> announceRepositoryModified [
+	Iceberg announcer announce:
+		(IceRepositoryModified for: self icebergRepository)
 ]
 
 { #category : #announcer }
@@ -405,34 +409,34 @@ GtGitRepository >> defaultMagritteStencil [
 
 { #category : #'api - actions' }
 GtGitRepository >> executeCommit: aCommitMessage [
-
 	| workingCopyDiff |
+	
 	workingCopyDiff := self workingCopyDiff.
 	self icebergWorkingCopy
 		commitChanges: workingCopyDiff
 		withMessage: aCommitMessage
 		force: false.
-	Iceberg announcer announce:
-		(IceRepositoryModified for: self icebergRepository)
+	
+	self announceRepositoryModified.
 ]
 
 { #category : #'api - actions' }
 GtGitRepository >> executeCommit: aCommitMessage withChanges: changes [
-
 	| workingCopyDiff |
+	
 	workingCopyDiff := self workingCopyDiff.
 	self icebergWorkingCopy
 		commitChanges: (workingCopyDiff copyWithOnly: changes)
 		withMessage: aCommitMessage
 		force: false.
-	Iceberg announcer announce:
-		(IceRepositoryModified for: self icebergRepository)
+	
+	self announceRepositoryModified.
 ]
 
 { #category : #'api - actions' }
 GtGitRepository >> fetch [
 	self icebergRepository fetch.
-	Iceberg announcer announce: (IceRepositoryModified for: self icebergRepository)
+	self announceRepositoryModified.
 ]
 
 { #category : #magritte }
@@ -475,7 +479,7 @@ GtGitRepository >> gtActionFetchFor: anAction [
 		priority: 2;
 		action: [ :aButton |
 			(IceTipRepositoryModel on: self icebergRepository) fetch.
-			Iceberg announcer announce: (IceRepositoryModified for: self icebergRepository).
+			self announceRepositoryModified.
 			aButton phlow fireUpdateWish ]
 ]
 
@@ -508,7 +512,7 @@ GtGitRepository >> gtActionPushFor: anAction [
 		priority: 4;
 		action: [ :aButton | 
 			self icebergRepository push.
-			Iceberg announcer announce: (IceRepositoryModified for: self icebergRepository).
+			self announceRepositoryModified.
 			
 			aButton phlow fireUpdateWish ]
 ]
@@ -539,7 +543,7 @@ GtGitRepository >> gtActionRefreshFor: anAction [
 					select: [ :each | each isDirty ].
 				dirtyPackages do: [ :each |
 					each beDirty: (diff includesPackageNamed: each name) ].
-					Iceberg announcer announce: (IceRepositoryModified for: self icebergRepository) ]. 
+					self announceRepositoryModified. ]. 
 				
 			aButton phlow fireUpdateWish ]. 
 ]
@@ -838,8 +842,7 @@ GtGitRepository >> gtReadmeFor: aView context: aContext [
 									   s truncate.
 									   s nextPutAll: anEvent currentTarget text asString ].
 							   self repository addFileToIndex: 'README.md'.
-							   Iceberg announcer announce:
-									   (IceRepositoryModified new repository: self repository) ]).
+							   self announceRepositoryModified. ]).
 			  ((snippetViewModel snippetView needsEmbellishments: false)
 				   asElement snippetViewModel: snippetViewModel) vMatchParent ];
 		  actionButtonIcon: BrGlamorousVectorIcons accept
@@ -850,8 +853,7 @@ GtGitRepository >> gtReadmeFor: aView context: aContext [
 				  s nextPutAll:
 					  aTab viewContentElement children first text asString ].
 			  self repository addFileToIndex: 'README.md'.
-			  Iceberg announcer announce:
-				  (IceRepositoryModified new repository: self repository) ]
+			  self announceRepositoryModified. ]
 ]
 
 { #category : #'gt - extensions' }
@@ -1001,22 +1003,18 @@ GtGitRepository >> printOn: aStream [
 
 { #category : #'api - actions' }
 GtGitRepository >> pull [
-	| res |
-	res := self icebergRepository configureUpstreamIfNecessary pull.
-	Iceberg announcer announce:
-		(IceRepositoryModified for: self icebergRepository).
-	^ res
+	self icebergRepository configureUpstreamIfNecessary.
+	self icebergRepository pull.
+	
+	self announceRepositoryModified.
 ]
 
 { #category : #'api - actions' }
 GtGitRepository >> push [
-
-	| res |
 	self icebergRepository configureUpstreamIfNecessary.
-	res := self icebergRepository push.
-	Iceberg announcer announce:
-		(IceRepositoryModified for: self icebergRepository).
-	^ res
+	self icebergRepository push.
+	
+	self announceRepositoryModified.
 ]
 
 { #category : #accessing }
@@ -1025,8 +1023,7 @@ GtGitRepository >> rawCommit: aCommitMessage [
 	self icebergRepository
 		commitIndexWithMessage: aCommitMessage
 		andParents: (self icebergWorkingCopy workingCopyState referenceCommits reject: [ :each | each isNoCommit ]).
-	Iceberg announcer announce:
-		(IceRepositoryModified for: self icebergRepository)
+	self announceRepositoryModified.
 ]
 
 { #category : #'gt - extensions' }
@@ -1034,8 +1031,7 @@ GtGitRepository >> refreshDirtyPackages [
 
 	self icebergRepository workingCopy refreshDirtyPackages.
 	self icebergRepository isModified ifFalse: [ 
-		Iceberg announcer announce:
-			(IceRepositoryModified new repository: self icebergRepository) ]
+		self announceRepositoryModified. ]
 ]
 
 { #category : #'api - actions' }
@@ -1048,8 +1044,7 @@ GtGitRepository >> removeBaseline: aBaseline [
 
 	self icebergRepository workingCopy removePackageNamed: aBaseline.
 	self icebergRepository workingCopy refreshPackages.
-	Iceberg announcer announce:
-		(IceRepositoryModified new repository: self icebergRepository)
+	self announceRepositoryModified.
 ]
 
 { #category : #'api - actions adding/removing' }
