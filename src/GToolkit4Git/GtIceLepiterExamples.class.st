@@ -527,6 +527,26 @@ GtIceLepiterExamples >> gitRepositoryACommitNewPageInSecondBranch_checkoutMainBr
 	^ gtIceRepository
 ]
 
+{ #category : #'examples - checkout' }
+GtIceLepiterExamples >> gitRepositoryACommitNewPageInSecondBranch_checkoutMainBranch_mergeSecondBranch [
+	<gtExample>
+	
+	| gtIceRepository targetDatabase newPage |
+	gtIceRepository := self gitRepositoryACommitNewPageInSecondBranch_checkoutMainBranch.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
+	
+	gtIceRepository lepiterWorkingCopy 
+		mergeCommit: (gtIceRepository icebergRepository 
+			branchNamed: self secondaryBranchName) commit.
+	self assertNoChangesInRepository:  gtIceRepository.
+	
+	self assert: targetDatabase pageCount equals: 2.
+	self assert: (targetDatabase hasPageNamed: 'Page1').
+	self assert: (targetDatabase hasPageNamed: 'Page2').
+	
+	^ gtIceRepository
+]
+
 { #category : #'examples - single page' }
 GtIceLepiterExamples >> gitRepositoryACommitNewUnnamedAddedPage [
 	<gtExample>
@@ -594,6 +614,25 @@ GtIceLepiterExamples >> gitRepositoryACommitRemovedPageInSecondBranch_checkoutMa
 	
 	self assert: targetDatabase pageCount equals: 1.
 	self assert: (targetDatabase hasPageNamed: 'Page1').
+	
+	^ gtIceRepository
+]
+
+{ #category : #'examples - checkout' }
+GtIceLepiterExamples >> gitRepositoryACommitRemovedPageInSecondBranch_checkoutMainBranch_mergeSecondBranch [
+	<gtExample>
+	
+	| gtIceRepository targetDatabase existingPage |
+	gtIceRepository := self gitRepositoryACommitRemovedPageInSecondBranch_checkoutMainBranch.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
+	
+	gtIceRepository lepiterWorkingCopy 
+		mergeCommit: (gtIceRepository icebergRepository 
+			branchNamed: self secondaryBranchName) commit.
+	self assertNoChangesInRepository:  gtIceRepository.
+	
+	self assert: targetDatabase pageCount equals: 0.
+	self assert: (targetDatabase hasPageNamed: 'Page1') not.
 	
 	^ gtIceRepository
 ]
@@ -843,7 +882,7 @@ GtIceLepiterExamples >> repositories [
 		repositories := IdentityDictionary new ]
 ]
 
-{ #category : #'examples - checkout' }
+{ #category : #accessing }
 GtIceLepiterExamples >> secondaryBranchName [
 	^ 'second'
 ]
