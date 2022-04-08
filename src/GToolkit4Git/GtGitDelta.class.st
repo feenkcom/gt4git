@@ -8,7 +8,7 @@ Class {
 		'oldFileRelative',
 		'newFileRelative'
 	],
-	#category : #GToolkit4Git
+	#category : #'GToolkit4Git-Model'
 }
 
 { #category : #'instance creation' }

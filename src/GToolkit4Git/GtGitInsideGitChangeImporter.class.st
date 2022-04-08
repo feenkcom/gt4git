@@ -1,7 +1,7 @@
 Class {
 	#name : #GtGitInsideGitChangeImporter,
 	#superclass : #IceGitChangeImporter,
-	#category : #'GToolkit4Git-Lepiter'
+	#category : #'GToolkit4Git-Model'
 }
 
 { #category : #importing }
