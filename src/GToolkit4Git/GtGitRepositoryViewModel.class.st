@@ -87,7 +87,7 @@ GtGitRepositoryViewModel >> initialize [
 		send: #onRepositoryModified:
 		to: self.
 	Iceberg announcer weak
-		when: IceMergeConflictResolved
+		when: GtIceMergeConflictResolved
 		send: #onRepositoryModified:
 		to: self
 ]

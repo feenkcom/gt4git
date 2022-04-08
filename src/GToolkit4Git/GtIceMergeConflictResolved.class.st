@@ -1,5 +1,5 @@
 Class {
-	#name : #IceMergeConflictResolved,
+	#name : #GtIceMergeConflictResolved,
 	#superclass : #IceRepositoryAnnouncement,
 	#category : #'GToolkit4Git-Announcements'
 }
