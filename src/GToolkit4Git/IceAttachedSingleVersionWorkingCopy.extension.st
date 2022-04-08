@@ -1,6 +1,6 @@
 Extension { #name : #IceAttachedSingleVersionWorkingCopy }
 
-{ #category : #'*BaselineOfGToolkit4Git' }
+{ #category : #'*GToolkit4Git' }
 IceAttachedSingleVersionWorkingCopy >> gtMergeCommit: aMergeCommit forWorkingCopy: aLepiterWorkingCopy [
 	^ GtGitIceMerge new
 		lepiterWorkingCopy: aLepiterWorkingCopy;
