@@ -384,9 +384,9 @@ GtIceLepiterExamples >> gitRepositoryACheckoutNewBranch [
 	gtIceRepository := self gitRepositoryACommitNewAddedPage.
 	
 	gtIceRepository 
-		gtLepiterAwareCheckoutBranch: 'second'.
+		gtLepiterAwareCheckoutBranch: self secondaryBranchName.
 		
-	self assert: gtIceRepository icebergRepository branchName equals: 'second'.
+	self assert: gtIceRepository icebergRepository branchName equals: self secondaryBranchName.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 	
 	self assertNoChangesInRepository:  gtIceRepository.
@@ -444,7 +444,30 @@ GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMai
 	self assertNoChangesInRepository:  gtIceRepository.
 	
 	targetPage := targetDatabase pageNamed: 'Page1'.
-	self assert: targetPage snippets size equals: 1.
+	self assert: targetDatabase pageCount equals: 1.
+	self assert: targetPage children size equals: 1.
+	
+	^ gtIceRepository
+]
+
+{ #category : #'examples - checkout' }
+GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_mergeSecondBranch [
+	<gtExample>
+	
+	| gtIceRepository targetDatabase existingPage targetPage |
+	gtIceRepository := self gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
+	
+	gtIceRepository lepiterWorkingCopy 
+		mergeCommit: (gtIceRepository icebergRepository 
+			branchNamed: self secondaryBranchName) commit.
+	self assertNoChangesInRepository:  gtIceRepository.
+	
+	targetPage := targetDatabase pageNamed: 'Page1'.
+	self assert: targetPage children size equals: 2.
+	self assert: targetPage children first string equals: 'Snippet1'.
+	self assert: targetPage children second string equals: 'Snippet2'.
+	self assert: targetDatabase pageCount equals: 1.
 	
 	^ gtIceRepository
 ]
@@ -792,6 +815,11 @@ GtIceLepiterExamples >> lepiterDatabases [
 		lepiterDatabases := IdentityDictionary new ]
 ]
 
+{ #category : #accessing }
+GtIceLepiterExamples >> mainBranchName [
+	^ 'master'
+]
+
 { #category : #'setUp-tearDown' }
 GtIceLepiterExamples >> removeRepositoriesAndCode [
 	self repositories do: [ :anIcebergRepository |
@@ -813,4 +841,9 @@ GtIceLepiterExamples >> removeRepositoriesAndCode [
 GtIceLepiterExamples >> repositories [ 
 	^ repositories ifNil: [ 
 		repositories := IdentityDictionary new ]
+]
+
+{ #category : #'examples - checkout' }
+GtIceLepiterExamples >> secondaryBranchName [
+	^ 'second'
 ]

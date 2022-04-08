@@ -60,10 +60,12 @@ IceLibgitRepository >> gtLocalBranchesFor: aView [
 { #category : #'*GToolkit4Git' }
 IceLibgitRepository >> gtRawStatusFor: aView [
 	<gtView>
+	self isMissing ifTrue: [ ^ aView empty ].
+	
 	^ aView columnedList
-		title: 'Raw Status';
+		title: 'Raw File Statuses';
 		priority: 100;
-		items: [self getStatusByFile associations];
+		items: [ self getStatusByFile associations ];
 		column: 'File'
 		text: [:each | each key ];
 		column: 'Status'
@@ -79,13 +81,14 @@ IceLibgitRepository >> gtRemoteBranchesFor: aView [
 
 { #category : #'*GToolkit4Git' }
 IceLibgitRepository >> gtRepositoryDirectoryFor: aView [
-
 	<gtView>
+	
 	| status |
-	status := self getStatusByFile.
 	self isMissing ifTrue: [ ^ aView empty ].
+	
+	status := self getStatusByFile.
 	^ (self repositoryDirectory gtTreeFor: aView)
-		  title: 'Repository directory' translated;
+		  title: 'Repository directory';
 		  priority: 35;
 		  column: 'Tracked' translated icon: [ :each | 
 			  | relative |
@@ -133,10 +136,11 @@ IceLibgitRepository >> gtRepositoryDirectoryFor: aView [
 
 { #category : #'*GToolkit4Git' }
 IceLibgitRepository >> gtStatusFor: aView [
-
 	<gtView>
+	
+	self isMissing ifTrue: [ ^ aView empty ].
 	^ aView columnedTree
-		  title: 'Status';
+		  title: 'File Statuses';
 		  priority: 2;
 		  items: [ 
 			  (self getStatusByFile associations groupedBy: [ :each | 

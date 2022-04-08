@@ -599,11 +599,13 @@ GtGitRepository >> gtAllLoadedExamples [
 
 { #category : #'gt - extensions' }
 GtGitRepository >> gtChangesFor: aView context: aContext [
-
 	<gtView>
 	<gtRepositoryView>
+	
 	| aViewModel changes chosen |
 	chosen := Set new.
+
+	self isMissing ifTrue: [ ^ aView empty ].
 
 	aViewModel := self viewModel.
 
@@ -757,11 +759,11 @@ GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts [
 
 { #category : #'gt - extensions' }
 GtGitRepository >> gtCommitsFor: aView [
-
 	<gtView>
 	<gtRepositoryView>
+	
 	| conflicts |
-	self repository repositoryDirectory ifNil: [ ^ aView empty ].
+	self isMissing ifTrue: [ ^ aView empty ].
 
 	conflicts := self conflictingCommits.
 
@@ -827,7 +829,7 @@ GtGitRepository >> gtExamplesFor: aView [
 		view: #gtExamplesFor:
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'api - actions' }
 GtGitRepository >> gtLepiterAwareCheckoutBranch: aBranchName [ 
 	self icebergRepository 
 		gtLepiterAwareCheckoutBranch: aBranchName 
@@ -892,7 +894,12 @@ GtGitRepository >> gtReadmeFor: aView context: aContext [
 GtGitRepository >> gtRepositoryDirectoryFor: aView [
 	<gtView>
 	<gtRepositoryView>
-	^ (self icebergRepository gtRepositoryDirectoryFor: aView) priority: 40
+	
+	^ aView forward 
+		title: 'Repository directory';
+		priority: 40;
+		object: [ self icebergRepository ];
+		view: #gtRepositoryDirectoryFor:
 ]
 
 { #category : #'api - testing' }

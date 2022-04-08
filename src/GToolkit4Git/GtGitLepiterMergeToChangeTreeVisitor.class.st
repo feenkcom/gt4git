@@ -33,7 +33,8 @@ GtGitLepiterMergeToChangeTreeVisitor >> visitAddition: anIceAddition [
 { #category : #visiting }
 GtGitLepiterMergeToChangeTreeVisitor >> visitDirectoryDefinition: anIceDirectoryDefinition [ 
 	| directoryReference |
-	directoryReference := self lepiterWorkingCopy fileSystem resolve: anIceDirectoryDefinition path.
+	directoryReference := self lepiterWorkingCopy fileSystem 
+		resolve: anIceDirectoryDefinition path.
 	
 	(directoryReference files anySatisfy: [ :aFile |
 		aFile basename = LepiterCoreDefaults databasePropertiesBasename ])
@@ -42,7 +43,8 @@ GtGitLepiterMergeToChangeTreeVisitor >> visitDirectoryDefinition: anIceDirectory
 	self lepiterWorkingCopy databases 
 		detect:  [ :aDatabase |
 			(self relativePathForDatabase: aDatabase) = anIceDirectoryDefinition path ]
-		ifFound: [ :aDatabase | aDatabase monitor primitiveReloadWithPageDeletion.  ^ self  ].
+		ifFound: [ :aDatabase | 
+			aDatabase monitor primitiveReloadWithPageDeletion.  ^ self  ].
 
 	self visitChildrenOf: currentNode
 ]
