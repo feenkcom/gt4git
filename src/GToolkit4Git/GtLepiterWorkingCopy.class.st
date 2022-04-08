@@ -180,7 +180,7 @@ GtLepiterWorkingCopy >> loadLepiterChangesInWorkingCopyFrom: aTree [
 GtLepiterWorkingCopy >> mergeCommit: aCommit [
 	
 	^ self icebergWorkingCopy workingCopyState 
-		gtMergeCommit: aCommit forRepository: self
+		gtMergeCommit: aCommit forWorkingCopy: self 
 ]
 
 { #category : #accessing }

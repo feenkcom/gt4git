@@ -41,7 +41,7 @@ IceMerge >> gtViewInspectorDiffFor: aView [
 		  items: [ self treeToShow children ];
 		  children: #children;
 		  expandAll;
-		  updateWhen: IceMergeConflictResolved in: [ Iceberg announcer ];
+		  updateWhen: GtIceMergeConflictResolved in: [ Iceberg announcer ];
 		  stencil: [ :anIceNode | 
 			  | element |
 			  element := BlElement new
@@ -71,7 +71,7 @@ IceMerge >> gtViewInspectorDiffFor: aView [
 						              constraintsDo: [ :c | 
 							              c linear horizontal alignCenter ]).
 			  Iceberg announcer
-				  when: IceMergeConflictResolved
+				  when: GtIceMergeConflictResolved
 				  do: [ element phlow fireUpdateWish ].
 
 			  anIceNode value isUnresolvedConflict ifTrue: [ 

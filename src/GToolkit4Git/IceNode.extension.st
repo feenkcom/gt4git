@@ -42,7 +42,7 @@ IceNode >> gtViewDiffFor: aView [
 					disabled: self value isRightChosen;
 					action: [ 
 						self value selectRight.
-						Iceberg announcer announce: IceMergeConflictResolved new.
+						Iceberg announcer announce: GtIceMergeConflictResolved new.
 						aDropdown enqueueTask: (BlTaskAction new action: [ 
 										 aDropdown dispatchEvent:
 												 (BrDropdownHideWish new anchor: aDropdown) ]).
@@ -56,7 +56,7 @@ IceNode >> gtViewDiffFor: aView [
 					disabled: self value isLeftChosen;
 					action: [ 
 						self value selectLeft.
-						Iceberg announcer announce: IceMergeConflictResolved new.
+						Iceberg announcer announce: GtIceMergeConflictResolved new.
 						aDropdown enqueueTask: (BlTaskAction new action: [ 
 										 aDropdown dispatchEvent:
 												 (BrDropdownHideWish new anchor: aDropdown) ]).

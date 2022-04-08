@@ -1,6 +1,6 @@
 Extension { #name : #IceWorkingCopyState }
 
 { #category : #'*BaselineOfGToolkit4Git' }
-IceWorkingCopyState >> gtMergeCommit: aMergeCommit forRepository: aGitRepository [
+IceWorkingCopyState >> gtMergeCommit: aMergeCommit forWorkingCopy: aLepiterWorkingCopy [
 	self subclassResponsibility
 ]

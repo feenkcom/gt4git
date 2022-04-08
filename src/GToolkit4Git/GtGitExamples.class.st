@@ -1,7 +1,7 @@
 Class {
 	#name : #GtGitExamples,
 	#superclass : #Object,
-	#category : #'GToolkit4Git-Model-Examples'
+	#category : #'GToolkit4Git-Examples'
 }
 
 { #category : #'examples - repository - model' }

@@ -1,7 +1,7 @@
 Class {
 	#name : #GtGitIceChangeImporter,
 	#superclass : #IceChangeImporter,
-	#category : #'GToolkit4Git-Lepiter'
+	#category : #'GToolkit4Git-Model'
 }
 
 { #category : #visiting }

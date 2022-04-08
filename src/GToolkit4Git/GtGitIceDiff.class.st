@@ -1,7 +1,7 @@
 Class {
 	#name : #GtGitIceDiff,
 	#superclass : #IceDiff,
-	#category : #'GToolkit4Git-Lepiter'
+	#category : #'GToolkit4Git-Model'
 }
 
 { #category : #building }

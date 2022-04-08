@@ -1,6 +1,16 @@
 Extension { #name : #IceRepository }
 
 { #category : #'*GToolkit4Git' }
+IceRepository >> gtLepiterAwareCheckoutBranch: branchName withWorkingCopy: aLepiterWorkingCopy [
+	"Convenience method to checkout all packages from a branch given a branch name"
+
+	(self
+		branchNamed: branchName
+		ifAbsent: [
+			self createBranch: branchName ]) gtLepiterAwareCheckoutWithWorkingCopy: aLepiterWorkingCopy
+]
+
+{ #category : #'*GToolkit4Git' }
 IceRepository >> gtLocalBranchesFor: aView [
 	<gtView>
 	^ aView list

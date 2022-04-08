@@ -1,9 +1,10 @@
 Extension { #name : #IceAttachedSingleVersionWorkingCopy }
 
 { #category : #'*BaselineOfGToolkit4Git' }
-IceAttachedSingleVersionWorkingCopy >> gtMergeCommit: aMergeCommit forRepository: aGitRepository [
+IceAttachedSingleVersionWorkingCopy >> gtMergeCommit: aMergeCommit forWorkingCopy: aLepiterWorkingCopy [
 	^ GtGitIceMerge new
-		repository: aGitRepository;
+		lepiterWorkingCopy: aLepiterWorkingCopy;
+		repository: aLepiterWorkingCopy icebergRepository;
 		mergeCommit: aMergeCommit;
-		execute.
+		execute
 ]

@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'repository'
 	],
-	#category : #GToolkit4Git
+	#category : #'GToolkit4Git-Announcements'
 }
 
 { #category : #accessing }
