@@ -827,6 +827,13 @@ GtGitRepository >> gtExamplesFor: aView [
 		view: #gtExamplesFor:
 ]
 
+{ #category : #'as yet unclassified' }
+GtGitRepository >> gtLepiterAwareCheckoutBranch: aBranchName [ 
+	self icebergRepository 
+		gtLepiterAwareCheckoutBranch: aBranchName 
+		withWorkingCopy: self lepiterWorkingCopy
+]
+
 { #category : #'gt - extensions' }
 GtGitRepository >> gtPackagesFor: aView context: aContext [
 	<gtView>

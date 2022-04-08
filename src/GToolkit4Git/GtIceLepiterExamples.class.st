@@ -165,6 +165,12 @@ GtIceLepiterExamples >> assertDiff: diff withChildrenCount: aChildrenCount andFu
 ]
 
 { #category : #assertions }
+GtIceLepiterExamples >> assertNoChangesInRepository: aGtIceRepository [
+	self assert: aGtIceRepository getDeltasForFullDiff isEmpty.
+	self assert: aGtIceRepository workingCopyDiff isEmpty.
+]
+
+{ #category : #assertions }
 GtIceLepiterExamples >> assertNode: aNode withKey: aKey withChildrenCount: anInteger [ 
 	self assert: aNode key equals: aKey.
 	self assert: aNode children size equals: anInteger.
@@ -370,6 +376,24 @@ GtIceLepiterExamples >> detachLepiterDatabases [
 	self lepiterDatabases removeAll.
 ]
 
+{ #category : #'examples - checkout' }
+GtIceLepiterExamples >> gitRepositoryACheckoutNewBranch [
+	<gtExample>
+	
+	| gtIceRepository targetDatabase |
+	gtIceRepository := self gitRepositoryACommitNewAddedPage.
+	
+	gtIceRepository 
+		gtLepiterAwareCheckoutBranch: 'second'.
+		
+	self assert: gtIceRepository icebergRepository branchName equals: 'second'.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
+	
+	self assertNoChangesInRepository:  gtIceRepository.
+	
+	^ gtIceRepository
+]
+
 { #category : #'examples - single page' }
 GtIceLepiterExamples >> gitRepositoryACommitEditedPage [
 	<gtExample>
@@ -385,6 +409,46 @@ GtIceLepiterExamples >> gitRepositoryACommitEditedPage [
 	^ gtIceRepository
 ]
 
+{ #category : #'examples - checkout' }
+GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch [
+	<gtExample>
+	
+	| gtIceRepository targetDatabase existingPage |
+	gtIceRepository := self gitRepositoryACheckoutNewBranch.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
+	
+	existingPage := targetDatabase pageNamed: 'Page1'.
+	existingPage addSnippet: (LeTextSnippet string: 'Snippet2').
+	self 
+		assertOneModifiedPage: existingPage 
+		inRepository: gtIceRepository.
+	
+	gtIceRepository executeCommit: 'Edit Page1'.
+	self assertNoChangesInRepository:  gtIceRepository.
+	self assert: targetDatabase pageCount equals: 1.
+	self assert: existingPage children size equals: 2.
+	
+	^ gtIceRepository
+]
+
+{ #category : #'examples - checkout' }
+GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch [
+	<gtExample>
+	
+	| gtIceRepository targetDatabase existingPage targetPage |
+	gtIceRepository := self gitRepositoryACommitEditedPageInSecondBranch.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
+	
+	gtIceRepository 
+		gtLepiterAwareCheckoutBranch: self mainBranchName.
+	self assertNoChangesInRepository:  gtIceRepository.
+	
+	targetPage := targetDatabase pageNamed: 'Page1'.
+	self assert: targetPage snippets size equals: 1.
+	
+	^ gtIceRepository
+]
+
 { #category : #'examples - single page' }
 GtIceLepiterExamples >> gitRepositoryACommitNewAddedPage [
 	<gtExample>
@@ -396,6 +460,46 @@ GtIceLepiterExamples >> gitRepositoryACommitNewAddedPage [
 	
 	self assert: gtIceRepository getDeltasForFullDiff isEmpty.
 	self assert: gtIceRepository workingCopyDiff isEmpty.
+	
+	^ gtIceRepository
+]
+
+{ #category : #'examples - checkout' }
+GtIceLepiterExamples >> gitRepositoryACommitNewPageInSecondBranch [
+	<gtExample>
+	
+	| gtIceRepository targetDatabase newPage |
+	gtIceRepository := self gitRepositoryACheckoutNewBranch.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
+	
+	newPage := LePage named: 'Page2'.
+	newPage addSnippet: (LeTextSnippet string: 'Snippet2').
+	targetDatabase addPage: newPage.
+	self assertOneAddedPage: newPage inRepository: gtIceRepository.
+	
+	gtIceRepository executeCommit: 'Add Page2'.
+	self assertNoChangesInRepository:  gtIceRepository.
+	self assert: targetDatabase pageCount equals: 2.
+	self assert: (targetDatabase hasPageNamed: 'Page2').
+	
+	^ gtIceRepository
+]
+
+{ #category : #'examples - checkout' }
+GtIceLepiterExamples >> gitRepositoryACommitNewPageInSecondBranch_checkoutMainBranch [
+	<gtExample>
+	
+	| gtIceRepository targetDatabase newPage |
+	gtIceRepository := self gitRepositoryACommitNewPageInSecondBranch.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
+	
+	gtIceRepository 
+		gtLepiterAwareCheckoutBranch: self mainBranchName.
+	self assertNoChangesInRepository:  gtIceRepository.
+	
+	self assert: targetDatabase pageCount equals: 1.
+	self assert: (targetDatabase hasPageNamed: 'Page1').
+	self assert: (targetDatabase hasPageNamed: 'Page2') not.
 	
 	^ gtIceRepository
 ]
@@ -426,6 +530,47 @@ GtIceLepiterExamples >> gitRepositoryACommitRemovedPage [
 	
 	self assert: gtIceRepository getDeltasForFullDiff isEmpty.
 	self assert: gtIceRepository workingCopyDiff isEmpty.
+	
+	^ gtIceRepository
+]
+
+{ #category : #'examples - checkout' }
+GtIceLepiterExamples >> gitRepositoryACommitRemovedPageInSecondBranch [
+	<gtExample>
+	
+	| gtIceRepository targetDatabase existingPage |
+	gtIceRepository := self gitRepositoryACheckoutNewBranch.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
+	
+	existingPage := targetDatabase pageNamed: 'Page1'.
+	existingPage removeSelf.
+	self 
+		assertOneRemovedPage: existingPage 
+		fromDatabase: targetDatabase 
+		inRepository: gtIceRepository.
+	
+	gtIceRepository executeCommit: 'Remove Page1'.
+	self assertNoChangesInRepository:  gtIceRepository.
+	self assert: targetDatabase pageCount equals: 0.
+	self assert: (targetDatabase hasPageNamed: 'Page1') not.
+	
+	^ gtIceRepository
+]
+
+{ #category : #'examples - checkout' }
+GtIceLepiterExamples >> gitRepositoryACommitRemovedPageInSecondBranch_checkoutMainBranch [
+	<gtExample>
+	
+	| gtIceRepository targetDatabase existingPage |
+	gtIceRepository := self gitRepositoryACommitRemovedPageInSecondBranch.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
+	
+	gtIceRepository 
+		gtLepiterAwareCheckoutBranch: self mainBranchName.
+	self assertNoChangesInRepository:  gtIceRepository.
+	
+	self assert: targetDatabase pageCount equals: 1.
+	self assert: (targetDatabase hasPageNamed: 'Page1').
 	
 	^ gtIceRepository
 ]
