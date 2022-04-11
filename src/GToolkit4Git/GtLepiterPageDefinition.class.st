@@ -129,15 +129,6 @@ GtLepiterPageDefinition >> printOn: aStream [
 ]
 
 { #category : #accessing }
-GtLepiterPageDefinition >> removeFrom: aVisitor [
-	| aDatabase aPage |
-	aDatabase := LeDatabase allInstances detect: [ :d | 
-		             d uuid = database databaseId ].
-	aPage := aDatabase pageByUuid: self pageUuid.
-	aDatabase removePage: aPage
-]
-
-{ #category : #accessing }
 GtLepiterPageDefinition >> toolIn: aGtRepository [
 
 	| targetDatabase targetPage |
