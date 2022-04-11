@@ -138,11 +138,12 @@ GtLepiterPageDefinition >> removeFrom: aVisitor [
 ]
 
 { #category : #accessing }
-GtLepiterPageDefinition >> toolIn: aRepository [
+GtLepiterPageDefinition >> toolIn: aGtRepository [
 
-	| aDatabase aPage |
-	aDatabase := LeDatabase allInstances detect: [ :d | 
-		             d uuid = database databaseId ].
-	aPage := aDatabase pageByUuid: self pageUuid ifAbsent: [ self asPage ].
-	^ LePagePhlowTool page: aPage
+	| targetDatabase targetPage |
+	targetDatabase := aGtRepository lepiterWorkingCopy databases 
+		detect: [ :aDatabase | aDatabase uuid = database databaseId ].
+	
+	targetPage := targetDatabase pageByUuid: self pageUuid ifAbsent: [ self asPage ].
+	^ targetPage asLepiterPagePhlowToolWithoutFocus
 ]
