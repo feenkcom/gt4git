@@ -26,25 +26,6 @@ GtLepiterPageDefinition >> accept: aVisitor [
 ]
 
 { #category : #accessing }
-GtLepiterPageDefinition >> asMCDefinition [
-
-	| aDatabase aPage |
-	aDatabase := LeDatabase allInstances detect: [ :d | 
-		             d uuid = database databaseId ].
-	aPage := aDatabase pageByUuid: self pageUuid ifAbsent: [ 
-		         | page |
-		         page := self asPage.
-		         aDatabase addPage: page.
-		         page ].
-	(aDatabase monitor pageFileReference: aPage) writeStreamDo: [ :s | 
-		s truncate.
-		s nextPutAll: self pageContents ].
-	aPage newReloadFromPage: (aDatabase monitor storage loadFromFile:
-			 (aDatabase monitor pageFileReference: aPage)).
-	^ MCMockDefinition token: self key
-]
-
-{ #category : #accessing }
 GtLepiterPageDefinition >> asPage [
 
 	^ LeJsonV4 uniqueInstance deserialize:
