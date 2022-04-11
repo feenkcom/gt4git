@@ -5,6 +5,7 @@ IceGitCommit >> gtChangesFor: aView [
 	<gtView>
 	^ aView forward
 		title: 'Changes';
+		priority: 15;
 		object: [ IceDiff from: self to:self parent ];
 		view: #gtViewInspectorDiffFor:
 ]
@@ -14,9 +15,9 @@ IceGitCommit >> gtFileSystemItemsFor: aView [
 	<gtView>
 	^ aView forward
 		title: 'File system' translated;
-		priority: 70;
+		priority: 55;
 		object: [ self fileSystem ];
-		view: #gtItemsFor:
+		view: #gtTreeFor:
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -24,8 +25,23 @@ IceGitCommit >> gtViewLepitereDatabasesFor: aView [
 	<gtView>
 	^ aView forward 
 		title: 'Lepiter Databases';
+		priority: 50;
 		object: [ self lepiterDatabases ];
 		view: #gtItemsFor:
+]
+
+{ #category : #'*GToolkit4Git' }
+IceGitCommit >> gtViewPackagesFor: aView [
+	<gtView>
+	^ aView columnedList 
+		title: 'Packages';
+		priority: 45;
+		items: [ self packages ];
+		column: 'Package Name' text: [ :aPackage | aPackage name ];
+		column: 'Status' text: [ :aPackage |
+			aPackage isLoaded 
+				ifTrue: 'loaded' 
+				ifFalse: 'not loaded' ]
 ]
 
 { #category : #'*GToolkit4Git' }

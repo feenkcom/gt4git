@@ -66,10 +66,8 @@ IceLibgitRepository >> gtRawStatusFor: aView [
 		title: 'Raw File Statuses';
 		priority: 100;
 		items: [ self getStatusByFile associations ];
-		column: 'File'
-		text: [:each | each key ];
-		column: 'Status'
-		text: [:each | each value ]
+		column: 'File' text: [:each | each key ];
+		column: 'Status' text: [:each | each value ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -102,7 +100,7 @@ IceLibgitRepository >> gtRepositoryDirectoryFor: aView [
 				  ifFalse: [ "exclude directories"
 					  each isDirectory
 						  ifTrue: [ BrGlamorousIcons empty ]
-						  ifFalse: [ BrGlamorousIcons accept ] ] ];
+						  ifFalse: [ BrGlamorousIcons accept ] ] ] width: 50;
 		  column: 'Actions' translated stencil: [ :each | 
 			  | relative |
 			  relative := each relativeTo: self repositoryDirectory.
