@@ -51,8 +51,8 @@ IceRepository >> gtTagsFor: aView [
 		title: 'Tags' translated;
 		priority: 30;
 		items: [ self tags ];
-		itemText:
-				[ :anIceTag | anIceTag name , ' [' , (anIceTag commit id first: 7) , ']' ]
+		itemText: [ :anIceTag | 
+			anIceTag name , ' [' , (anIceTag commit id first: 7) , ']' ]
 ]
 
 { #category : #'*GToolkit4Git' }

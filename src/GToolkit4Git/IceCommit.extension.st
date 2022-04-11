@@ -2,7 +2,7 @@ Extension { #name : #IceCommit }
 
 { #category : #'*GToolkit4Git' }
 IceCommit >> gtCommitAncestorsDominanceTreeFor: aView [
-	<gtView>
+	"<gtView>"
 	^ aView mondrian
 		title: 'DominanceTree';
 		priority: 60;
@@ -25,7 +25,7 @@ IceCommit >> gtCommitAncestorsDominanceTreeFor: aView [
 
 { #category : #'*GToolkit4Git' }
 IceCommit >> gtCommitAncestorsTreeFor: aView [
-	<gtView>
+	"<gtView>"
 	^ aView mondrian
 		title: 'Tree';
 		priority: 50;
@@ -52,6 +52,7 @@ IceCommit >> gtCommitsFor: aView [
 	^ aView columnedList 
 		title: 'Ancestors' translated;
 		items: [ self commits ];
+		priority: 20;
 		column: 'Timestamp' text: [ :aCommit | aCommit timeStamp asStringYMDHM ] width: 120;
 		column: 'Commit' text: #shortId width: 70;
 		column: 'Author' text: #author;
@@ -65,13 +66,14 @@ IceCommit >> gtDetailsFor: aView [
 		priority: 9;
 		title: 'Details' translated;
 		items: [ {
-			'Commit'  -> ('[' , self commit shortId , '] ' , self commit id).
-			'Parents' -> (self commit ancestors collect: #shortId) asCommaString.
-			'Author'  -> self commit author.
-			'Date'    -> self commit timeStamp asStringYMDHM.
+			'Commit'  -> ('[' , self shortId , '] ' , self commit id).
+			'Parents' -> (self ancestors collect: #shortId) asCommaString.
+			'Author'  -> self author.
+			'Date'    -> self timeStamp asStringYMDHM.
 			'Tags'    -> self tagNames asCommaString.
-			'Comment' -> self commit comment } ];
-		column: 'Property' text: #key;
+			'Comment' -> self comment.
+			'Status'  -> self status } ];
+		column: 'Property' text: #key width: 150;
 		column: 'Value' text: #value;
 		send: #value
 ]
