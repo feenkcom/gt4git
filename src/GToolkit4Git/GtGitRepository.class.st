@@ -269,11 +269,13 @@ GtGitRepository >> conflictingCommits [
 
 { #category : #'gt - extensions' }
 GtGitRepository >> contextMenuOptionsFor: anIceNode [
-
 	| options |
-	options := { ('Revert changes' -> [ :e | 
+	
+	options := { } asOrderedCollection.
+	(anIceNode value definition isKindOf: IceCodeDefinition) ifTrue: [
+		options add: ('Revert changes' -> [ :e | 
 	            self icebergWorkingCopy diffToReferenceCommit revertChanges:
-		            anIceNode ]) } asOrderedCollection.
+		            anIceNode ]) ].
 	anIceNode value canBeBrowsed ifTrue: [ 
 		options addFirst: 'Browse' -> [ :e | 
 			e phlow spawnTool: (anIceNode value definition toolIn: self) ] ].
