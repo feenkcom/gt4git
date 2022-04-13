@@ -15,12 +15,6 @@ GtLepiterDatabaseDefinition >> accept: aVisitor [
 ]
 
 { #category : #accessing }
-GtLepiterDatabaseDefinition >> asDatabase [
-	^ LeDatabase allInstances detect: [ :d | 
-		             d uuid = self databaseId ].
-]
-
-{ #category : #accessing }
 GtLepiterDatabaseDefinition >> canBeBrowsed [
 	^ true
 ]
@@ -71,6 +65,9 @@ GtLepiterDatabaseDefinition >> printOn: aStream [
 ]
 
 { #category : #accessing }
-GtLepiterDatabaseDefinition >> toolIn: aRepository [
-	^ self asDatabase asPhlowTool
+GtLepiterDatabaseDefinition >> toolIn: aGtRepository [
+	| targetDatabase |
+	targetDatabase := aGtRepository lepiterWorkingCopy databases 
+		detect: [ :aDatabase | aDatabase uuid = self databaseId ].
+	^ targetDatabase asPhlowTool
 ]
