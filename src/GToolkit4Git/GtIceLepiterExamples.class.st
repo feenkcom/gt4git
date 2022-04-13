@@ -464,7 +464,6 @@ GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMai
 { #category : #'examples - checkout' }
 GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_mergeSecondBranch [
 	<gtExample>
-	<noTest>
 	
 	| gtIceRepository targetDatabase existingPage targetPage |
 	gtIceRepository := self gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch.
