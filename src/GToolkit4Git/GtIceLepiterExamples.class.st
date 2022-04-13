@@ -446,7 +446,7 @@ GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch [
 GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch [
 	<gtExample>
 	
-	| gtIceRepository targetDatabase existingPage targetPage |
+	| gtIceRepository targetDatabase targetPage |
 	gtIceRepository := self gitRepositoryACommitEditedPageInSecondBranch.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 	
@@ -462,10 +462,58 @@ GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMai
 ]
 
 { #category : #'examples - checkout' }
+GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_commitInMainBranch [
+	<gtExample>
+	
+	| gtIceRepository targetDatabase targetPage |
+	gtIceRepository := self gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
+
+	targetPage := targetDatabase pageNamed: 'Page1'.
+	targetPage addSnippet: (LeTextSnippet string: 'Snippet2-Modified').
+	self 
+		assertOneModifiedPage: targetPage 
+		inRepository: gtIceRepository.
+		
+	gtIceRepository executeCommit: 'Edit Page1'.
+	self assertNoChangesInRepository:  gtIceRepository.
+	
+	self assert: targetDatabase pageCount equals: 1.
+	self assert: targetPage children size equals: 2.
+	
+	^ gtIceRepository
+]
+
+{ #category : #'examples - checkout' }
+GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_commitInMainBranch_mergeSecondBranchWithConflict [
+	<gtExample>
+	
+	| gtIceRepository targetDatabase mergeException mergeAction |
+	gtIceRepository := self gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_commitInMainBranch.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
+
+	mergeException := nil.
+	[ 
+		gtIceRepository lepiterWorkingCopy 
+			mergeCommit: (gtIceRepository icebergRepository 
+				branchNamed: self secondaryBranchName) commit 
+	] on: IceMergeResolutionRequest do: [ :anException | mergeException := anException ].
+	self assert: mergeException notNil.
+	self assert: mergeException merge notNil.
+	
+	mergeAction := mergeException merge.
+	self assert: mergeAction unresolvedConflictCount equals: 1.
+
+	self assertNoChangesInRepository: gtIceRepository.
+	
+	^ mergeAction
+]
+
+{ #category : #'examples - checkout' }
 GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_mergeSecondBranch [
 	<gtExample>
 	
-	| gtIceRepository targetDatabase existingPage targetPage |
+	| gtIceRepository targetDatabase targetPage |
 	gtIceRepository := self gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 	
@@ -523,7 +571,7 @@ GtIceLepiterExamples >> gitRepositoryACommitNewPageInSecondBranch [
 GtIceLepiterExamples >> gitRepositoryACommitNewPageInSecondBranch_checkoutMainBranch [
 	<gtExample>
 	
-	| gtIceRepository targetDatabase newPage |
+	| gtIceRepository targetDatabase |
 	gtIceRepository := self gitRepositoryACommitNewPageInSecondBranch.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 	
@@ -542,7 +590,7 @@ GtIceLepiterExamples >> gitRepositoryACommitNewPageInSecondBranch_checkoutMainBr
 GtIceLepiterExamples >> gitRepositoryACommitNewPageInSecondBranch_checkoutMainBranch_mergeSecondBranch [
 	<gtExample>
 	
-	| gtIceRepository targetDatabase newPage |
+	| gtIceRepository targetDatabase |
 	gtIceRepository := self gitRepositoryACommitNewPageInSecondBranch_checkoutMainBranch.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 	
@@ -615,7 +663,7 @@ GtIceLepiterExamples >> gitRepositoryACommitRemovedPageInSecondBranch [
 GtIceLepiterExamples >> gitRepositoryACommitRemovedPageInSecondBranch_checkoutMainBranch [
 	<gtExample>
 	
-	| gtIceRepository targetDatabase existingPage |
+	| gtIceRepository targetDatabase |
 	gtIceRepository := self gitRepositoryACommitRemovedPageInSecondBranch.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 	
@@ -633,7 +681,7 @@ GtIceLepiterExamples >> gitRepositoryACommitRemovedPageInSecondBranch_checkoutMa
 GtIceLepiterExamples >> gitRepositoryACommitRemovedPageInSecondBranch_checkoutMainBranch_mergeSecondBranch [
 	<gtExample>
 	
-	| gtIceRepository targetDatabase existingPage |
+	| gtIceRepository targetDatabase |
 	gtIceRepository := self gitRepositoryACommitRemovedPageInSecondBranch_checkoutMainBranch.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 	
