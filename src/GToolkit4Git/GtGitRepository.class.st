@@ -580,7 +580,10 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 	| aViewModel changes chosen |
 	chosen := Set new.
 
-	self isMissing ifTrue: [ ^ aView empty ].
+	 (self isMissing  
+		or: [ self workingCopy isDetached not
+			and: [ self icebergRepository head isDetached not
+				and: [ self workingCopy project isUnborn ] ] ]) ifTrue: [ ^ aView empty ].
 
 	aViewModel := self viewModel.
 
