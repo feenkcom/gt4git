@@ -18,9 +18,7 @@ IceMerge >> gtActionMergeFor: anAction [
 	^ anAction button
 		  label: 'Merge';
 		  action: [ :aButton | 
-			  self updateHead.
-
-			  self updateWorkingCopy.
+			  self executeWithoutConflictSignal.
 			  
 			  Iceberg announcer announce: (IceRepositoryModified for: self repository).
 			  Iceberg announcer announce: (IceCommited for: self repository).
