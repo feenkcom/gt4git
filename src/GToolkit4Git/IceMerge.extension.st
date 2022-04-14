@@ -1,6 +1,15 @@
 Extension { #name : #IceMerge }
 
 { #category : #'*GToolkit4Git' }
+IceMerge >> executeWithoutConflictSignal [
+	[ self execute ]
+		on: IceMergeResolutionRequest 
+		do: [ :exception |
+			self assert: self unresolvedConflictCount = 0. 
+			exception resume: true ]
+]
+
+{ #category : #'*GToolkit4Git' }
 IceMerge >> gtActionMergeFor: anAction [
 
 	<gtAction>
@@ -17,6 +26,16 @@ IceMerge >> gtActionMergeFor: anAction [
 			  Iceberg announcer announce: (IceCommited for: self repository).
 			
 			  aButton phlow fireUpdateWish ]
+]
+
+{ #category : #'*GToolkit4Git' }
+IceMerge >> gtConflicts [
+	| conflicts |
+	conflicts := OrderedCollection new.
+	self conflictsDo: [ :anOperation | 
+		conflicts add: anOperation ].
+	
+	^ conflicts
 ]
 
 { #category : #'*GToolkit4Git' }

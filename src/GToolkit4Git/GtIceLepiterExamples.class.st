@@ -429,7 +429,7 @@ GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch [
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 	
 	existingPage := targetDatabase pageNamed: 'Page1'.
-	existingPage addSnippet: (LeTextSnippet string: 'Snippet2').
+	existingPage addSnippet: (LeTextSnippet string: 'Snippet2-SecondModified').
 	self 
 		assertOneModifiedPage: existingPage 
 		inRepository: gtIceRepository.
@@ -470,7 +470,7 @@ GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMai
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 
 	targetPage := targetDatabase pageNamed: 'Page1'.
-	targetPage addSnippet: (LeTextSnippet string: 'Snippet2-Modified').
+	targetPage addSnippet: (LeTextSnippet string: 'Snippet2-MainModified').
 	self 
 		assertOneModifiedPage: targetPage 
 		inRepository: gtIceRepository.
@@ -488,7 +488,7 @@ GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMai
 GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_commitInMainBranch_mergeSecondBranchWithConflict [
 	<gtExample>
 	
-	| gtIceRepository targetDatabase mergeException mergeAction |
+	| gtIceRepository targetDatabase mergeException mergeAction conflicts |
 	gtIceRepository := self gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_commitInMainBranch.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 
@@ -501,10 +501,11 @@ GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMai
 	self assert: mergeException notNil.
 	self assert: mergeException merge notNil.
 	
+	self assertNoChangesInRepository: gtIceRepository.
+	
 	mergeAction := mergeException merge.
 	self assert: mergeAction unresolvedConflictCount equals: 1.
-
-	self assertNoChangesInRepository: gtIceRepository.
+	conflicts := mergeAction gtConflicts first.
 	
 	^ mergeAction
 ]
@@ -525,7 +526,7 @@ GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMai
 	targetPage := targetDatabase pageNamed: 'Page1'.
 	self assert: targetPage children size equals: 2.
 	self assert: targetPage children first string equals: 'Snippet1'.
-	self assert: targetPage children second string equals: 'Snippet2'.
+	self assert: targetPage children second string equals: 'Snippet2-SecondModified'.
 	self assert: targetDatabase pageCount equals: 1.
 	
 	^ gtIceRepository
@@ -725,6 +726,68 @@ GtIceLepiterExamples >> gitRepositoryAEditExistingPage [
 	self assertOneModifiedPage: targetPage inRepository: gtIceRepository.
 	
 	^ gtIceRepository
+]
+
+{ #category : #'examples - checkout' }
+GtIceLepiterExamples >> gitRepositoryAPageEditWithMergeConflict_acceptExistingChange [
+	<gtExample>
+	
+	| mergeAction conflict |
+	mergeAction := self gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_commitInMainBranch_mergeSecondBranchWithConflict.
+
+	conflict := mergeAction gtConflicts first.
+	conflict selectRight.
+	self assert: conflict isResolved.
+	
+	^ mergeAction
+]
+
+{ #category : #'examples - checkout' }
+GtIceLepiterExamples >> gitRepositoryAPageEditWithMergeConflict_acceptExistingChange_performMerge [
+	<gtExample>
+	
+	| mergeAction targetDatabase targetPage |
+	mergeAction := self gitRepositoryAPageEditWithMergeConflict_acceptExistingChange.
+	
+	targetDatabase := mergeAction lepiterWorkingCopy databases anyOne.
+	targetPage := targetDatabase pageNamed: 'Page1'.
+
+	mergeAction executeWithoutConflictSignal.
+	self assert: targetPage children size equals: 2.
+	self assert: targetPage children second string equals: 'Snippet2-MainModified'.
+	
+	^ mergeAction
+]
+
+{ #category : #'examples - checkout' }
+GtIceLepiterExamples >> gitRepositoryAPageEditWithMergeConflict_acceptIncomingChange [
+	<gtExample>
+	
+	| mergeAction conflict |
+	mergeAction := self gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_commitInMainBranch_mergeSecondBranchWithConflict.
+
+	conflict := mergeAction gtConflicts first.
+	conflict selectLeft.
+	self assert: conflict isResolved.
+	
+	^ mergeAction
+]
+
+{ #category : #'examples - checkout' }
+GtIceLepiterExamples >> gitRepositoryAPageEditWithMergeConflict_acceptIncomingChange_performMerge [
+	<gtExample>
+	
+	| mergeAction targetDatabase targetPage |
+	mergeAction := self gitRepositoryAPageEditWithMergeConflict_acceptIncomingChange.
+	
+	targetDatabase := mergeAction lepiterWorkingCopy databases anyOne.
+	targetPage := targetDatabase pageNamed: 'Page1'.
+	
+	mergeAction executeWithoutConflictSignal.
+	self assert: targetPage children size equals: 2.
+	self assert: targetPage children second string equals: 'Snippet2-SecondModified'.
+	
+	^ mergeAction
 ]
 
 { #category : #'examples - single page' }
