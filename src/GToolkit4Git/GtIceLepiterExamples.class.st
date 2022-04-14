@@ -532,6 +532,52 @@ GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMai
 	^ gtIceRepository
 ]
 
+{ #category : #'examples - checkout' }
+GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_nonConflictingCommitInMainBranch [
+	<gtExample>
+	
+	| gtIceRepository targetDatabase newPage |
+	gtIceRepository := self gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
+
+	newPage := LePage named: 'Page2'.
+	newPage addSnippet: (LeTextSnippet string: 'Snippet2-1').
+	targetDatabase addPage: newPage.
+	
+	self assertOneAddedPage: newPage inRepository: gtIceRepository.
+	
+	gtIceRepository executeCommit: 'Add Page2'.
+	self assertNoChangesInRepository:  gtIceRepository.
+	
+	self assert: targetDatabase pageCount equals: 2.
+	self assert: newPage children size equals: 1.
+	
+	^ gtIceRepository
+]
+
+{ #category : #'examples - checkout' }
+GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_nonConflictingCommitInMainBranch_mergeSecondBranch [
+	<gtExample>
+	
+	| gtIceRepository targetDatabase |
+	gtIceRepository := self gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_nonConflictingCommitInMainBranch.
+	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
+
+	gtIceRepository lepiterWorkingCopy 
+		mergeCommit: (gtIceRepository icebergRepository 
+			branchNamed: self secondaryBranchName) commit.
+	
+	self assertNoChangesInRepository: gtIceRepository.
+	self assert: targetDatabase pageCount equals: 2.
+	self assert: (targetDatabase hasPageNamed: 'Page1').
+	self assert: (targetDatabase hasPageNamed: 'Page2').
+	self assert: (targetDatabase pageNamed: 'Page1') children first string equals: 'Snippet1'.
+	self assert: (targetDatabase pageNamed: 'Page1') children second string equals: 'Snippet2-SecondModified'.
+	self assert: (targetDatabase pageNamed: 'Page2') children first string equals: 'Snippet2-1'.
+	
+	^ gtIceRepository
+]
+
 { #category : #'examples - single page' }
 GtIceLepiterExamples >> gitRepositoryACommitNewAddedPage [
 	<gtExample>
