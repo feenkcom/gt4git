@@ -310,7 +310,8 @@ GtGitRepositoryElement >> pullFrom: aButton [
 
 	[ self repositoryViewModel pull ]
 		on: IceMergeResolutionRequest
-		do: [ :r | self phlow spawnObject: r merge ].
+		do: [ :mergeException | 
+			self phlow spawnObject: mergeException merge ].
 	aButton phlow fireUpdateWish
 ]
 
