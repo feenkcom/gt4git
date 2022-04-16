@@ -49,7 +49,6 @@ GtGitNavigationStencil >> createListFor: aView [
 			  | s |
 			  s := GtGitAddRepositoryStencil new.
 			  s dropdown: aDropdown.
-			  s repoGroup: self.
 			  s onCreated: [ :repo | 
 					  self announcer announce:
 							  (GtGitRepositoryAddedAndSelected new repository:

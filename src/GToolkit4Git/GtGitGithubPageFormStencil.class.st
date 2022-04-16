@@ -5,41 +5,10 @@ Class {
 		'ownerEditor',
 		'projectEditor',
 		'aDropdown',
-		'repoGroup',
 		'onCreated'
 	],
 	#category : #'GToolkit4Git-Inspector Integration'
 }
-
-{ #category : #accessing }
-GtGitGithubPageFormStencil >> addOwnerContainer [
-	|container|
-	container := BlElement new.
-	container viewModel: BrPagerPageModel new;
-	aptitude: BrWidgetContainerAptitude.
-	ownerEditor := BrEditableLabel new
-		aptitude: BrGlamorousEditableLabelAptitude new glamorousRegularFontAndSize;
-		text: 'Owner'.
-	ownerEditor switchToEditor.
-	container addChild: ownerEditor.
-	^ container
-	
-]
-
-{ #category : #accessing }
-GtGitGithubPageFormStencil >> addProjectContainer [
-	|container|
-	container := BlElement new.
-	container viewModel: BrPagerPageModel new;
-	aptitude: BrWidgetContainerAptitude.
-	projectEditor := BrEditableLabel new
-		aptitude: BrGlamorousEditableLabelAptitude new glamorousRegularFontAndSize;
-		text: 'Project'.
-	projectEditor switchToEditor.
-	container addChild: projectEditor.
-	^ container
-	
-]
 
 { #category : #accessing }
 GtGitGithubPageFormStencil >> create [
@@ -49,7 +18,7 @@ GtGitGithubPageFormStencil >> create [
 { #category : #accessing }
 GtGitGithubPageFormStencil >> createCloneButton [
 
-	| filler cloneButton |
+	| cloneButton |
 	cloneButton := BrButton new.
 	cloneButton aptitude: BrGlamorousButtonRectangularAptitude
 		+ (BrGlamorousButtonLabelAptitude new selectedColor: Color black).
@@ -66,43 +35,44 @@ GtGitGithubPageFormStencil >> createCloneButton [
 					 aDropdown dispatchEvent:
 						 (BrDropdownHideWish new anchor: aDropdown) ]) ].
 		self onCreated value: repo ].
-	filler := BlElement new.
 	cloneButton constraintsDo: [ :c | 
 		c grid vertical alignTop.
 		c grid horizontal alignRight ].
-	^ { 
-		  filler.
-		  cloneButton }
+	^ cloneButton
 ]
 
 { #category : #accessing }
 GtGitGithubPageFormStencil >> createMainContainer [
 	|container|
-	container := BrPagerPageElement new
-			weight: 1.0;
-			layout: (BlGridLayout new columnCount: 2);
-			padding: (BlInsets all: 8).
+	container := BrHorizontalPane new
+			padding: (BlInsets all: 5); vFitContent; hExact: 300.
 	container addChildren: self createUrl.
-	container addChildren: self createCloneButton.
+	container addChild: self createCloneButton.
 	^ container.
 ]
 
 { #category : #accessing }
 GtGitGithubPageFormStencil >> createUrl [
-	|label |
-	label := BrLabel new text:'Git URL'.
-	label aptitude: BrGlamorousLabelAptitude.
-	
+
+	| label |
+	label := BrLabel new
+		         text: 'Git URL: ';
+		         aptitude: BrGlamorousLabelAptitude;
+		         margin: (BlInsets right: 5).
+
 	ownerEditor := BrEditableLabel new
-		aptitude: BrGlamorousEditableLabelAptitude new glamorousRegularFontAndSize;
-		text: ''.
+		               aptitude:
+			               BrGlamorousEditableLabelAptitude new
+				               glamorousRegularFontAndSize;
+		               text: ''.
 	ownerEditor switchToEditor.
 	ownerEditor hMatchParent.
 	ownerEditor vExact: 23.
-	label constraintsDo: [:c | c grid vertical alignCenter].
-	ownerEditor constraintsDo: [:c | c grid vertical alignCenter].
-	^ {label . ownerEditor}
-	
+	label constraintsDo: [ :c | c grid vertical alignCenter ].
+	ownerEditor constraintsDo: [ :c | c grid vertical alignCenter ].
+	^ { 
+		  label.
+		  ownerEditor }
 ]
 
 { #category : #accessing }
@@ -132,9 +102,4 @@ GtGitGithubPageFormStencil >> projectLocation [
 	^ IceLibgitRepository repositoriesLocation 
 		/ owner
 		/ project
-]
-
-{ #category : #accessing }
-GtGitGithubPageFormStencil >> repoGroup: aGtGitRepositoryGroup [
-	repoGroup := aGtGitRepositoryGroup
 ]
