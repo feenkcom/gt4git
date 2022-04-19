@@ -87,30 +87,6 @@ GtGitDefinitionsElement >> buildErrorMessage [
 ]
 
 { #category : #accessing }
-GtGitDefinitionsElement >> buildSectionLabel: aSectionName [
-	
-	^ BrLabel new
-		aptitude: (BrGlamorousLabelAptitude new glamorousRegularFontAndSize foreground: Color gray; fontSize: 12);
-		text: aSectionName, ':';
-		focusability: BlFocusability none;
-		margin: (BlInsets top: 5 right: 2);
-		constraintsDo: [ :c | c grid horizontal alignLeft ]
-]
-
-{ #category : #accessing }
-GtGitDefinitionsElement >> buttonMargin [
-	^ BlInsets top: 3 left: 0 bottom: 3 right: 5
-]
-
-{ #category : #accessing }
-GtGitDefinitionsElement >> editableLabelLook [
-	^ BrGlamorousEditableLabelAptitude new
-		glamorousCodeFont;
-		defaultForeground: Color black;
-		fontSize: 10
-]
-
-{ #category : #accessing }
 GtGitDefinitionsElement >> initialize [
 	super initialize.	
 
@@ -118,24 +94,6 @@ GtGitDefinitionsElement >> initialize [
 		aptitude: GtCoderExpanderAptitude;
 		hMatchParent;
 		vFitContent
-]
-
-{ #category : #accessing }
-GtGitDefinitionsElement >> readonlyLabelLook [
-	^ BrGlamorousEditorAptitude new
-		glamorousCodeFont;
-		fontSize: 10;
-		foreground: Color black;
-		add:
-			(BrStyleCommonAptitude new
-				default: [ :aStyle | 
-					aStyle
-						geometry: (BlRoundedRectangleGeometry cornerRadius: 4);
-						border: BlBorder empty ];
-				hovered: [ :aStyle | 
-					aStyle
-						border: (BlBorder paint: self theme button hoveredBorderColor width: 1) ]);
-		yourself
 ]
 
 { #category : #accessing }

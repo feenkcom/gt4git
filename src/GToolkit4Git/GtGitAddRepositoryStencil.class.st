@@ -2,18 +2,24 @@ Class {
 	#name : #GtGitAddRepositoryStencil,
 	#superclass : #BrStencil,
 	#instVars : [
-		'pager',
-		'pagerContainer',
 		'dropdown',
 		'repoGroup',
-		'onCreated'
+		'onCreated',
+		'container'
 	],
 	#category : #'GToolkit4Git-Inspector Integration'
 }
 
 { #category : #accessing }
+GtGitAddRepositoryStencil >> container [
+	container ifNil: [
+		container := self initialPage].
+	^ container
+]
+
+{ #category : #accessing }
 GtGitAddRepositoryStencil >> create [
-	^ self pagerContainer 
+	^ self container 
 ]
 
 { #category : #accessing }
@@ -23,85 +29,66 @@ GtGitAddRepositoryStencil >> dropdown: aDropdown [
 
 { #category : #accessing }
 GtGitAddRepositoryStencil >> githubPage [
-	|container button stencil|
+	| button stencil|
 	stencil := GtGitGithubPageFormStencil new.
 	stencil dropdown: dropdown.
-	stencil repoGroup: repoGroup.
 	stencil onCreated: self onCreated.
 	^ stencil create.
 ]
 
 { #category : #accessing }
 GtGitAddRepositoryStencil >> initialPage [
-	| container button local label |
+	| element button local label |
 	label := BrLabel new.
 	label
 		aptitude: BrGlamorousLabelAptitude;
-		text: 'Import Git'.
+		text: 'Import a Git repository'.
 	button := BrButton new.
 	button
-		label: 'clone';
-		beHugeSize;
-		hExact: 100.
+		label: 'remotely'.
 	button aptitude: BrGlamorousButtonWithLabelAptitude.
 	button action: [ self openGithubPage ].
 	local := BrButton new.
 	local
-		label: 'local';
-		beHugeSize;
-		hExact: 100.
+		label: 'locally'.
 	local aptitude: BrGlamorousButtonWithLabelAptitude.
 	local action: [ self openLocalPage ].
-	container := BrPagerPageElement new.
-	container
-		weight: 1.0;
-		layout: BlLinearLayout vertical alignCenter.
-	label margin: (BlInsets top: 20).
-	button margin: (BlInsets top: 20).
-	local margin: (BlInsets top: 10 bottom: 10).
-	container addChild: label.
-	container addChild: button.
-	container addChild: local.
-	^ container
+	element := BrVerticalPane new.
+	label margin: (BlInsets all: 5).
+	button margin: (BlInsets all: 5).
+	local margin: (BlInsets all: 5).
+	element addChild: label.
+	element addChild: (BrHorizontalPane new addChild: button; addChild: local; fitContent).
+	^ element fitContent
 ]
 
 { #category : #accessing }
 GtGitAddRepositoryStencil >> localPage [
-	|fileBrowser container |
-	container := BlElement new
-		viewModel: BrPagerPageModel new;
-		layout: (BlGridLayout new columnCount: 1);
-		padding: (BlInsets all: 8);
-		aptitude: BrWidgetContainerAptitude.
-	container
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical matchParent ].
-	fileBrowser := BrFileSelector new.
-	
+
+	| fileBrowser |
+	fileBrowser := BrFileSelector new margin: (BlInsets all: 5).
+
 	fileBrowser vMatchParent.
-	fileBrowser hExact:464.
-	
+	fileBrowser hExact: 464.
+
 	fileBrowser buttonLabel: 'Import'.
-	fileBrowser okAction: [:filePath | 
-		|repo|
+	fileBrowser okAction: [ :filePath | 
+		| repo |
 		repo := IceRepositoryCreator new
-			location: filePath;
-			createRepository.
-			repo register.
-			Iceberg announcer announce: (IceRepositoryAnnouncement for: repo).
+			        location: filePath;
+			        createRepository.
+		repo register.
+		Iceberg announcer announce: (IceRepositoryAnnouncement for: repo).
 		self onCreated value: repo.
-		dropdown ifNotNil: [
-			dropdown enqueueTask:
-				(BlTaskAction new
-					action:[ dropdown dispatchEvent: 
-						(BrDropdownHideWish new anchor: dropdown) ])]].
-		
-	fileBrowser fileFilterBlock: [:aFileReference | aFileReference isDirectory 
-		and: [(FileSystemDirectoryEntry reference: aFileReference) isHidden not] ].
-	container addChild: fileBrowser.
-	^ container
-	
+		dropdown ifNotNil: [ 
+			dropdown enqueueTask: (BlTaskAction new action: [ 
+					 dropdown dispatchEvent:
+						 (BrDropdownHideWish new anchor: dropdown) ]) ] ].
+
+	fileBrowser fileFilterBlock: [ :aFileReference | 
+		aFileReference isDirectory and: [ 
+			(FileSystemDirectoryEntry reference: aFileReference) isHidden not ] ].
+	^ fileBrowser
 ]
 
 { #category : #accessing }
@@ -117,38 +104,14 @@ GtGitAddRepositoryStencil >> onCreated: aBlock [
 
 { #category : #accessing }
 GtGitAddRepositoryStencil >> openGithubPage [
-	"self pager viewModel removePagesAfter: self pager viewModel pages first."
-	self pager addPage: self githubPage.
-	self pager smoothScrollToLast.
+
+	container removeChildren.
+	container addChild: self githubPage
 ]
 
 { #category : #accessing }
 GtGitAddRepositoryStencil >> openLocalPage [
-	"self pager viewModel removePagesAfter: self pager viewModel pages first."
-	self pager addPage: self localPage.
-	self pager smoothScrollToLast.
-]
 
-{ #category : #accessing }
-GtGitAddRepositoryStencil >> pager [
-	^ pager
-]
-
-{ #category : #accessing }
-GtGitAddRepositoryStencil >> pagerContainer [
-	pagerContainer ifNil: [
-		pager := BrPager new.
-		pager matchParent.
-		pagerContainer := BlElement new.
-		pagerContainer constraintsDo: 
-			[:c | c horizontal exact: 480. 
-			c vertical exact: 400].
-		pagerContainer addChild: pager.
-		pager addPage: self initialPage].
-	^ pagerContainer
-]
-
-{ #category : #accessing }
-GtGitAddRepositoryStencil >> repoGroup: aGtGitRepositoryGroup [
-	repoGroup := aGtGitRepositoryGroup
+	container removeChildren.
+	container addChild: self localPage
 ]
