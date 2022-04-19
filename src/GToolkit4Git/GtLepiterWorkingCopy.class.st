@@ -170,7 +170,7 @@ GtLepiterWorkingCopy >> lepiterChangesTo: aCommitish [
 GtLepiterWorkingCopy >> loadLepiterChangesInWorkingCopyFrom: aTree [
 	| visitor |
 	
-	visitor := GtGitLepiterMergeToChangeTreeVisitor new
+	visitor := GtGitLepiterImageWorkingCopyUpdateVisitor new
 		lepiterWorkingCopy: self.
 	aTree accept: visitor.
 	^ visitor

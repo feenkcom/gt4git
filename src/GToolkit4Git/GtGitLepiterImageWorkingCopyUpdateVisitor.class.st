@@ -1,5 +1,5 @@
 Class {
-	#name : #GtGitLepiterMergeToChangeTreeVisitor,
+	#name : #GtGitLepiterImageWorkingCopyUpdateVisitor,
 	#superclass : #IceTreeVisitor,
 	#instVars : [
 		'lepiterWorkingCopy'
@@ -8,31 +8,33 @@ Class {
 }
 
 { #category : #accessing }
-GtGitLepiterMergeToChangeTreeVisitor >> lepiterWorkingCopy [
+GtGitLepiterImageWorkingCopyUpdateVisitor >> lepiterWorkingCopy [
 
 	^ lepiterWorkingCopy
 ]
 
 { #category : #accessing }
-GtGitLepiterMergeToChangeTreeVisitor >> lepiterWorkingCopy: aLepiterWorkingCopy [
+GtGitLepiterImageWorkingCopyUpdateVisitor >> lepiterWorkingCopy: aLepiterWorkingCopy [
 
 	lepiterWorkingCopy := aLepiterWorkingCopy
 ]
 
 { #category : #accessing }
-GtGitLepiterMergeToChangeTreeVisitor >> relativePathForDatabase: aDatabase [
+GtGitLepiterImageWorkingCopyUpdateVisitor >> relativePathForDatabase: aDatabase [
 	^ aDatabase localStoreRootDirectory asFileReference path 
 			relativeTo: self lepiterWorkingCopy icebergRepository repositoryDirectory
 ]
 
 { #category : #visiting }
-GtGitLepiterMergeToChangeTreeVisitor >> visitAddition: anIceAddition [ 
+GtGitLepiterImageWorkingCopyUpdateVisitor >> visitAddition: anIceAddition [ 
 	self halt.
+	anIceAddition definition accept: self.
 ]
 
 { #category : #visiting }
-GtGitLepiterMergeToChangeTreeVisitor >> visitDirectoryDefinition: anIceDirectoryDefinition [ 
+GtGitLepiterImageWorkingCopyUpdateVisitor >> visitDirectoryDefinition: anIceDirectoryDefinition [ 
 	| directoryReference |
+	self halt.
 	directoryReference := self lepiterWorkingCopy fileSystem 
 		resolve: anIceDirectoryDefinition path.
 	
@@ -50,16 +52,35 @@ GtGitLepiterMergeToChangeTreeVisitor >> visitDirectoryDefinition: anIceDirectory
 ]
 
 { #category : #visiting }
-GtGitLepiterMergeToChangeTreeVisitor >> visitNoModification: anIceNoModification [
+GtGitLepiterImageWorkingCopyUpdateVisitor >> visitFileNode: anIceFileDefinition [
+	
+	"Ignore files, as they are not loaded into the image"
+]
+
+{ #category : #visiting }
+GtGitLepiterImageWorkingCopyUpdateVisitor >> visitModification: anIceModification [ 
+	
+	anIceModification definition accept: self
+]
+
+{ #category : #visiting }
+GtGitLepiterImageWorkingCopyUpdateVisitor >> visitNoModification: anIceNoModification [
+	self halt.
 	anIceNoModification definition accept: self.
 ]
 
 { #category : #visiting }
-GtGitLepiterMergeToChangeTreeVisitor >> visitNonConflictingOperation: anIceNonConflictingOperation [ 
+GtGitLepiterImageWorkingCopyUpdateVisitor >> visitNonConflictingOperation: anIceNonConflictingOperation [ 
 	anIceNonConflictingOperation chosenOperation accept: self.
 ]
 
 { #category : #visiting }
-GtGitLepiterMergeToChangeTreeVisitor >> visitRootDefinition: anIceRootDefinition [ 
+GtGitLepiterImageWorkingCopyUpdateVisitor >> visitPackage: anIcePackageDefinition [
+	
+	"This visitor ignores packages"
+]
+
+{ #category : #visiting }
+GtGitLepiterImageWorkingCopyUpdateVisitor >> visitRootDefinition: anIceRootDefinition [ 
 	self visitChildrenOf: currentNode
 ]
