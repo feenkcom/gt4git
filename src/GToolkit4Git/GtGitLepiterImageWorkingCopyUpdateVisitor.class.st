@@ -1,3 +1,11 @@
+"
+Visitor that updates the state of Lepiter databases after a merge.
+
+The main responsability is to detect changes to Lepiter databases and trigger updates.
+No content is actually modified by the visitor. The visitor only asks the database to reload.
+
+
+"
 Class {
 	#name : #GtGitLepiterImageWorkingCopyUpdateVisitor,
 	#superclass : #IceTreeVisitor,
@@ -27,14 +35,13 @@ GtGitLepiterImageWorkingCopyUpdateVisitor >> relativePathForDatabase: aDatabase 
 
 { #category : #visiting }
 GtGitLepiterImageWorkingCopyUpdateVisitor >> visitAddition: anIceAddition [ 
-	self halt.
 	anIceAddition definition accept: self.
 ]
 
 { #category : #visiting }
 GtGitLepiterImageWorkingCopyUpdateVisitor >> visitDirectoryDefinition: anIceDirectoryDefinition [ 
 	| directoryReference |
-	self halt.
+	
 	directoryReference := self lepiterWorkingCopy fileSystem 
 		resolve: anIceDirectoryDefinition path.
 	
@@ -65,7 +72,6 @@ GtGitLepiterImageWorkingCopyUpdateVisitor >> visitModification: anIceModificatio
 
 { #category : #visiting }
 GtGitLepiterImageWorkingCopyUpdateVisitor >> visitNoModification: anIceNoModification [
-	self halt.
 	anIceNoModification definition accept: self.
 ]
 
@@ -78,6 +84,11 @@ GtGitLepiterImageWorkingCopyUpdateVisitor >> visitNonConflictingOperation: anIce
 GtGitLepiterImageWorkingCopyUpdateVisitor >> visitPackage: anIcePackageDefinition [
 	
 	"This visitor ignores packages"
+]
+
+{ #category : #visiting }
+GtGitLepiterImageWorkingCopyUpdateVisitor >> visitRemoval: anIceRemoval [
+	anIceRemoval definition accept: self.
 ]
 
 { #category : #visiting }
