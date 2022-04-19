@@ -484,7 +484,7 @@ GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMai
 	^ gtIceRepository
 ]
 
-{ #category : #'examples - checkout' }
+{ #category : #'examples - merge' }
 GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_commitInMainBranch_mergeSecondBranchWithConflict [
 	<gtExample>
 	
@@ -555,7 +555,7 @@ GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMai
 	^ gtIceRepository
 ]
 
-{ #category : #'examples - checkout' }
+{ #category : #'examples - merge' }
 GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_nonConflictingCommitInMainBranch_mergeSecondBranch [
 	<gtExample>
 	
@@ -633,7 +633,7 @@ GtIceLepiterExamples >> gitRepositoryACommitNewPageInSecondBranch_checkoutMainBr
 	^ gtIceRepository
 ]
 
-{ #category : #'examples - checkout' }
+{ #category : #'examples - merge' }
 GtIceLepiterExamples >> gitRepositoryACommitNewPageInSecondBranch_checkoutMainBranch_mergeSecondBranch [
 	<gtExample>
 	
@@ -724,7 +724,7 @@ GtIceLepiterExamples >> gitRepositoryACommitRemovedPageInSecondBranch_checkoutMa
 	^ gtIceRepository
 ]
 
-{ #category : #'examples - checkout' }
+{ #category : #'examples - merge' }
 GtIceLepiterExamples >> gitRepositoryACommitRemovedPageInSecondBranch_checkoutMainBranch_mergeSecondBranch [
 	<gtExample>
 	
@@ -774,7 +774,7 @@ GtIceLepiterExamples >> gitRepositoryAEditExistingPage [
 	^ gtIceRepository
 ]
 
-{ #category : #'examples - checkout' }
+{ #category : #'examples - merge' }
 GtIceLepiterExamples >> gitRepositoryAPageEditWithMergeConflict_acceptExistingChange [
 	<gtExample>
 	
@@ -788,7 +788,7 @@ GtIceLepiterExamples >> gitRepositoryAPageEditWithMergeConflict_acceptExistingCh
 	^ mergeAction
 ]
 
-{ #category : #'examples - checkout' }
+{ #category : #'examples - merge' }
 GtIceLepiterExamples >> gitRepositoryAPageEditWithMergeConflict_acceptExistingChange_performMerge [
 	<gtExample>
 	
@@ -805,7 +805,7 @@ GtIceLepiterExamples >> gitRepositoryAPageEditWithMergeConflict_acceptExistingCh
 	^ mergeAction
 ]
 
-{ #category : #'examples - checkout' }
+{ #category : #'examples - merge' }
 GtIceLepiterExamples >> gitRepositoryAPageEditWithMergeConflict_acceptIncomingChange [
 	<gtExample>
 	
@@ -819,7 +819,7 @@ GtIceLepiterExamples >> gitRepositoryAPageEditWithMergeConflict_acceptIncomingCh
 	^ mergeAction
 ]
 
-{ #category : #'examples - checkout' }
+{ #category : #'examples - merge' }
 GtIceLepiterExamples >> gitRepositoryAPageEditWithMergeConflict_acceptIncomingChange_performMerge [
 	<gtExample>
 	
