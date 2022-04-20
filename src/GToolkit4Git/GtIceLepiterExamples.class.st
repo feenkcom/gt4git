@@ -1085,6 +1085,31 @@ GtIceLepiterExamples >> gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch
 	^ gtIceRepository
 ]
 
+{ #category : #'examples - merge' }
+GtIceLepiterExamples >> gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch_commitDatabase_checkoutMainBranch_mergeSecondBranch [
+	"Example for merging a branch that has a lepiter database"
+	<gtExample>
+	
+	| gtIceRepository lepiterWorkingCopy targetDatabase |
+	gtIceRepository := self gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch_commitDatabase_checkoutMainBranch.
+	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
+	
+	lepiterWorkingCopy 
+		mergeCommit: (gtIceRepository icebergRepository 
+			branchNamed: self secondaryBranchName) commit.
+	self assertNoChangesInRepository:  gtIceRepository.
+	
+	"Databases are not added automatically."
+	self assert: lepiterWorkingCopy databases size equals: 0.
+	
+	targetDatabase := self loadDatabaseInIcebergRepository: gtIceRepository icebergRepository.
+	lepiterWorkingCopy addDB: targetDatabase.
+	
+	self assert: (targetDatabase hasPageNamed: 'Page1').
+	
+	^ gtIceRepository
+]
+
 { #category : #'examples - pages' }
 GtIceLepiterExamples >> gitRepositoryAWithTwoNewUnnamedAddedPage [
 	<gtExample>
@@ -1126,6 +1151,14 @@ GtIceLepiterExamples >> gitRepositoryAWithTwoNewUnnamedAddedPage [
 GtIceLepiterExamples >> lepiterDatabases [ 
 	^ lepiterDatabases ifNil: [ 
 		lepiterDatabases := IdentityDictionary new ]
+]
+
+{ #category : #'creation repositories' }
+GtIceLepiterExamples >> loadDatabaseInIcebergRepository: iceRepository [
+	^ LeLocalStoreLoad current 
+		loadAndMonitorFrom: (self databaseLocationForRepository: iceRepository)
+		saveDelay: 0 seconds.
+
 ]
 
 { #category : #'accessing - names' }
