@@ -210,11 +210,13 @@ GtLepiterWorkingCopy >> referenceCommit [
 GtLepiterWorkingCopy >> removeDatabase: aDatabase [
 	self assert: [ databases includes: aDatabase ].
 	
+	"This removes the database and triggers an announcement.
+	The working copy listens to that announcements and removes the database."
 	aDatabase removeFromParentDatabaseUpdatingProperties.
-	databases remove: aDatabase.
 	
 	self unsubscribeDatabase: aDatabase.
 	
+	self assert: [ (databases includes: aDatabase) not ].
 ]
 
 { #category : #accessing }
