@@ -452,10 +452,15 @@ GtGitRepository >> fileFormatDescription [
 	^ MASingleOptionDescription new
 		  label: 'File Format';
 		  priority: 3;
-		  display: #description;
+		  display: [ :aWriter | 
+			aWriter 
+				ifNil: [ '<unspeficied>' ] 
+				ifNotNil: [ aWriter description ]  ];
 		  accessor: (MAPluggableAccessor
 				   read: [ :aModel | 
-					   icebergRepository project repositoryProperties fileFormat ]
+					   icebergRepository project isUnborn
+							ifTrue: [ nil ] 
+							ifFalse: [ icebergRepository project repositoryProperties fileFormat ] ]
 				   write: [ :aModel :aValue | 
 					   icebergRepository project fileFormat: (aValue = 'Tonel'
 								    ifTrue: [ IceLibgitTonelWriter ]
@@ -579,7 +584,10 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 	| aViewModel changes chosen |
 	chosen := Set new.
 
-	self isMissing ifTrue: [ ^ aView empty ].
+	 (self isMissing  
+		or: [ self workingCopy isDetached not
+			and: [ self icebergRepository head isDetached not
+				and: [ self workingCopy project isUnborn ] ] ]) ifTrue: [ ^ aView empty ].
 
 	aViewModel := self viewModel.
 
@@ -1177,7 +1185,7 @@ GtGitRepository >> workingCopy [
 	^ self icebergWorkingCopy
 ]
 
-{ #category : #'gt - extensions' }
+{ #category : #'api - repository' }
 GtGitRepository >> workingCopyDiff [
 	^ self lepiterWorkingCopy diffToReferenceCommit
 ]
