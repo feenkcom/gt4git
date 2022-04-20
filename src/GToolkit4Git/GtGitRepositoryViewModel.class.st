@@ -144,7 +144,7 @@ GtGitRepositoryViewModel >> outgoingCommits [
 
 { #category : #'api - actions' }
 GtGitRepositoryViewModel >> pull [
-	self repositoryModel pull
+	self repositoryModel gtLepiterAwarePull
 ]
 
 { #category : #'api - actions' }

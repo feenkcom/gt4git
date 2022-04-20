@@ -1,3 +1,7 @@
+"
+{{gtClass:GtGitRepository}} augments an Iceberg repository with a gt-specific working copy that can handle Lepiter databases and other files. 
+It also relies on a gt-specific working copy ({{gtClass:GtLepiterWorkingCopy}}) for peforming operations that afect the state of the image.
+"
 Class {
 	#name : #GtGitRepository,
 	#superclass : #Object,
@@ -496,7 +500,7 @@ GtGitRepository >> gtActionPullFor: anAction [
 		  label: 'Pull';
 		  priority: 3;
 		  action: [ :aButton | 
-			  [ self pull ]
+			  [ self gtLepiterAwarePull ]
 				  on: IceMergeResolutionRequest
 				  do: [ :r | aButton phlow spawnObject: r merge ].
 			  aButton phlow fireUpdateWish ]
