@@ -332,6 +332,19 @@ GtIceLepiterExamples >> createBasicIcebergRepositoryWithName: repositoryName [
 ]
 
 { #category : #'creation repositories' }
+GtIceLepiterExamples >> createDatabaseNamed: aDatabaseName inIcebergRepository: iceRepository [
+	| database |
+	
+	database := LeLocalStoreLoad current 
+		loadAndMonitorFrom: (self databaseLocationForRepository: iceRepository)
+		saveDelay: 0 seconds.
+	database databaseName: aDatabaseName.
+	self lepiterDatabases at: aDatabaseName put: database.
+	
+	^ database
+]
+
+{ #category : #'creation repositories' }
 GtIceLepiterExamples >> createIcebergRepositoryNamed: aRepositoryName withLepiterDatabaseNamed: aDatabaseName [
 	| iceRepository gtRepository database |
 	
@@ -339,11 +352,7 @@ GtIceLepiterExamples >> createIcebergRepositoryNamed: aRepositoryName withLepite
 		ifTrue: [ Error signal: 'Database already present.' ].
 		
 	iceRepository := self createBasicIcebergRepositoryWithName: aRepositoryName.
-	
-	database := LeLocalStoreLoad current 
-		loadAndMonitorFrom: iceRepository location / 'lepiter'
-		saveDelay: 0 seconds.
-	database databaseName: aDatabaseName.
+	database := self createDatabaseNamed: aDatabaseName inIcebergRepository: iceRepository.
 	
 	"The current mechanism requires a database to be registered
 	before creating the gt git repo, in order for the diff logic to work."
@@ -353,9 +362,6 @@ GtIceLepiterExamples >> createIcebergRepositoryNamed: aRepositoryName withLepite
 	gtRepository lepiterWorkingCopy: (GtLepiterWorkingCopy new
 		icebergRepository: iceRepository; 
 		databases: { database }).
-	"self assertLepiterDatabase: database inFolderNamed: 'lepiter'."
-
-	self lepiterDatabases at: aDatabaseName put: database.
 	
 	^ gtRepository
 ]
@@ -377,6 +383,11 @@ GtIceLepiterExamples >> createNewPageWithAttachmentIn: aDatabase [
 	visitor cleanUp.
 	
 	^ newPage
+]
+
+{ #category : #'creation repositories' }
+GtIceLepiterExamples >> databaseLocationForRepository: iceRepository [
+	^ iceRepository location / 'lepiter'
 ]
 
 { #category : #'setUp-tearDown' }
@@ -894,7 +905,7 @@ GtIceLepiterExamples >> gitRepositoryAWithNewEmptyNotCommitedLepiterDatabase [
 	| gtIceRepository lepiterWorkingCopy targetDatabase diff databaseNode |
 	
 	gtIceRepository := self 
-		createIcebergRepositoryNamed: 'repo-a' 
+		createIcebergRepositoryNamed: self repositoryName 
 		withLepiterDatabaseNamed: 'database-a'. 
 	
 	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
@@ -979,6 +990,101 @@ GtIceLepiterExamples >> gitRepositoryAWithNewUnnamedAddedPage [
 	^ gtIceRepository
 ]
 
+{ #category : #'examples - checkout' }
+GtIceLepiterExamples >> gitRepositoryAWithNoLepiterDatabase [
+	<gtExample>
+	<after: #cleanUpRepositoriesAndDatabases>
+	
+	| iceRepository gtIceRepository lepiterWorkingCopy |
+	iceRepository := self createBasicIcebergRepositoryWithName: self repositoryName.
+	gtIceRepository := GtGitRepository fromIcebergRepository: iceRepository.
+	
+	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
+	self assert: lepiterWorkingCopy databases size equals: 0.
+	self assertNoChangesInRepository: gtIceRepository.
+	
+	^ gtIceRepository
+]
+
+{ #category : #'examples - checkout' }
+GtIceLepiterExamples >> gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch [
+	<gtExample>
+	
+	| gtIceRepository lepiterWorkingCopy |
+	gtIceRepository := self gitRepositoryAWithNoLepiterDatabase.
+	
+	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
+	self assert: lepiterWorkingCopy databases size equals: 0.
+	
+	gtIceRepository 
+		gtLepiterAwareCheckoutBranch: self secondaryBranchName.
+	
+	self assert: lepiterWorkingCopy databases size equals: 0.
+	self assertNoChangesInRepository: gtIceRepository.
+	
+	^ gtIceRepository
+]
+
+{ #category : #'examples - checkout' }
+GtIceLepiterExamples >> gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch_commitDatabase [
+	<gtExample>
+	
+	| gtIceRepository targetDatabase lepiterWorkingCopy newPage |
+	gtIceRepository := self gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch.
+	
+	targetDatabase := self 
+		createDatabaseNamed: 'database-a' 
+		inIcebergRepository: gtIceRepository icebergRepository.
+		
+	"There should be deltas because the database files were written to disk"
+	self assert: gtIceRepository getDeltasForFullDiff isNotEmpty.
+	"The diff with the working copy is empty as the database is not yet added to the repository"
+	self assert: gtIceRepository workingCopyDiff isEmpty.
+		
+	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
+	lepiterWorkingCopy addDB: targetDatabase.
+		
+	gtIceRepository executeCommit: 'Add Database'.
+
+	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
+	lepiterWorkingCopy addDB: targetDatabase.
+	
+	newPage := LePage named: 'Page1'.
+	newPage addSnippet: (LeTextSnippet string: 'Snippet1').
+	targetDatabase addPage: newPage.
+	self 
+		assertOneAddedPage: newPage 
+		inRepository: gtIceRepository.
+	
+	gtIceRepository executeCommit: 'Add Page1'.
+	self assertNoChangesInRepository:  gtIceRepository.
+	self assert: targetDatabase pageCount equals: 1.
+	self assert: newPage children size equals: 1.
+	
+	^ gtIceRepository
+]
+
+{ #category : #'examples - checkout' }
+GtIceLepiterExamples >> gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch_commitDatabase_checkoutMainBranch [
+	"Example for checking out a branch that removes a database. The current branch has a Lepiter databases.
+	The main branch does not have the database. Switching to the main branch should remove the database."
+	<gtExample>
+	
+	| gtIceRepository lepiterWorkingCopy |
+	gtIceRepository := self gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch_commitDatabase.
+	
+	gtIceRepository 
+		gtLepiterAwareCheckoutBranch: self mainBranchName.
+		
+	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
+	self assertNoChangesInRepository:  gtIceRepository.
+	self assert: (self databaseLocationForRepository: gtIceRepository icebergRepository) files size equals: 0.
+	
+	self assert: lepiterWorkingCopy databases size equals: 0.
+	
+	^ gtIceRepository
+]
+
 { #category : #'examples - pages' }
 GtIceLepiterExamples >> gitRepositoryAWithTwoNewUnnamedAddedPage [
 	<gtExample>
@@ -1022,7 +1128,7 @@ GtIceLepiterExamples >> lepiterDatabases [
 		lepiterDatabases := IdentityDictionary new ]
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing - names' }
 GtIceLepiterExamples >> mainBranchName [
 	^ 'master'
 ]
@@ -1050,7 +1156,12 @@ GtIceLepiterExamples >> repositories [
 		repositories := IdentityDictionary new ]
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing - names' }
+GtIceLepiterExamples >> repositoryName [
+	^ 'repo-a'
+]
+
+{ #category : #'accessing - names' }
 GtIceLepiterExamples >> secondaryBranchName [
 	^ 'second'
 ]

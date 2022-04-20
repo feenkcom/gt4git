@@ -806,6 +806,12 @@ GtGitRepository >> gtLepiterAwareCheckoutBranch: aBranchName [
 		withWorkingCopy: self lepiterWorkingCopy
 ]
 
+{ #category : #accessing }
+GtGitRepository >> gtLepiterAwarePull [
+	self icebergRepository 
+		gtPullInWorkingCopy: self lepiterWorkingCopy
+]
+
 { #category : #'gt - extensions' }
 GtGitRepository >> gtPackagesFor: aView context: aContext [
 	<gtView>

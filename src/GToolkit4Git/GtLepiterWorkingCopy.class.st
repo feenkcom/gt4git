@@ -9,18 +9,11 @@ Class {
 	#category : #'GToolkit4Git-Lepiter'
 }
 
-{ #category : #accessing }
+{ #category : #actions }
 GtLepiterWorkingCopy >> addDB: aDatabase [
 
 	databases add: aDatabase.
-	aDatabase announcer weak
-		when: LeAnnouncement
-		send: #onDatabaseChanged:
-		to: self.
-	aDatabase monitor announcer weak
-		when: LeLocalStoreMonitorSavedChanges
-		send: #onDatabaseSaved:
-		to: self
+	self subscribeDatabase: aDatabase.
 ]
 
 { #category : #testing }
@@ -28,7 +21,7 @@ GtLepiterWorkingCopy >> canRevertChanges [
 	^ true
 ]
 
-{ #category : #accessing }
+{ #category : #changes }
 GtLepiterWorkingCopy >> changesFromCommit: anIceCommit [
 	"Delegate for now to the iceberg working copy.
 	This does not take into account any Lepiter changes for now"
@@ -45,7 +38,7 @@ GtLepiterWorkingCopy >> changesTo: aCommitish [
 	  , { (IceGitChange on: 'README.md') }
 ]
 
-{ #category : #accessing }
+{ #category : #changes }
 GtLepiterWorkingCopy >> changesToHeadUsingIndex [
 	"Determine the changes between the current head commit of the repository and
 	the working directory, by relying on the index."
@@ -72,14 +65,7 @@ GtLepiterWorkingCopy >> databases [
 GtLepiterWorkingCopy >> databases: anObject [
 	databases := anObject asSet.
 	databases do: [ :aDatabase | 
-		aDatabase announcer weak
-			when: LeAnnouncement
-			send: #onDatabaseChanged:
-			to: self.
-		aDatabase monitor announcer weak
-			when: LeLocalStoreMonitorSavedChanges
-			send: #onDatabaseSaved:
-			to: self ]
+		self subscribeDatabase: aDatabase ]
 ]
 
 { #category : #'API - changes' }
@@ -166,7 +152,7 @@ GtLepiterWorkingCopy >> lepiterChangesTo: aCommitish [
 	^ self lepiterChangesStragegy changesTo: aCommitish
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #changes }
 GtLepiterWorkingCopy >> loadLepiterChangesInWorkingCopyFrom: aTree [
 	| visitor |
 	
@@ -183,7 +169,7 @@ GtLepiterWorkingCopy >> mergeCommit: aCommit [
 		gtMergeCommit: aCommit forWorkingCopy: self 
 ]
 
-{ #category : #accessing }
+{ #category : #callbacks }
 GtLepiterWorkingCopy >> onDatabaseChanged: anAnnouncement [
 	(anAnnouncement isKindOf: LeDatabaseUnloadAnnouncement) ifTrue: [ 
 		databases remove: anAnnouncement database ifAbsent: [] ].
@@ -192,7 +178,7 @@ GtLepiterWorkingCopy >> onDatabaseChanged: anAnnouncement [
 		(IceRepositoryModified for: self repository)
 ]
 
-{ #category : #accessing }
+{ #category : #callbacks }
 GtLepiterWorkingCopy >> onDatabaseSaved: anAnnouncement [
 
 	(databases contains: [ :aDatabase | 
@@ -215,6 +201,17 @@ GtLepiterWorkingCopy >> properties [
 { #category : #accessing }
 GtLepiterWorkingCopy >> referenceCommit [
 	^ self icebergWorkingCopy referenceCommit
+]
+
+{ #category : #actions }
+GtLepiterWorkingCopy >> removeDatabase: aDatabase [
+	self assert: [ databases includes: aDatabase ].
+	
+	aDatabase removeFromParentDatabaseUpdatingProperties.
+	databases remove: aDatabase.
+	
+	self unsubscribeDatabase: aDatabase.
+	
 ]
 
 { #category : #accessing }
@@ -241,7 +238,33 @@ GtLepiterWorkingCopy >> snapshotForPackage: aPackage [
 	^ self icebergWorkingCopy snapshotForPackage: aPackage 
 ]
 
-{ #category : #accessing }
+{ #category : #actions }
+GtLepiterWorkingCopy >> subscribeDatabase: aDatabase [
+	aDatabase announcer weak
+		when: LeAnnouncement
+		send: #onDatabaseChanged:
+		to: self.
+	aDatabase monitor announcer weak
+		when: LeLocalStoreMonitorSavedChanges
+		send: #onDatabaseSaved:
+		to: self
+]
+
+{ #category : #actions }
+GtLepiterWorkingCopy >> unsubscribeDatabase: aDatabase [
+	aDatabase announcer unsubscribe: self.
+	aDatabase monitor announcer unsubscribe: self.
+	
+]
+
+{ #category : #actions }
+GtLepiterWorkingCopy >> updateContentForDatabase: aDatabase [
+	self assert: [ databases includes: aDatabase ].
+	
+	aDatabase monitor primitiveReloadWithPageDeletion 
+]
+
+{ #category : #actions }
 GtLepiterWorkingCopy >> updateDatabases [
 	| allDatabases |
 	allDatabases := LeDatabasesRegistry default 

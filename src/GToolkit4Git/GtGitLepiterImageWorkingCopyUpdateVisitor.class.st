@@ -15,6 +15,34 @@ Class {
 	#category : #'GToolkit4Git-Lepiter'
 }
 
+{ #category : #testing }
+GtGitLepiterImageWorkingCopyUpdateVisitor >> isLepiterDatabaseDefinition: anIceDefinition [ 
+	| directoryReference |
+	
+	anIceDefinition class = IceDirectoryDefinition ifFalse: [ ^ false ].
+	
+	directoryReference := self lepiterWorkingCopy fileSystem 
+		resolve: anIceDefinition path.
+	
+	^ directoryReference files anySatisfy: [ :aFile |
+		aFile basename = LepiterCoreDefaults databasePropertiesBasename ]
+]
+
+{ #category : #testing }
+GtGitLepiterImageWorkingCopyUpdateVisitor >> isLoadedLepiterDatabaseDefinition: anIceDefinition [ 
+	^ (self isLepiterDatabaseDefinition: anIceDefinition) and: [
+		self isRegisteredLepiterDatabaseDefinition: anIceDefinition ]
+]
+
+{ #category : #testing }
+GtGitLepiterImageWorkingCopyUpdateVisitor >> isRegisteredLepiterDatabaseDefinition: anIceDefinition [ 
+	anIceDefinition class = IceDirectoryDefinition ifFalse: [ ^ false ].
+	
+	^ self lepiterWorkingCopy databases 
+		anySatisfy: [ :aDatabase |
+			(self relativePathForDatabase: aDatabase) = anIceDefinition path ]
+]
+
 { #category : #accessing }
 GtGitLepiterImageWorkingCopyUpdateVisitor >> lepiterWorkingCopy [
 
@@ -33,6 +61,25 @@ GtGitLepiterImageWorkingCopyUpdateVisitor >> relativePathForDatabase: aDatabase 
 			relativeTo: self lepiterWorkingCopy icebergRepository repositoryDirectory
 ]
 
+{ #category : #updating }
+GtGitLepiterImageWorkingCopyUpdateVisitor >> removeLepiterDatabaseForDefinition: anIceDirectoryDefinition [
+
+	self 
+		withDatabaseForDefinition: anIceDirectoryDefinition 
+		do: [ :aDatabase | 
+			self lepiterWorkingCopy removeDatabase: aDatabase ]
+	
+]
+
+{ #category : #updating }
+GtGitLepiterImageWorkingCopyUpdateVisitor >> updateDatabaseForDefiniton: anIceDirectoryDefinition [
+
+	self 
+		withDatabaseForDefinition: anIceDirectoryDefinition 
+		do: [ :aDatabase | 
+			self lepiterWorkingCopy updateContentForDatabase: aDatabase ]
+]
+
 { #category : #visiting }
 GtGitLepiterImageWorkingCopyUpdateVisitor >> visitAddition: anIceAddition [ 
 	anIceAddition definition accept: self.
@@ -40,22 +87,11 @@ GtGitLepiterImageWorkingCopyUpdateVisitor >> visitAddition: anIceAddition [
 
 { #category : #visiting }
 GtGitLepiterImageWorkingCopyUpdateVisitor >> visitDirectoryDefinition: anIceDirectoryDefinition [ 
-	| directoryReference |
 	
-	directoryReference := self lepiterWorkingCopy fileSystem 
-		resolve: anIceDirectoryDefinition path.
+	(self isLoadedLepiterDatabaseDefinition: anIceDirectoryDefinition) ifFalse: [ 
+		^ self visitChildrenOf: currentNode ].
 	
-	(directoryReference files anySatisfy: [ :aFile |
-		aFile basename = LepiterCoreDefaults databasePropertiesBasename ])
-			ifFalse: [ self visitChildrenOf: currentNode. ^ self ].
-	
-	self lepiterWorkingCopy databases 
-		detect:  [ :aDatabase |
-			(self relativePathForDatabase: aDatabase) = anIceDirectoryDefinition path ]
-		ifFound: [ :aDatabase | 
-			aDatabase monitor primitiveReloadWithPageDeletion.  ^ self  ].
-
-	self visitChildrenOf: currentNode
+	self updateDatabaseForDefiniton: anIceDirectoryDefinition.
 ]
 
 { #category : #visiting }
@@ -88,10 +124,27 @@ GtGitLepiterImageWorkingCopyUpdateVisitor >> visitPackage: anIcePackageDefinitio
 
 { #category : #visiting }
 GtGitLepiterImageWorkingCopyUpdateVisitor >> visitRemoval: anIceRemoval [
-	anIceRemoval definition accept: self.
+	
+	(self isRegisteredLepiterDatabaseDefinition: anIceRemoval definition) ifTrue: [ 
+		^ self removeLepiterDatabaseForDefinition: anIceRemoval definition ].
+
+	self visitChildrenOf: currentNode
 ]
 
 { #category : #visiting }
 GtGitLepiterImageWorkingCopyUpdateVisitor >> visitRootDefinition: anIceRootDefinition [ 
 	self visitChildrenOf: currentNode
+]
+
+{ #category : #utils }
+GtGitLepiterImageWorkingCopyUpdateVisitor >> withDatabaseForDefinition: anIceDefinition do: aBlock [
+
+	self lepiterWorkingCopy databases 
+		detect:  [ :aDatabase |
+			(self relativePathForDatabase: aDatabase) = anIceDefinition path ]
+		ifFound: [ :aDatabase | 
+			aBlock value: aDatabase ]
+		ifNone: [ Error signal: 'Database not found' ]
+		
+	
 ]
