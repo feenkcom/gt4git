@@ -2,9 +2,10 @@
 Visitor that updates the state of Lepiter databases after a merge.
 
 The main responsability is to detect changes to Lepiter databases and trigger updates.
-No content is actually modified by the visitor. The visitor only asks the database to reload.
+No pages or other content is directly modified by the visitor. The visitor only asks the 
+working copy to reload or remove databases.
 
-
+The visitor can either visit a merge tree containing merge operations ({{gtClass:IceOperationMerge}}) or a diff tree containing change operations ({{gtClass:IceOperation}}). 
 "
 Class {
 	#name : #GtGitLepiterImageWorkingCopyUpdateVisitor,
@@ -80,7 +81,7 @@ GtGitLepiterImageWorkingCopyUpdateVisitor >> updateDatabaseForDefiniton: anIceDi
 			self lepiterWorkingCopy updateContentForDatabase: aDatabase ]
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting - operations' }
 GtGitLepiterImageWorkingCopyUpdateVisitor >> visitAddition: anIceAddition [ 
 	anIceAddition definition accept: self.
 ]
@@ -100,20 +101,20 @@ GtGitLepiterImageWorkingCopyUpdateVisitor >> visitFileNode: anIceFileDefinition 
 	"Ignore files, as they are not loaded into the image"
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting - operations' }
 GtGitLepiterImageWorkingCopyUpdateVisitor >> visitModification: anIceModification [ 
 	
 	anIceModification definition accept: self
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting - operations' }
 GtGitLepiterImageWorkingCopyUpdateVisitor >> visitNoModification: anIceNoModification [
 	anIceNoModification definition accept: self.
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting - merge tree' }
 GtGitLepiterImageWorkingCopyUpdateVisitor >> visitNonConflictingOperation: anIceNonConflictingOperation [ 
-	anIceNonConflictingOperation chosenOperation accept: self.
+	anIceNonConflictingOperation chosenOperation accept: self
 ]
 
 { #category : #visiting }
@@ -122,7 +123,7 @@ GtGitLepiterImageWorkingCopyUpdateVisitor >> visitPackage: anIcePackageDefinitio
 	"This visitor ignores packages"
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting - operations' }
 GtGitLepiterImageWorkingCopyUpdateVisitor >> visitRemoval: anIceRemoval [
 	
 	(self isRegisteredLepiterDatabaseDefinition: anIceRemoval definition) ifTrue: [ 

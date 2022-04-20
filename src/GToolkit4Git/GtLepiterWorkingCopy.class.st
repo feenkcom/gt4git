@@ -154,6 +154,9 @@ GtLepiterWorkingCopy >> lepiterChangesTo: aCommitish [
 
 { #category : #changes }
 GtLepiterWorkingCopy >> loadLepiterChangesInWorkingCopyFrom: aTree [
+	"I detect if the tree includes changes for Lepiter databases currently loaded. If yes I update those databases.
+	I should be called after git operations that change the state of the git working copy on disk, to update the state
+	of the working copy also inside the image, like after a branch is checkout."
 	| visitor |
 	
 	visitor := GtGitLepiterImageWorkingCopyUpdateVisitor new

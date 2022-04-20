@@ -1,3 +1,8 @@
+"
+This is a stragegy that augments {{gtClass:IceCheckoutAlreadyLoadedPackages}} with support for updating Lepiter databases already loaded inside the image. 
+
+If a database is removed from disk it will also be removed from the in-image working copy.
+"
 Class {
 	#name : #GtGitIceCheckoutAlreadyLoadedContent,
 	#superclass : #IceCheckoutAlreadyLoadedPackages,
