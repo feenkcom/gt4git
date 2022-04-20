@@ -213,6 +213,7 @@ GtLepiterWorkingCopy >> removeDatabase: aDatabase [
 	"This removes the database and triggers an announcement.
 	The working copy listens to that announcements and removes the database."
 	aDatabase removeFromParentDatabaseUpdatingProperties.
+	databases remove: aDatabase ifAbsent: [ ].
 	
 	self unsubscribeDatabase: aDatabase.
 	
