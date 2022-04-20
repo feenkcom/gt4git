@@ -10,10 +10,26 @@ Class {
 }
 
 { #category : #actions }
-GtLepiterWorkingCopy >> addDB: aDatabase [
+GtLepiterWorkingCopy >> addDatabase: aDatabase [
 
 	databases add: aDatabase.
 	self subscribeDatabase: aDatabase.
+]
+
+{ #category : #actions }
+GtLepiterWorkingCopy >> addNewDatabaseInDirectory: aDirectory [
+	| newDatabase aFileLocator |
+	
+	aFileLocator := aDirectory gtWithClosestFileLocatorParent.
+	newDatabase := LeLocalStoreLoad current 
+		loadAndMonitorFrom: aFileLocator.
+
+	LeDatabasesRegistry defaultLogicalDatabase 
+		addDB: newDatabase;
+		saveProperties.
+
+	self addDatabase: newDatabase.
+	
 ]
 
 { #category : #testing }
@@ -66,6 +82,18 @@ GtLepiterWorkingCopy >> databases: anObject [
 	databases := anObject asSet.
 	databases do: [ :aDatabase | 
 		self subscribeDatabase: aDatabase ]
+]
+
+{ #category : #actions }
+GtLepiterWorkingCopy >> deleteDatabase: aDatabase [
+	self assert: [ databases includes: aDatabase ].
+	
+	aDatabase removeFromParentDatabaseUpdatingProperties.
+	databases remove: aDatabase ifAbsent: [ ].
+	
+	self unsubscribeDatabase: aDatabase.
+	
+	self assert: [ (databases includes: aDatabase) not ].
 ]
 
 { #category : #'API - changes' }
@@ -206,20 +234,6 @@ GtLepiterWorkingCopy >> referenceCommit [
 	^ self icebergWorkingCopy referenceCommit
 ]
 
-{ #category : #actions }
-GtLepiterWorkingCopy >> removeDatabase: aDatabase [
-	self assert: [ databases includes: aDatabase ].
-	
-	"This removes the database and triggers an announcement.
-	The working copy listens to that announcements and removes the database."
-	aDatabase removeFromParentDatabaseUpdatingProperties.
-	databases remove: aDatabase ifAbsent: [ ].
-	
-	self unsubscribeDatabase: aDatabase.
-	
-	self assert: [ (databases includes: aDatabase) not ].
-]
-
 { #category : #accessing }
 GtLepiterWorkingCopy >> repository [
 
@@ -257,6 +271,11 @@ GtLepiterWorkingCopy >> subscribeDatabase: aDatabase [
 ]
 
 { #category : #actions }
+GtLepiterWorkingCopy >> unloadDatabase: aDatabase [
+	aDatabase unload
+]
+
+{ #category : #actions }
 GtLepiterWorkingCopy >> unsubscribeDatabase: aDatabase [
 	aDatabase announcer unsubscribe: self.
 	aDatabase monitor announcer unsubscribe: self.
@@ -273,8 +292,8 @@ GtLepiterWorkingCopy >> updateContentForDatabase: aDatabase [
 { #category : #actions }
 GtLepiterWorkingCopy >> updateDatabases [
 	| allDatabases |
-	allDatabases := LeDatabasesRegistry default 
-		defaultLogicalDatabase databases.
+	allDatabases := LeDatabasesRegistry defaultLogicalDatabase databases.
+	
 	self icebergRepository repositoryDirectory ifNotNil: [ 
 		self databases: (allDatabases select: [ :aDatabase | 
 			 self icebergRepository repositoryDirectory 

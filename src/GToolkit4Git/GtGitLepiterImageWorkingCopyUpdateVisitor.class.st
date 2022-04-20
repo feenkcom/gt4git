@@ -68,7 +68,7 @@ GtGitLepiterImageWorkingCopyUpdateVisitor >> removeLepiterDatabaseForDefinition:
 	self 
 		withDatabaseForDefinition: anIceDirectoryDefinition 
 		do: [ :aDatabase | 
-			self lepiterWorkingCopy removeDatabase: aDatabase ]
+			self lepiterWorkingCopy deleteDatabase: aDatabase ]
 	
 ]
 

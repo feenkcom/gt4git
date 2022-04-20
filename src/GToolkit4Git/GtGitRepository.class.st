@@ -61,41 +61,10 @@ GtGitRepository >> addBaseline: aBaselineName [
 ]
 
 { #category : #'api - actions adding/removing' }
-GtGitRepository >> addDatabase: aDatabaseName [
-
-	| aDatabase aFileLocator |
-	aFileLocator := self icebergRepository repositoryDirectory / aDatabaseName.
-	aFileLocator createDirectory.
-	aDatabase := LeLocalStoreLoad current 
-		loadAndMonitorFrom: aFileLocator.
-
-	LeDatabasesRegistry uniqueInstance ensureDatabase addDB: aDatabase.
-
-	LeDatabasesRegistry defaultLogicalDatabase properties 
-		addRegisteredDirectory: aFileLocator.
-
-	self icebergRepository addFileToIndex:
-		(aFileLocator relativeTo: self icebergRepository repositoryDirectory).
-	self lepiterWorkingCopy addDB: aDatabase.
-	self announceRepositoryModified.
-]
-
-{ #category : #'api - actions adding/removing' }
 GtGitRepository >> addNewDatabaseInDirectory: aDirectory [
 
-	| aDatabase aFileLocator |
-	aFileLocator := aDirectory gtWithClosestFileLocatorParent.
-	aDatabase := LeLocalStoreLoad current 
-		loadAndMonitorFrom: aFileLocator.
-
-	LeDatabasesRegistry uniqueInstance ensureDatabase addDB: aDatabase.
-
-	LeDatabasesRegistry defaultLogicalDatabase properties 
-		addRegisteredDirectory: aFileLocator.
-
-	self icebergRepository addFileToIndex:
-		(aDirectory relativeTo: self icebergRepository repositoryDirectory).
-	self lepiterWorkingCopy addDB: aDatabase
+	self lepiterWorkingCopy addNewDatabaseInDirectory: aDirectory.
+	self announceRepositoryModified.
 ]
 
 { #category : #announcer }
@@ -304,10 +273,10 @@ GtGitRepository >> databasesDescription [
 		  accessor: (MAPluggableAccessor
 				   read: [ :aModel | aModel databases asOrderedCollection ]
 				   write: [ :aModel :aValue | 
-					   | databasesToAdd databasesToRemove |
 					   aModel databases asOrderedCollection
 						   removeAllFoundIn: aValue;
-						   collect: [ :database | self removeDatabase: database ].
+						   collect: [ :database | 
+								self lepiterWorkingCopy unloadDatabase: database ].
 					   aValue
 						   removeAllFoundIn: aModel databases;
 						   collect: [ :database | 
@@ -1065,11 +1034,6 @@ GtGitRepository >> removeBaseline: aBaseline [
 	self icebergRepository workingCopy removePackageNamed: aBaseline.
 	self icebergRepository workingCopy refreshPackages.
 	self announceRepositoryModified.
-]
-
-{ #category : #'api - actions adding/removing' }
-GtGitRepository >> removeDatabase: aDatabase [
-	aDatabase unload.
 ]
 
 { #category : #accessing }

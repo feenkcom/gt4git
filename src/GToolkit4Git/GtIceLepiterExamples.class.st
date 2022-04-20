@@ -1042,12 +1042,9 @@ GtIceLepiterExamples >> gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch
 	self assert: gtIceRepository workingCopyDiff isEmpty.
 		
 	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
-	lepiterWorkingCopy addDB: targetDatabase.
+	lepiterWorkingCopy addDatabase: targetDatabase.
 		
 	gtIceRepository executeCommit: 'Add Database'.
-
-	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
-	lepiterWorkingCopy addDB: targetDatabase.
 	
 	newPage := LePage named: 'Page1'.
 	newPage addSnippet: (LeTextSnippet string: 'Snippet1').
@@ -1103,7 +1100,7 @@ GtIceLepiterExamples >> gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch
 	self assert: lepiterWorkingCopy databases size equals: 0.
 	
 	targetDatabase := self loadDatabaseInIcebergRepository: gtIceRepository icebergRepository.
-	lepiterWorkingCopy addDB: targetDatabase.
+	lepiterWorkingCopy addDatabase: targetDatabase.
 	
 	self assert: (targetDatabase hasPageNamed: 'Page1').
 	

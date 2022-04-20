@@ -31,25 +31,6 @@ GtGitDefinitionsElement >> addDefinitionEditorShortcutsTo: aPropertiesElement [
 ]
 
 { #category : #accessing }
-GtGitDefinitionsElement >> addNewDatabaseInDirectory: aDirectory [
-
-	| aDatabase aFileLocator |
-	aFileLocator := aDirectory gtWithClosestFileLocatorParent.
-	aDatabase := LeLocalStoreLoad current loadAndMonitorFrom:
-		             aFileLocator.
-
-	LeDatabasesRegistry uniqueInstance ensureDatabase addDB: aDatabase.
-
-	LeDatabasesRegistry defaultLogicalDatabase properties 
-		addRegisteredDirectory: aFileLocator.
-
-	self repository addFileToIndex:
-		(aDirectory relativeTo: self repository repositoryDirectory).
-	self repositoryViewModel repositoryModel lepiterWorkingCopy addDB:
-		aDatabase
-]
-
-{ #category : #accessing }
 GtGitDefinitionsElement >> buildDefinitionEditor [
 
 	| theProperties |
@@ -68,7 +49,7 @@ GtGitDefinitionsElement >> buildDefinitionEditor [
 { #category : #accessing }
 GtGitDefinitionsElement >> buildDefinitionReader [
 
-	| theProperties theReaders |
+	| theProperties |
 	theProperties := BrHorizontalGrid new constraintsDo: [ :c | 
 		                 c horizontal matchParent.
 		                 c vertical fitContent ].
