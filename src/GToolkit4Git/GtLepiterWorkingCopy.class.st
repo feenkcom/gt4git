@@ -9,18 +9,27 @@ Class {
 	#category : #'GToolkit4Git-Lepiter'
 }
 
-{ #category : #accessing }
-GtLepiterWorkingCopy >> addDB: aDatabase [
+{ #category : #actions }
+GtLepiterWorkingCopy >> addDatabase: aDatabase [
 
 	databases add: aDatabase.
-	aDatabase announcer weak
-		when: LeAnnouncement
-		send: #onDatabaseChanged:
-		to: self.
-	aDatabase monitor announcer weak
-		when: LeLocalStoreMonitorSavedChanges
-		send: #onDatabaseSaved:
-		to: self
+	self subscribeDatabase: aDatabase.
+]
+
+{ #category : #actions }
+GtLepiterWorkingCopy >> addNewDatabaseInDirectory: aDirectory [
+	| newDatabase aFileLocator |
+	
+	aFileLocator := aDirectory gtWithClosestFileLocatorParent.
+	newDatabase := LeLocalStoreLoad current 
+		loadAndMonitorFrom: aFileLocator.
+
+	LeDatabasesRegistry defaultLogicalDatabase 
+		addDB: newDatabase;
+		saveProperties.
+
+	self addDatabase: newDatabase.
+	
 ]
 
 { #category : #testing }
@@ -28,7 +37,7 @@ GtLepiterWorkingCopy >> canRevertChanges [
 	^ true
 ]
 
-{ #category : #accessing }
+{ #category : #changes }
 GtLepiterWorkingCopy >> changesFromCommit: anIceCommit [
 	"Delegate for now to the iceberg working copy.
 	This does not take into account any Lepiter changes for now"
@@ -45,7 +54,7 @@ GtLepiterWorkingCopy >> changesTo: aCommitish [
 	  , { (IceGitChange on: 'README.md') }
 ]
 
-{ #category : #accessing }
+{ #category : #changes }
 GtLepiterWorkingCopy >> changesToHeadUsingIndex [
 	"Determine the changes between the current head commit of the repository and
 	the working directory, by relying on the index."
@@ -72,14 +81,19 @@ GtLepiterWorkingCopy >> databases [
 GtLepiterWorkingCopy >> databases: anObject [
 	databases := anObject asSet.
 	databases do: [ :aDatabase | 
-		aDatabase announcer weak
-			when: LeAnnouncement
-			send: #onDatabaseChanged:
-			to: self.
-		aDatabase monitor announcer weak
-			when: LeLocalStoreMonitorSavedChanges
-			send: #onDatabaseSaved:
-			to: self ]
+		self subscribeDatabase: aDatabase ]
+]
+
+{ #category : #actions }
+GtLepiterWorkingCopy >> deleteDatabase: aDatabase [
+	self assert: [ databases includes: aDatabase ].
+	
+	aDatabase removeFromParentDatabaseUpdatingProperties.
+	databases remove: aDatabase ifAbsent: [ ].
+	
+	self unsubscribeDatabase: aDatabase.
+	
+	self assert: [ (databases includes: aDatabase) not ].
 ]
 
 { #category : #'API - changes' }
@@ -166,11 +180,14 @@ GtLepiterWorkingCopy >> lepiterChangesTo: aCommitish [
 	^ self lepiterChangesStragegy changesTo: aCommitish
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #changes }
 GtLepiterWorkingCopy >> loadLepiterChangesInWorkingCopyFrom: aTree [
+	"I detect if the tree includes changes for Lepiter databases currently loaded. If yes I update those databases.
+	I should be called after git operations that change the state of the git working copy on disk, to update the state
+	of the working copy also inside the image, like after a branch is checkout."
 	| visitor |
 	
-	visitor := GtGitLepiterMergeToChangeTreeVisitor new
+	visitor := GtGitLepiterImageWorkingCopyUpdateVisitor new
 		lepiterWorkingCopy: self.
 	aTree accept: visitor.
 	^ visitor
@@ -183,7 +200,7 @@ GtLepiterWorkingCopy >> mergeCommit: aCommit [
 		gtMergeCommit: aCommit forWorkingCopy: self 
 ]
 
-{ #category : #accessing }
+{ #category : #callbacks }
 GtLepiterWorkingCopy >> onDatabaseChanged: anAnnouncement [
 	(anAnnouncement isKindOf: LeDatabaseUnloadAnnouncement) ifTrue: [ 
 		databases remove: anAnnouncement database ifAbsent: [] ].
@@ -192,7 +209,7 @@ GtLepiterWorkingCopy >> onDatabaseChanged: anAnnouncement [
 		(IceRepositoryModified for: self repository)
 ]
 
-{ #category : #accessing }
+{ #category : #callbacks }
 GtLepiterWorkingCopy >> onDatabaseSaved: anAnnouncement [
 
 	(databases contains: [ :aDatabase | 
@@ -241,11 +258,42 @@ GtLepiterWorkingCopy >> snapshotForPackage: aPackage [
 	^ self icebergWorkingCopy snapshotForPackage: aPackage 
 ]
 
-{ #category : #accessing }
+{ #category : #actions }
+GtLepiterWorkingCopy >> subscribeDatabase: aDatabase [
+	aDatabase announcer weak
+		when: LeAnnouncement
+		send: #onDatabaseChanged:
+		to: self.
+	aDatabase monitor announcer weak
+		when: LeLocalStoreMonitorSavedChanges
+		send: #onDatabaseSaved:
+		to: self
+]
+
+{ #category : #actions }
+GtLepiterWorkingCopy >> unloadDatabase: aDatabase [
+	aDatabase unload
+]
+
+{ #category : #actions }
+GtLepiterWorkingCopy >> unsubscribeDatabase: aDatabase [
+	aDatabase announcer unsubscribe: self.
+	aDatabase monitor announcer unsubscribe: self.
+	
+]
+
+{ #category : #actions }
+GtLepiterWorkingCopy >> updateContentForDatabase: aDatabase [
+	self assert: [ databases includes: aDatabase ].
+	
+	aDatabase monitor primitiveReloadWithPageDeletion 
+]
+
+{ #category : #actions }
 GtLepiterWorkingCopy >> updateDatabases [
 	| allDatabases |
-	allDatabases := LeDatabasesRegistry default 
-		defaultLogicalDatabase databases.
+	allDatabases := LeDatabasesRegistry defaultLogicalDatabase databases.
+	
 	self icebergRepository repositoryDirectory ifNotNil: [ 
 		self databases: (allDatabases select: [ :aDatabase | 
 			 self icebergRepository repositoryDirectory 

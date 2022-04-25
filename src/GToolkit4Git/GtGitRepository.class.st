@@ -1,3 +1,7 @@
+"
+{{gtClass:GtGitRepository}} augments an Iceberg repository with a gt-specific working copy that can handle Lepiter databases and other files. 
+It also relies on a gt-specific working copy ({{gtClass:GtLepiterWorkingCopy}}) for peforming operations that afect the state of the image.
+"
 Class {
 	#name : #GtGitRepository,
 	#superclass : #Object,
@@ -57,41 +61,10 @@ GtGitRepository >> addBaseline: aBaselineName [
 ]
 
 { #category : #'api - actions adding/removing' }
-GtGitRepository >> addDatabase: aDatabaseName [
-
-	| aDatabase aFileLocator |
-	aFileLocator := self icebergRepository repositoryDirectory / aDatabaseName.
-	aFileLocator createDirectory.
-	aDatabase := LeLocalStoreLoad current 
-		loadAndMonitorFrom: aFileLocator.
-
-	LeDatabasesRegistry uniqueInstance ensureDatabase addDB: aDatabase.
-
-	LeDatabasesRegistry defaultLogicalDatabase properties 
-		addRegisteredDirectory: aFileLocator.
-
-	self icebergRepository addFileToIndex:
-		(aFileLocator relativeTo: self icebergRepository repositoryDirectory).
-	self lepiterWorkingCopy addDB: aDatabase.
-	self announceRepositoryModified.
-]
-
-{ #category : #'api - actions adding/removing' }
 GtGitRepository >> addNewDatabaseInDirectory: aDirectory [
 
-	| aDatabase aFileLocator |
-	aFileLocator := aDirectory gtWithClosestFileLocatorParent.
-	aDatabase := LeLocalStoreLoad current 
-		loadAndMonitorFrom: aFileLocator.
-
-	LeDatabasesRegistry uniqueInstance ensureDatabase addDB: aDatabase.
-
-	LeDatabasesRegistry defaultLogicalDatabase properties 
-		addRegisteredDirectory: aFileLocator.
-
-	self icebergRepository addFileToIndex:
-		(aDirectory relativeTo: self icebergRepository repositoryDirectory).
-	self lepiterWorkingCopy addDB: aDatabase
+	self lepiterWorkingCopy addNewDatabaseInDirectory: aDirectory.
+	self announceRepositoryModified.
 ]
 
 { #category : #announcer }
@@ -300,10 +273,10 @@ GtGitRepository >> databasesDescription [
 		  accessor: (MAPluggableAccessor
 				   read: [ :aModel | aModel databases asOrderedCollection ]
 				   write: [ :aModel :aValue | 
-					   | databasesToAdd databasesToRemove |
 					   aModel databases asOrderedCollection
 						   removeAllFoundIn: aValue;
-						   collect: [ :database | self removeDatabase: database ].
+						   collect: [ :database | 
+								self lepiterWorkingCopy unloadDatabase: database ].
 					   aValue
 						   removeAllFoundIn: aModel databases;
 						   collect: [ :database | 
@@ -448,10 +421,15 @@ GtGitRepository >> fileFormatDescription [
 	^ MASingleOptionDescription new
 		  label: 'File Format';
 		  priority: 3;
-		  display: #description;
+		  display: [ :aWriter | 
+			aWriter 
+				ifNil: [ '<unspeficied>' ] 
+				ifNotNil: [ aWriter description ]  ];
 		  accessor: (MAPluggableAccessor
 				   read: [ :aModel | 
-					   icebergRepository project repositoryProperties fileFormat ]
+					   icebergRepository project isUnborn
+							ifTrue: [ nil ] 
+							ifFalse: [ icebergRepository project repositoryProperties fileFormat ] ]
 				   write: [ :aModel :aValue | 
 					   icebergRepository project fileFormat: (aValue = 'Tonel'
 								    ifTrue: [ IceLibgitTonelWriter ]
@@ -496,7 +474,7 @@ GtGitRepository >> gtActionPullFor: anAction [
 		  label: 'Pull';
 		  priority: 3;
 		  action: [ :aButton | 
-			  [ self pull ]
+			  [ self gtLepiterAwarePull ]
 				  on: IceMergeResolutionRequest
 				  do: [ :r | aButton phlow spawnObject: r merge ].
 			  aButton phlow fireUpdateWish ]
@@ -575,7 +553,10 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 	| aViewModel changes chosen |
 	chosen := Set new.
 
-	self isMissing ifTrue: [ ^ aView empty ].
+	 (self isMissing  
+		or: [ self workingCopy isDetached not
+			and: [ self icebergRepository head isDetached not
+				and: [ self workingCopy project isUnborn ] ] ]) ifTrue: [ ^ aView empty ].
 
 	aViewModel := self viewModel.
 
@@ -804,6 +785,12 @@ GtGitRepository >> gtLepiterAwareCheckoutBranch: aBranchName [
 	self icebergRepository 
 		gtLepiterAwareCheckoutBranch: aBranchName 
 		withWorkingCopy: self lepiterWorkingCopy
+]
+
+{ #category : #accessing }
+GtGitRepository >> gtLepiterAwarePull [
+	self icebergRepository 
+		gtPullInWorkingCopy: self lepiterWorkingCopy
 ]
 
 { #category : #'gt - extensions' }
@@ -1049,11 +1036,6 @@ GtGitRepository >> removeBaseline: aBaseline [
 	self announceRepositoryModified.
 ]
 
-{ #category : #'api - actions adding/removing' }
-GtGitRepository >> removeDatabase: aDatabase [
-	aDatabase unload.
-]
-
 { #category : #accessing }
 GtGitRepository >> repairActions [
 
@@ -1167,7 +1149,7 @@ GtGitRepository >> workingCopy [
 	^ self icebergWorkingCopy
 ]
 
-{ #category : #'gt - extensions' }
+{ #category : #'api - repository' }
 GtGitRepository >> workingCopyDiff [
 	^ self lepiterWorkingCopy diffToReferenceCommit
 ]

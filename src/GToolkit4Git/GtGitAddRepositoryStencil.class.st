@@ -13,7 +13,7 @@ Class {
 { #category : #accessing }
 GtGitAddRepositoryStencil >> container [
 	container ifNil: [
-		container := self initialPage].
+		container := self initialPage ].
 	^ container
 ]
 
@@ -68,7 +68,7 @@ GtGitAddRepositoryStencil >> localPage [
 	| fileBrowser |
 	fileBrowser := BrFileSelector new margin: (BlInsets all: 5).
 
-	fileBrowser vMatchParent.
+	fileBrowser vExact: 400.
 	fileBrowser hExact: 464.
 
 	fileBrowser buttonLabel: 'Import'.
