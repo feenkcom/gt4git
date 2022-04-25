@@ -1,6 +1,9 @@
 Class {
 	#name : #GtGitStatusElement,
 	#superclass : #BlElement,
+	#instVars : [
+		'session'
+	],
 	#category : #'GToolkit4Git-UI'
 }
 
@@ -19,9 +22,10 @@ GtGitStatusElement >> initialize [
 GtGitStatusElement >> initializeOn: aRepository [
 
 	[ 
-	self removeChildren.
-	aRepository statusModel do: [ :status | 
-		self addChild: status asElement ] ] asAsyncFuture await
+	(session isNotNil and: [ Smalltalk session == session ]) ifTrue: [ 
+		self removeChildren.
+		aRepository statusModel do: [ :status | 
+			self addChild: status asElement ] ] ] asAsyncFuture await
 ]
 
 { #category : #accessing }
@@ -31,6 +35,8 @@ GtGitStatusElement >> onRepositoryModified: anAnnouncement [
 
 { #category : #accessing }
 GtGitStatusElement >> repository: aRepository [
+	session ifNotNil: [ ^ self ].
+	session := Smalltalk session.
 	self subscribeTo: aRepository viewModel.
 	self initializeOn: aRepository.
 ]
