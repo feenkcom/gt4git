@@ -2,7 +2,7 @@ Extension { #name : #GtCoderToolbarElement }
 
 { #category : #'*GToolkit4Git' }
 GtCoderToolbarElement >> gitButton [
-	<gtCoderAction>
+	<gtCoderAction: 4>
 	
 	toolbarElement addItem: self newGitButton
 ]
@@ -10,7 +10,7 @@ GtCoderToolbarElement >> gitButton [
 { #category : #'*GToolkit4Git' }
 GtCoderToolbarElement >> newGitButton [
 
-	^ BrButton new
+	^ self createActionButton
 		  aptitude: BrGlamorousButtonWithIconAptitude;
 		  label: 'Go to repository';
 		  icon: BrGlamorousVectorIcons branching;
