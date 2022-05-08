@@ -16,6 +16,17 @@ IceGitWorkingCopyUpdateVisitor >> visitFileNode: anIceFileDefinition [
 	reference := repository location resolve: anIceFileDefinition path.
 	
 	NonInteractiveTranscript stdout
+		nextPutAll: 'Repository location: ';
+		space;
+		nextPutAll: repository location asString;
+		cr. 
+	NonInteractiveTranscript stdout
+		nextPutAll: 'Reference fullName: ';
+		space;
+		nextPutAll: reference fullName asString;
+		cr. 
+	
+	NonInteractiveTranscript stdout
 		nextPutAll: 'Reference exists: ';
 		nextPutAll: reference exists asString;
 		cr.
@@ -27,9 +38,15 @@ IceGitWorkingCopyUpdateVisitor >> visitFileNode: anIceFileDefinition [
 	reference parent ensureCreateDirectory.
 	
 	NonInteractiveTranscript stdout
+		nextPutAll: 'Reference parent fullName: ';
+		space;
+		nextPutAll: reference parent fullName asString;
+		cr. 
+	NonInteractiveTranscript stdout
 		nextPutAll: 'Parent after creation exists: ';
 		nextPutAll: reference parent exists asString;
-		cr.
+		cr;
+		flush.
 	
 	reference
 		ensureDelete;
