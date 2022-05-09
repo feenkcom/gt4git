@@ -5,7 +5,8 @@ Class {
 		'ownerEditor',
 		'projectEditor',
 		'aDropdown',
-		'onCreated'
+		'onCreated',
+		'errorElement'
 	],
 	#category : #'GToolkit4Git-Inspector Integration'
 }
@@ -24,17 +25,17 @@ GtGitGithubPageFormStencil >> createCloneButton [
 		+ (BrGlamorousButtonLabelAptitude new selectedColor: Color black).
 	cloneButton label: 'Clone'.
 	cloneButton action: [ 
-		| repo |
-		repo := IceRepositoryCreator new
+		| creator repo |
+		creator := IceRepositoryCreator new
 			        remote: (IceGitRemote url: ownerEditor text asString);
-			        location: self projectLocation;
-			        createRepository.
+			        location: self projectLocation.
+		[ repo := creator createRepository.
 		repo register.
 		aDropdown ifNotNil: [ 
 			aDropdown enqueueTask: (BlTaskAction new action: [ 
 					 aDropdown dispatchEvent:
 						 (BrDropdownHideWish new anchor: aDropdown) ]) ].
-		self onCreated value: repo ].
+		self onCreated value: repo ] on: IceAuthenticationError do: [ :e | self displayError: e ] ].
 	cloneButton constraintsDo: [ :c | 
 		c grid vertical alignTop.
 		c grid horizontal alignRight ].
@@ -42,13 +43,22 @@ GtGitGithubPageFormStencil >> createCloneButton [
 ]
 
 { #category : #accessing }
+GtGitGithubPageFormStencil >> createError [
+
+	^ errorElement := BrEditor new
+]
+
+{ #category : #accessing }
 GtGitGithubPageFormStencil >> createMainContainer [
-	|container|
+	|wrapper container|
+	wrapper := BrVerticalPane new vFitContent; hExact: 300.
 	container := BrHorizontalPane new
-			padding: (BlInsets all: 5); vFitContent; hExact: 300.
+			padding: (BlInsets all: 5); matchParent.
 	container addChildren: self createUrl.
 	container addChild: self createCloneButton.
-	^ container.
+	wrapper addChild: container.
+	wrapper addChild: self createError.
+	^ wrapper
 ]
 
 { #category : #accessing }
@@ -73,6 +83,18 @@ GtGitGithubPageFormStencil >> createUrl [
 	^ { 
 		  label.
 		  ownerEditor }
+]
+
+{ #category : #accessing }
+GtGitGithubPageFormStencil >> displayError: anError [
+
+	errorElement
+		text:
+			'An authentication error occurred. Did you add a valid login method?
+			
+Please review "How to work with GitHub" in the Glamorous Toolkit Book for setup instructions.';
+		aptitude: BrGlamorousRegularEditorAptitude new;
+		vFitContent
 ]
 
 { #category : #accessing }
