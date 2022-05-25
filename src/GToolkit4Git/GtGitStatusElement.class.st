@@ -2,7 +2,8 @@ Class {
 	#name : #GtGitStatusElement,
 	#superclass : #BlElement,
 	#instVars : [
-		'session'
+		'session',
+		'currentFuture'
 	],
 	#category : #'GToolkit4Git-UI'
 }
@@ -20,12 +21,17 @@ GtGitStatusElement >> initialize [
 
 { #category : #accessing }
 GtGitStatusElement >> initializeOn: aRepository [
+	| future |
+	future := [ (session isNotNil and: [ Smalltalk session == session ])
+			ifTrue: [ self removeChildren.
+				aRepository statusModel do: [ :status | self addChild: status asElement ] ] ]
+			asAsyncFuture.
 
-	[ 
-	(session isNotNil and: [ Smalltalk session == session ]) ifTrue: [ 
-		self removeChildren.
-		aRepository statusModel do: [ :status | 
-			self addChild: status asElement ] ] ] asAsyncFuture await
+	currentFuture
+		ifNil: [ future await ]
+		ifNotNil: [ currentFuture then: [ future await ] ].
+
+	currentFuture := future
 ]
 
 { #category : #accessing }
