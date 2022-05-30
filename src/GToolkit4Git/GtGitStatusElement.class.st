@@ -3,7 +3,7 @@ Class {
 	#superclass : #BlElement,
 	#instVars : [
 		'session',
-		'currentFuture'
+		'currentPromise'
 	],
 	#category : #'GToolkit4Git-UI'
 }
@@ -27,12 +27,9 @@ GtGitStatusElement >> initializeOn: aRepository [
 				aRepository statusModel do: [ :status | self addChild: status asElement ] ] ]
 			asAsyncFuture.
 
-	currentFuture
-		ifNil: [ future await ]
-		ifNotNil: [ currentFuture then: [ future await ] ].
-
-	currentFuture := future
-			then: [ currentFuture = future ifTrue: [ currentFuture := nil ] ]
+	(currentPromise isNil or: [ currentPromise isFulfilled ])
+		ifTrue: [ currentPromise := future await ]
+		ifFalse: [ currentPromise then: [ currentPromise := future await ] ]
 ]
 
 { #category : #accessing }
