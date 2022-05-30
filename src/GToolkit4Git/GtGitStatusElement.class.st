@@ -32,6 +32,7 @@ GtGitStatusElement >> initializeOn: aRepository [
 		ifNotNil: [ currentFuture then: [ future await ] ].
 
 	currentFuture := future
+			then: [ currentFuture = future ifTrue: [ currentFuture := nil ] ]
 ]
 
 { #category : #accessing }
