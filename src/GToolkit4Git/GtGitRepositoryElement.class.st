@@ -273,7 +273,7 @@ GtGitRepositoryElement >> makeLabel [
 		aptitude: (BrGlamorousLabelAptitude new glamorousRegularFontAndSize
 				foreground: Color gray;
 				fontSize: 12);
-		text: 'Git'
+		text: 'Git Repository'
 ]
 
 { #category : #accessing }
