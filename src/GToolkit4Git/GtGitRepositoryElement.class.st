@@ -226,6 +226,7 @@ GtGitRepositoryElement >> initialize [
 	self initializeLazyTabsElement.
 	self initializeDefinitionsElement.
 	
+	self addChild: self makeLabel as: #label.
 	self addChild: self toolbarElement as: #toolbar.
 	self addChild: self definitionsElement as: #definitions.
 	self addChild: self lazyTabsElement as: #lazyTabs.
@@ -264,6 +265,15 @@ GtGitRepositoryElement >> labelElement [
 { #category : #'private - accessing' }
 GtGitRepositoryElement >> lazyTabsElement [
 	^ lazyTabsElement
+]
+
+{ #category : #initialization }
+GtGitRepositoryElement >> makeLabel [
+	^ BrLabel new
+		aptitude: (BrGlamorousLabelAptitude new glamorousRegularFontAndSize
+				foreground: Color gray;
+				fontSize: 12);
+		text: 'Git'
 ]
 
 { #category : #accessing }
