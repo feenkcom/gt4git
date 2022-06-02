@@ -789,8 +789,11 @@ GtGitRepository >> gtLepiterAwareCheckoutBranch: aBranchName [
 
 { #category : #accessing }
 GtGitRepository >> gtLepiterAwarePull [
-	self icebergRepository 
-		gtPullInWorkingCopy: self lepiterWorkingCopy
+	self icebergRepository configureUpstreamIfNecessary.
+	self icebergRepository gtPullInWorkingCopy: self lepiterWorkingCopy.
+
+
+	self announceRepositoryModified
 ]
 
 { #category : #'gt - extensions' }
