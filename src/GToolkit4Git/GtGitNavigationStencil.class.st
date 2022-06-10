@@ -42,7 +42,7 @@ GtGitNavigationStencil >> createListFor: aView [
 	^ aView columnedList
 		  title: 'Repositories';
 		  updateWhen: GtRepositoryListChanged
-		  in: GtRepositoryRegistryAnnouncer new;
+		  in: GtRepositoryRegistryAnnouncer default announcer;
 		  actionDropdownButtonIcon: BrGlamorousVectorIcons add
 		  tooltip: 'Add Repository'
 		  content: [ :aDropdown :aTarget | 
