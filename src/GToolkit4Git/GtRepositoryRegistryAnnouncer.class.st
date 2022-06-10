@@ -1,8 +1,8 @@
 Class {
 	#name : #GtRepositoryRegistryAnnouncer,
 	#superclass : #Object,
-	#traits : 'TGtWithAnnouncer',
-	#classTraits : 'TGtWithAnnouncer classTrait',
+	#traits : 'TGtWithAnnouncer + TGtUniqueInstance',
+	#classTraits : 'TGtWithAnnouncer classTrait + TGtUniqueInstance classTrait',
 	#category : #'GToolkit4Git-UI - View Model'
 }
 
