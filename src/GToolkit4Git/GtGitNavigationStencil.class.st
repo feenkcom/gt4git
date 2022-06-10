@@ -55,7 +55,7 @@ GtGitNavigationStencil >> createListFor: aView [
 									   (GtGitRepository fromIcebergRepository: repo)) ].
 			  s ];
 		  actionButtonIcon: BrGlamorousVectorIcons down
-		  tooltip: 'Fetch all'
+		  tooltip: 'Fetch All'
 		  action: [ [ self repositories collect: [ :r | r fetch ] ] fork ];
 		  items: [ self repositories ];
 		  send: [ :repo | 
@@ -70,7 +70,7 @@ GtGitNavigationStencil >> createListFor: aView [
 					  self announce: (GtGitRepositorySelected new repository: anItem).
 					  anElement phlow fireUpdateWish ] ]
 		  tooltip: 'Search Repositories';
-		  actionUpdateButton;
+		  actionUpdateButtonTooltip: 'Refresh List of Repositories';
 		  column: 'Repository' translated
 		  text: [ :each | self viewModel nameFor: each ];
 		  column: 'Status' translated
