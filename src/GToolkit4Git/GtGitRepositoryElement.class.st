@@ -465,9 +465,8 @@ GtGitRepositoryElement >> updateTitleElement [
 { #category : #'private - updating' }
 GtGitRepositoryElement >> updateToolbarElement [
 	| outgoingCommits incomingCommits |
-	
-	(self hasRepositoryViewModel not or: [ 
-		 self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
+	(self hasRepositoryViewModel not
+		or: [ self repositoryViewModel hasRepository not ]) ifTrue: [ ^ self ].
 
 	toolbarElement removeAllItems.
 	toolbarElement
@@ -480,15 +479,15 @@ GtGitRepositoryElement >> updateToolbarElement [
 	incomingCommits := self repositoryViewModel incomingCommits.
 	outgoingCommits := self repositoryViewModel outgoingCommits.
 
-	self repositoryViewModel isMissing ifFalse: [ 
-		toolbarElement addItem: (incomingCommits isNotEmpty
-			ifTrue: [ self createPullRepositoryWithIncomingCommits: incomingCommits ]
-			ifFalse: [ self createPullRepositoryWithNoIncommingCommitsButton ]) ].
+	(self repositoryViewModel isMissing or: [ self repository remotes isEmpty ])
+		ifFalse: [ toolbarElement
+				addItem: (incomingCommits isNotEmpty
+						ifTrue: [ self createPullRepositoryWithIncomingCommits: incomingCommits ]
+						ifFalse: [ self createPullRepositoryWithNoIncommingCommitsButton ]) ].
 
-	outgoingCommits isNotEmpty ifTrue: [ 
-		toolbarElement addItem: (self createPushButtonForCommits: outgoingCommits) ].
+	(outgoingCommits isNotEmpty and: [ self repository remotes isNotEmpty ])
+		ifTrue: [ toolbarElement addItem: (self createPushButtonForCommits: outgoingCommits) ].
 
-	self repositoryViewModel needsRepair ifTrue: [ 
-		toolbarElement addItem: self createRepairRepositoryButton ]
-				              
+	self repositoryViewModel needsRepair
+		ifTrue: [ toolbarElement addItem: self createRepairRepositoryButton ]
 ]
