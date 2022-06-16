@@ -860,6 +860,36 @@ GtGitRepository >> gtRepositoryDirectoryFor: aView [
 		view: #gtRepositoryDirectoryFor:
 ]
 
+{ #category : #'gt - extensions' }
+GtGitRepository >> gtUnbornHelpFor: aView [
+	<gtView>
+	<gtRepositoryView>
+	self workingCopy project isUnborn ifFalse: [ ^ aView empty ].
+
+
+	(GtGitRepairAction subclasses
+		select: [ :sc | sc iceTipClass isAvailableFor: icebergRepository ]) size = 0
+		ifTrue: [ ^ aView empty ].
+
+	^ aView explicit
+		title: 'Setup';
+		priority: 1;
+		stencil: [ | container |
+			container := BrVerticalPane new matchParent padding: (BlInsets all: 5).
+
+			container
+				addChild: (BrEditor new
+						aptitude: BrGlamorousRegularEditorAptitude new;
+						vFitContent;
+						text: 'The repository is not set up for use with GT yet. You will need to perform the following actions before committing:'
+								asRopedText).
+
+			(GtGitRepairAction subclasses
+				select: [ :sc | sc iceTipClass isAvailableFor: icebergRepository ])
+				do: [ :sc | container addChild: (sc new repository: icebergRepository) repairStencil ].
+			container ]
+]
+
 { #category : #'api - testing' }
 GtGitRepository >> hasChanges [
 	^ self hasWorkingCopy and: [ 
