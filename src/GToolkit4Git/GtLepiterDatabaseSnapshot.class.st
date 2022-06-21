@@ -14,9 +14,9 @@ Class {
 }
 
 { #category : #'instance creation' }
-GtLepiterDatabaseSnapshot class >> fromDatabase: aDatabase [
+GtLepiterDatabaseSnapshot class >> fromDatabase: aDatabase inRepository: aRepository [
 	^ self new
-		initializeFromDatabase: aDatabase
+		initializeFromDatabase: aDatabase inRepository: aRepository
 ]
 
 { #category : #accessing }
@@ -66,11 +66,10 @@ GtLepiterDatabaseSnapshot >> gtViewPageSnapshotsFor: aView [
 ]
 
 { #category : #initialization }
-GtLepiterDatabaseSnapshot >> initializeFromDatabase: aDatabase [ 
+GtLepiterDatabaseSnapshot >> initializeFromDatabase: aDatabase inRepository: aRepository [
 	self databaseUuid: aDatabase uuid.
 	self databaseName: aDatabase databaseName.
-	self localRootRelativePath: (RelativePath 
-		with: aDatabase localStoreRootDirectory basename).
+	self localRootRelativePath: (self relativePathForDatabase: aDatabase inRepository: aRepository).
 	self propertiesContents: aDatabase monitor dbPropertiesFile contents.
 	
 	(aDatabase explicitLinks isNotNil and: [aDatabase explicitLinks uid isNotNil]) ifTrue: [ self linksSnapshot: (GtLepiterLinksSnapshot
@@ -141,4 +140,10 @@ GtLepiterDatabaseSnapshot >> propertiesContents: anObject [
 { #category : #accessing }
 GtLepiterDatabaseSnapshot >> propertiesFileName [
 	^ LepiterCoreDefaults databasePropertiesBasename
+]
+
+{ #category : #utils }
+GtLepiterDatabaseSnapshot >> relativePathForDatabase: aDatabase inRepository: aRepository [
+	^ aDatabase localStoreRootDirectory asFileReference path 
+			relativeTo: aRepository repositoryDirectory
 ]

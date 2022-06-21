@@ -20,6 +20,12 @@ GtLepiterDatabaseDefinition >> canBeBrowsed [
 ]
 
 { #category : #accessing }
+GtLepiterDatabaseDefinition >> databaseFolderName [
+
+	^ self localRootRelativePath basename
+]
+
+{ #category : #accessing }
 GtLepiterDatabaseDefinition >> databaseId [
 
 	^ databaseId
@@ -39,8 +45,9 @@ GtLepiterDatabaseDefinition >> icon [
 { #category : #accessing }
 GtLepiterDatabaseDefinition >> key [
 	"The key is used by {{gtClass:IceNode}} to compute the path, so we use the
-	folder name. For now it should be a single folder."
-	^ self localRootRelativePath fullName
+	folder name. Because of that it should be a single folder."
+	
+	^ self databaseFolderName
 ]
 
 { #category : #accessing }
