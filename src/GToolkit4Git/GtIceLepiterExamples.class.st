@@ -925,7 +925,21 @@ GtIceLepiterExamples >> gitRepositoryAWithEmptyCommitedLepiterDatabase [
 	| gtIceRepository |
 	
 	gtIceRepository := self gitRepositoryAWithNewEmptyNotCommitedLepiterDatabase. 
-	gtIceRepository executeCommit: 'Add Two Pages'.
+	gtIceRepository executeCommit: 'Add Database'.
+	
+	self assert: gtIceRepository getDeltasForFullDiff isEmpty.
+	self assert: gtIceRepository workingCopyDiff isEmpty.
+	
+	^ gtIceRepository
+]
+
+{ #category : #'examples - nested folder' }
+GtIceLepiterExamples >> gitRepositoryAWithEmptyCommitedLepiterDatabaseInNestedFolder [
+	<gtExample>
+	| gtIceRepository |
+	
+	gtIceRepository := self gitRepositoryAWithNewEmptyNotCommitedLepiterDatabaseInNestedFolder. 
+	gtIceRepository executeCommit: 'Add Nested Database'.
 	
 	self assert: gtIceRepository getDeltasForFullDiff isEmpty.
 	self assert: gtIceRepository workingCopyDiff isEmpty.
