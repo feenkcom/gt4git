@@ -29,7 +29,7 @@ GtGitAddRepositoryStencil >> dropdown: aDropdown [
 
 { #category : #accessing }
 GtGitAddRepositoryStencil >> githubPage [
-	| button stencil|
+	| stencil|
 	stencil := GtGitGithubPageFormStencil new.
 	stencil dropdown: dropdown.
 	stencil onCreated: self onCreated.
