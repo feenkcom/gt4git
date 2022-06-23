@@ -76,5 +76,7 @@ IceGitCommit >> snapshotForKnowledgeWithId: anUuid [
 	| inCommitDatabase |
 	inCommitDatabase := self lepiterDatabases detect: [ :anInCommitDatabase |
 		anInCommitDatabase database uuid = anUuid ].
-	^ GtLepiterDatabaseSnapshot fromDatabase: inCommitDatabase database.
+	^ GtLepiterDatabaseSnapshot 
+		fromDatabase: inCommitDatabase database
+		inRepository: self repository
 ]

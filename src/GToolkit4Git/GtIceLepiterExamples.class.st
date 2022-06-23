@@ -165,6 +165,25 @@ GtIceLepiterExamples >> assertDiff: diff withChildrenCount: aChildrenCount andFu
 ]
 
 { #category : #assertions }
+GtIceLepiterExamples >> assertFolderNode: aNode forName: aFolderName withChildrenCount: anInteger [ 
+	| operation definition |
+	self 
+		assertNode: aNode 
+		withKey: aFolderName
+		withChildrenCount: anInteger.
+	
+	operation := aNode value .
+	self assert: operation isNoModification.
+	self assert: operation name equals: aFolderName.
+	self assert: operation key equals: aFolderName.
+	
+	definition := operation definition.
+	self assert: definition name equals: aFolderName.
+	self assert: definition key equals: aFolderName.
+	self assert: definition isDirectoryDefinition.
+]
+
+{ #category : #assertions }
 GtIceLepiterExamples >> assertNoChangesInRepository: aGtIceRepository [
 	self 
 		assert: aGtIceRepository getDeltasForFullDiff isEmpty
@@ -332,11 +351,13 @@ GtIceLepiterExamples >> createBasicIcebergRepositoryWithName: repositoryName [
 ]
 
 { #category : #'creation repositories' }
-GtIceLepiterExamples >> createDatabaseNamed: aDatabaseName inIcebergRepository: iceRepository [
+GtIceLepiterExamples >> createDatabaseNamed: aDatabaseName atLocation: aPathString inIcebergRepository: iceRepository [
 	| database |
 	
 	database := LeLocalStoreLoad current 
-		loadAndMonitorFrom: (self databaseLocationForRepository: iceRepository)
+		loadAndMonitorFrom: (self 
+			databaseLocationForRepository: iceRepository
+			atLocation: aPathString)
 		saveDelay: 0 seconds.
 	database databaseName: aDatabaseName.
 	self lepiterDatabases at: aDatabaseName put: database.
@@ -345,14 +366,33 @@ GtIceLepiterExamples >> createDatabaseNamed: aDatabaseName inIcebergRepository: 
 ]
 
 { #category : #'creation repositories' }
+GtIceLepiterExamples >> createDatabaseNamed: aDatabaseName inIcebergRepository: iceRepository [
+	^ self 
+		createDatabaseNamed: aDatabaseName 
+		atLocation: self defaultDatabasePathString
+		inIcebergRepository: iceRepository
+]
+
+{ #category : #'creation repositories' }
 GtIceLepiterExamples >> createIcebergRepositoryNamed: aRepositoryName withLepiterDatabaseNamed: aDatabaseName [
+	^ self 
+		createIcebergRepositoryNamed: aRepositoryName 
+		withLepiterDatabaseNamed: aDatabaseName 
+		atLocation: self defaultDatabasePathString
+]
+
+{ #category : #'creation repositories' }
+GtIceLepiterExamples >> createIcebergRepositoryNamed: aRepositoryName withLepiterDatabaseNamed: aDatabaseName atLocation: aPathString [
 	| iceRepository gtRepository database |
 	
 	(self lepiterDatabases includesKey: aDatabaseName)
 		ifTrue: [ Error signal: 'Database already present.' ].
 		
 	iceRepository := self createBasicIcebergRepositoryWithName: aRepositoryName.
-	database := self createDatabaseNamed: aDatabaseName inIcebergRepository: iceRepository.
+	database := self 
+		createDatabaseNamed: aDatabaseName 
+		atLocation: aPathString
+		inIcebergRepository: iceRepository.
 	
 	"The current mechanism requires a database to be registered
 	before creating the gt git repo, in order for the diff logic to work."
@@ -387,7 +427,19 @@ GtIceLepiterExamples >> createNewPageWithAttachmentIn: aDatabase [
 
 { #category : #'creation repositories' }
 GtIceLepiterExamples >> databaseLocationForRepository: iceRepository [
-	^ iceRepository location / 'lepiter'
+	^ self 
+		databaseLocationForRepository: iceRepository 
+		atLocation: self defaultDatabasePathString
+]
+
+{ #category : #'creation repositories' }
+GtIceLepiterExamples >> databaseLocationForRepository: iceRepository atLocation: aPathString [
+	^ iceRepository location / aPathString
+]
+
+{ #category : #'accessing - names' }
+GtIceLepiterExamples >> defaultDatabasePathString [
+	^ 'lepiter'
 ]
 
 { #category : #'setUp-tearDown' }
@@ -873,7 +925,21 @@ GtIceLepiterExamples >> gitRepositoryAWithEmptyCommitedLepiterDatabase [
 	| gtIceRepository |
 	
 	gtIceRepository := self gitRepositoryAWithNewEmptyNotCommitedLepiterDatabase. 
-	gtIceRepository executeCommit: 'Add Two Pages'.
+	gtIceRepository executeCommit: 'Add Database'.
+	
+	self assert: gtIceRepository getDeltasForFullDiff isEmpty.
+	self assert: gtIceRepository workingCopyDiff isEmpty.
+	
+	^ gtIceRepository
+]
+
+{ #category : #'examples - nested folder' }
+GtIceLepiterExamples >> gitRepositoryAWithEmptyCommitedLepiterDatabaseInNestedFolder [
+	<gtExample>
+	| gtIceRepository |
+	
+	gtIceRepository := self gitRepositoryAWithNewEmptyNotCommitedLepiterDatabaseInNestedFolder. 
+	gtIceRepository executeCommit: 'Add Nested Database'.
 	
 	self assert: gtIceRepository getDeltasForFullDiff isEmpty.
 	self assert: gtIceRepository workingCopyDiff isEmpty.
@@ -929,6 +995,55 @@ GtIceLepiterExamples >> gitRepositoryAWithNewEmptyNotCommitedLepiterDatabase [
 		assertDatabasePropertiesNode: databaseNode children first
 		forDatabase: targetDatabase
 		withOperation: #add.
+	
+	^ gtIceRepository
+]
+
+{ #category : #'examples - nested folder' }
+GtIceLepiterExamples >> gitRepositoryAWithNewEmptyNotCommitedLepiterDatabaseInNestedFolder [
+	<gtExample>
+	<after: #cleanUpRepositoriesAndDatabases>
+	| gtIceRepository lepiterWorkingCopy targetDatabase diff folderOneNode folderTwoNode databaseNode |
+	
+	gtIceRepository := self 
+		createIcebergRepositoryNamed: self repositoryName 
+		withLepiterDatabaseNamed: 'database-a'
+		atLocation: 'lepiter/foo/bar'.
+	
+	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
+	self assert: lepiterWorkingCopy databases size equals: 1.
+	targetDatabase := lepiterWorkingCopy databases anyOne.
+	self 
+		assert: lepiterWorkingCopy databases anyOne databaseName 
+		equals: 'database-a'.
+	
+	diff := lepiterWorkingCopy diffToReferenceCommit.
+	self assert: diff isEmpty not.
+
+	self assertDiff: diff withChildrenCount: 1 andFullCount: 5.
+	
+	folderOneNode := diff tree children first.
+	self 
+		assertFolderNode: folderOneNode
+		forName: 'lepiter'
+		withChildrenCount: 1.
+	
+	folderTwoNode := folderOneNode children first.
+	self 
+		assertFolderNode: folderTwoNode
+		forName: 'foo'
+		withChildrenCount: 1.
+		
+	databaseNode := folderTwoNode children first.
+	self
+		assertDatabaseNode: databaseNode
+		forDatabase: targetDatabase
+		withChildrenCount: 1.
+	self
+		assertDatabasePropertiesNode: databaseNode children first
+		forDatabase: targetDatabase
+		withOperation: #add.
+	self assert: databaseNode value definition localRootRelativePath equals: (Path * 'lepiter' / 'foo' / 'bar').
 	
 	^ gtIceRepository
 ]

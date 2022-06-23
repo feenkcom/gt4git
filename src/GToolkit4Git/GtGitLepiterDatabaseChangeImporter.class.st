@@ -14,10 +14,10 @@ GtGitLepiterDatabaseChangeImporter >> createDatabaseNodeOn: aParentNode [
 	databaseDefinition := GtLepiterDatabaseDefinition new
 		name: lepiterDatabaseChange databaseName;
 		databaseId: lepiterDatabaseChange databaseUuid;
-		localRootRelativePath: (RelativePath with:
-			lepiterDatabaseChange database localStoreRootDirectory basename).
+		localRootRelativePath: (self 
+			relativePathForDatabase: lepiterDatabaseChange database).
 	
-	databaseNode	 := aParentNode addChild: databaseDefinition.
+	databaseNode := aParentNode addChild: databaseDefinition.
 	^ databaseNode
 ]
 
@@ -151,6 +151,12 @@ GtGitLepiterDatabaseChangeImporter >> importPageDefinitionsOn: aDatabaseNode [
 { #category : #accessing }
 GtGitLepiterDatabaseChangeImporter >> lepiterDatabaseChange: aLepiterDatabaseChange [
 	lepiterDatabaseChange := aLepiterDatabaseChange
+]
+
+{ #category : #accessing }
+GtGitLepiterDatabaseChangeImporter >> relativePathForDatabase: aDatabase [
+	^ aDatabase localStoreRootDirectory asFileReference path 
+			relativeTo: version repository repositoryDirectory
 ]
 
 { #category : #accessing }

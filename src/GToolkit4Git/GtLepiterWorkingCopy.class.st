@@ -250,7 +250,9 @@ GtLepiterWorkingCopy >> snapshotForKnowledgeWithId: anUuid [
 	| database |
 	database := self databases detect: [ :aDatabase |
 		aDatabase uuid = anUuid ].
-	^ GtLepiterDatabaseSnapshot fromDatabase: database.
+	^ GtLepiterDatabaseSnapshot 
+		fromDatabase: database
+		inRepository: self icebergRepository
 ]
 
 { #category : #'private - monticello' }
