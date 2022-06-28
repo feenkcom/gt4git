@@ -45,6 +45,14 @@ IceRepository >> gtRemoteBranchesFor: aView [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceRepository >> gtSpotterActDefaultFrom: aSourceElement [
+ 	^ (GtGitElement new 
+		repository: (GtGitRepository fromIcebergRepository: self);
+		openInPagerFrom: aSourceElement) maximized
+
+]
+
+{ #category : #'*GToolkit4Git' }
 IceRepository >> gtTagsFor: aView [
 	<gtView>
 	^ aView list
