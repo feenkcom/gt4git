@@ -8,10 +8,10 @@ IceGitIndex >> addLepiterDatabase: aDatabaseDefinition [
 
 { #category : #'*GToolkit4Git' }
 IceGitIndex >> removeDirectoryFromIndex: aString [
-	self repositoryHandle index removeDirectory: aString
+	(self repositoryHandle index removeDirectory: aString) writeToDisk
 ]
 
 { #category : #'*GToolkit4Git' }
 IceGitIndex >> removeFileFromIndex: aString [
-	self repositoryHandle index remove: aString
+	(self repositoryHandle index remove: aString) writeToDisk
 ]
