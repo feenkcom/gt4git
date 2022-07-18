@@ -63,26 +63,21 @@ GtGitGithubPageFormStencil >> createMainContainer [
 
 { #category : #accessing }
 GtGitGithubPageFormStencil >> createUrl [
-
 	| label |
 	label := BrLabel new
-		         text: 'Git URL: ';
-		         aptitude: BrGlamorousLabelAptitude;
-		         margin: (BlInsets right: 5).
+			text: 'Git URL: ';
+			margin: (BlInsets right: 5).
 
 	ownerEditor := BrEditableLabel new
-		               aptitude:
-			               BrGlamorousEditableLabelAptitude new
-				               glamorousRegularFontAndSize;
-		               text: ''.
+			aptitude: BrGlamorousEditableLabelAptitude new glamorousRegularFontAndSize;
+			text: ''.
 	ownerEditor switchToEditor.
 	ownerEditor hMatchParent.
 	ownerEditor vExact: 23.
 	label constraintsDo: [ :c | c grid vertical alignCenter ].
 	ownerEditor constraintsDo: [ :c | c grid vertical alignCenter ].
-	^ { 
-		  label.
-		  ownerEditor }
+	^ {label.
+		ownerEditor}
 ]
 
 { #category : #accessing }

@@ -35,22 +35,21 @@ IcePackage >> gtPackageDescription [
 
 { #category : #'*GToolkit4Git' }
 IcePackage >> gtPackageStatus [
-	|label|
-	self isLoaded ifFalse: [
-		| loadButton|
-		loadButton := BrButton new.
-		loadButton aptitude: (BrGlamorousButtonRectangularAptitude + BrGlamorousButtonExteriorAptitude + 
-			(BrGlamorousButtonLabelAptitude new selectedColor: Color black)).
-		loadButton label: 'Load'.
-		loadButton action: [ self load].
-		^ loadButton].
-		"^ 'Not loaded' asRopedText
+	| label |
+	self isLoaded
+		ifFalse: [ | loadButton |
+			loadButton := BrButton new.
+			loadButton
+				aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonExteriorAptitude
+						+ (BrGlamorousButtonLabelAptitude new selectedColor: Color black).
+			loadButton label: 'Load'.
+			loadButton action: [ self load ].
+			^ loadButton ].	"^ 'Not loaded' asRopedText
 				attributes: {BlTextForegroundAttribute paint: Smalltalk ui theme disabledTextColor};
 				yourself ]."
 	label := BrLabel new.
-	label aptitude: BrGlamorousLabelAptitude.
-	self isModified ifTrue: [ 
-		label text: 'Uncommited changes'].
+
+	self isModified ifTrue: [ label text: 'Uncommited changes' ].
 	label text: 'Up to date'.
-	^  label
+	^ label
 ]

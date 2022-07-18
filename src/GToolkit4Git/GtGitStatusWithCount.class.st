@@ -27,14 +27,11 @@ GtGitStatusWithCount >> count: aNumber [
 
 { #category : #accessing }
 GtGitStatusWithCount >> icon [
-
 	^ BlElement new
-		  addChild: self bareIcon asElement;
-		  addChild: (BrLabel new
-				   aptitude: BrGlamorousLabelAptitude;
-				   text: count asString);
-		  layout: BlLinearLayout horizontal alignCenterLeft;
-		  constraintsDo: [ :c | 
-			  c horizontal fitContent.
-			  c vertical fitContent ]
+		addChild: self bareIcon asElement;
+		addChild: (BrLabel new text: count asString);
+		layout: BlLinearLayout horizontal alignCenterLeft;
+		constraintsDo: [ :c | 
+			c horizontal fitContent.
+			c vertical fitContent ]
 ]
