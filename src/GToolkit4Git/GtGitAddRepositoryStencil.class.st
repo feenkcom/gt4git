@@ -40,13 +40,17 @@ GtGitAddRepositoryStencil >> githubPage [
 GtGitAddRepositoryStencil >> initialPage [
 	| element button local label |
 	label := BrLabel new.
-	label text: 'Import a Git repository'.
+	label
+		aptitude: BrGlamorousLabelAptitude;
+		text: 'Import a Git repository'.
 	button := BrButton new.
-	button label: 'remotely'.
+	button
+		label: 'remotely'.
 	button aptitude: BrGlamorousButtonWithLabelAptitude.
 	button action: [ self openGithubPage ].
 	local := BrButton new.
-	local label: 'locally'.
+	local
+		label: 'locally'.
 	local aptitude: BrGlamorousButtonWithLabelAptitude.
 	local action: [ self openLocalPage ].
 	element := BrVerticalPane new.
@@ -54,11 +58,7 @@ GtGitAddRepositoryStencil >> initialPage [
 	button margin: (BlInsets all: 5).
 	local margin: (BlInsets all: 5).
 	element addChild: label.
-	element
-		addChild: (BrHorizontalPane new
-				addChild: button;
-				addChild: local;
-				fitContent).
+	element addChild: (BrHorizontalPane new addChild: button; addChild: local; fitContent).
 	^ element fitContent
 ]
 
