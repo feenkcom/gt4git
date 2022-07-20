@@ -666,45 +666,40 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 
 { #category : #'gt - extensions' }
 GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts [
-
 	| container merge |
-	container := BrHorizontalPane new 
-		vExact: 24;
-		hMatchParent.
+	container := BrHorizontalPane new
+			vExact: 24;
+			hMatchParent.
 
-	(conflicts contains: [ :aCommit | aCommit = item ]) ifTrue: [ 
-		container addChild: (BrButton new
-				 aptitude: BrGlamorousButtonWithLabelAptitude;
-				 label: 'Merge';
-				 action: [ :aButton | aButton phlow spawnObject: merge ]) ].
+	(conflicts contains: [ :aCommit | aCommit = item ])
+		ifTrue: [ container
+				addChild: (BrButton new
+						aptitude: BrGlamorousButtonWithLabelAptitude;
+						label: 'Merge';
+						action: [ :aButton | aButton phlow spawnObject: merge ]) ].
 
-	(self viewModel outgoingCommits size > 0 and: [ 
-		 self viewModel outgoingCommits first = item ]) ifTrue: [ 
-		container addChild: (BrButton new
-				 aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
-				 label: self viewModel outgoingCommits size asString;
-				 icon: BrGlamorousVectorIcons up;
-				 action: [ :aButton | 
-					 self push.
-					 aButton phlow fireUpdateWish ]) ].
-	"(self outgoingCommits size > 1 and: [ 
-		 self outgoingCommits first = item ]) ifTrue: [ 
-		container addChild: (BrButton new
-				 aptitude: BrGlamorousButtonWithLabelAptitude;
-				 label: 'Squash';
-				 action: [ :aButton | 
-					 self squash.
-					 aButton phlow fireUpdateWish ]) ]."
+	(self viewModel outgoingCommits size > 0
+		and: [ self viewModel outgoingCommits first = item
+				and: [ self repository remotes isNotEmpty ] ])
+		ifTrue: [ container
+				addChild: (BrButton new
+						aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
+						label: self viewModel outgoingCommits size asString;
+						icon: BrGlamorousVectorIcons up;
+						action: [ :aButton | 
+							self push.
+							aButton phlow fireUpdateWish ]) ].
 
-	(self incomingCommits size > 0 and: [ 
-		 self incomingCommits first = item ]) ifTrue: [ 
-		container addChild: (BrButton new
-				 aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
-				 label: self incomingCommits size asString;
-				 icon: BrGlamorousVectorIcons down;
-				 action: [ :aButton | 
-					 self pull.
-					 aButton phlow fireUpdateWish ]) ].
+	(self incomingCommits size > 0
+		and: [ self incomingCommits first = item and: [ self repository remotes isNotEmpty ] ])
+		ifTrue: [ container
+				addChild: (BrButton new
+						aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
+						label: self incomingCommits size asString;
+						icon: BrGlamorousVectorIcons down;
+						action: [ :aButton | 
+							self pull.
+							aButton phlow fireUpdateWish ]) ].
 	^ container
 ]
 
@@ -952,12 +947,12 @@ GtGitRepository >> initialize [
 { #category : #'api - testing' }
 GtGitRepository >> isCommittable [
 
-	^ (((self hasWorkingCopy and: [ self icebergRepository isMissing not ]) 
+	^ self hasWorkingCopy and: [ self icebergRepository isMissing not  
 		    and: [ 
 			    self icebergRepository workingCopy workingCopyState
-				    isUnknownCommitState not ]) and: [ 
-		   self icebergRepository workingCopy isDetached not ]) and: [ 
-		  self icebergRepository head isDetached not ]
+				    isUnknownCommitState not   and: [ 
+		   self icebergRepository workingCopy isDetached not    and: [ 
+		  self icebergRepository head isDetached not ] ] ] ]
 ]
 
 { #category : #'api - testing' }
