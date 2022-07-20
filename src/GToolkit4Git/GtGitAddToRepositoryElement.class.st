@@ -20,7 +20,14 @@ GtGitAddToRepositoryElement >> initialize [
 	super initialize.
 	self matchParent.
 	self margin: (BlInsets all: 5).
-	self layout: BlLinearLayout vertical
+	self layout: BlLinearLayout vertical.
+	
+	self setupListeners
+]
+
+{ #category : #accessing }
+GtGitAddToRepositoryElement >> onAnnouncement: anAnnouncement [
+	package ifNotNil: [ self onPackageAdded ]
 ]
 
 { #category : #accessing }
@@ -63,4 +70,12 @@ GtGitAddToRepositoryElement >> package: aPackage [
 	package := aPackage.
 	
 	self onPackageAdded
+]
+
+{ #category : #accessing }
+GtGitAddToRepositoryElement >> setupListeners [
+	Iceberg announcer weak
+		when: IceRepositoryRegistryAnnouncement
+		send: #onAnnouncement:
+		to: self
 ]
