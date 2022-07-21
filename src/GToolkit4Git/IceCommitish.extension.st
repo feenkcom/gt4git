@@ -15,7 +15,7 @@ IceCommitish >> gtDiffTo: aCommitish [
 { #category : #'*GToolkit4Git' }
 IceCommitish >> gtLepiterAwareCheckoutWithWorkingCopy: aLepiterWorkingCopy [
 	
-	self checkout: (GtGitIceCheckoutAlreadyLoadedContent new
+	self checkout: (GtIceCheckoutAlreadyLoadedContent new
 		lepiterWorkingCopy: aLepiterWorkingCopy;
 		committish: self;
 		yourself)
