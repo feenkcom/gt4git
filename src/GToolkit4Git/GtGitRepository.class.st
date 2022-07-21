@@ -707,60 +707,62 @@ GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts [
 GtGitRepository >> gtCommitsFor: aView [
 	<gtView>
 	<gtRepositoryView>
-	
 	| conflicts |
 	self isMissing ifTrue: [ ^ aView empty ].
 
 	conflicts := self conflictingCommits.
 
 	^ aView columnedList
-		  title: 'Commits' translated;
-		  priority: 2;
-		  items: [ 
-			  (AsyncSequenceStream forCollection: self incomingCommits) merge: self repository head commitStream ];
-		  column: 'Status' stencil: [ :item | 
-			  ((self incomingCommits contains: [ :aCommit | aCommit = item ])
-				   ifTrue: [ 
-					   (conflicts contains: [ :aCommit | aCommit = item ])
-						   ifTrue: [ 
-							   self
-								   statusElementColored:
-									   BrGlamorousColors errorBackgroundColor
-								   withTooltip: 'Conflict' ]
-						   ifFalse: [ 
-							   self
-								   statusElementColored:
-									   BrGlamorousColors successBackgroundColor
-								   withTooltip: 'Incoming' ] ]
-				   ifFalse: [ 
-					   (self viewModel outgoingCommits contains: [ :aCommit | aCommit = item ])
-						   ifTrue: [ 
-							   self
-								   statusElementColored:
-									   BrGlamorousColors selectedListItemColor
-								   withTooltip: 'Outgoing' ]
-						   ifFalse: [ BlElement new ] ])
-				  size: 12 @ 12;
-				  geometry: (BlRoundedRectangleGeometry cornerRadius: 6);
-				  margin: (BlInsets left: 15) ]
-		  width: 40;
-		  column: 'Timestamp'
-		  	text: [ :aCommit | aCommit timeStamp asStringYMDHM ]
-		  	width: 120;
-		  column: 'Commit' text: #shortId width: 70;
-		  column: 'Author' text: #author width: 100;
-		  column: 'Description' text: #comment;
-		  column: 'Actions' 
-		  	stencil: [ :item | 
-		 	 	self gtCommitButtonsFor: item withConflicts: conflicts ]
-		  	width: 150;
-		  itemContextMenuStencil: [ :element :item | 
-			  BrGlamorousSimpleContextMenuContent new
-				  items: { ('Revert' -> [ :e | 
-						   item revert.
-						   self rawCommit: 'Revert ' , item shortId , ' ' , item comment.
-						   element phlow fireUpdateWish ]) };
-				  yourself ]
+		title: 'Commits' translated;
+		priority: 2;
+		items: [ (AsyncSequenceStream forCollection: self incomingCommits)
+				merge: self repository head commitStream ];
+		column: 'Status'
+			stencil: [ :item | 
+				((self incomingCommits contains: [ :aCommit | aCommit = item ])
+					ifTrue: [ (conflicts contains: [ :aCommit | aCommit = item ])
+							ifTrue: [ self
+									statusElementColored: BrGlamorousColors errorBackgroundColor
+									withTooltip: 'Conflict' ]
+							ifFalse: [ self
+									statusElementColored: BrGlamorousColors successBackgroundColor
+									withTooltip: 'Incoming' ] ]
+					ifFalse: [ (self viewModel outgoingCommits
+							contains: [ :aCommit | aCommit = item ])
+							ifTrue: [ self
+									statusElementColored: BrGlamorousColors selectedListItemColor
+									withTooltip: 'Outgoing' ]
+							ifFalse: [ BlElement new ] ])
+					size: 12 @ 12;
+					geometry: (BlRoundedRectangleGeometry cornerRadius: 6);
+					margin: (BlInsets left: 15) ]
+			width: 40;
+		column: 'Timestamp'
+			text: [ :aCommit | aCommit timeStamp asStringYMDHM ]
+			width: 120;
+		column: 'Commit'
+			text: #shortId
+			width: 70;
+		column: 'Author'
+			text: #author
+			width: 100;
+		column: 'Description' text: #comment;
+		column: 'Actions'
+			stencil: [ :item | self gtCommitButtonsFor: item withConflicts: conflicts ]
+			width: 150;
+		itemContextMenuStencil: [ :element :item | 
+			BrGlamorousSimpleContextMenuContent new
+				items: {'Revert'
+							-> [ :e | 
+								item revert.
+								self rawCommit: 'Revert ' , item shortId , ' ' , item comment.
+								element phlow fireUpdateWish ].
+						'Checkout'
+							-> [ :e | 
+								item checkout.
+								self announceRepositoryModified.
+								element phlow fireUpdateWish ]};
+				yourself ]
 ]
 
 { #category : #'gt - extensions' }
