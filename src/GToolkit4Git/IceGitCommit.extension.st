@@ -3,9 +3,24 @@ Extension { #name : #IceGitCommit }
 { #category : #'*GToolkit4Git' }
 IceGitCommit >> gtActionCheckoutFor: anAction [
 	<gtAction>
-	^ anAction button
-		  label: 'Checkout';
-		  action: [ self checkout ]
+	^ anAction dropdown
+		label: 'Checkout';
+		content: [ :aDropdown | 
+			BrSimpleList new
+				margin: (BlInsets all: 5);
+				items: IceCheckoutStrategy allGtStrategies;
+				itemStencil: [ BrLabel new hMatchParent
+						aptitude: BrGlamorousLabelAptitude + BrGlamorousListItemAptitude ];
+				itemDataBinder: [ :aLabel :aStrategy | 
+					aLabel
+						text: aStrategy gtDescription;
+						when: BlClickEvent
+							do: [ :_ | 
+								aStrategy
+									committish: self;
+									lepiterWorkingCopy: self repository lepiterWorkingCopy;
+									checkoutOn: self repository workingCopy.
+								aDropdown fireEvent: BrDropdownHideWish new ] ] ]
 ]
 
 { #category : #'*GToolkit4Git' }

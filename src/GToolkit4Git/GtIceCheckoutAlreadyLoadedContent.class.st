@@ -4,7 +4,7 @@ This is a stragegy that augments {{gtClass:IceCheckoutAlreadyLoadedPackages}} wi
 If a database is removed from disk it will also be removed from the in-image working copy.
 "
 Class {
-	#name : #GtGitIceCheckoutAlreadyLoadedContent,
+	#name : #GtIceCheckoutAlreadyLoadedContent,
 	#superclass : #IceCheckoutAlreadyLoadedPackages,
 	#instVars : [
 		'lepiterWorkingCopy'
@@ -13,17 +13,27 @@ Class {
 }
 
 { #category : #accessing }
-GtGitIceCheckoutAlreadyLoadedContent class >> description [
+GtIceCheckoutAlreadyLoadedContent class >> description [
 	^ 'Checkout packages and Lepiter databases ALREADY LOADED in the image'
 ]
 
 { #category : #accessing }
-GtGitIceCheckoutAlreadyLoadedContent class >> order [
+GtIceCheckoutAlreadyLoadedContent class >> gtDescription [
+	^ 'Checkout packages and Lepiter databases already loaded in the image'
+]
+
+{ #category : #accessing }
+GtIceCheckoutAlreadyLoadedContent class >> isGtStrategy [
+	^ true
+]
+
+{ #category : #accessing }
+GtIceCheckoutAlreadyLoadedContent class >> order [
 	^ 9
 ]
 
 { #category : #checkout }
-GtGitIceCheckoutAlreadyLoadedContent >> checkoutOn: anIceWorkingCopy [ 
+GtIceCheckoutAlreadyLoadedContent >> checkoutOn: anIceWorkingCopy [ 
 	"Calling super performs a forced checkout. After this updates files from disk, trigger a reload of lepiter databases affected by this change."
 	
 	super checkoutOn: anIceWorkingCopy.
@@ -32,20 +42,20 @@ GtGitIceCheckoutAlreadyLoadedContent >> checkoutOn: anIceWorkingCopy [
 ]
 
 { #category : #accessing }
-GtGitIceCheckoutAlreadyLoadedContent >> diff [
+GtIceCheckoutAlreadyLoadedContent >> diff [
 	
 	^ diff ifNil: [ 
 		diff := committish diffTo: lepiterWorkingCopy ].
 ]
 
 { #category : #accessing }
-GtGitIceCheckoutAlreadyLoadedContent >> lepiterWorkingCopy [
+GtIceCheckoutAlreadyLoadedContent >> lepiterWorkingCopy [
 
 	^ lepiterWorkingCopy
 ]
 
 { #category : #accessing }
-GtGitIceCheckoutAlreadyLoadedContent >> lepiterWorkingCopy: aLepiterWorkingCopy [
+GtIceCheckoutAlreadyLoadedContent >> lepiterWorkingCopy: aLepiterWorkingCopy [
 
 	lepiterWorkingCopy := aLepiterWorkingCopy
 ]
