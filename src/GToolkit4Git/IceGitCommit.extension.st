@@ -1,6 +1,14 @@
 Extension { #name : #IceGitCommit }
 
 { #category : #'*GToolkit4Git' }
+IceGitCommit >> gtActionCheckoutFor: anAction [
+	<gtAction>
+	^ anAction button
+		  label: 'Checkout';
+		  action: [ self checkout ]
+]
+
+{ #category : #'*GToolkit4Git' }
 IceGitCommit >> gtChangesFor: aView [
 	<gtView>
 	^ aView forward
