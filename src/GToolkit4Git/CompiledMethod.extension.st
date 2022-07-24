@@ -22,6 +22,7 @@ CompiledMethod >> gtGitCommitsFor: aView [
 			width: 100;
 		column: 'Comment' text: [ :each | each comment ];
 		actionButtonIcon: BrGlamorousVectorIcons branching
+			tooltip: 'Browse the method''s Git repository'
 			action: [ :button | 
 				IceRepository registry
 					detect: [ :each | each includesPackageNamed: packageName ]
