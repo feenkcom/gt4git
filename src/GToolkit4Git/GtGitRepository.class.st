@@ -750,6 +750,15 @@ GtGitRepository >> gtCommitsFor: aView [
 		column: 'Actions'
 			stencil: [ :item | self gtCommitButtonsFor: item withConflicts: conflicts ]
 			width: 150;
+		send: [:each | GtGitCommit new
+			id: each id;
+			author: each author;
+			datetime: each datetime;
+			ancestorIds: each ancestorIds;
+			comment: each comment;
+			repository: each repository;
+			lepiterWorkingCopy: self lepiterWorkingCopy
+			yourself ];
 		itemContextMenuStencil: [ :element :item | 
 			BrGlamorousSimpleContextMenuContent new
 				items: {'Revert'
