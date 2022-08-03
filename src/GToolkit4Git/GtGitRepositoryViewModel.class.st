@@ -139,7 +139,7 @@ GtGitRepositoryViewModel >> outgoingCommits [
 
 	self repositoryModel repository branch hasUpstream
 		ifFalse: [ self repositoryModel repository
-				remoteBranchNamed: self repositoryModel repository branch name
+				remoteBranchNamed: 'origin/' , self repositoryModel repository branch name
 				ifPresent: [ :aBranch | self repositoryModel repository branch setUpstream: aBranch ]
 				ifAbsent: [ ^ {} ] ].
 
