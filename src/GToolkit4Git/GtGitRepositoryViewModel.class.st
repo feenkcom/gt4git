@@ -137,10 +137,11 @@ GtGitRepositoryViewModel >> onRepositoryModified: anAnnouncement [
 GtGitRepositoryViewModel >> outgoingCommits [
 	self repositoryModel isCommittable not ifTrue: [ ^ {} ].
 
-	self repositoryModel repository
-		remoteBranchNamed: self repositoryModel repository branch name
-		ifPresent: [ :aBranch | self  repositoryModel repository branch setUpstream: aBranch ]
-		ifAbsent: [ ^ {} ].
+	self repositoryModel repository branch hasUpstream
+		ifFalse: [ self repositoryModel repository
+				remoteBranchNamed: self repositoryModel repository branch name
+				ifPresent: [ :aBranch | self repositoryModel repository branch setUpstream: aBranch ]
+				ifAbsent: [ ^ {} ] ].
 
 	^ self repositoryModel outgoingCommits
 ]
