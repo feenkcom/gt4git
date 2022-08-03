@@ -136,10 +136,11 @@ GtGitRepositoryViewModel >> onRepositoryModified: anAnnouncement [
 { #category : #accessing }
 GtGitRepositoryViewModel >> outgoingCommits [
 
-	^ (self repositoryModel isCommittable not or: [ 
-		   self repositoryModel repository branch hasUpstream ])
-		  ifTrue: [ self repositoryModel outgoingCommits ]
-		  ifFalse: [ self repositoryModel repository head commits ]
+	(self repositoryModel isCommittable not) ifTrue: [ ^ {} ].
+	
+	self repositoryModel repository configureUpstreamIfNecessary.
+	
+	^ self repositoryModel outgoingCommits
 ]
 
 { #category : #'api - actions' }
