@@ -111,7 +111,8 @@ GtGitElement >> navigationModel: aNavigationModel [
 GtGitElement >> onNavigationModelChange: anEvent [
 	repository := anEvent repository.
 	self refreshView.
-	self updateTabLabel
+	self updateTabLabel.
+	self fireEvent: (GtPhlowToolObjectChangeWish new object: repository)
 ]
 
 { #category : #accessing }
@@ -129,6 +130,11 @@ GtGitElement >> refreshView [
 	self
 		addChild: (self contentElement padding: (BlInsets all: 5))
 		as: #content.
+]
+
+{ #category : #accessing }
+GtGitElement >> repository [
+	^ repository
 ]
 
 { #category : #accessing }
