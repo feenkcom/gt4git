@@ -45,25 +45,28 @@ GtGitAddRepositoryStencil >> initialPage [
 				margin: (BlInsets all: 5));
 		addChild: (BrHorizontalPane new
 				addChild: (BrButton new
-						label: 'remotely';
-						aptitude: BrGlamorousButtonWithLabelAptitude;
-						action: [ self openGithubPage ];
-						margin: (BlInsets all: 5));
+							label: 'remotely';
+							aptitude: BrGlamorousButtonWithLabelAptitude;
+							action: [ self openGithubPage ];
+							margin: (BlInsets all: 5))
+					as: #'git-remote';
 				addChild: (BrButton new
-						label: 'locally';
-						aptitude: BrGlamorousButtonWithLabelAptitude;
-						action: [ self openLocalPage ];
-						margin: (BlInsets all: 5));
+							label: 'locally';
+							aptitude: BrGlamorousButtonWithLabelAptitude;
+							action: [ self openLocalPage ];
+							margin: (BlInsets all: 5))
+					as: #'git-local';
 				fitContent);
 		addChild: (BrLabel new
 				aptitude: BrGlamorousLabelAptitude;
 				text: 'or initialize a new one';
 				margin: (BlInsets all: 5));
 		addChild: (BrButton new
-				label: 'initialize';
-				aptitude: BrGlamorousButtonWithLabelAptitude;
-				action: [ self openInitialize ];
-				margin: (BlInsets all: 5));
+					label: 'initialize';
+					aptitude: BrGlamorousButtonWithLabelAptitude;
+					action: [ self openInitialize ];
+					margin: (BlInsets all: 5))
+			as: #'git-initial';
 		fitContent
 ]
 
@@ -143,19 +146,19 @@ GtGitAddRepositoryStencil >> onCreated: aBlock [
 GtGitAddRepositoryStencil >> openGithubPage [
 
 	container removeChildren.
-	container addChild: self githubPage
+	container addChild: self githubPage as: #'git-github-page'
 ]
 
 { #category : #accessing }
 GtGitAddRepositoryStencil >> openInitialize [
 
 	container removeChildren.
-	container addChild: self initializePage
+	container addChild: self initializePage  as: #'git-initialize-page'
 ]
 
 { #category : #accessing }
 GtGitAddRepositoryStencil >> openLocalPage [
 
 	container removeChildren.
-	container addChild: self localPage
+	container addChild: self localPage as: #'git-local-page'
 ]
