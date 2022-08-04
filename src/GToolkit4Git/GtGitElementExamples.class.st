@@ -29,6 +29,7 @@ GtGitElementExamples >> scripterOnExpandedElement [
 { #category : #accessing }
 GtGitElementExamples >> scripterOnExpandedElementWithSelectedRepository [
 	<gtExample>
+	<noTest>
 	| aScripter |
 	aScripter := self scripterOnExpandedElement.
 	aScripter
