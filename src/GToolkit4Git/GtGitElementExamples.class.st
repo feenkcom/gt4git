@@ -98,6 +98,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithExpandedSearch [
 { #category : #accessing }
 GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogNavigated [
 	<gtExample>
+	<noTest>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDialogOpen.
 	aScripter
@@ -117,6 +118,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogNavigat
 { #category : #accessing }
 GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogOpen [
 	<gtExample>
+	<noTest>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithAddDialogOpen.
 	(FileLocator imageDirectory / 'zzz') ensureCreateDirectory.
