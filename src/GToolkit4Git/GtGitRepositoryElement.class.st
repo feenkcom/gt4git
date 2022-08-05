@@ -118,7 +118,7 @@ GtGitRepositoryElement >> createPushButtonForCommits: aListOfOutgoingCommits [
 GtGitRepositoryElement >> createRemoveRepositoryButton [
 	| localDelete |
 	localDelete := false.
-	
+
 	^ GtPreviewChangeButton new
 		icon: BrGlamorousVectorIcons remove;
 		label: 'Remove';
@@ -128,27 +128,27 @@ GtGitRepositoryElement >> createRemoveRepositoryButton [
 				ifFalse: [ self repositoryViewModel forget ].
 			navigationModel announce: (GtGitRepositorySelected new repository: nil).
 			aButton phlow fireUpdateWish ];
-		changeStencil: [ 
-			BrVerticalPane new
+		changeStencil: [ BrVerticalPane new
 				hFitContent;
 				vFitContent;
 				margin: (BlInsets all: 10);
 				addChild: (BrLabel new
-					aptitude: BrGlamorousLabelAptitude new glamorousRegularFont;
-					text: 'Remove repository?' asRopedText);
+						aptitude: BrGlamorousLabelAptitude new glamorousRegularFont;
+						text: 'Remove repository?' asRopedText);
 				addChild: (BrHorizontalPane new
-					hFitContent;
-					vFitContent;
-					alignCenterLeft;
-					margin: (BlInsets top: 5);
-					addChild: (BrCheckbox new
-						aptitude: BrGlamorousCheckboxAptitude;
-						whenCheckedDo: [ localDelete := true ];
-						margin: (BlInsets right: 8);
-						whenUncheckedDo: [ localDelete := false ]);
-					addChild: (BrLabel new
-						aptitude: BrLabelAptitude new glamorousRegularFont;
-						text: 'Remove repository from disk')) ]
+						hFitContent;
+						vFitContent;
+						alignCenterLeft;
+						margin: (BlInsets top: 5);
+						addChild: (BrCheckbox new
+									aptitude: BrGlamorousCheckboxAptitude;
+									whenCheckedDo: [ localDelete := true ];
+									margin: (BlInsets right: 8);
+									whenUncheckedDo: [ localDelete := false ])
+							as: #'git-repository-removal-checkbox';
+						addChild: (BrLabel new
+									aptitude: BrLabelAptitude new glamorousRegularFont;
+									text: 'Remove repository from disk')) ]
 ]
 
 { #category : #'building - actions' }
