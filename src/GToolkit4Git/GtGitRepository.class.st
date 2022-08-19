@@ -596,7 +596,7 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 							   +
 								   (BrGlamorousWithLabelTooltipAptitude new text:
 										    'Select for Commit');
-						   checked: true;
+						   checked: (chosen includes: anIceNode value );
 						   whenCheckedDo: [ chosen add: anIceNode value ];
 						   margin: (BlInsets right: 8);
 						   whenUncheckedDo: [ 
