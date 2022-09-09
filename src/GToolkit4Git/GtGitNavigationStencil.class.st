@@ -98,8 +98,8 @@ GtGitNavigationStencil >> navigationModel: aGtGitNavigationModel [
 { #category : #accessing }
 GtGitNavigationStencil >> repositories [
 
-	^ self navigationModel repositories collect: [ :eachIceRepository | 
-		  GtGitRepository fromIcebergRepository: eachIceRepository ]
+	^ (self navigationModel repositories collect: [ :eachIceRepository | 
+		  GtGitRepository fromIcebergRepository: eachIceRepository ]) sorted: [:a :b | (a name caseInsensitiveLessOrEqual: b name)]
 ]
 
 { #category : #accessing }
