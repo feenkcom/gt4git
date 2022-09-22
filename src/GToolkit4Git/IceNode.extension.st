@@ -115,10 +115,9 @@ IceNode >> gtViewTwoPanesDiffFor: aView [
 			 GtDiffElementWithLabelStencil new
 			 	fromLabelText: 'Repository:';
 			 	toLabelText:  'Working Copy (local):';
-			 	diffBuilder: ((GtCodeDiffBuilder 
-					from: self value rightContents 
-					to: self value leftContents) 
-						isMethod: self definition isMethodDefinition) ];
+			 	diffBuilder: (self definition class 
+			 		gtDiffBuilderFrom: self value rightContents  
+			 		to: self value leftContents) ];
 		in: [ :currentView | 
 			self value isConflict ifTrue: [ 
 				self gtResolveConflictActionForView: currentView ] ];
