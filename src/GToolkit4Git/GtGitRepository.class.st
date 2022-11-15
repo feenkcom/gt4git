@@ -665,12 +665,8 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 ]
 
 { #category : #'gt - extensions' }
-GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts [
-	| container merge |
-	container := BrHorizontalPane new
-			vExact: 24;
-			hMatchParent.
-
+GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts inPane: container [
+	| merge |
 	(conflicts contains: [ :aCommit | aCommit = item ])
 		ifTrue: [ container
 				addChild: (BrButton new
@@ -699,8 +695,7 @@ GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts [
 						icon: BrGlamorousVectorIcons down;
 						action: [ :aButton | 
 							self pull.
-							aButton phlow fireUpdateWish ]) ].
-	^ container
+							aButton phlow fireUpdateWish ]) ]
 ]
 
 { #category : #'gt - extensions' }
@@ -718,7 +713,7 @@ GtGitRepository >> gtCommitsFor: aView [
 		items: [ (AsyncSequenceStream forCollection: self incomingCommits)
 				merge: self repository head commitStream ];
 		column: 'Status'
-			stencil: [ :item | 
+			icon: [ :item | 
 				((self incomingCommits contains: [ :aCommit | aCommit = item ])
 					ifTrue: [ (conflicts contains: [ :aCommit | aCommit = item ])
 							ifTrue: [ self
@@ -748,17 +743,26 @@ GtGitRepository >> gtCommitsFor: aView [
 			width: 100;
 		column: 'Description' text: #comment;
 		column: 'Actions'
-			stencil: [ :item | self gtCommitButtonsFor: item withConflicts: conflicts ]
-			width: 150;
-		send: [:each | GtGitCommit new
-			id: each id;
-			author: each author;
-			datetime: each datetime;
-			ancestorIds: each ancestorIds;
-			comment: each comment;
-			repository: each repository;
-			lepiterWorkingCopy: self lepiterWorkingCopy
-			yourself ];
+			do: [ :aColumn | 
+				aColumn
+					stencil: [ BrHorizontalPane new
+							vExact: 24;
+							hExact: 150;
+							hMatchParent ];
+					dataBinder: [ :aPane :item | 
+						self
+							gtCommitButtonsFor: item
+							withConflicts: conflicts
+							inPane: aPane ] ];
+		send: [ :each | 
+			GtGitCommit new
+				id: each id;
+				author: each author;
+				datetime: each datetime;
+				ancestorIds: each ancestorIds;
+				comment: each comment;
+				repository: each repository;
+				lepiterWorkingCopy: self lepiterWorkingCopy yourself ];
 		itemContextMenuStencil: [ :element :item | 
 			BrGlamorousSimpleContextMenuContent new
 				items: {'Revert'
