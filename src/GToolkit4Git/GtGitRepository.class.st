@@ -750,6 +750,7 @@ GtGitRepository >> gtCommitsFor: aView [
 							hExact: 150;
 							hMatchParent ];
 					dataBinder: [ :aPane :item | 
+						aPane removeChildren.
 						self
 							gtCommitButtonsFor: item
 							withConflicts: conflicts
