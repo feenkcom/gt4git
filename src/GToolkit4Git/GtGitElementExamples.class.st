@@ -201,6 +201,14 @@ GtGitElementExamples >> scripterOnExpandedElementWithSelectedRepository [
 		satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository isNotNil ];
 		play.
 
+	aScripter check
+		label: 'Check repository rendering basics (name is shown)';
+		satisfies: [ :aChangeView | 
+			((aChangeView pages last contentElement tool childNamed: #content)
+				childNamed: #toolbar) children first text asString
+				= aChangeView pages last contentElement tool repository name ];
+		play.
+
 	^ aScripter
 ]
 
