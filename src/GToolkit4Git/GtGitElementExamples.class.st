@@ -15,7 +15,7 @@ GtGitElementExamples >> cleanUpRepository [
 			aRepository workingCopy fileSystem ensureDeleteAll ]
 ]
 
-{ #category : #accessing }
+{ #category : #examples }
 GtGitElementExamples >> expandedElement [
 	<gtExample>
 	| element |
@@ -24,7 +24,7 @@ GtGitElementExamples >> expandedElement [
 	^ element
 ]
 
-{ #category : #accessing }
+{ #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElement [
 	<gtExample>
 	| aScripter |
@@ -35,7 +35,7 @@ GtGitElementExamples >> scripterOnExpandedElement [
 	^ aScripter
 ]
 
-{ #category : #accessing }
+{ #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithAddDialogOpen [
 	<gtExample>
 	| aScripter |
@@ -51,7 +51,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithAddDialogOpen [
 	^ aScripter
 ]
 
-{ #category : #accessing }
+{ #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithDeletedRepository [
 	<gtExample>
 	| aScripter |
@@ -83,7 +83,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithDeletedRepository [
 	^ aScripter
 ]
 
-{ #category : #accessing }
+{ #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithExpandedSearch [
 	<gtExample>
 	| aScripter |
@@ -99,7 +99,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithExpandedSearch [
 	^ aScripter
 ]
 
-{ #category : #accessing }
+{ #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogNavigated [
 	<gtExample>
 	| aScripter |
@@ -116,7 +116,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogNavigat
 	^ aScripter
 ]
 
-{ #category : #accessing }
+{ #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogOpen [
 	<gtExample>
 	| aScripter |
@@ -131,7 +131,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogOpen [
 	^ aScripter
 ]
 
-{ #category : #accessing }
+{ #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithInitializationDone [
 	<gtExample>
 	<after: #cleanUpRepository>
@@ -153,7 +153,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDone [
 	^ aScripter
 ]
 
-{ #category : #accessing }
+{ #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithSearchResult [
 	<noTest>
 	<gtExample>
@@ -184,7 +184,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithSearchResult [
 	^ aScripter
 ]
 
-{ #category : #accessing }
+{ #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithSelectedRepository [
 	<noTest>
 	<gtExample>
@@ -228,7 +228,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithSelectedRepository [
 	^ aScripter
 ]
 
-{ #category : #accessing }
+{ #category : #examples }
 GtGitElementExamples >> simpleElement [
 	<gtExample>
 	| element |
