@@ -174,7 +174,7 @@ GtGitRepository >> branchDescription [
 		  blocCompletion: [ 
 			  GtStringsCompletionStrategy new completions:
 					  (GtPrefixTree withAll:
-							   (icebergRepository allBranches collect: [ :branch | branch name ])) ];
+							   (icebergRepository allBranches collect: #name)) ];
 		  blocStencil: self defaultMagritteStencil;
 		  addCondition: [ :aValue | (aValue includesSubstring: '..') not ]
 		  labelled: 'May not contain ".."';
