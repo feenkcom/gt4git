@@ -9,7 +9,7 @@ Class {
 { #category : #accessing }
 GtGitElementExamples >> cleanUpRepository [
 	IceRepository registry
-		detect: [ :aRepository | aRepository name = 'zzz' ]
+		detect: [ :aRepository | aRepository name = self repositoryName ]
 		ifFound: [ :aRepository | 
 			aRepository forget.	"Delete all files from disk related to this repository"
 			aRepository workingCopy fileSystem ensureDeleteAll ]
@@ -22,6 +22,11 @@ GtGitElementExamples >> expandedElement [
 	element := self simpleElement createInPager maximized.
 	
 	^ element
+]
+
+{ #category : #accessing }
+GtGitElementExamples >> repositoryName [
+	^ 'AAA'
 ]
 
 { #category : #examples }
@@ -110,7 +115,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogNavigat
 		id: #'git-initialize-page';
 		onChildAt: 2;
 		id: #scrollable;
-		onChildAt: 7;
+		onChildAt: 2;
 		play.
 
 	^ aScripter
@@ -121,7 +126,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogOpen [
 	<gtExample>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithAddDialogOpen.
-	(FileLocator imageDirectory / 'zzz') ensureCreateDirectory.
+	(FileLocator imageDirectory / self repositoryName) ensureCreateDirectory.
 	aScripter click
 		label: 'Click initialization';
 		onSpaceRoot;
@@ -147,7 +152,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDone [
 
 	aScripter check
 		label: 'Check repository';
-		satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository name = 'zzz' ];
+		satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository name = self repositoryName ];
 		play.
 
 	^ aScripter
