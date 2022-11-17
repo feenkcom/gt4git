@@ -7,6 +7,15 @@ Class {
 }
 
 { #category : #accessing }
+GtGitElementExamples >> cleanUpRepository [
+	IceRepository registry
+		detect: [ :aRepository | aRepository name = 'zzz' ]
+		ifFound: [ :aRepository | 
+			aRepository forget.	"Delete all files from disk related to this repository"
+			aRepository workingCopy fileSystem ensureDeleteAll ]
+]
+
+{ #category : #accessing }
 GtGitElementExamples >> expandedElement [
 	<gtExample>
 	| element |
@@ -28,7 +37,6 @@ GtGitElementExamples >> scripterOnExpandedElement [
 
 { #category : #accessing }
 GtGitElementExamples >> scripterOnExpandedElementWithAddDialogOpen [
-	<noTest>
 	<gtExample>
 	| aScripter |
 	aScripter := self scripterOnExpandedElement.
@@ -45,7 +53,6 @@ GtGitElementExamples >> scripterOnExpandedElementWithAddDialogOpen [
 
 { #category : #accessing }
 GtGitElementExamples >> scripterOnExpandedElementWithDeletedRepository [
-	<noTest>
 	<gtExample>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDone.
@@ -95,7 +102,6 @@ GtGitElementExamples >> scripterOnExpandedElementWithExpandedSearch [
 { #category : #accessing }
 GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogNavigated [
 	<gtExample>
-	<noTest>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDialogOpen.
 	aScripter doubleClick
@@ -113,7 +119,6 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogNavigat
 { #category : #accessing }
 GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogOpen [
 	<gtExample>
-	<noTest>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithAddDialogOpen.
 	(FileLocator imageDirectory / 'zzz') ensureCreateDirectory.
@@ -128,8 +133,8 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogOpen [
 
 { #category : #accessing }
 GtGitElementExamples >> scripterOnExpandedElementWithInitializationDone [
-	<noTest>
 	<gtExample>
+	<after: #cleanUpRepository>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDialogNavigated.
 	aScripter click
@@ -145,7 +150,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDone [
 		satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository name = 'zzz' ];
 		play.
 
-	^ aScripter syncContinue
+	^ aScripter
 ]
 
 { #category : #accessing }
@@ -154,35 +159,46 @@ GtGitElementExamples >> scripterOnExpandedElementWithSearchResult [
 	<gtExample>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithExpandedSearch.
-	aScripter
-		substep: 'Type in search'
-		do: [ :aStep | 
-			aStep check
-				label: 'Check no repository';
-				satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository isNil ].
-				
-			aStep type
-				label: 'Search for GToolkit repository';
-				text: 'gtoolkit'.
+
+	aScripter check
+		label: 'Check no repository';
+		satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository isNil ];
+		play.
+
+	aScripter type
+		label: 'Search for GToolkit repository';
+		text: 'gtoolkit';
+		play.
 
 
-			aStep keyClick
-				label: 'Select repository';
-				key: BlKeyboardKey return.
-								
-			aStep check
-				label: 'Check repository';
-				satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository name = 'gtoolkit' ]. ].
+	aScripter keyClick
+		label: 'Select repository';
+		key: BlKeyboardKey return;
+		play.
 
-	^ aScripter syncContinue
+	aScripter check
+		label: 'Check repository';
+		satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository name = 'gtoolkit' ];
+		play.
+
+	^ aScripter
 ]
 
 { #category : #accessing }
 GtGitElementExamples >> scripterOnExpandedElementWithSelectedRepository [
-	<gtExample>
 	<noTest>
+	<gtExample>
+	<after: #cleanUpRepository>
 	| aScripter |
-	aScripter := self scripterOnExpandedElement.
+	aScripter := self scripterOnExpandedElementWithInitializationDone.
+
+	aScripter check
+		label: 'Unselect repository';
+		do: [ :aChangeView | 
+			aChangeView pages last contentElement tool
+				onNavigationModelChange: (GtGitRepositorySelected new repository: nil) ];
+		play.
+
 	aScripter check
 		label: 'Check no repository';
 		satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository isNil ];
