@@ -191,7 +191,6 @@ GtGitElementExamples >> scripterOnExpandedElementWithSearchResult [
 
 { #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithSelectedRepository [
-	<noTest>
 	<gtExample>
 	<after: #cleanUpRepository>
 	| aScripter |
@@ -214,7 +213,6 @@ GtGitElementExamples >> scripterOnExpandedElementWithSelectedRepository [
 		id: #sidebar;
 		id: #content;
 		id: #scrollable;
-		onChildAt: 1;
 		play.
 
 	aScripter check
