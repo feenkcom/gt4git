@@ -214,7 +214,6 @@ GtGitElementExamples >> scripterOnExpandedElementWithSelectedRepository [
 		id: #sidebar;
 		id: #content;
 		id: #scrollable;
-		onChildAt: 1;
 		play.
 
 	aScripter check
