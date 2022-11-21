@@ -191,6 +191,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithSearchResult [
 
 { #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithSelectedRepository [
+	<noTest>
 	<gtExample>
 	<after: #cleanUpRepository>
 	| aScripter |
