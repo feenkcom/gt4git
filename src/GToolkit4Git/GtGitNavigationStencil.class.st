@@ -42,21 +42,21 @@ GtGitNavigationStencil >> createListFor: aView [
 	^ aView columnedList
 		  title: 'Repositories';
 		  updateWhen: GtRepositoryListChanged
-		  in: GtRepositoryRegistryAnnouncer default announcer;
+		  	in: GtRepositoryRegistryAnnouncer default announcer;
 		  actionDropdownButtonIcon: BrGlamorousVectorIcons add
-		  tooltip: 'Add Repository'
-		  content: [ :aDropdown :aTarget | 
-			  | s |
-			  s := GtGitAddRepositoryStencil new.
-			  s dropdown: aDropdown.
-			  s onCreated: [ :repo | 
+		  	tooltip: 'Add Repository'
+		  	content: [ :aDropdown :aTarget | 
+			  	| s |
+			  	s := GtGitAddRepositoryStencil new.
+			  	s dropdown: aDropdown.
+			  	s onCreated: [ :repo | 
 					  self announcer announce:
 							  (GtGitRepositoryAddedAndSelected new repository:
 									   (GtGitRepository fromIcebergRepository: repo)) ].
-			  s ];
+			  	s ];
 		  actionButtonIcon: BrGlamorousVectorIcons down
-		  tooltip: 'Fetch All'
-		  action: [ [ self repositories collect: [ :r | r fetch ] ] fork ];
+		  	tooltip: 'Fetch All'
+		  	action: [ [ self repositories collect: [ :r | r fetch ] ] fork ];
 		  items: [ self repositories ];
 		  send: [ :repo | 
 			  self announce: (GtGitRepositorySelected new repository: repo) ];
