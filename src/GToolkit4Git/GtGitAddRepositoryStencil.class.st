@@ -78,11 +78,13 @@ GtGitAddRepositoryStencil >> initializePage [
 	fileBrowser vExact: 400.
 	fileBrowser hExact: 464.
 
-	fileBrowser buttonLabel: 'Initialize'.
+	fileBrowser
+		buttonLabel: 'Initialize';
+		buttonId: #'git-initialize-button'.
 	fileBrowser
 		okAction: [ :filePath | 
 			| repo |
-			filePath hasChildren ifFalse: [filePath ensureDelete].
+			filePath hasChildren ifFalse: [ filePath ensureDelete ].
 			repo := IceRepositoryCreator new
 					location: filePath;
 					subdirectory: 'src';

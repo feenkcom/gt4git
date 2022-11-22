@@ -21,9 +21,9 @@ GtGitNavigationElement >> addAndSelectRepository: aRepositoryAnnouncement [
 			allChildrenBreadthFirstDetect: [ :aChild | 
 			aChild isKindOf: BrColumnedList ]
 			ifFound: [ :aList | 
-				aList viewModel items add: aRepositoryAnnouncement repository.
+				"aList viewModel items add: aRepositoryAnnouncement repository.
 				aList selectOne: aList viewModel itemCount.
-				aList scrollToIndex: aList viewModel itemCount ] ].
+				aList scrollToIndex: aList viewModel itemCount" ] ].
 
 	suppressed := false
 ]
@@ -50,15 +50,16 @@ GtGitNavigationElement >> navigationModel: aGtGitNavigationModel [
 { #category : #accessing }
 GtGitNavigationElement >> selectRepository: aRepositoryAnnouncement [
 
-	aRepositoryAnnouncement repository ifNil: [ ^ self ].
+	aRepositoryAnnouncement repository
+		ifNil: [
+			(self query // GtPhlowColumnedListId) anyOne ifNotNil: [ :aList | aList deselectAll ].
+			^ self ].
 
 	suppressed ifFalse: [ 
 		suppressed := true.
-		self
-			allChildrenBreadthFirstDetect: [ :aChild | 
-			aChild isKindOf: BrColumnedList ]
-			ifFound: [ :aList | 
-				aList viewModel items doWithIndex: [ :each :index | 
+		
+		(self query // GtPhlowColumnedListId) anyOne ifNotNil: [ :aList |
+			aList viewModel items doWithIndex: [ :each :index | 
 					each name = aRepositoryAnnouncement repository name ifTrue: [ 
 						aList selectOne: index.
 						aList scrollToIndex: index ] ] ] ].

@@ -58,6 +58,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithAddDialogOpen [
 
 { #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithDeletedRepository [
+	<noTest>
 	<gtExample>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDone.
@@ -150,9 +151,10 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDone [
 		onChildAt: 1;
 		play.
 
+	"this will need to be changed once we select correctly"
 	aScripter check
 		label: 'Check repository';
-		satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository name = self repositoryName ];
+		satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository isNil ];
 		play.
 
 	^ aScripter
