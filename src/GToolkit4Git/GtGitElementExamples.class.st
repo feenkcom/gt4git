@@ -58,7 +58,6 @@ GtGitElementExamples >> scripterOnExpandedElementWithAddDialogOpen [
 
 { #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithDeletedRepository [
-	<noTest>
 	<gtExample>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDone.
@@ -154,7 +153,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDone [
 	"this will need to be changed once we select correctly"
 	aScripter check
 		label: 'Check repository';
-		satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository isNil ];
+		satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository isNotNil ];
 		play.
 
 	^ aScripter
@@ -216,6 +215,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithSelectedRepository [
 		id: #sidebar;
 		id: #content;
 		id: #scrollable;
+		onChildAt: 1;
 		play.
 
 	aScripter check
