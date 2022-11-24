@@ -764,19 +764,14 @@ GtGitRepository >> gtCommitsFor: aView [
 				comment: each comment;
 				repository: each repository;
 				lepiterWorkingCopy: self lepiterWorkingCopy yourself ];
-		itemContextMenuStencil: [ :element :item | 
-			BrGlamorousSimpleContextMenuContent new
-				items: {'Revert'
-							-> [ :e | 
+		contextItemLabel: 'Revert' action: [ :element :item | 
 								item revert.
 								self rawCommit: 'Revert ' , item shortId , ' ' , item comment.
-								element phlow fireUpdateWish ].
-						'Checkout'
-							-> [ :e | 
+								element phlow fireUpdateWish ];
+		contextItemLabel: 'Checkout' action: [ :element :item | 
 								item checkout.
 								self announceRepositoryModified.
-								element phlow fireUpdateWish ]};
-				yourself ]
+								element phlow fireUpdateWish ]
 ]
 
 { #category : #'gt - extensions' }
