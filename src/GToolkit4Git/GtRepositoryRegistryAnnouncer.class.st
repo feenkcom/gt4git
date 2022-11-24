@@ -1,10 +1,21 @@
+"
+nil
+"
 Class {
 	#name : #GtRepositoryRegistryAnnouncer,
 	#superclass : #Object,
-	#traits : 'TGtWithAnnouncer + TGtUniqueInstance',
-	#classTraits : 'TGtWithAnnouncer classTrait + TGtUniqueInstance classTrait',
+	#traits : 'TGtAnnouncer + TGtUniqueInstance',
+	#classTraits : 'TGtAnnouncer classTrait + TGtUniqueInstance classTrait',
+	#instVars : [
+		'announcer'
+	],
 	#category : #'GToolkit4Git-UI - View Model'
 }
+
+{ #category : #announcer }
+GtRepositoryRegistryAnnouncer >> announcer [
+	^ announcer ifNil: [ announcer := Announcer new ]
+]
 
 { #category : #accessing }
 GtRepositoryRegistryAnnouncer >> initialize [

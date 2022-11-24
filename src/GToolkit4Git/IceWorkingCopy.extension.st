@@ -19,21 +19,18 @@ IceWorkingCopy >> gtPackagesFor: aView [
 		priority: 15;
 		title: 'Packages' translated;
 		items: [ (IceSortingStrategy new first: #modified) sort: self packages ];
-		itemContextMenuStencil: [ :element :item | 
-			BrGlamorousSimpleContextMenuContent new
-				items: {'Remove'
-							-> [ :e | 
-								item remove.
-								Iceberg announcer
-									announce: (IceRepositoryModified new repository: self repository).
-								element phlow fireUpdateWish ].
-						'Reload (Force)'
-							-> [ :e | [ item reload ] on: MCMergeOrLoadWarning do: [ :err | err load ] ].
-						'Reload (Merge)'
-							-> [ :e | [ item reload ] on: MCMergeOrLoadWarning do: [ :err | err merge ] ].
-						'Reload (Bail)'
-							-> [ :e | [ item reload ] on: MCMergeOrLoadWarning do: [ :err | err cancel ] ]};
-				yourself ];
+		contextItemLabel: 'Remove'
+			action: [ :element :item | 
+				item remove.
+				Iceberg announcer
+					announce: (IceRepositoryModified new repository: self repository).
+				element phlow fireUpdateWish ];
+		contextItemLabel: 'Reload (Force)'
+			action: [ :element :item | [ item reload ] on: MCMergeOrLoadWarning do: [ :err | err load ] ];
+		contextItemLabel: 'Reload (Merge)'
+			action: [ :element :item | [ item reload ] on: MCMergeOrLoadWarning do: [ :err | err merge ] ];
+		contextItemLabel: 'Reload (Bail)'
+			action: [ :element :item | [ item reload ] on: MCMergeOrLoadWarning do: [ :err | err cancel ] ];
 		updateWhen: IceRepositoryModified in: Iceberg announcer;
 		column: 'Name' text: #gtPackageDescription;
 		column: 'Status'

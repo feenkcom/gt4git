@@ -36,46 +36,48 @@ GtGitNavigationStencil >> create [
 
 { #category : #accessing }
 GtGitNavigationStencil >> createListFor: aView [
-
 	<gtGitNavigation>
-	
 	^ aView columnedList
-		  title: 'Repositories';
-		  updateWhen: GtRepositoryListChanged
-		  	in: GtRepositoryRegistryAnnouncer default announcer;
-		  actionDropdownButtonIcon: BrGlamorousVectorIcons add
-		  	tooltip: 'Add Repository'
-		  	content: [ :aDropdown :aTarget | 
-			  	| s |
-			  	s := GtGitAddRepositoryStencil new.
-			  	s dropdown: aDropdown.
-			  	s onCreated: [ :repo | 
-					  self announcer announce:
-							  (GtGitRepositoryAddedAndSelected new repository:
-									   (GtGitRepository fromIcebergRepository: repo)) ].
-			  	s ];
-		  actionButtonIcon: BrGlamorousVectorIcons down
-		  	tooltip: 'Fetch All'
-		  	action: [ [ self repositories collect: [ :r | r fetch ] ] fork ];
-		  items: [ self repositories ];
-		  send: [ :repo | 
-			  self announce: (GtGitRepositorySelected new repository: repo) ];
-		  actionStencil: [ :anElement | 
-			  GtSpotterDropdownButtonStencil new
-				  valuable: [ self repositories ];
-				  tooltip: 'Search Repositories';
-				  icon: BrGlamorousVectorIcons search;
-				  actOn: [ :anActOnEvent :anItem | 
-					  anActOnEvent beActed.
-					  self announce: (GtGitRepositorySelected new repository: anItem).
-					  anElement phlow fireUpdateWish ] ]
-		  tooltip: 'Search Repositories';
-		  actionUpdateButtonTooltip: 'Refresh List of Repositories';
-		  column: 'Repository' translated
-		  text: [ :each | self viewModel nameFor: each ];
-		  column: 'Status' translated
-		  stencil: [ :each | self viewModel statusElementFor: each ]
-		  width: 100
+		title: 'Repositories';
+		updateWhen: GtRepositoryListChanged
+			in: GtRepositoryRegistryAnnouncer default announcer;
+		actionDropdownButtonIcon: BrGlamorousVectorIcons add
+			tooltip: 'Add Repository'
+			content: [ :aDropdown :aTarget | 
+				| s |
+				s := GtGitAddRepositoryStencil new.
+				s dropdown: aDropdown.
+				s
+					onCreated: [ :repo | 
+						self announcer
+							announce: (GtGitRepositoryAddedAndSelected new
+									repository: (GtGitRepository fromIcebergRepository: repo)) ].
+				s ];
+		actionButtonIcon: BrGlamorousVectorIcons down
+			tooltip: 'Fetch All'
+			action: [ [ self repositories collect: [ :r | r fetch ] ] fork ];
+		items: [ self repositories ];
+		send: [ :repo | self announce: (GtGitRepositorySelected new repository: repo) ];
+		actionStencil: [ :anElement | 
+				GtSpotterDropdownButtonStencil new
+					valuable: [ self repositories ];
+					tooltip: 'Search Repositories';
+					icon: BrGlamorousVectorIcons search;
+					actOn: [ :anActOnEvent :anItem | 
+						anActOnEvent beActed.
+						self announce: (GtGitRepositorySelected new repository: anItem).
+						anElement phlow fireUpdateWish ] ]
+			tooltip: 'Search Repositories';
+		actionUpdateButtonTooltip: 'Refresh List of Repositories';
+		rowDataBinder: [ :aRowElement :aRepository |
+				aRepository = navigationModel repository
+					ifTrue: [ aRowElement states addState: BlElementSelectedState uniqueInstance ]
+					ifFalse: [ aRowElement ] ];
+			column: 'Repository' translated
+			text: [ :each | self viewModel nameFor: each ];
+		column: 'Status' translated
+			stencil: [ :each | self viewModel statusElementFor: each ]
+			width: 100
 ]
 
 { #category : #accessing }

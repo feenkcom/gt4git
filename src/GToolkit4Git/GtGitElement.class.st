@@ -157,9 +157,15 @@ GtGitElement >> sidebarElement [
 
 { #category : #accessing }
 GtGitElement >> subscribeToNavigationModel [
-	self navigationModel weak 
+	self navigationModel weak
 		when: GtGitRepositorySelected
-		send: #onNavigationModelChange: to: self
+		send: #onNavigationModelChange:
+		to: self.
+
+	self navigationModel weak
+		when: GtGitRepositoryAddedAndSelected
+		send: #onNavigationModelChange:
+		to: self
 ]
 
 { #category : #accessing }
