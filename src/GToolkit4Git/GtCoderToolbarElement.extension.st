@@ -8,15 +8,16 @@ GtCoderToolbarElement >> gitButtonFor: anAction [
 		tooltip: 'Go to repository';
 		priority: 4;
 		  icon: BrGlamorousVectorIcons branching;
-		  action: [ :_ | 
+		  action: [ :aDropdown | 
 			  | repository |
+			  self halt.
 			  repository := self repository.
 			  repository
 				  ifNil: [ 
-					  self phlow spawnTool: (GtPhlowValuableTool new valuable: [ 
+					  aDropdown phlow spawnTool: (GtPhlowValuableTool new valuable: [ 
 									   GtGitAddToRepositoryElement new package:
 											   self navigationModel selectedPackage ]) ]
 				  ifNotNil: [ 
-					  self phlow spawnTool: (GtPhlowValuableTool new valuable: [ 
+					  aDropdown phlow spawnTool: (GtPhlowValuableTool new valuable: [ 
 									   GtGitElement new repository: self repository ]) ] ]
 ]
