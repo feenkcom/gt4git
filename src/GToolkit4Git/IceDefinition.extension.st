@@ -16,3 +16,8 @@ IceDefinition >> isAttachmentFileDefinition [
 IceDefinition >> isAttachmentPropertiesDefinition [
 	^ false
 ]
+
+{ #category : #'*GToolkit4Git' }
+IceDefinition >> needsRepositoryForTool [
+	^ false
+]
