@@ -1,6 +1,17 @@
 Extension { #name : #IceNode }
 
 { #category : #'*GToolkit4Git' }
+IceNode >> gtBrowseActionFor: anAction [
+	<gtAction>
+	self value definition needsRepositoryForTool ifTrue: [ ^ anAction noAction ].
+
+	^ anAction button
+		icon: BrGlamorousVectorIcons emphasizedBrowse;
+		tooltip: 'Browse current version';
+		action: [ :aButton | aButton phlow spawnTool: (self value definition toolIn: nil) ]
+]
+
+{ #category : #'*GToolkit4Git' }
 IceNode >> gtResolveConflictActionForView: aView [
 
 	aView

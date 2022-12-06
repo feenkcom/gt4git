@@ -10,6 +10,11 @@ GtLepiterDefinition >> canBeBrowsed [
 ]
 
 { #category : #accessing }
+GtLepiterDefinition >> needsRepositoryForTool [
+	^ true
+]
+
+{ #category : #accessing }
 GtLepiterDefinition >> removeFrom: anObject [
 	"noop"
 ]
