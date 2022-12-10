@@ -329,7 +329,11 @@ GtIceLepiterExamples >> createBasicIcebergRepositoryWithName: repositoryName [
 		                 location: reposioryFolder;
 		                 subdirectory: 'src';
 		                 ensureProjectFile;
+		                 commitishName: self mainBranchName;
 		                 createNewRepositoryNamed: repositoryName.
+		                 
+	self assert: iceRepository branchName equals: self mainBranchName.
+		                 
 	iceRepository workingCopy commitWithMessage:
 		'Add properties and project files'.
 
@@ -509,13 +513,19 @@ GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch [
 GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch [
 	<gtExample>
 	
-	| gtIceRepository targetDatabase targetPage |
+	| gtIceRepository targetDatabase targetPage beforeBranches afterBranches |
 	gtIceRepository := self gitRepositoryACommitEditedPageInSecondBranch.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
+	
+	beforeBranches := gtIceRepository repository allBranches copy.
+	self assert: beforeBranches size equals: 2.
 	
 	gtIceRepository 
 		gtLepiterAwareCheckoutBranch: self mainBranchName.
 	self assertNoChangesInRepository:  gtIceRepository.
+	
+	afterBranches :=  gtIceRepository repository allBranches copy.
+	self assert: beforeBranches size equals: 2.
 	
 	targetPage := targetDatabase pageNamed: 'Page1'.
 	self assert: targetDatabase pageCount equals: 1.
@@ -1275,7 +1285,7 @@ GtIceLepiterExamples >> loadDatabaseInIcebergRepository: iceRepository [
 
 { #category : #'accessing - names' }
 GtIceLepiterExamples >> mainBranchName [
-	^ 'master'
+	^ 'main'
 ]
 
 { #category : #'setUp-tearDown' }
