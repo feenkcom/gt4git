@@ -275,7 +275,7 @@ GtGitRepository >> databasesDescription [
 				   write: [ :aModel :aValue | 
 					   aModel databases asOrderedCollection
 						   removeAllFoundIn: aValue;
-						   collect: [ :database | 
+						   do: [ :database | 
 								self lepiterWorkingCopy unloadDatabase: database ].
 					   aValue
 						   removeAllFoundIn: aModel databases;
