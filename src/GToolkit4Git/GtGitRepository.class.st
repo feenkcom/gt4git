@@ -275,7 +275,7 @@ GtGitRepository >> databasesDescription [
 				   write: [ :aModel :aValue | 
 					   aModel databases asOrderedCollection
 						   removeAllFoundIn: aValue;
-						   collect: [ :database | 
+						   do: [ :database | 
 								self lepiterWorkingCopy unloadDatabase: database ].
 					   aValue
 						   removeAllFoundIn: aModel databases;
@@ -778,11 +778,11 @@ GtGitRepository >> gtCommitsFor: aView [
 GtGitRepository >> gtExamplesFor: aView [
 	<gtView>
 	<gtRepositoryView>
-	
-	^ aView forward 
+	^ aView forward
 		title: 'Examples';
 		priority: 20;
-		object: [ GtExampleGroup withAll: self gtAllLoadedExamples];
+		object: [ GtExampleGroup
+				withAll: (self gtAllLoadedExamples collect: #asCachedExampleWithResult) ];
 		view: #gtExamplesFor:
 ]
 

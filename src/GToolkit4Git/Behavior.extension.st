@@ -7,6 +7,7 @@ Behavior >> gtGitButtonFor: anAction [
 		tooltip: 'Go to repository';
 		priority: 4;
 		icon: BrGlamorousVectorIcons branching;
+		id: GtCoderGitButtonId;
 		action: [ :aButton | 
 			| coder repository |
 			coder := aButton phlow firstParentWithView.
