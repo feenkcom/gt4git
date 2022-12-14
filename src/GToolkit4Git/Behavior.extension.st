@@ -10,7 +10,7 @@ Behavior >> gtGitButtonFor: anAction [
 		id: GtCoderGitButtonId;
 		action: [ :aButton | 
 			| coder repository |
-			coder := aButton phlow coder.
+			coder := aButton phlow firstParentCoder.
 			coder navigationModel hasSelectedPackageOrClass
 				ifTrue: [ repository := coder repository.
 					repository
