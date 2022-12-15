@@ -10,13 +10,13 @@ Behavior >> gtGitButtonFor: anAction [
 		id: GtCoderGitButtonId;
 		action: [ :aButton | 
 			| coder repository |
-			coder := aButton phlow firstParentWithView.
+			coder := aButton phlow firstParentCoder.
 			coder navigationModel hasSelectedPackageOrClass
 				ifTrue: [ repository := coder repository.
 					repository
-						ifNil: [ coder phlow
+						ifNil: [ aButton phlow
 								spawnTool: (GtPhlowValuableTool new
 										valuable: [ GtGitAddToRepositoryElement new package: coder navigationModel selectedPackage ]) ]
-						ifNotNil: [ coder phlow
+						ifNotNil: [ aButton phlow
 								spawnTool: (GtPhlowValuableTool new valuable: [ GtGitElement new repository: repository ]) ] ] ]
 ]
