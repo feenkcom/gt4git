@@ -149,7 +149,7 @@ GtGitRepository >> baselinesDescription [
 					  using: aDescription ].
 			  aTagger withAsyncSinkDo: [ :anElementSink | 
 				  anElementSink
-					  sink: AsyncPeakSink new;
+					  sink: AsyncPeekSink new;
 					  whenUpdate: [ :theTagger :aSink | 
 						  | theValues theTexts |
 						  theValues := aSink value currentValue.
@@ -331,7 +331,7 @@ GtGitRepository >> databasesDescription [
 					  using: aDescription ].
 			  aTagger withAsyncSinkDo: [ :anElementSink | 
 				  anElementSink
-					  sink: AsyncPeakSink new;
+					  sink: AsyncPeekSink new;
 					  whenUpdate: [ :theTagger :aSink | 
 						  | theValues |
 						  theValues := aSink value currentValue.
@@ -370,7 +370,7 @@ GtGitRepository >> defaultMagritteStencil [
 			  c minWidth: 20 ];
 		  withAsyncSinkDo: [ :anElementSink | 
 			  anElementSink
-				  sink: AsyncPeakSink new;
+				  sink: AsyncPeekSink new;
 				  whenUpdate: [ :theEditor :aSink | 
 					  theEditor text: aSink value currentValue ].
 			  (aMemento readObservableValueUsing: aDescription) observe:
