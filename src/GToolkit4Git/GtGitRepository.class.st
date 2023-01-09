@@ -99,7 +99,7 @@ GtGitRepository >> baselinesDescription [
 				   write: [ :aModel :aValue | 
 					   aModel baselines
 						   removeAllFoundIn: aValue;
-						   collect: [ :baseline | self removeBaseline: baseline ].
+						   do: [ :baseline | self removeBaseline: baseline ].
 					   aValue
 						   removeAllFoundIn: aModel baselines;
 						   collect: [ :baseline | self addBaseline: baseline ] ]);
