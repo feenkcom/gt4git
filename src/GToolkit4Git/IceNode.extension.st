@@ -21,9 +21,8 @@ IceNode >> gtResolveConflictActionForView: aView [
 			| leftButton rightButton |
 			leftButton := BrButton new.
 			leftButton
-				aptitude: BrGlamorousButtonWithIconAptitude;
-				icon: BrGlamorousVectorIcons left;
-				label: 'Choose Right';
+				aptitude: BrGlamorousButtonWithLabelAptitude;
+				label: 'Choose Yours';
 				disabled: self value isRightChosen;
 				action: [ 
 					self value selectRight.
@@ -35,9 +34,8 @@ IceNode >> gtResolveConflictActionForView: aView [
 
 			rightButton := BrButton new.
 			rightButton
-				aptitude: BrGlamorousButtonWithIconAptitude;
-				icon: BrGlamorousVectorIcons right;
-				label: 'Choose Left';
+				aptitude: BrGlamorousButtonWithLabelAptitude;
+				label: 'Choose Incoming';
 				disabled: self value isLeftChosen;
 				action: [ 
 					self value selectLeft.
