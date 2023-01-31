@@ -1,9 +1,8 @@
 Extension { #name : #IceMethodDefinition }
 
 { #category : #'*GToolkit4Git' }
-IceMethodDefinition class >> gtDiffBuilderFrom: aContent to: anotherContent [
-	^ (super gtDiffBuilderFrom: aContent to: anotherContent) 
-			isMethod: true
+IceMethodDefinition class >> gtStyler [
+	^ super gtStyler isForWorkspace: false
 ]
 
 { #category : #'*GToolkit4Git' }

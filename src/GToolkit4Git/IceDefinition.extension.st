@@ -1,10 +1,16 @@
 Extension { #name : #IceDefinition }
 
 { #category : #'*GToolkit4Git' }
-IceDefinition class >> gtDiffBuilderFrom: aContent to: anotherContent [
-	^ TextDiffBuilder 
-		from:  aContent 
+IceDefinition class >> gtDiffChangeFrom: aContent to: anotherContent [
+	^ GtDiffBuilder
+		computeDifferencesFrom: aContent
 		to: anotherContent
+		using: GtCharacterGroupDiffSplitter words
+]
+
+{ #category : #'*GToolkit4Git' }
+IceDefinition class >> gtStyler [
+	^ nil
 ]
 
 { #category : #'*GToolkit4Git' }
