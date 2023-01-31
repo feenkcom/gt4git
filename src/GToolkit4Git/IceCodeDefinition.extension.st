@@ -1,9 +1,16 @@
 Extension { #name : #IceCodeDefinition }
 
 { #category : #'*GToolkit4Git' }
-IceCodeDefinition class >> gtDiffBuilderFrom: aContent to: anotherContent [
-	^ (GtCodeDiffBuilder 
-		from: aContent 
-		to: anotherContent) 
-			isMethod: false
+IceCodeDefinition class >> gtDiffChangeFrom: aContent to: anotherContent [
+	^ GtDiffBuilder
+		computeDifferencesFrom: aContent
+		to: anotherContent
+		using: GtSmaCCDiffSplitter forPharo
+]
+
+{ #category : #'*GToolkit4Git' }
+IceCodeDefinition class >> gtStyler [
+	^ GtCodeDiffRBTextStyler new
+		isForWorkspace: true;
+		yourself
 ]
