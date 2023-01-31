@@ -24,6 +24,7 @@ IceNode >> gtResolveConflictActionForView: aView [
 				aptitude: BrGlamorousButtonWithLabelAptitude;
 				label: 'Choose Yours';
 				disabled: self value isRightChosen;
+				margin: (BlInsets right: 5);
 				action: [ 
 					self value selectRight.
 					Iceberg announcer announce: GtIceMergeConflictResolved new.
@@ -122,10 +123,9 @@ IceNode >> gtViewTwoPanesDiffFor: aView [
 		stencil: [ GtDiffElementWithLabelStencil new
 				fromLabelText: 'Repository:';
 				toLabelText: 'Working Copy (local):';
-				change: (self definition class
-						gtDiffChangeFrom: self value rightContents
-						to: self value leftContents);
-				styler: self definition class gtStyler ];
+				diffBuilder: (GtTextDiff new
+						from: self value rightContents to: self value leftContents;
+						styler: [ self definition class gtStyler ]) ];
 		in: [ :currentView | 
 			self value isConflict
 				ifTrue: [ self gtResolveConflictActionForView: currentView ] ];
