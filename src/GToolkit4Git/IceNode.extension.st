@@ -119,7 +119,7 @@ IceNode >> gtViewTwoPanesDiffFor: aView [
 	<gtView>
 	^ aView explicit
 		title: 'Diff (two panes)';
-		priority: 22;
+		priority: 19;
 		stencil: [ GtDiffElementWithLabelStencil new
 				fromLabelText: 'Repository:';
 				toLabelText: 'Working Copy (local):';
