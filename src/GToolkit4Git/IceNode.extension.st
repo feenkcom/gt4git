@@ -123,9 +123,10 @@ IceNode >> gtViewTwoPanesDiffFor: aView [
 		stencil: [ GtDiffElementWithLabelStencil new
 				fromLabelText: 'Repository:';
 				toLabelText: 'Working Copy (local):';
-				diffBuilder: (GtTextDiff new
-						from: self value rightContents to: self value leftContents;
-						styler: [ self definition class gtStyler ]) ];
+				change: (self definition class
+						gtDiffChangeFrom: self value rightContents
+						to: self value leftContents);
+				styler: self definition class gtStyler ];
 		in: [ :currentView | 
 			self value isConflict
 				ifTrue: [ self gtResolveConflictActionForView: currentView ] ];
