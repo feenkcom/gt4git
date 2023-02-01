@@ -22,7 +22,7 @@ IceNode >> gtResolveConflictActionForView: aView [
 			leftButton := BrButton new.
 			leftButton
 				aptitude: BrGlamorousButtonWithLabelAptitude;
-				label: 'Choose Yours';
+				label: 'Choose Repository';
 				disabled: self value isRightChosen;
 				margin: (BlInsets right: 5);
 				action: [ 
@@ -36,7 +36,7 @@ IceNode >> gtResolveConflictActionForView: aView [
 			rightButton := BrButton new.
 			rightButton
 				aptitude: BrGlamorousButtonWithLabelAptitude;
-				label: 'Choose Incoming';
+				label: 'Choose Local';
 				disabled: self value isLeftChosen;
 				action: [ 
 					self value selectLeft.
