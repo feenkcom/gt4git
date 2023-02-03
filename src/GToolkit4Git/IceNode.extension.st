@@ -21,10 +21,10 @@ IceNode >> gtResolveConflictActionForView: aView [
 			| leftButton rightButton |
 			leftButton := BrButton new.
 			leftButton
-				aptitude: BrGlamorousButtonWithIconAptitude;
-				icon: BrGlamorousVectorIcons left;
-				label: 'Choose Right';
+				aptitude: BrGlamorousButtonWithLabelAptitude;
+				label: 'Choose Repository';
 				disabled: self value isRightChosen;
+				margin: (BlInsets right: 5);
 				action: [ 
 					self value selectRight.
 					Iceberg announcer announce: GtIceMergeConflictResolved new.
@@ -35,9 +35,8 @@ IceNode >> gtResolveConflictActionForView: aView [
 
 			rightButton := BrButton new.
 			rightButton
-				aptitude: BrGlamorousButtonWithIconAptitude;
-				icon: BrGlamorousVectorIcons right;
-				label: 'Choose Left';
+				aptitude: BrGlamorousButtonWithLabelAptitude;
+				label: 'Choose Local';
 				disabled: self value isLeftChosen;
 				action: [ 
 					self value selectLeft.
@@ -120,7 +119,7 @@ IceNode >> gtViewTwoPanesDiffFor: aView [
 	<gtView>
 	^ aView explicit
 		title: 'Diff (two panes)';
-		priority: 22;
+		priority: 19;
 		stencil: [ GtDiffElementWithLabelStencil new
 				fromLabelText: 'Repository:';
 				toLabelText: 'Working Copy (local):';
