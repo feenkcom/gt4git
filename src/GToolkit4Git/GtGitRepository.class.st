@@ -262,82 +262,86 @@ GtGitRepository >> databases [
 
 { #category : #magritte }
 GtGitRepository >> databasesDescription [
-
 	<magritteDescription>
 	^ MAToManyRelationDescription new
-		  label: 'Databases';
-		  priority: 5;
-		  classes: { 
-				  LeDatabase.
-				  FileLocator };
-		  accessor: (MAPluggableAccessor
-				   read: [ :aModel | aModel databases asOrderedCollection ]
-				   write: [ :aModel :aValue | 
-					   aModel databases asOrderedCollection
-						   removeAllFoundIn: aValue;
-						   do: [ :database | 
-								self lepiterWorkingCopy unloadDatabase: database ].
-					   aValue
-						   removeAllFoundIn: aModel databases;
-						   collect: [ :database | 
-							   self addNewDatabaseInDirectory: database ] ]);
-		  blocListStencil: [ :aMemento :aDescription :aForm | 
-			  | aTagger |
-			  aTagger := BrTagger new.
-			  aTagger
-				  margin: ((BlInsets left: 7) withBottom: 4);
-				  hMatchParent;
-				  vFitContent.
-			  aForm hMatchParent.
-			  aTagger aptitude: (BrGlamorousTaggerEditableDropdownAptitude new
-					   margin: (BlInsets right: 5);
-					   tagLabel: [ :aTag | 
-						   BrEditableLabel new
-							   text: (aDescription displayStringFor: aTag name);
-							   aptitude: (BrGlamorousEditableLabelAptitude new
-									    glamorousCodeFont;
-									    defaultForeground: Color black;
-									    fontSize: 10);
-							   whenKey: BlKeyCombination primaryB
-							   labelDo: [ :aShortcutEvent :aShortcut | 
-							   aTagger phlow spawnObject: aTag name ] ];
-					   content: [ :aDropdown :_ | 
-						   BrFileSelector new
-							   folder: self repository repositoryDirectory;
-							   fileFilterBlock: [ :aFile | aFile isDirectory ];
-							   okAction: [ :aDirectory :aButton | 
-								   aDirectory isDirectory ifTrue: [ 
-										   aDropdown fireEvent: BrDropdownHideWish new.
-										   aMemento
-											   write: ((aTagger tags collect: #name)
-													    add: aDirectory;
-													    yourself)
-											   using: aDescription.
-										   aDropdown phlow fireUpdateWish ] ];
-							   buttonLabel: 'Add database';
-							   padding: (BlInsets all: 20);
-							   matchParent ]).
-			  aTagger when: BrTaggerAddTagRequest do: [ :aRequest | 
-				  aMemento
-					  write: ((aTagger tags collect: #name)
-							   add: aRequest tag name;
-							   yourself)
-					  using: aDescription ].
-			  aTagger when: BrTaggerRemoveTagRequest do: [ :aRequest | 
-				  aMemento
-					  write: ((aTagger tags collect: #name)
-							   remove: aRequest tag name;
-							   yourself)
-					  using: aDescription ].
-			  aTagger withAsyncSinkDo: [ :anElementSink | 
-				  anElementSink
-					  sink: AsyncPeekSink new;
-					  whenUpdate: [ :theTagger :aSink | 
-						  | theValues |
-						  theValues := aSink value currentValue.
-						  theTagger namedTags: theValues ].
-				  (aMemento readObservableValueUsing: aDescription) observe:
-					  anElementSink ] ]
+		label: 'Databases';
+		priority: 5;
+		classes: {LeDatabase.
+				FileLocator};
+		accessor: (MAPluggableAccessor
+				read: [ :aModel | aModel databases asOrderedCollection ]
+				write: [ :aModel :aValue | 
+					aModel databases asOrderedCollection
+						removeAllFoundIn: aValue;
+						do: [ :database | self lepiterWorkingCopy unloadDatabase: database ].
+					aValue
+						removeAllFoundIn: aModel databases;
+						collect: [ :database | self addNewDatabaseInDirectory: database ] ]);
+		blocListStencil: [ :aMemento :aDescription :aForm | 
+			| aTagger |
+			aTagger := BrTagger new.
+			aTagger
+				margin: ((BlInsets left: 7) withBottom: 4);
+				hMatchParent;
+				vFitContent.
+			aForm hMatchParent.
+			aTagger
+				aptitude: (BrGlamorousTaggerEditableDropdownAptitude new
+						margin: (BlInsets right: 5);
+						tagLabel: [ :aTag | 
+							BrEditableLabel new
+								text: (aDescription displayStringFor: aTag name);
+								aptitude: (BrGlamorousEditableLabelAptitude new
+										glamorousCodeFont;
+										defaultForeground: Color black;
+										fontSize: 10);
+								whenKey: BlKeyCombination primaryB
+									labelDo: [ :aShortcutEvent :aShortcut | aTagger phlow spawnObject: aTag name ] ];
+						content: [ :aDropdown :_ | 
+							BrFileSelector new
+								vExact: 250;
+								hExact: 400;
+								folder: self repository repositoryDirectory;
+								addAptitude: BrGlamorousWithVerticalResizerAptitude
+										+ BrGlamorousWithHorizontalResizerAptitude
+										+ BrGlamorousWithHorizontalResizerAptitude new beLeft;
+								fileFilterBlock: [ :aFile | aFile isDirectory ];
+								okAction: [ :aDirectory :aButton | 
+									aDirectory isDirectory
+										ifTrue: [ aDropdown fireEvent: BrDropdownHideWish new.
+											aMemento
+												write: ((aTagger tags collect: #name)
+														add: aDirectory;
+														yourself)
+												using: aDescription.
+											aDropdown phlow fireUpdateWish ] ];
+								buttonLabel: 'Add database';
+								padding: (BlInsets all: 10) ]).
+			aTagger
+				when: BrTaggerAddTagRequest
+				do: [ :aRequest | 
+					aMemento
+						write: ((aTagger tags collect: #name)
+								add: aRequest tag name;
+								yourself)
+						using: aDescription ].
+			aTagger
+				when: BrTaggerRemoveTagRequest
+				do: [ :aRequest | 
+					aMemento
+						write: ((aTagger tags collect: #name)
+								remove: aRequest tag name;
+								yourself)
+						using: aDescription ].
+			aTagger
+				withAsyncSinkDo: [ :anElementSink | 
+					anElementSink
+						sink: AsyncPeekSink new;
+						whenUpdate: [ :theTagger :aSink | 
+							| theValues |
+							theValues := aSink value currentValue.
+							theTagger namedTags: theValues ].
+					(aMemento readObservableValueUsing: aDescription) observe: anElementSink ] ]
 ]
 
 { #category : #magritte }
