@@ -112,7 +112,7 @@ GtGitRepository >> baselinesDescription [
 				  hMatchParent;
 				  vFitContent.
 			  aForm hMatchParent.
-			  aTagger aptitude: (BrGlamorousTaggerEditableAptitude new
+			  aTagger aptitude: (GtCreationEditableTaggerAptitude new
 					   margin: (BlInsets right: 5);
 					   tagLabel: [ :aTag | 
 						   | aLabel |
@@ -125,7 +125,7 @@ GtGitRepository >> baselinesDescription [
 
 						   (GtCompletionController
 							    on: aLabel
-							    strategy: GtClassesCompletionStrategy new) install.
+							    strategy: GtBaselinesCompletionStrategy new) install.
 
 						   aLabel
 							   whenKey: BlKeyCombination primaryB
