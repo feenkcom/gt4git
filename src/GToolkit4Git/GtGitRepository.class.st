@@ -162,37 +162,31 @@ GtGitRepository >> baselinesDescription [
 
 { #category : #magritte }
 GtGitRepository >> branchDescription [
-
 	<magritteDescription>
 	^ MAStringDescription new
-		  label: 'Branch';
-		  priority: 1;
-		  accessor: (MAPluggableAccessor
-				   read: [ :aModel | aModel repository branchName ]
-				   write: [ :aModel :aValue | 
-					   aModel repository checkoutBranch: aValue ]);
-		  blocCompletion: [ 
-			  GtStringsCompletionStrategy new completions:
-					  (GtPrefixTree withAll:
-							   (icebergRepository allBranches collect: #name)) ];
-		  blocStencil: self defaultMagritteStencil;
-		  addCondition: [ :aValue | (aValue includesSubstring: '..') not ]
-		  labelled: 'May not contain ".."';
-		  addCondition: [ :aValue | (aValue includesAny: '~^:?*[\') not ]
-		  labelled: 'May not contain any of "~^:?*[\"';
-		  addCondition: [ :aValue | (aValue endsWith: '.') not ]
-		  labelled: 'May not end with a dot';
-		  addCondition: [ :aValue | 
-			  ((aValue beginsWith: '/') or: [ aValue endsWith: '/' ]) not ]
-		  labelled: 'May not start or end with a slash';
-		  addCondition: [ :aValue | (aValue includesSubstring: '@{') not ]
-		  labelled: 'May not contain the sequence "@{"';
-		  addCondition: [ :aValue | (aValue = '@') not ]
-		  labelled: 'May not just be an "@" charater';
-		  addCondition: [ :aValue | (aValue includesSubstring: '//') not ]
-		  labelled: 'May not contain multiple consecutive slashes';
-		  comment:
-		  'A branch name. If you set it to a non-existant branch, a new one will be created.'
+		label: 'Branch';
+		priority: 1;
+		accessor: (MAPluggableAccessor
+				read: [ :aModel | aModel repository branchName ]
+				write: [ :aModel :aValue | aModel repository checkoutBranch: aValue ]);
+		blocCompletion: [ GtStringsCompletionStrategy new
+				completions: (GtPrefixTree withAll: (icebergRepository allBranches collect: #name)) ];
+		textStyler: #glamorousCodeFontAndSmallSize;
+		addCondition: [ :aValue | (aValue includesSubstring: '..') not ]
+			labelled: 'May not contain ".."';
+		addCondition: [ :aValue | (aValue includesAny: '~^:?*[\') not ]
+			labelled: 'May not contain any of "~^:?*[\"';
+		addCondition: [ :aValue | (aValue endsWith: '.') not ]
+			labelled: 'May not end with a dot';
+		addCondition: [ :aValue | ((aValue beginsWith: '/') or: [ aValue endsWith: '/' ]) not ]
+			labelled: 'May not start or end with a slash';
+		addCondition: [ :aValue | (aValue includesSubstring: '@{') not ]
+			labelled: 'May not contain the sequence "@{"';
+		addCondition: [ :aValue | (aValue = '@') not ]
+			labelled: 'May not just be an "@" charater';
+		addCondition: [ :aValue | (aValue includesSubstring: '//') not ]
+			labelled: 'May not contain multiple consecutive slashes';
+		comment: 'A branch name. If you set it to a non-existant branch, a new one will be created.'
 ]
 
 { #category : #'api - repository' }
@@ -281,7 +275,7 @@ GtGitRepository >> databasesDescription [
 			| aTagger |
 			aTagger := BrTagger new.
 			aTagger
-				margin: ((BlInsets left: 7) withBottom: 4);
+				margin: (BlInsets left: 7);
 				hMatchParent;
 				vFitContent.
 			aForm hMatchParent.
@@ -342,48 +336,6 @@ GtGitRepository >> databasesDescription [
 							theValues := aSink value currentValue.
 							theTagger namedTags: theValues ].
 					(aMemento readObservableValueUsing: aDescription) observe: anElementSink ] ]
-]
-
-{ #category : #magritte }
-GtGitRepository >> defaultMagritteStencil [
-
-	^ [ :aMemento :aDescription | 
-	  | anEditor |
-	  anEditor := BrEditor new.
-	  aDescription isReadOnly ifTrue: [ anEditor beReadOnlyWithSelection ].
-	  anEditor
-		  aptitude:
-			  (BrGlamorousRegularEditorAptitude new glamorousCodeFont 
-				   fontSize: 10);
-		  addAptitude: (BrStyleCommonAptitude new
-				   default: [ :aStyle | 
-					   aStyle background: BrGlamorousColors backdropColor ];
-				   focused: [ :aStyle | 
-					   aStyle
-						   background: Color white;
-						   border:
-							   (BlBorder
-								    paint: BrGlamorousColors focusedEditorBorderColor
-								    width: 1) ]);
-		  geometry: (BlRoundedRectangleGeometry cornerRadius: 4);
-		  vFitContent;
-		  hFitContentLimited;
-		  margin: (BlInsets all: 4);
-		  constraintsDo: [ :c | 
-			  c grid vertical alignCenter.
-			  c minWidth: 20 ];
-		  withAsyncSinkDo: [ :anElementSink | 
-			  anElementSink
-				  sink: AsyncPeekSink new;
-				  whenUpdate: [ :theEditor :aSink | 
-					  theEditor text: aSink value currentValue ].
-			  (aMemento readObservableValueUsing: aDescription) observe:
-				  anElementSink ].
-
-	  anEditor editor when: BrTextEditorModifiedEvent do: [ :anEvent | 
-		  aMemento write: anEvent text asString using: aDescription ].
-
-	  anEditor ]
 ]
 
 { #category : #'api - actions' }
@@ -1008,16 +960,14 @@ GtGitRepository >> onRepositoryModifiedAnnouncement: anAnnouncement [
 
 { #category : #magritte }
 GtGitRepository >> originDescription [
-
 	<magritteDescription>
 	^ MAStringDescription new
-		  label: 'Origin';
-		  priority: 2;
-		  blocStencil: self defaultMagritteStencil;
-		  accessor: (MAPluggableAccessor
-				   read: [ :aModel | aModel repository originUrl ]
-				   write: [ :aModel :aValue | 
-					   aModel repository setOriginTo: aValue ])
+		label: 'Origin';
+		priority: 2;
+		textStyler: #glamorousCodeFontAndSmallSize;
+		accessor: (MAPluggableAccessor
+				read: [ :aModel | aModel repository originUrl ]
+				write: [ :aModel :aValue | aModel repository setOriginTo: aValue ])
 ]
 
 { #category : #'api - repository' }
