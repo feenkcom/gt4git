@@ -40,6 +40,19 @@ GtGitRepository class >> fromIcebergRepository: anIceRepository [
 		icebergRepository: anIceRepository
 ]
 
+{ #category : #'gt - extensions' }
+GtGitRepository >> actionButtonLabelled: buttonText withDropdownContent: dropdownContent [
+	| aDropdown |
+	^ BrButton new
+		aptitude: BrGlamorousButtonWithLabelAptitude
+				+ (BrGlamorousWithDropdownAptitude
+						handle: [ aDropdown := BrButton new
+									aptitude: BrGlamorousButtonWithLabelAptitude - BrGlamorousButtonExteriorAptitude;
+									label: buttonText ]
+						content: dropdownContent);
+		label: buttonText
+]
+
 { #category : #'api - actions adding/removing' }
 GtGitRepository >> addBaseline: aBaselineName [
 
@@ -65,6 +78,14 @@ GtGitRepository >> addNewDatabaseInDirectory: aDirectory [
 
 	self lepiterWorkingCopy addNewDatabaseInDirectory: aDirectory.
 	self announceRepositoryModified.
+]
+
+{ #category : #'api - actions adding/removing' }
+GtGitRepository >> addPackage: aPackageName [
+	(RBAddPackageChange addPackageNamed: aPackageName) execute.
+
+	self icebergWorkingCopy addPackageNamed: aPackageName.
+	self announceRepositoryModified
 ]
 
 { #category : #announcer }
@@ -826,30 +847,12 @@ GtGitRepository >> gtRepositoryDirectoryFor: aView [
 GtGitRepository >> gtUnbornHelpFor: aView [
 	<gtView>
 	<gtRepositoryView>
-	self workingCopy project isUnborn ifFalse: [ ^ aView empty ].
+	(self workingCopy project isUnborn or: [ self hasCommits not  ]) ifFalse: [ ^ aView empty ].
 
-
-	(GtGitRepairAction subclasses
-		select: [ :sc | sc iceTipClass isAvailableFor: icebergRepository ]) size = 0
-		ifTrue: [ ^ aView empty ].
-
-	^ aView explicit
+	^ aView textEditor
 		title: 'Setup';
 		priority: 1;
-		stencil: [ | container |
-			container := BrVerticalPane new matchParent padding: (BlInsets all: 5).
-
-			container
-				addChild: (BrEditor new
-						aptitude: BrGlamorousRegularEditorAptitude new;
-						vFitContent;
-						text: 'The repository is not set up for use with GT yet. You will need to perform the following actions before committing:'
-								asRopedText).
-
-			(GtGitRepairAction subclasses
-				select: [ :sc | sc iceTipClass isAvailableFor: icebergRepository ])
-				do: [ :sc | container addChild: (sc new repository: icebergRepository) repairStencil ].
-			container ]
+		text: [ self setupInstructions ]
 ]
 
 { #category : #'api - testing' }
@@ -857,6 +860,11 @@ GtGitRepository >> hasChanges [
 	^ self hasWorkingCopy and: [ 
 		self isModified "and: [  
 			self workingCopy diffToReferenceCommit treeToShow children isNotEmpty ]" ]
+]
+
+{ #category : #'api - testing' }
+GtGitRepository >> hasCommits [
+	^ self repository head commitStream hasNext wait
 ]
 
 { #category : #'api - testing' }
@@ -1050,6 +1058,91 @@ GtGitRepository >> repository [
 { #category : #'api - accessing' }
 GtGitRepository >> repository: anIcebergRepository [
 	self icebergRepository: anIcebergRepository
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> setupBaselineAction [
+	^ self
+		actionButtonLabelled: 'Create a baseline'
+		withDropdownContent: [ GtGitBaselineCreationForm new repositoryModel: self ]
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> setupDefaultDirectoryAction [
+	^ BrButton new
+		label: 'Create a default source directory';
+		aptitude: BrGlamorousButtonWithLabelAptitude;
+		action: [ | model |
+			model := IceBasicProject onRepository: self repository.
+			model sourceDirectory: self repository repositoryDirectory / 'src'.
+			model fileFormat: IceLibgitTonelWriter.
+			self assert: model repositoryProperties fileFormat = IceLibgitTonelWriter.	"Set the project in the repository"
+			self repository workingCopy project: model.
+			Iceberg announcer announce: (IceRepositoryModified for: self repository) ]
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> setupDefaultSourceDirectoryAction [
+	^ BrButton new
+		label: 'Create default source directory';
+		aptitude: BrGlamorousButtonWithLabelAptitude;
+		action: [ | model |
+			model := IceBasicProject onRepository: self repository.
+			model sourceDirectory: self repository repositoryDirectory / 'src'.
+			model fileFormat: IceLibgitTonelWriter.
+			self assert: model repositoryProperties fileFormat = IceLibgitTonelWriter.
+			self repository workingCopy project: model.
+			Iceberg announcer announce: (IceRepositoryModified for: self repository) ]
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> setupInstructions [
+	| aStream |
+	aStream := BlTextStream new.
+	aStream next
+		appendingAdornment: [ self setupDefaultDirectoryAction ];
+		putAll: 'The repository is not set up for use with GT yet. You will need to perform the following actions before committing: '.
+	aStream next
+		appendingAdornment: [ self setupSourceDirectoryAction.  ];
+		putAll: ' or '.
+	aStream next
+		cr;
+		putAll: 'This will create a directory in which to store sources and create the necessary metadata files. You will then be able to work normally with the repository.';
+		cr;
+		cr.
+	aStream next
+		appendingAdornment: [ self setupLepiterDatabaseAction ];
+		putAll: 'Optionally you can also '.
+	aStream next
+		appendingAdornment: [ self setupBaselineAction ];
+		putAll: ', '.
+	aStream next
+		appendingAdornment: [ self setupPackageAction ];
+		putAll: ' or '.
+	^ aStream contents
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> setupLepiterDatabaseAction [
+	^ BrButton new
+		label: 'Create a default Lepiter database';
+		aptitude: BrGlamorousButtonWithLabelAptitude;
+		action: [ self
+				addNewDatabaseInDirectory: self repository repositoryDirectory / 'lepiter' ]
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> setupPackageAction [
+	^ self
+		actionButtonLabelled: 'Create a package'
+		withDropdownContent: [ GtGitPackageCreationForm new repositoryModel: self ]
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> setupSourceDirectoryAction [
+	^ self
+		actionButtonLabelled: 'Create a custom source directory'
+		withDropdownContent: [ (GtGitRepairProject new repository: icebergRepository) repairStencil ]
 ]
 
 { #category : #'api - actions' }

@@ -1,0 +1,76 @@
+Class {
+	#name : #GtGitPackageCreationForm,
+	#superclass : #Object,
+	#instVars : [
+		'repositoryModel',
+		'package'
+	],
+	#category : #'GToolkit4Git-Model'
+}
+
+{ #category : #accessing }
+GtGitPackageCreationForm >> acceptAction [
+	<magritteActionDescription>
+	^ MAActionDescription new
+		label: 'Accept';
+		action: [ :aModel :aButton | 
+			[ self repositoryModel addPackage: self package.
+			aButton
+				inUIProcessDo: [ aButton dispatchEvent: BrDropdownHideWish new.
+					aButton phlow fireUpdateWish ] ] on: Error do: #debug ];
+		beCommitAction
+]
+
+{ #category : #accessing }
+GtGitPackageCreationForm >> asElement [
+	^ (self asGtMagritteViewModel
+		onElementCreated: [ :aFrame | 
+			BlFocusFinder new
+				direction: BlFocusSearchDirectionForward new;
+				root: aFrame;
+				referenceElement: nil;
+				nextFocusDo: #requestFocus ifNone: [  ] ]) asElement
+		padding: (BlInsets all: 5)
+]
+
+{ #category : #accessing }
+GtGitPackageCreationForm >> initialize [
+	package := ''
+]
+
+{ #category : #accessing }
+GtGitPackageCreationForm >> package [
+	^ package
+]
+
+{ #category : #accessing }
+GtGitPackageCreationForm >> package: anObject [
+	package := anObject
+]
+
+{ #category : #accessing }
+GtGitPackageCreationForm >> packageDescription [
+	<magritteDescription>
+	^ MAStringDescription new
+		label: 'Package';
+		priority: 1;
+		accessor: #package;
+		blocCompletion: [ GtStringsCompletionStrategy new
+				completions: (GtPrefixTree withAll: (Smalltalk allClasses collect: #name)) ];
+		addCondition: [ :aValue | aValue asString trim isNotEmpty ]
+			labelled: 'Package name must be set';
+		addCondition: [ :aValue | (Smalltalk classNamed: aValue asString trim) isNil ]
+			labelled: 'Package name is already taken';
+		beRequired
+]
+
+{ #category : #accessing }
+GtGitPackageCreationForm >> repositoryModel [
+	^ repositoryModel
+]
+
+{ #category : #accessing }
+GtGitPackageCreationForm >> repositoryModel: anObject [
+	repositoryModel := anObject.
+	self package: (' ' join: ('-' split: repositoryModel name)) asCamelCase
+]
