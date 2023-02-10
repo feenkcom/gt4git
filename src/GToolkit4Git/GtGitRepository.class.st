@@ -40,6 +40,20 @@ GtGitRepository class >> fromIcebergRepository: anIceRepository [
 		icebergRepository: anIceRepository
 ]
 
+{ #category : #'gt - extensions' }
+GtGitRepository >> actionButtonLabelled: buttonText withDropdownContent: dropdownContent [
+	| aButton aDropdown |
+	aButton := BrButton new
+			aptitude: BrGlamorousButtonWithLabelAptitude
+					+ (BrGlamorousWithDropdownAptitude
+							handle: [ aDropdown := BrButton new
+										aptitude: BrGlamorousButtonWithLabelAptitude - BrGlamorousButtonExteriorAptitude;
+										label: buttonText ]
+							content: [ dropdownContent cull: aButton ]);
+			label: buttonText.
+	^ aButton
+]
+
 { #category : #'api - actions adding/removing' }
 GtGitRepository >> addBaseline: aBaselineName [
 
@@ -61,10 +75,46 @@ GtGitRepository >> addBaseline: aBaselineName [
 ]
 
 { #category : #'api - actions adding/removing' }
+GtGitRepository >> addBaselineWithAllPackages: aBaselineName [
+	(RBAddPackageChange addPackageNamed: aBaselineName) execute.
+	(RBAddClassChange
+		definition: 'BaselineOf subclass: #' , aBaselineName
+				, '
+	instanceVariableNames: ''''
+	classVariableNames: ''''
+	poolDictionaries: ''''
+	package: ''' , aBaselineName , '''') execute.
+	(RBAddMethodChange
+		compile: 'baseline: spec
+	<baseline>
+		^ spec for: #common do: [
+			'
+				, ('.
+			'
+						join: (self workingCopy packages
+								collect: [ :aPackage | 'spec package: ''' , aPackage name , '''' ]))
+				, '
+		]'
+		in: aBaselineName asClass
+		classified: #baseline) execute.
+
+	self icebergWorkingCopy addPackageNamed: aBaselineName.
+	self announceRepositoryModified
+]
+
+{ #category : #'api - actions adding/removing' }
 GtGitRepository >> addNewDatabaseInDirectory: aDirectory [
 
 	self lepiterWorkingCopy addNewDatabaseInDirectory: aDirectory.
 	self announceRepositoryModified.
+]
+
+{ #category : #'api - actions adding/removing' }
+GtGitRepository >> addPackage: aPackageName [
+	(RBAddPackageChange addPackageNamed: aPackageName) execute.
+
+	self icebergWorkingCopy addPackageNamed: aPackageName.
+	self announceRepositoryModified
 ]
 
 { #category : #announcer }
@@ -487,13 +537,15 @@ GtGitRepository >> gtActionRefreshFor: anAction [
 { #category : #'gt - extensions' }
 GtGitRepository >> gtActionRepairFor: anAction [
 	<gtAction>
-	(GtGitRepairAction subclasses 
-		select: [:sc | sc iceTipClass isAvailableFor: icebergRepository]) size = 0 
-			ifTrue: [ ^ anAction noAction ].
+	(GtGitRepairAction subclasses
+		select: [ :sc | sc iceTipClass isAvailableFor: icebergRepository ]) size = 0
+		ifTrue: [ ^ anAction noAction ].
 	^ anAction dropdown
-		label: 'Repair';
-		content: [:aDropdown | 
-			GtGitRepositoryRepairStencil new repository: icebergRepository; dropdown: aDropdown ].
+		label: (self isUninitialized ifTrue: [ 'Initialize' ] ifFalse: [ 'Repair' ]);
+		content: [ :aDropdown | 
+			GtGitRepositoryRepairStencil new
+				repository: icebergRepository;
+				dropdown: aDropdown ]
 ]
 
 { #category : #'gt - extensions' }
@@ -826,30 +878,12 @@ GtGitRepository >> gtRepositoryDirectoryFor: aView [
 GtGitRepository >> gtUnbornHelpFor: aView [
 	<gtView>
 	<gtRepositoryView>
-	self workingCopy project isUnborn ifFalse: [ ^ aView empty ].
+	(self isUninitialized or: [ self hasCommits not  ]) ifFalse: [ ^ aView empty ].
 
-
-	(GtGitRepairAction subclasses
-		select: [ :sc | sc iceTipClass isAvailableFor: icebergRepository ]) size = 0
-		ifTrue: [ ^ aView empty ].
-
-	^ aView explicit
+	^ aView textEditor
 		title: 'Setup';
 		priority: 1;
-		stencil: [ | container |
-			container := BrVerticalPane new matchParent padding: (BlInsets all: 5).
-
-			container
-				addChild: (BrEditor new
-						aptitude: BrGlamorousRegularEditorAptitude new;
-						vFitContent;
-						text: 'The repository is not set up for use with GT yet. You will need to perform the following actions before committing:'
-								asRopedText).
-
-			(GtGitRepairAction subclasses
-				select: [ :sc | sc iceTipClass isAvailableFor: icebergRepository ])
-				do: [ :sc | container addChild: (sc new repository: icebergRepository) repairStencil ].
-			container ]
+		text: [ self setupInstructions ]
 ]
 
 { #category : #'api - testing' }
@@ -857,6 +891,11 @@ GtGitRepository >> hasChanges [
 	^ self hasWorkingCopy and: [ 
 		self isModified "and: [  
 			self workingCopy diffToReferenceCommit treeToShow children isNotEmpty ]" ]
+]
+
+{ #category : #'api - testing' }
+GtGitRepository >> hasCommits [
+	^ self repository head commitStream hasNext wait
 ]
 
 { #category : #'api - testing' }
@@ -934,6 +973,11 @@ GtGitRepository >> isModified [
 		   self lepiterWorkingCopy hasDatabases and: [ 
 			   self icebergRepository isDirty ] ]) or: [ 
 		  self lepiterWorkingCopy changesToHeadUsingIndex isNotEmpty ]
+]
+
+{ #category : #'api - testing' }
+GtGitRepository >> isUninitialized [
+	^ self workingCopy project isUnborn
 ]
 
 { #category : #'gt - extensions' }
@@ -1050,6 +1094,100 @@ GtGitRepository >> repository [
 { #category : #'api - accessing' }
 GtGitRepository >> repository: anIcebergRepository [
 	self icebergRepository: anIcebergRepository
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> setupBaselineAction [
+	^ self
+		actionButtonLabelled: 'Create a baseline'
+		withDropdownContent: [ :aButton | 
+			GtGitBaselineCreationForm new
+				repositoryModel: self;
+				button: aButton ]
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> setupDefaultDirectoryAction [
+	^ BrButton new
+		label: 'Create a default source directory';
+		aptitude: BrGlamorousButtonWithLabelAptitude;
+		action: [ | model |
+			model := IceBasicProject onRepository: self repository.
+			model sourceDirectory: self repository repositoryDirectory / 'src'.
+			model fileFormat: IceLibgitTonelWriter.
+			self assert: model repositoryProperties fileFormat = IceLibgitTonelWriter.	"Set the project in the repository"
+			self repository workingCopy project: model.
+			Iceberg announcer announce: (IceRepositoryModified for: self repository) ]
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> setupDefaultSourceDirectoryAction [
+	^ BrButton new
+		label: 'Create default source directory';
+		aptitude: BrGlamorousButtonWithLabelAptitude;
+		action: [ | model |
+			model := IceBasicProject onRepository: self repository.
+			model sourceDirectory: self repository repositoryDirectory / 'src'.
+			model fileFormat: IceLibgitTonelWriter.
+			self assert: model repositoryProperties fileFormat = IceLibgitTonelWriter.
+			self repository workingCopy project: model.
+			Iceberg announcer announce: (IceRepositoryModified for: self repository) ]
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> setupInstructions [
+	| aStream |
+	aStream := BlTextStream new.
+	aStream next
+		appendingAdornment: [ self setupDefaultDirectoryAction ];
+		putAll: 'The repository is not set up for use with GT yet. You will need to perform the following actions before committing: '.
+	aStream next
+		appendingAdornment: [ self setupSourceDirectoryAction.  ];
+		putAll: ' or '.
+	aStream next
+		cr;
+		putAll: 'This will create a directory in which to store sources and create the necessary metadata files. You will then be able to work normally with the repository.';
+		cr;
+		cr.
+	aStream next
+		appendingAdornment: [ self setupLepiterDatabaseAction ];
+		putAll: 'Optionally you can also '.
+	aStream next
+		appendingAdornment: [ self setupPackageAction ];
+		putAll: ', '.
+	aStream next
+		appendingAdornment: [ self setupBaselineAction ];
+		putAll: ' or '.
+	^ aStream contents
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> setupLepiterDatabaseAction [
+	^ BrButton new
+		label: 'Create a default Lepiter database';
+		aptitude: BrGlamorousButtonWithLabelAptitude;
+		action: [ self
+				addNewDatabaseInDirectory: self repository repositoryDirectory / 'lepiter' ]
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> setupPackageAction [
+	^ self
+		actionButtonLabelled: 'Create a package'
+		withDropdownContent: [ :aButton | 
+			GtGitPackageCreationForm new
+				repositoryModel: self;
+				button: aButton ]
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> setupSourceDirectoryAction [
+	^ self
+		actionButtonLabelled: 'Create a custom source directory'
+		withDropdownContent: [ :aButton | 
+			(GtGitRepairProject new
+				repository: icebergRepository;
+				dropdown: aButton) repairStencil ]
 ]
 
 { #category : #'api - actions' }

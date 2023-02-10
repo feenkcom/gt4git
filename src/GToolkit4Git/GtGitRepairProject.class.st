@@ -10,6 +10,22 @@ GtGitRepairProject class >> iceTipClass [
 ]
 
 { #category : #accessing }
+GtGitRepairProject >> createFor: pathString in: container [
+	| model |
+	model := IceBasicProject onRepository: repository.
+	model sourceDirectory: pathString.
+	model fileFormat: IceLibgitTonelWriter.
+	self assert: model repositoryProperties fileFormat = IceLibgitTonelWriter.	"Set the project in the repository"
+	repository workingCopy project: model.
+	Iceberg announcer announce: (IceRepositoryModified for: repository).
+	dropdown
+		ifNotNil: [ dropdown
+				enqueueTask: (BlTaskAction new
+						action: [ dropdown dispatchEvent: (BrDropdownHideWish new anchor: dropdown).
+							dropdown phlow fireUpdateWish ]) ]
+]
+
+{ #category : #accessing }
 GtGitRepairProject >> help [
 	^ self class iceTipClass help , '
 
@@ -20,8 +36,10 @@ Add a new source folder (e.g., called "src"), select it, and click on OK to add 
 { #category : #accessing }
 GtGitRepairProject >> repairStencil [
 	| container srcSelector |
-	container := BrVerticalPane new.
-	container matchParent.
+	container := BrVerticalPane new
+			aptitude: BrGlamorousWithVerticalResizerAptitude
+					+ BrGlamorousWithHorizontalResizerAptitude.
+	container size: 600 @ 350.
 	container padding: (BlInsets all: 10).
 	srcSelector := BrFileSelector new folder: repository repositoryDirectory.
 	container
@@ -32,18 +50,8 @@ GtGitRepairProject >> repairStencil [
 	container addChild: srcSelector.
 	srcSelector
 		okAction: [ :srcFolder | 
-			| model |
-			model := IceBasicProject onRepository: repository.
-			model
-				sourceDirectory: (srcFolder relativeTo: repository repositoryDirectory) pathString.
-			model fileFormat: IceLibgitTonelWriter.
-			self assert: model repositoryProperties fileFormat = IceLibgitTonelWriter.	"Set the project in the repository"
-			repository workingCopy project: model.
-			Iceberg announcer announce: (IceRepositoryModified for: repository).
-			dropdown
-				ifNotNil: [ dropdown
-						enqueueTask: (BlTaskAction new
-								action: [ dropdown dispatchEvent: (BrDropdownHideWish new anchor: dropdown).
-									dropdown phlow fireUpdateWish ]) ] ].
+			self
+				createFor: (srcFolder relativeTo: repository repositoryDirectory)
+				in: container ].
 	^ container
 ]
