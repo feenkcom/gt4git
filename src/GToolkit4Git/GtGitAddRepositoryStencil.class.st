@@ -47,13 +47,20 @@ GtGitAddRepositoryStencil >> initialPage [
 										hovered: [ :aStyle | aStyle background: BrGlamorousColors hoveredListItemColor ]) ];
 				itemDataBinder: [ :anItemElement :anItemObject :anItemIndex | 
 					anItemElement
-						text: anItemObject key;
-						when: BlClickEvent do: anItemObject value ];
+						text: anItemObject first;
+						id: anItemObject second;
+						when: BlClickEvent do: anItemObject third ];
 				fitContent;
 				padding: (BlInsets all: 3);
-				items: {'Clone a remote repository' -> [ self openGithubPage ].
-						'Load a local repository' -> [ self openLocalPage ].
-						'Create a new repository' -> [ self openInitialize ]})
+				items: {{'Clone a remote repository'.
+							#'git-remote'.
+							[ self openGithubPage ]}.
+						{'Load a local repository'.
+							#'git-local'.
+							[ self openLocalPage ]}.
+						{'Create a new repository'.
+							#'git-initial'.
+							[ self openInitialize ]}})
 ]
 
 { #category : #accessing }
