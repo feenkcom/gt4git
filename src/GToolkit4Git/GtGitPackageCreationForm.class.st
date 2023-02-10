@@ -23,14 +23,27 @@ GtGitPackageCreationForm >> acceptAction [
 
 { #category : #accessing }
 GtGitPackageCreationForm >> asElement [
-	^ (self asGtMagritteViewModel
+	| viewModel |
+	viewModel := self asGtMagritteViewModel.
+	viewModel actions first
+		installOn: [ :aModel :aButton :aMemento | 
+			aButton
+				withAsyncSinkDo: [ :anElementSink | 
+					anElementSink
+						sink: AsyncPeekSink new;
+						whenUpdate: [ :theButton :aSink | 
+							| aStatus |
+							aStatus := aSink value.
+							theButton enabled: aStatus isValid ].
+					aMemento overallStatus observe: anElementSink ] ].
+	viewModel
 		onElementCreated: [ :aFrame | 
 			BlFocusFinder new
 				direction: BlFocusSearchDirectionForward new;
 				root: aFrame;
 				referenceElement: nil;
-				nextFocusDo: #requestFocus ifNone: [  ] ]) asElement
-		padding: (BlInsets all: 5)
+				nextFocusDo: #requestFocus ifNone: [  ] ].
+	^ viewModel asElement padding: (BlInsets all: 5)
 ]
 
 { #category : #accessing }
@@ -55,6 +68,7 @@ GtGitPackageCreationForm >> packageDescription [
 		label: 'Package';
 		priority: 1;
 		accessor: #package;
+		textStyler: #glamorousCodeFont;
 		blocCompletion: [ GtStringsCompletionStrategy new
 				completions: (GtPrefixTree withAll: (Smalltalk allClasses collect: #name)) ];
 		addCondition: [ :aValue | aValue asString trim isNotEmpty ]

@@ -74,6 +74,34 @@ GtGitRepository >> addBaseline: aBaselineName [
 ]
 
 { #category : #'api - actions adding/removing' }
+GtGitRepository >> addBaselineWithAllPackages: aBaselineName [
+	(RBAddPackageChange addPackageNamed: aBaselineName) execute.
+	(RBAddClassChange
+		definition: 'BaselineOf subclass: #' , aBaselineName
+				, '
+	instanceVariableNames: ''''
+	classVariableNames: ''''
+	poolDictionaries: ''''
+	package: ''' , aBaselineName , '''') execute.
+	(RBAddMethodChange
+		compile: 'baseline: spec
+	<baseline>
+		^ spec for: #common do: [
+			'
+				, ('.
+			'
+						join: (self workingCopy packages
+								collect: [ :aPackage | 'spec package: ''' , aPackage name , '''' ]))
+				, '
+		]'
+		in: aBaselineName asClass
+		classified: #baseline) execute.
+
+	self icebergWorkingCopy addPackageNamed: aBaselineName.
+	self announceRepositoryModified
+]
+
+{ #category : #'api - actions adding/removing' }
 GtGitRepository >> addNewDatabaseInDirectory: aDirectory [
 
 	self lepiterWorkingCopy addNewDatabaseInDirectory: aDirectory.
