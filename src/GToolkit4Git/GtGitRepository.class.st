@@ -536,13 +536,15 @@ GtGitRepository >> gtActionRefreshFor: anAction [
 { #category : #'gt - extensions' }
 GtGitRepository >> gtActionRepairFor: anAction [
 	<gtAction>
-	(GtGitRepairAction subclasses 
-		select: [:sc | sc iceTipClass isAvailableFor: icebergRepository]) size = 0 
-			ifTrue: [ ^ anAction noAction ].
+	(GtGitRepairAction subclasses
+		select: [ :sc | sc iceTipClass isAvailableFor: icebergRepository ]) size = 0
+		ifTrue: [ ^ anAction noAction ].
 	^ anAction dropdown
-		label: 'Repair';
-		content: [:aDropdown | 
-			GtGitRepositoryRepairStencil new repository: icebergRepository; dropdown: aDropdown ].
+		label: (self isUninitialized ifTrue: [ 'Initialize' ] ifFalse: [ 'Repair' ]);
+		content: [ :aDropdown | 
+			GtGitRepositoryRepairStencil new
+				repository: icebergRepository;
+				dropdown: aDropdown ]
 ]
 
 { #category : #'gt - extensions' }
@@ -875,7 +877,7 @@ GtGitRepository >> gtRepositoryDirectoryFor: aView [
 GtGitRepository >> gtUnbornHelpFor: aView [
 	<gtView>
 	<gtRepositoryView>
-	(self workingCopy project isUnborn or: [ self hasCommits not  ]) ifFalse: [ ^ aView empty ].
+	(self isUninitialized or: [ self hasCommits not  ]) ifFalse: [ ^ aView empty ].
 
 	^ aView textEditor
 		title: 'Setup';
@@ -970,6 +972,11 @@ GtGitRepository >> isModified [
 		   self lepiterWorkingCopy hasDatabases and: [ 
 			   self icebergRepository isDirty ] ]) or: [ 
 		  self lepiterWorkingCopy changesToHeadUsingIndex isNotEmpty ]
+]
+
+{ #category : #'api - testing' }
+GtGitRepository >> isUninitialized [
+	^ self workingCopy project isUnborn
 ]
 
 { #category : #'gt - extensions' }
@@ -1142,10 +1149,10 @@ GtGitRepository >> setupInstructions [
 		appendingAdornment: [ self setupLepiterDatabaseAction ];
 		putAll: 'Optionally you can also '.
 	aStream next
-		appendingAdornment: [ self setupBaselineAction ];
+		appendingAdornment: [ self setupPackageAction ];
 		putAll: ', '.
 	aStream next
-		appendingAdornment: [ self setupPackageAction ];
+		appendingAdornment: [ self setupBaselineAction ];
 		putAll: ' or '.
 	^ aStream contents
 ]

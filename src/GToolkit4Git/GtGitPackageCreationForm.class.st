@@ -14,10 +14,14 @@ GtGitPackageCreationForm >> acceptAction [
 	^ MAActionDescription new
 		label: 'Accept';
 		action: [ :aModel :aButton | 
-			[ self repositoryModel addPackage: self package.
+			[ self debug. self repositoryModel addPackage: self package.
 			aButton
 				inUIProcessDo: [ aButton dispatchEvent: BrDropdownHideWish new.
-					aButton phlow fireUpdateWish ] ] on: Error do: #debug ];
+					aButton phlow fireUpdateWish.
+					aButton phlow
+						spawnTool: (GtPackageCoderTool package: self package asPackage) ] ]
+				on: Error
+				do: #debug ];
 		beCommitAction
 ]
 

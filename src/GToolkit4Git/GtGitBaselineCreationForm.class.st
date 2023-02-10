@@ -18,7 +18,8 @@ GtGitBaselineCreationForm >> acceptAction [
 
 			aButton
 				inUIProcessDo: [ aButton dispatchEvent: BrDropdownHideWish new.
-					aButton phlow fireUpdateWish ] ] on: Error do: #debug ];
+					aButton phlow fireUpdateWish.
+					aButton phlow spawnTool: (GtMethodCoderTool compiledMethod: (self baseline asClass >> #baseline:)) ] ] on: Error do: #debug ];
 		beCommitAction
 ]
 
