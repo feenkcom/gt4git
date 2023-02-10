@@ -42,15 +42,16 @@ GtGitRepository class >> fromIcebergRepository: anIceRepository [
 
 { #category : #'gt - extensions' }
 GtGitRepository >> actionButtonLabelled: buttonText withDropdownContent: dropdownContent [
-	| aDropdown |
-	^ BrButton new
-		aptitude: BrGlamorousButtonWithLabelAptitude
-				+ (BrGlamorousWithDropdownAptitude
-						handle: [ aDropdown := BrButton new
-									aptitude: BrGlamorousButtonWithLabelAptitude - BrGlamorousButtonExteriorAptitude;
-									label: buttonText ]
-						content: dropdownContent);
-		label: buttonText
+	| aButton aDropdown |
+	aButton := BrButton new
+			aptitude: BrGlamorousButtonWithLabelAptitude
+					+ (BrGlamorousWithDropdownAptitude
+							handle: [ aDropdown := BrButton new
+										aptitude: BrGlamorousButtonWithLabelAptitude - BrGlamorousButtonExteriorAptitude;
+										label: buttonText ]
+							content: [ dropdownContent cull: aButton ]);
+			label: buttonText.
+	^ aButton
 ]
 
 { #category : #'api - actions adding/removing' }
@@ -1099,7 +1100,10 @@ GtGitRepository >> repository: anIcebergRepository [
 GtGitRepository >> setupBaselineAction [
 	^ self
 		actionButtonLabelled: 'Create a baseline'
-		withDropdownContent: [ GtGitBaselineCreationForm new repositoryModel: self ]
+		withDropdownContent: [ :aButton | 
+			GtGitBaselineCreationForm new
+				repositoryModel: self;
+				button: aButton ]
 ]
 
 { #category : #'gt - extensions' }
@@ -1170,14 +1174,20 @@ GtGitRepository >> setupLepiterDatabaseAction [
 GtGitRepository >> setupPackageAction [
 	^ self
 		actionButtonLabelled: 'Create a package'
-		withDropdownContent: [ GtGitPackageCreationForm new repositoryModel: self ]
+		withDropdownContent: [ :aButton | 
+			GtGitPackageCreationForm new
+				repositoryModel: self;
+				button: aButton ]
 ]
 
 { #category : #'gt - extensions' }
 GtGitRepository >> setupSourceDirectoryAction [
 	^ self
 		actionButtonLabelled: 'Create a custom source directory'
-		withDropdownContent: [ (GtGitRepairProject new repository: icebergRepository) repairStencil ]
+		withDropdownContent: [ :aButton | 
+			(GtGitRepairProject new
+				repository: icebergRepository;
+				dropdown: aButton) repairStencil ]
 ]
 
 { #category : #'api - actions' }

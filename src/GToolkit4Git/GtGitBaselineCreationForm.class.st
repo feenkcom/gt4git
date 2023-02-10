@@ -3,7 +3,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'repositoryModel',
-		'baseline'
+		'baseline',
+		'button'
 	],
 	#category : #'GToolkit4Git-Model'
 }
@@ -16,10 +17,13 @@ GtGitBaselineCreationForm >> acceptAction [
 		action: [ :aModel :aButton | 
 			[ self repositoryModel addBaselineWithAllPackages: self baseline.
 
-			aButton
-				inUIProcessDo: [ aButton dispatchEvent: BrDropdownHideWish new.
-					aButton phlow fireUpdateWish.
-					aButton phlow spawnTool: (GtMethodCoderTool compiledMethod: (self baseline asClass >> #baseline:)) ] ] on: Error do: #debug ];
+			button
+				inUIProcessDo: [ button dispatchEvent: BrDropdownHideWish new.
+					button phlow fireUpdateWish.
+					button phlow
+						spawnTool: (GtMethodCoderTool compiledMethod: self baseline asClass >> #baseline:) ] ]
+				on: Error
+				do: #debug ];
 		beCommitAction
 ]
 
@@ -77,6 +81,16 @@ GtGitBaselineCreationForm >> baselineDescription [
 		addCondition: [ :aValue | aValue asString isAllAlphaNumerics ]
 			labelled: 'Baseline name must be alphanumeric';
 		beRequired
+]
+
+{ #category : #accessing }
+GtGitBaselineCreationForm >> button [
+	^ button
+]
+
+{ #category : #accessing }
+GtGitBaselineCreationForm >> button: anObject [
+	button := anObject
 ]
 
 { #category : #accessing }

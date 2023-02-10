@@ -18,9 +18,11 @@ GtGitRepairProject >> createFor: pathString in: container [
 	self assert: model repositoryProperties fileFormat = IceLibgitTonelWriter.	"Set the project in the repository"
 	repository workingCopy project: model.
 	Iceberg announcer announce: (IceRepositoryModified for: repository).
-	^ container
-		inUIProcessDo: [ container dispatchEvent: BrDropdownHideWish new.
-			container phlow fireUpdateWish ]
+	dropdown
+		ifNotNil: [ dropdown
+				enqueueTask: (BlTaskAction new
+						action: [ dropdown dispatchEvent: (BrDropdownHideWish new anchor: dropdown).
+							dropdown phlow fireUpdateWish ]) ]
 ]
 
 { #category : #accessing }

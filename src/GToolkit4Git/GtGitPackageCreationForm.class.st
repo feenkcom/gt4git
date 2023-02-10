@@ -3,7 +3,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'repositoryModel',
-		'package'
+		'package',
+		'button'
 	],
 	#category : #'GToolkit4Git-Model'
 }
@@ -14,11 +15,11 @@ GtGitPackageCreationForm >> acceptAction [
 	^ MAActionDescription new
 		label: 'Accept';
 		action: [ :aModel :aButton | 
-			[ self debug. self repositoryModel addPackage: self package.
-			aButton
-				inUIProcessDo: [ aButton dispatchEvent: BrDropdownHideWish new.
-					aButton phlow fireUpdateWish.
-					aButton phlow
+			[ self repositoryModel addPackage: self package.
+			button
+				inUIProcessDo: [ button dispatchEvent: BrDropdownHideWish new.
+					button phlow fireUpdateWish.
+					button phlow
 						spawnTool: (GtPackageCoderTool package: self package asPackage) ] ]
 				on: Error
 				do: #debug ];
@@ -48,6 +49,16 @@ GtGitPackageCreationForm >> asElement [
 				referenceElement: nil;
 				nextFocusDo: #requestFocus ifNone: [  ] ].
 	^ viewModel asElement padding: (BlInsets all: 5)
+]
+
+{ #category : #accessing }
+GtGitPackageCreationForm >> button [
+	^ button
+]
+
+{ #category : #accessing }
+GtGitPackageCreationForm >> button: anObject [
+	button := anObject
 ]
 
 { #category : #accessing }
