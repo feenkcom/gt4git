@@ -827,7 +827,8 @@ GtGitRepository >> gtReadmeFor: aView context: aContext [
 	(self hasWorkingCopy not or: [ self icebergRepository isMissing ]) ifTrue: [ 
 		^ aView empty ].
 
-	readme := self icebergRepository repositoryDirectory / 'README.md'.
+	readme := self repository repositoryDirectory / 'README.md'.
+	
 
 	^ aView explicit
 		  title: 'README';
@@ -875,7 +876,7 @@ GtGitRepository >> gtRepositoryDirectoryFor: aView [
 ]
 
 { #category : #'gt - extensions' }
-GtGitRepository >> gtUnbornHelpFor: aView [
+GtGitRepository >> gtSetupHelpFor: aView [
 	<gtView>
 	<gtRepositoryView>
 	(self isUninitialized or: [ self hasCommits not  ]) ifFalse: [ ^ aView empty ].

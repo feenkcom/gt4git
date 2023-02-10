@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'repositoryModel',
 		'baseline',
-		'button'
+		'button',
+		'readmeInstructions'
 	],
 	#category : #'GToolkit4Git-Model'
 }
@@ -17,9 +18,27 @@ GtGitBaselineCreationForm >> acceptAction [
 		action: [ :aModel :aButton | 
 			[ self repositoryModel addBaselineWithAllPackages: self baseline.
 
+			self readmeInstructions
+				ifTrue: [ | readme |
+					readme := self repositoryModel repository repositoryDirectory / 'README.md'.
+					readme
+						writeStreamDo: [ :s | 
+							s
+								nextPutAll: '##Installation
+
+```
+Metacello new
+	repository: '''';
+	baseline: '''
+										, (self baseline removePrefix: 'BaselineOf')
+										, ''';
+	load
+```' ].
+					self repositoryModel repository addFileToIndex: 'README.md'.
+					self repositoryModel announceRepositoryModified ].
+
 			button
 				inUIProcessDo: [ button dispatchEvent: BrDropdownHideWish new.
-					button phlow fireUpdateWish.
 					button phlow
 						spawnTool: (GtMethodCoderTool compiledMethod: self baseline asClass >> #baseline:) ] ]
 				on: Error
@@ -95,7 +114,27 @@ GtGitBaselineCreationForm >> button: anObject [
 
 { #category : #accessing }
 GtGitBaselineCreationForm >> initialize [
-	baseline := ''
+	baseline := ''.
+	readmeInstructions := false
+]
+
+{ #category : #accessing }
+GtGitBaselineCreationForm >> installationDescription [
+	<magritteDescription>
+	^ MABooleanDescription new
+		label: 'Add installation instructions to README';
+		priority: 2;
+		accessor: #readmeInstructions
+]
+
+{ #category : #accessing }
+GtGitBaselineCreationForm >> readmeInstructions [
+	^ readmeInstructions
+]
+
+{ #category : #accessing }
+GtGitBaselineCreationForm >> readmeInstructions: anObject [
+	readmeInstructions := anObject
 ]
 
 { #category : #accessing }
