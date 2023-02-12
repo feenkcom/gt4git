@@ -899,6 +899,11 @@ GtGitRepository >> hasCommits [
 	^ self repository head commitStream hasNext wait
 ]
 
+{ #category : #accessing }
+GtGitRepository >> hasDatabase [
+	^ self lepiterWorkingCopy hasDatabases
+]
+
 { #category : #'api - testing' }
 GtGitRepository >> hasRepository [
 	^ self icebergRepository isNotNil
@@ -1114,6 +1119,7 @@ GtGitRepository >> setupDefaultDirectoryAction [
 		aptitude: BrGlamorousButtonWithLabelAptitude;
 		action: [ | model |
 			model := IceBasicProject onRepository: self repository.
+			(self repository repositoryDirectory / 'src') ensureCreateDirectory.
 			model sourceDirectory: self repository repositoryDirectory / 'src'.
 			model fileFormat: IceLibgitTonelWriter.
 			self assert: model repositoryProperties fileFormat = IceLibgitTonelWriter.	"Set the project in the repository"
@@ -1139,26 +1145,37 @@ GtGitRepository >> setupDefaultSourceDirectoryAction [
 GtGitRepository >> setupInstructions [
 	| aStream |
 	aStream := BlTextStream new.
-	aStream next
-		appendingAdornment: [ self setupDefaultDirectoryAction ];
-		putAll: 'The repository is not set up for use with GT yet. You will need to perform the following actions before committing: '.
-	aStream next
-		appendingAdornment: [ self setupSourceDirectoryAction.  ];
-		putAll: ' or '.
-	aStream next
-		cr;
-		putAll: 'This will create a directory in which to store sources and create the necessary metadata files. You will then be able to work normally with the repository.';
-		cr;
-		cr.
-	aStream next
-		appendingAdornment: [ self setupLepiterDatabaseAction ];
-		putAll: 'Optionally you can also '.
+	self repository project isUnborn
+		ifTrue: [ aStream next
+				appendingAdornment: [ self setupDefaultDirectoryAction ];
+				putAll: 'The repository is not set up for use with GT yet. You will need to perform the following actions before committing: '.
+			aStream next
+				appendingAdornment: [ self setupSourceDirectoryAction ];
+				putAll: ' or '.
+			aStream next
+				cr;
+				putAll: 'This will create a directory in which to store sources and create the necessary metadata files. You will then be able to work normally with the repository.';
+				cr;
+				cr;
+				putAll: 'Optionally you can also ' ]
+		ifFalse: [
+			aStream next
+				cr;
+				putAll: 'This repository is initialized correctly and the first commit can be made.';
+				cr;
+				cr;
+				putAll: 'Optionally, before your first commit, you can'].
+
+	self hasDatabase
+		ifFalse: [ aStream next
+				appendingAdornment: [ self setupLepiterDatabaseAction ];
+				putAll: ' ' ].
 	aStream next
 		appendingAdornment: [ self setupPackageAction ];
-		putAll: ', '.
+		putAll: ' '.
 	aStream next
 		appendingAdornment: [ self setupBaselineAction ];
-		putAll: ' or '.
+		putAll: ' '.
 	^ aStream contents
 ]
 
