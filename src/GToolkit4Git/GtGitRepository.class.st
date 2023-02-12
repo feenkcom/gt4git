@@ -388,6 +388,18 @@ GtGitRepository >> databasesDescription [
 					(aMemento readObservableValueUsing: aDescription) observe: anElementSink ] ]
 ]
 
+{ #category : #'gt - extensions' }
+GtGitRepository >> disabledCheckBoxChecked: aBoolean [
+	^ BrCheckbox new
+		aptitude: BrGlamorousCheckboxAptitude
+				+ (BrCheckboxAptitude new
+						hovered: [ :aStyle | 
+							aStyle
+								border: (BlBorder paint: BrTheme default button defaultBorderColor width: 1) ]);
+		disable;
+		checked: aBoolean
+]
+
 { #category : #'api - actions' }
 GtGitRepository >> executeCommit: aCommitMessage [
 	| workingCopyDiff |
@@ -887,6 +899,12 @@ GtGitRepository >> gtSetupHelpFor: aView [
 		text: [ self setupInstructions ]
 ]
 
+{ #category : #accessing }
+GtGitRepository >> hasBaseline [
+	^ (self workingCopy packages detect: #isMetacelloBaseline ifNone: [ nil ])
+		isNotNil
+]
+
 { #category : #'api - testing' }
 GtGitRepository >> hasChanges [
 	^ self hasWorkingCopy and: [ 
@@ -902,6 +920,11 @@ GtGitRepository >> hasCommits [
 { #category : #accessing }
 GtGitRepository >> hasDatabase [
 	^ self lepiterWorkingCopy hasDatabases
+]
+
+{ #category : #accessing }
+GtGitRepository >> hasPackage [
+	^ self workingCopy packages size > 0
 ]
 
 { #category : #'api - testing' }
@@ -1145,37 +1168,41 @@ GtGitRepository >> setupDefaultSourceDirectoryAction [
 GtGitRepository >> setupInstructions [
 	| aStream |
 	aStream := BlTextStream new.
-	self repository project isUnborn
-		ifTrue: [ aStream next
-				appendingAdornment: [ self setupDefaultDirectoryAction ];
-				putAll: 'The repository is not set up for use with GT yet. You will need to perform the following actions before committing: '.
-			aStream next
-				appendingAdornment: [ self setupSourceDirectoryAction ];
-				putAll: ' or '.
-			aStream next
-				cr;
-				putAll: 'This will create a directory in which to store sources and create the necessary metadata files. You will then be able to work normally with the repository.';
-				cr;
-				cr;
-				putAll: 'Optionally you can also ' ]
-		ifFalse: [
-			aStream next
-				cr;
-				putAll: 'This repository is initialized correctly and the first commit can be made.';
-				cr;
-				cr;
-				putAll: 'Optionally, before your first commit, you can'].
+	aStream next
+		appendingAdornment: [ self disabledCheckBoxChecked: self repository project isUnborn not ];
+		putAll: ' '.
+	aStream next
+		appendingAdornment: [ self setupDefaultDirectoryAction ];
+		putAll: ' '.
+	aStream next
+		appendingAdornment: [ self setupSourceDirectoryAction ];
+		putAll: ' or '.
+	aStream next cr.
 
-	self hasDatabase
-		ifFalse: [ aStream next
-				appendingAdornment: [ self setupLepiterDatabaseAction ];
-				putAll: ' ' ].
+	aStream next
+		appendingAdornment: [ self disabledCheckBoxChecked: self hasPackage ];
+		putAll: ' '.
 	aStream next
 		appendingAdornment: [ self setupPackageAction ];
+		putAll: ' '.
+	aStream next cr.
+		
+	aStream next
+		appendingAdornment: [ self disabledCheckBoxChecked: self hasBaseline ];
 		putAll: ' '.
 	aStream next
 		appendingAdornment: [ self setupBaselineAction ];
 		putAll: ' '.
+	aStream next cr.
+
+	aStream next
+		appendingAdornment: [ self disabledCheckBoxChecked: self hasDatabase ];
+		putAll: ' '.
+	aStream next
+		appendingAdornment: [ self setupLepiterDatabaseAction ];
+		putAll: ' '.
+
+
 	^ aStream contents
 ]
 
