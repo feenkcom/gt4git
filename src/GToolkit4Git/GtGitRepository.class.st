@@ -1143,7 +1143,7 @@ GtGitRepository >> setupDefaultDirectoryAction [
 		action: [ | model |
 			model := IceBasicProject onRepository: self repository.
 			(self repository repositoryDirectory / 'src') ensureCreateDirectory.
-			model sourceDirectory: self repository repositoryDirectory / 'src'.
+			model sourceDirectory: 'src'.
 			model fileFormat: IceLibgitTonelWriter.
 			self assert: model repositoryProperties fileFormat = IceLibgitTonelWriter.	"Set the project in the repository"
 			self repository workingCopy project: model.
