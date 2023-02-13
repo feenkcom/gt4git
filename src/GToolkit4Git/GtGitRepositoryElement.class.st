@@ -153,21 +153,20 @@ GtGitRepositoryElement >> createRemoveRepositoryButton [
 
 { #category : #'building - actions' }
 GtGitRepositoryElement >> createRepairRepositoryButton [
-	| dropdownButton |
+	| dropdownButton buttonLabel |
 	dropdownButton := BrButton new.
+	buttonLabel := self repositoryViewModel repositoryModel isUninitialized
+			ifTrue: [ 'Initialize' ]
+			ifFalse: [ 'Repair' ].
 	dropdownButton
 		aptitude: BrGlamorousButtonWithLabelAptitude
-			+ (BrGlamorousWithDropdownAptitude
-				handle: [ 
-					BrButton new
-						aptitude: BrGlamorousButtonWithLabelAptitude
-							- BrGlamorousButtonExteriorAptitude;
-						label: 'Repair' ]
-				content: [ 
-					self repositoryViewModel repairStencilFor: dropdownButton ]);
-		label: 'Repair'.
+				+ (BrGlamorousWithDropdownAptitude
+						handle: [ BrButton new
+								aptitude: BrGlamorousButtonWithLabelAptitude - BrGlamorousButtonExteriorAptitude;
+								label: buttonLabel ]
+						content: [ self repositoryViewModel repairStencilFor: dropdownButton ]);
+		label: buttonLabel.
 	^ dropdownButton
-				              
 ]
 
 { #category : #'private - updating' }

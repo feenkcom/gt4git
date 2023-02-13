@@ -37,36 +37,30 @@ GtGitAddRepositoryStencil >> githubPage [
 
 { #category : #accessing }
 GtGitAddRepositoryStencil >> initialPage [
-	^ BrVerticalPane new
-		addChild: (BrLabel new
-				aptitude: BrGlamorousLabelAptitude;
-				text: 'Import a Git repository';
-				margin: (BlInsets all: 5));
-		addChild: (BrHorizontalPane new
-				addChild: (BrButton new
-							label: 'remotely';
-							aptitude: BrGlamorousButtonWithLabelAptitude;
-							action: [ self openGithubPage ];
-							margin: (BlInsets all: 5))
-					as: #'git-remote';
-				addChild: (BrButton new
-							label: 'locally';
-							aptitude: BrGlamorousButtonWithLabelAptitude;
-							action: [ self openLocalPage ];
-							margin: (BlInsets all: 5))
-					as: #'git-local';
-				fitContent);
-		addChild: (BrLabel new
-				aptitude: BrGlamorousLabelAptitude;
-				text: 'or initialize a new one';
-				margin: (BlInsets all: 5));
-		addChild: (BrButton new
-					label: 'initialize';
-					aptitude: BrGlamorousButtonWithLabelAptitude;
-					action: [ self openInitialize ];
-					margin: (BlInsets all: 5))
-			as: #'git-initial';
-		fitContent
+	^ BrVerticalPane new fitContent
+		addChild: (BrSimpleList new
+				itemStencil: [ BrLabel new
+						vFitContent;
+						hMatchParent;
+						aptitude: BrGlamorousLabelAptitude
+								+ (BrStyleCommonAptitude new
+										hovered: [ :aStyle | aStyle background: BrGlamorousColors hoveredListItemColor ]) ];
+				itemDataBinder: [ :anItemElement :anItemObject :anItemIndex | 
+					anItemElement
+						text: anItemObject first;
+						id: anItemObject second;
+						when: BlClickEvent do: anItemObject third ];
+				fitContent;
+				padding: (BlInsets all: 3);
+				items: {{'Clone a remote repository'.
+							#'git-remote'.
+							[ self openGithubPage ]}.
+						{'Load a local repository'.
+							#'git-local'.
+							[ self openLocalPage ]}.
+						{'Create a new repository'.
+							#'git-initial'.
+							[ self openInitialize ]}})
 ]
 
 { #category : #accessing }
