@@ -58,12 +58,12 @@ GtGitLepiterDatabaseChangeImporter >> importAttachmentDefinitionsOn: aDatabaseNo
 GtGitLepiterDatabaseChangeImporter >> importAttachmentFileDefinitionFor: aFileChange on: anAttachmentNode [
 	| fileReference attachmentFileDefinition |
 	fileReference := version resolveDelta: aFileChange delta.
-	fileReference exists ifFalse: [ ^ self ].
-	
+	(fileReference isNil or: [ fileReference exists not ]) ifTrue: [ ^ self ].
+
 	attachmentFileDefinition := GtLepiterAttachmentFileDefinition new
-		name: fileReference basename;
-		fileName: fileReference basename;
-		binaryContents: fileReference gtBinaryContents.
+			name: fileReference basename;
+			fileName: fileReference basename;
+			binaryContents: fileReference gtBinaryContents.
 	anAttachmentNode addChild: attachmentFileDefinition
 ]
 
@@ -71,7 +71,7 @@ GtGitLepiterDatabaseChangeImporter >> importAttachmentFileDefinitionFor: aFileCh
 GtGitLepiterDatabaseChangeImporter >> importAttachmentPropertiesDefinitionFor: aPropertiesFileChange on: anAttachmentNode [ 
 	| fileReference attachmentFileDefinition |
 	fileReference := version resolveDelta: aPropertiesFileChange delta.
-	fileReference exists ifFalse: [ ^ self ].
+	(fileReference isNil or: [ fileReference exists not ]) ifTrue: [ ^ self ].
 	
 	attachmentFileDefinition := GtLepiterAttachmentPropertiesDefinition new
 		name: fileReference basename;
@@ -86,7 +86,7 @@ GtGitLepiterDatabaseChangeImporter >> importDatabasePropertiesDefinitionOn: data
 
 	lepiterDatabaseChange propertiesFileChange ifNil: [ ^ self ].
 	fileReference := version resolveDelta: lepiterDatabaseChange propertiesFileChange delta.
-	fileReference exists ifFalse: [ ^ self ].
+	(fileReference isNil or: [ fileReference exists not ]) ifTrue: [ ^ self ].
 	
 	databaseNode addChild: (GtLepiterDatabasePropertiesDefinition new
 		name: fileReference basename;
@@ -102,7 +102,7 @@ GtGitLepiterDatabaseChangeImporter >> importLinksDefinitionOn: aDatabaseNode [
 	
 	fileReference := version 
 		resolveDelta: lepiterDatabaseChange linksChange delta.
-	fileReference exists ifFalse: [ ^ self ].
+	(fileReference isNil or: [ fileReference exists not ]) ifTrue: [ ^ self ].
 	
 	linksDefinition := GtLepiterLinksDefinition new
 		name: fileReference basename;
@@ -125,7 +125,7 @@ GtGitLepiterDatabaseChangeImporter >> importOn: aParentNode [
 GtGitLepiterDatabaseChangeImporter >> importPageDefinitionFor: aPageChange on: aPagesNode in: aDatabaseNode [
 	| fileReference pageDefinition page contents |
 	fileReference := version resolveDelta: aPageChange delta.
-	fileReference exists ifFalse: [ ^ self ].
+	(fileReference isNil or: [ fileReference exists not ]) ifTrue: [ ^ self ].
 	
 	contents := fileReference contents.
 	page := LeJsonV4 uniqueInstance 
