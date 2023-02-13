@@ -40,20 +40,6 @@ GtGitRepository class >> fromIcebergRepository: anIceRepository [
 		icebergRepository: anIceRepository
 ]
 
-{ #category : #'gt - extensions' }
-GtGitRepository >> actionButtonLabelled: buttonText withDropdownContent: dropdownContent [
-	| aButton aDropdown |
-	aButton := BrButton new
-			aptitude: BrGlamorousButtonWithLabelAptitude
-					+ (BrGlamorousWithDropdownAptitude
-							handle: [ aDropdown := BrButton new
-										aptitude: BrGlamorousButtonWithLabelAptitude - BrGlamorousButtonExteriorAptitude;
-										label: buttonText ]
-							content: [ dropdownContent cull: aButton ]);
-			label: buttonText.
-	^ aButton
-]
-
 { #category : #'api - actions adding/removing' }
 GtGitRepository >> addBaseline: aBaselineName [
 
@@ -386,18 +372,6 @@ GtGitRepository >> databasesDescription [
 							theValues := aSink value currentValue.
 							theTagger namedTags: theValues ].
 					(aMemento readObservableValueUsing: aDescription) observe: anElementSink ] ]
-]
-
-{ #category : #'gt - extensions' }
-GtGitRepository >> disabledCheckBoxChecked: aBoolean [
-	^ BrCheckbox new
-		aptitude: BrGlamorousCheckboxAptitude
-				+ (BrCheckboxAptitude new
-						hovered: [ :aStyle | 
-							aStyle
-								border: (BlBorder paint: BrTheme default button defaultBorderColor width: 1) ]);
-		disable;
-		checked: aBoolean
 ]
 
 { #category : #'api - actions' }
@@ -891,12 +865,15 @@ GtGitRepository >> gtRepositoryDirectoryFor: aView [
 GtGitRepository >> gtSetupHelpFor: aView [
 	<gtView>
 	<gtRepositoryView>
-	(self isUninitialized or: [ self hasCommits not  ]) ifFalse: [ ^ aView empty ].
+	(self isUninitialized or: [ self hasCommits not ]) ifFalse: [ ^ aView empty ].
 
-	^ aView textEditor
+	^ aView columnedList
 		title: 'Setup';
 		priority: 1;
-		text: [ self setupInstructions ]
+		items: [ (GtGitRepositorySetupItem allSubclasses sorted: #priority ascending)
+				collect: [:aClass | aClass new repository: self] ];
+		column: 'Status' stencil: [:item | item buildCheckbox ] width: 50;
+		column: 'Action' stencil: [:item | item buildContent ]
 ]
 
 { #category : #accessing }
@@ -1126,31 +1103,6 @@ GtGitRepository >> repository: anIcebergRepository [
 ]
 
 { #category : #'gt - extensions' }
-GtGitRepository >> setupBaselineAction [
-	^ self
-		actionButtonLabelled: 'Create a baseline'
-		withDropdownContent: [ :aButton | 
-			GtGitBaselineCreationForm new
-				repositoryModel: self;
-				button: aButton ]
-]
-
-{ #category : #'gt - extensions' }
-GtGitRepository >> setupDefaultDirectoryAction [
-	^ BrButton new
-		label: 'Create a default source directory';
-		aptitude: BrGlamorousButtonWithLabelAptitude;
-		action: [ | model |
-			model := IceBasicProject onRepository: self repository.
-			(self repository repositoryDirectory / 'src') ensureCreateDirectory.
-			model sourceDirectory: 'src'.
-			model fileFormat: IceLibgitTonelWriter.
-			self assert: model repositoryProperties fileFormat = IceLibgitTonelWriter.	"Set the project in the repository"
-			self repository workingCopy project: model.
-			Iceberg announcer announce: (IceRepositoryModified for: self repository) ]
-]
-
-{ #category : #'gt - extensions' }
 GtGitRepository >> setupDefaultSourceDirectoryAction [
 	^ BrButton new
 		label: 'Create default source directory';
@@ -1204,35 +1156,6 @@ GtGitRepository >> setupInstructions [
 
 
 	^ aStream contents
-]
-
-{ #category : #'gt - extensions' }
-GtGitRepository >> setupLepiterDatabaseAction [
-	^ BrButton new
-		label: 'Create a default Lepiter database';
-		aptitude: BrGlamorousButtonWithLabelAptitude;
-		action: [ self
-				addNewDatabaseInDirectory: self repository repositoryDirectory / 'lepiter' ]
-]
-
-{ #category : #'gt - extensions' }
-GtGitRepository >> setupPackageAction [
-	^ self
-		actionButtonLabelled: 'Create a package'
-		withDropdownContent: [ :aButton | 
-			GtGitPackageCreationForm new
-				repositoryModel: self;
-				button: aButton ]
-]
-
-{ #category : #'gt - extensions' }
-GtGitRepository >> setupSourceDirectoryAction [
-	^ self
-		actionButtonLabelled: 'Create a custom source directory'
-		withDropdownContent: [ :aButton | 
-			(GtGitRepairProject new
-				repository: icebergRepository;
-				dropdown: aButton) repairStencil ]
 ]
 
 { #category : #'api - actions' }
