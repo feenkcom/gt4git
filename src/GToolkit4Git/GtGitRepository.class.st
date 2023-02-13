@@ -739,7 +739,7 @@ GtGitRepository >> gtCommitsFor: aView [
 		column: 'Actions'
 			do: [ :aColumn | 
 				aColumn
-					stencil: [ BrHorizontalPane new
+					cellStencil: [ BrHorizontalPane new
 							vExact: 24;
 							hExact: 150;
 							hMatchParent ];
