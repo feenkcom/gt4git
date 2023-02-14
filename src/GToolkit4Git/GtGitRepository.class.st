@@ -865,15 +865,16 @@ GtGitRepository >> gtRepositoryDirectoryFor: aView [
 GtGitRepository >> gtSetupHelpFor: aView [
 	<gtView>
 	<gtRepositoryView>
-	(self isUninitialized or: [ self hasCommits not ]) ifFalse: [ ^ aView empty ].
+	self isSetupDone ifTrue: [ ^ aView empty ].
 
 	^ aView columnedList
 		title: 'Setup';
-		priority: 1;
-		items: [ (GtGitRepositorySetupItem allSubclasses sorted: #priority ascending)
-				collect: [:aClass | aClass new repository: self] ];
-		column: 'Status' stencil: [:item | item buildCheckbox ] width: 50;
-		column: 'Action' stencil: [:item | item buildContent ]
+		priority: 0;
+		items: [ self setupItems ];
+		column: 'Status'
+			stencil: [ :item | item buildCheckbox ]
+			width: 50;
+		column: 'Action' stencil: [ :item | item buildContent ]
 ]
 
 { #category : #accessing }
@@ -979,6 +980,11 @@ GtGitRepository >> isModified [
 		   self lepiterWorkingCopy hasDatabases and: [ 
 			   self icebergRepository isDirty ] ]) or: [ 
 		  self lepiterWorkingCopy changesToHeadUsingIndex isNotEmpty ]
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> isSetupDone [
+	^ (self setupItems reject: #isExecuted) isEmpty
 ]
 
 { #category : #'api - testing' }
@@ -1156,6 +1162,12 @@ GtGitRepository >> setupInstructions [
 
 
 	^ aStream contents
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> setupItems [
+	^ (GtGitRepositorySetupItem allSubclasses sorted: #priority ascending)
+		collect: [ :aClass | aClass new repository: self ]
 ]
 
 { #category : #'api - actions' }

@@ -20,7 +20,7 @@ GtGitRepositoryPackageSetupItem >> buildActionsIn: aStream [
 ]
 
 { #category : #accessing }
-GtGitRepositoryPackageSetupItem >> checkboxPredicate [
+GtGitRepositoryPackageSetupItem >> isExecuted [
 	^  self repository hasPackage
 ]
 

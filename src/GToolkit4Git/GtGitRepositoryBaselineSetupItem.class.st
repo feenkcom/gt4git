@@ -20,7 +20,7 @@ GtGitRepositoryBaselineSetupItem >> buildActionsIn: aStream [
 ]
 
 { #category : #accessing }
-GtGitRepositoryBaselineSetupItem >> checkboxPredicate [
+GtGitRepositoryBaselineSetupItem >> isExecuted [
 	^ self repository hasBaseline
 ]
 

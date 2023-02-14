@@ -20,7 +20,7 @@ GtGitRepositorySourceSetupItem >> buildActionsIn: aStream [
 ]
 
 { #category : #accessing }
-GtGitRepositorySourceSetupItem >> checkboxPredicate [
+GtGitRepositorySourceSetupItem >> isExecuted [
 	^ self repository repository project isUnborn not
 ]
 
