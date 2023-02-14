@@ -35,7 +35,7 @@ GtGitRepositoryBaselineSetupItem >> setupBaselineAction [
 		actionButtonLabelled: 'Create a baseline'
 		withDropdownContent: [ :aButton | 
 			GtGitBaselineCreationForm new
-				repositoryModel: self;
+				repositoryModel: self repository;
 				button: aButton ]
 ]
 
