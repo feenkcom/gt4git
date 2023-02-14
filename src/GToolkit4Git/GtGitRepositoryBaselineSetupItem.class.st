@@ -13,7 +13,7 @@ GtGitRepositoryBaselineSetupItem class >> priority [
 GtGitRepositoryBaselineSetupItem >> buildActionsIn: aStream [
 	aStream next
 		appendingAdornment: [ self setupBaselineAction ];
-		putAll: ' '.
+		cr.
 	aStream next
 		appendingAdornment: [ self setupCustomBaselineAction ];
 		putAll: ' or '

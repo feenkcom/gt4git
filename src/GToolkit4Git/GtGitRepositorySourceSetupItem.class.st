@@ -13,7 +13,7 @@ GtGitRepositorySourceSetupItem class >> priority [
 GtGitRepositorySourceSetupItem >> buildActionsIn: aStream [
 	aStream next
 		appendingAdornment: [ self setupDefaultDirectoryAction ];
-		putAll: ' '.
+		cr.
 	aStream next
 		appendingAdornment: [ self setupSourceDirectoryAction ];
 		putAll: ' or '.

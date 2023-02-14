@@ -13,7 +13,7 @@ GtGitRepositoryPackageSetupItem class >> priority [
 GtGitRepositoryPackageSetupItem >> buildActionsIn: aStream [
 	aStream next
 		appendingAdornment: [ self setupPackageAction ];
-		putAll: ' '.
+		cr.
 		aStream next
 		appendingAdornment: [ self setupCustomPackageAction ];
 		putAll: ' or '.
