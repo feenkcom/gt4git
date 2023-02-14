@@ -20,7 +20,7 @@ GtGitRepositoryDatabaseSetupItem >> buildActionsIn: aStream [
 ]
 
 { #category : #accessing }
-GtGitRepositoryDatabaseSetupItem >> checkboxPredicate [
+GtGitRepositoryDatabaseSetupItem >> isExecuted [
 	^ self repository hasDatabase
 ]
 

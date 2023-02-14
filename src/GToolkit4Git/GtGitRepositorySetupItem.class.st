@@ -36,7 +36,7 @@ GtGitRepositorySetupItem >> buildCheckbox [
 	^ BrHorizontalPane new
 		width: 56;
 		padding: (BlInsets top: 6);
-		addChild: (self disabledCheckBoxChecked: self checkboxPredicate)
+		addChild: (self disabledCheckBoxChecked: self isExecuted)
 ]
 
 { #category : #accessing }
@@ -52,11 +52,6 @@ GtGitRepositorySetupItem >> buildContent [
 ]
 
 { #category : #accessing }
-GtGitRepositorySetupItem >> checkboxPredicate [
-	^ self subclassResponsibility
-]
-
-{ #category : #accessing }
 GtGitRepositorySetupItem >> disabledCheckBoxChecked: aBoolean [
 	^ BrCheckbox new
 		aptitude: BrGlamorousCheckboxAptitude
@@ -67,6 +62,11 @@ GtGitRepositorySetupItem >> disabledCheckBoxChecked: aBoolean [
 		margin: (BlInsets left: 14);
 		disable;
 		checked: aBoolean
+]
+
+{ #category : #accessing }
+GtGitRepositorySetupItem >> isExecuted [
+	^ self subclassResponsibility
 ]
 
 { #category : #accessing }
