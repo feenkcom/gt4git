@@ -51,7 +51,7 @@ GtGitRepairProject >> repairStencil [
 	srcSelector
 		okAction: [ :srcFolder | 
 			self
-				createFor: (srcFolder relativeTo: repository repositoryDirectory)
+				createFor: (srcFolder relativeTo: repository repositoryDirectory) pathString
 				in: container ].
 	^ container
 ]

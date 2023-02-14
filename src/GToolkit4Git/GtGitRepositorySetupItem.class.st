@@ -33,19 +33,20 @@ GtGitRepositorySetupItem >> buildActionsIn: aStream [
 
 { #category : #accessing }
 GtGitRepositorySetupItem >> buildCheckbox [
-	^ self disabledCheckBoxChecked: self checkboxPredicate
+	^ BrHorizontalPane new
+		width: 56;
+		padding: (BlInsets top: 6);
+		addChild: (self disabledCheckBoxChecked: self checkboxPredicate)
 ]
 
 { #category : #accessing }
 GtGitRepositorySetupItem >> buildContent [
 	| aStream |
 	aStream := BlTextStream new.
-	aStream next
-		putAll: ' ';
-		putAll: self message;
-		cr.
+	aStream next putAll: self message.
 	self buildActionsIn: aStream.
 	^ BrEditor new
+		padding: BlInsets empty;
 		text: aStream contents;
 		aptitude: BrGlamorousRegularEditorAptitude
 ]

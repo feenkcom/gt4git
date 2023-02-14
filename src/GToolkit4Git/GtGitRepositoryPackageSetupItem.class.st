@@ -13,7 +13,7 @@ GtGitRepositoryPackageSetupItem class >> priority [
 GtGitRepositoryPackageSetupItem >> buildActionsIn: aStream [
 	aStream next
 		appendingAdornment: [ self setupPackageAction ];
-		putAll: ' '.
+		cr.
 		aStream next
 		appendingAdornment: [ self setupCustomPackageAction ];
 		putAll: ' or '.
@@ -39,8 +39,7 @@ GtGitRepositoryPackageSetupItem >> setupCustomPackageAction [
 		label: 'Add Existing Package';
 		actOn: [ :anActOnEvent :anItem | 
 			self repository icebergWorkingCopy addPackageNamed: anItem name asSymbol.
-			Iceberg announcer
-				announce: (IceRepositoryModified new repository: self repository repository).
+			self repository announceRepositoryModified.
 			anActOnEvent beActed ]
 ]
 

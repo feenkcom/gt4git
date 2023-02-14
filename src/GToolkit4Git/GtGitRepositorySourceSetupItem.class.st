@@ -13,7 +13,7 @@ GtGitRepositorySourceSetupItem class >> priority [
 GtGitRepositorySourceSetupItem >> buildActionsIn: aStream [
 	aStream next
 		appendingAdornment: [ self setupDefaultDirectoryAction ];
-		putAll: ' '.
+		cr.
 	aStream next
 		appendingAdornment: [ self setupSourceDirectoryAction ];
 		putAll: ' or '.
@@ -42,7 +42,7 @@ GtGitRepositorySourceSetupItem >> setupDefaultDirectoryAction [
 			model fileFormat: IceLibgitTonelWriter.
 			self assert: model repositoryProperties fileFormat = IceLibgitTonelWriter.	"Set the project in the repository"
 			self repository workingCopy project: model.
-			Iceberg announcer announce: (IceRepositoryModified for: self repository) ]
+			self repository announceRepositoryModified ]
 ]
 
 { #category : #accessing }

@@ -13,7 +13,7 @@ GtGitRepositoryBaselineSetupItem class >> priority [
 GtGitRepositoryBaselineSetupItem >> buildActionsIn: aStream [
 	aStream next
 		appendingAdornment: [ self setupBaselineAction ];
-		putAll: ' '.
+		cr.
 	aStream next
 		appendingAdornment: [ self setupCustomBaselineAction ];
 		putAll: ' or '
@@ -35,7 +35,7 @@ GtGitRepositoryBaselineSetupItem >> setupBaselineAction [
 		actionButtonLabelled: 'Create a baseline'
 		withDropdownContent: [ :aButton | 
 			GtGitBaselineCreationForm new
-				repositoryModel: self;
+				repositoryModel: self repository;
 				button: aButton ]
 ]
 
@@ -50,7 +50,6 @@ GtGitRepositoryBaselineSetupItem >> setupCustomBaselineAction [
 		label: 'Add Existing Baseline';
 		actOn: [ :anActOnEvent :anItem | 
 			self repository icebergWorkingCopy addPackageNamed: anItem name asSymbol.
-			Iceberg announcer
-				announce: (IceRepositoryModified new repository: self repository repository).
+			self repository announceRepositoryModified.
 			anActOnEvent beActed ]
 ]

@@ -13,7 +13,7 @@ GtGitRepositoryDatabaseSetupItem class >> priority [
 GtGitRepositoryDatabaseSetupItem >> buildActionsIn: aStream [
 	aStream next
 		appendingAdornment: [ self setupLepiterDatabaseAction ];
-		putAll: ' '.
+		cr.
 	aStream next
 		appendingAdornment: [ self setupCustomLepiterDatabaseAction ];
 		putAll: ' or '
