@@ -50,6 +50,6 @@ GtGitRepositoryPackageSetupItem >> setupPackageAction [
 		actionButtonLabelled: 'Create a package'
 		withDropdownContent: [ :aButton | 
 			GtGitPackageCreationForm new
-				repositoryModel: self;
+				repositoryModel: self repository;
 				button: aButton ]
 ]
