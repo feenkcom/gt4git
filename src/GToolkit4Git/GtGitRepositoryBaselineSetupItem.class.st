@@ -50,7 +50,6 @@ GtGitRepositoryBaselineSetupItem >> setupCustomBaselineAction [
 		label: 'Add Existing Baseline';
 		actOn: [ :anActOnEvent :anItem | 
 			self repository icebergWorkingCopy addPackageNamed: anItem name asSymbol.
-			Iceberg announcer
-				announce: (IceRepositoryModified new repository: self repository repository).
+			self repository announceRepositoryModified.
 			anActOnEvent beActed ]
 ]
