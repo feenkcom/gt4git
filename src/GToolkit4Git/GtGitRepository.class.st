@@ -435,7 +435,15 @@ GtGitRepository >> fileFormatDescription [
 
 { #category : #'api - actions' }
 GtGitRepository >> forget [
-	self icebergRepository forget
+	self icebergRepository forget.
+	self forgetLepiterDatabases
+]
+
+{ #category : #accessing }
+GtGitRepository >> forgetLepiterDatabases [
+	| registry |
+	registry := LeDatabasesRegistry uniqueInstance defaultLogicalDatabase.
+	self databases do: [ :database | registry removeDB: database ]
 ]
 
 { #category : #'api - repository' }
@@ -1074,7 +1082,8 @@ GtGitRepository >> refreshDirtyPackages [
 
 { #category : #'api - actions' }
 GtGitRepository >> remove [
-	self icebergRepository delete
+	self icebergRepository delete.
+	self forgetLepiterDatabases
 ]
 
 { #category : #'api - actions adding/removing' }
