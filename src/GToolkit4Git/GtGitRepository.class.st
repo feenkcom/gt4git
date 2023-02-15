@@ -87,14 +87,12 @@ GtGitRepository >> addNewDatabaseInDirectory: aDirectory [
 ]
 
 { #category : #'api - actions adding/removing' }
-GtGitRepository >> addPackage: aPackageName [
-	| aPackage |
-	aPackage := (RBAddPackageChange addPackageNamed: aPackageName) execute.
+GtGitRepository >> addPackage: aPackageName(RBAddPackageChange [ addPackageNamed: aPackageName) execute.
 
 	self icebergWorkingCopy addPackageNamed: aPackageName.
 	self announceRepositoryModified.
 
-	^ aPackage
+	^ aPackageName asPackage
 ]
 
 { #category : #announcer }
@@ -867,7 +865,8 @@ GtGitRepository >> gtRepositoryDirectoryFor: aView [
 GtGitRepository >> gtSetupHelpFor: aView [
 	<gtView>
 	<gtRepositoryView>
-	(self hasCommits and: [ self isSetupDone ]) ifTrue: [ ^ aView empty ].
+	(self isMissing or: [ self hasCommits and: [ self isSetupDone ] ])
+		ifTrue: [ ^ aView empty ].
 
 	^ aView columnedList
 		title: 'Setup';
@@ -894,12 +893,12 @@ GtGitRepository >> hasChanges [
 
 { #category : #'api - testing' }
 GtGitRepository >> hasCommits [
-	^ self repository head commitStream hasNext wait
+	^ self isMissing not and: [ self repository head commitStream hasNext wait ]
 ]
 
 { #category : #accessing }
 GtGitRepository >> hasDatabase [
-	^ self lepiterWorkingCopy hasDatabases
+	^ self isMissing not and: [ self lepiterWorkingCopy hasDatabases ]
 ]
 
 { #category : #accessing }

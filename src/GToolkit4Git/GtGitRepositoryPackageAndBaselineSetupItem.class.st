@@ -1,37 +1,37 @@
 Class {
-	#name : #GtGitRepositoryPackageSetupItem,
+	#name : #GtGitRepositoryPackageAndBaselineSetupItem,
 	#superclass : #GtGitRepositorySetupItem,
 	#category : #'GToolkit4Git-Model'
 }
 
 { #category : #accessing }
-GtGitRepositoryPackageSetupItem class >> priority [
+GtGitRepositoryPackageAndBaselineSetupItem class >> priority [
 	^ 2
 ]
 
 { #category : #accessing }
-GtGitRepositoryPackageSetupItem >> buildActionsIn: aStream [
+GtGitRepositoryPackageAndBaselineSetupItem >> buildActionsIn: aStream [
 	aStream next
 		appendingAdornment: [ self setupPackageAction ];
 		cr
 ]
 
 { #category : #accessing }
-GtGitRepositoryPackageSetupItem >> isExecuted [
+GtGitRepositoryPackageAndBaselineSetupItem >> isExecuted [
 	^  self repository hasPackage
 ]
 
 { #category : #accessing }
-GtGitRepositoryPackageSetupItem >> message [
+GtGitRepositoryPackageAndBaselineSetupItem >> message [
 	^ 'Setup Packages and Baselines'
 ]
 
 { #category : #accessing }
-GtGitRepositoryPackageSetupItem >> setupPackageAction [
+GtGitRepositoryPackageAndBaselineSetupItem >> setupPackageAction [
 	^ self
 		actionButtonLabelled: 'Create a package and/or baseline'
 		withDropdownContent: [ :aButton | 
-			GtGitPackageCreationForm new
+			GtGitPackageAndBaselineCreationForm new
 				repositoryModel: self repository;
 				button: aButton ]
 ]

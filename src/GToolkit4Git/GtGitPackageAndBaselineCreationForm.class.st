@@ -1,17 +1,18 @@
 Class {
-	#name : #GtGitPackageCreationForm,
+	#name : #GtGitPackageAndBaselineCreationForm,
 	#superclass : #Object,
 	#instVars : [
 		'repositoryModel',
 		'package',
 		'button',
-		'baseline'
+		'baseline',
+		'addToReadme'
 	],
 	#category : #'GToolkit4Git-Model'
 }
 
 { #category : #accessing }
-GtGitPackageCreationForm >> acceptAction [
+GtGitPackageAndBaselineCreationForm >> acceptAction [
 	<magritteActionDescription>
 	^ MAActionDescription new
 		label: 'Accept';
@@ -19,18 +20,38 @@ GtGitPackageCreationForm >> acceptAction [
 			[ | aPackage |
 			aPackage := self addPackage.
 			self addPackageToBaseline: aPackage.
+			self addInstallationInstructions.
 			button
 				inUIProcessDo: [ button dispatchEvent: BrDropdownHideWish new.
-					button phlow fireUpdateWish.
-					button phlow
-						spawnTool: (GtPackageCoderTool package: self package asPackage) ] ]
-				on: Error
-				do: #debug ];
+					button phlow fireUpdateWish ] ] on: Error do: #debug ];
 		beCommitAction
 ]
 
 { #category : #accessing }
-GtGitPackageCreationForm >> addPackage [
+GtGitPackageAndBaselineCreationForm >> addInstallationInstructions [
+	| readme |
+	self addToReadme ifFalse: [ ^ self ].
+
+	readme := self repositoryModel repository repositoryDirectory / 'README.md'.
+	readme
+		writeStreamDo: [ :s | 
+			s
+				nextPutAll: '##Installation
+
+```
+Metacello new
+	repository: ''' , self guessRepository
+						, ''';
+	baseline: ''' , (self baseline removePrefix: 'BaselineOf')
+						, ''';
+	load
+```' ].
+	self repositoryModel repository addFileToIndex: 'README.md'.
+	self repositoryModel announceRepositoryModified
+]
+
+{ #category : #accessing }
+GtGitPackageAndBaselineCreationForm >> addPackage [
 	| packageClass |
 	self package ifEmpty: [ ^ self ].
 
@@ -42,7 +63,7 @@ GtGitPackageCreationForm >> addPackage [
 ]
 
 { #category : #accessing }
-GtGitPackageCreationForm >> addPackageToBaseline: aPackage [
+GtGitPackageAndBaselineCreationForm >> addPackageToBaseline: aPackage [
 	| baselineMethod baselineClass |
 	baseline ifEmpty: [ ^ self ].
 
@@ -60,12 +81,31 @@ GtGitPackageCreationForm >> addPackageToBaseline: aPackage [
 			spec package: ''' , aPackage name , ''''
 						, '
 		]'
-				in: baseline
+				in: baselineClass
 				classified: #baseline) execute ]
 ]
 
 { #category : #accessing }
-GtGitPackageCreationForm >> asElement [
+GtGitPackageAndBaselineCreationForm >> addToReadme [
+	^ addToReadme
+]
+
+{ #category : #accessing }
+GtGitPackageAndBaselineCreationForm >> addToReadme: anObject [
+	addToReadme := anObject
+]
+
+{ #category : #accessing }
+GtGitPackageAndBaselineCreationForm >> addToReadmeDescription [
+	<magritteDescription>
+	^ MABooleanDescription new
+		label: 'Add Installation to README';
+		priority: 3;
+		accessor: #addToReadme
+]
+
+{ #category : #accessing }
+GtGitPackageAndBaselineCreationForm >> asElement [
 	| viewModel |
 	viewModel := self asGtMagritteViewModel.
 	viewModel actions first
@@ -90,17 +130,17 @@ GtGitPackageCreationForm >> asElement [
 ]
 
 { #category : #accessing }
-GtGitPackageCreationForm >> baseline [
+GtGitPackageAndBaselineCreationForm >> baseline [
 	^ baseline
 ]
 
 { #category : #accessing }
-GtGitPackageCreationForm >> baseline: anObject [
+GtGitPackageAndBaselineCreationForm >> baseline: anObject [
 	baseline := anObject
 ]
 
 { #category : #accessing }
-GtGitPackageCreationForm >> baselineDescription [
+GtGitPackageAndBaselineCreationForm >> baselineDescription [
 	<magritteDescription>
 	^ MAStringDescription new
 		label: 'Baseline';
@@ -116,33 +156,45 @@ GtGitPackageCreationForm >> baselineDescription [
 ]
 
 { #category : #accessing }
-GtGitPackageCreationForm >> button [
+GtGitPackageAndBaselineCreationForm >> button [
 	^ button
 ]
 
 { #category : #accessing }
-GtGitPackageCreationForm >> button: anObject [
+GtGitPackageAndBaselineCreationForm >> button: anObject [
 	button := anObject
 ]
 
 { #category : #accessing }
-GtGitPackageCreationForm >> initialize [
-	package := ''.
-	baseline := ''
+GtGitPackageAndBaselineCreationForm >> guessRepository [
+	| parser parsed |
+	self repositoryModel repository originUrl isEmptyOrNil ifTrue: [ ^ '' ].
+
+	parser := self urlParser.
+	parsed := parser parse: self repositoryModel repository originUrl.
+	^ 'github://' , (parsed at: 1) , '/' , (parsed at: 2) , ':'
+		, self repositoryModel repository branchName , '/' , self repositoryModel repository subdirectory
 ]
 
 { #category : #accessing }
-GtGitPackageCreationForm >> package [
+GtGitPackageAndBaselineCreationForm >> initialize [
+	package := ''.
+	baseline := ''.
+	addToReadme := true
+]
+
+{ #category : #accessing }
+GtGitPackageAndBaselineCreationForm >> package [
 	^ package
 ]
 
 { #category : #accessing }
-GtGitPackageCreationForm >> package: anObject [
+GtGitPackageAndBaselineCreationForm >> package: anObject [
 	package := anObject
 ]
 
 { #category : #accessing }
-GtGitPackageCreationForm >> packageDescription [
+GtGitPackageAndBaselineCreationForm >> packageDescription [
 	<magritteDescription>
 	^ MAStringDescription new
 		label: 'Package';
@@ -154,14 +206,35 @@ GtGitPackageCreationForm >> packageDescription [
 ]
 
 { #category : #accessing }
-GtGitPackageCreationForm >> repositoryModel [
+GtGitPackageAndBaselineCreationForm >> repositoryModel [
 	^ repositoryModel
 ]
 
 { #category : #accessing }
-GtGitPackageCreationForm >> repositoryModel: anObject [
+GtGitPackageAndBaselineCreationForm >> repositoryModel: anObject [
 	repositoryModel := anObject.
 	self package: (' ' join: ('-' split: repositoryModel name)) asCamelCase.
+	self baseline: 'BaselineOf' , self package.
 	repositoryModel baselines
 		ifNotEmpty: [ :baselines | self baseline: baselines first ]
+]
+
+{ #category : #accessing }
+GtGitPackageAndBaselineCreationForm >> urlParser [
+	| user domain organization repository ssh separator https |
+	user := '@' asPParser negate plus flatten.
+	domain := 'github.com' asPParser.
+	ssh := (user , '@' asPParser , domain , ':' asPParser)
+			==> [ :t | 
+				{t first.
+					t third} ].
+	separator := '/' asPParser.
+	https := ('https://' asPParser , separator negate plus flatten , separator)
+			==> #second.
+	organization := separator negate plus flatten.
+	repository := '.git' asPParser negate plus flatten.
+	^ (https / ssh , organization , separator , repository , '.git' asPParser)
+		==> [ :t | 
+			{t second.
+				t fourth} ]
 ]
