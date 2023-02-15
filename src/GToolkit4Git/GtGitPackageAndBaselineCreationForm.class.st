@@ -17,10 +17,10 @@ GtGitPackageAndBaselineCreationForm >> acceptAction [
 	^ MAActionDescription new
 		label: 'Accept';
 		action: [ :aModel :aButton | 
-			[ | aPackage |
+			[ | aPackage newBaseline |
 			aPackage := self addPackage.
-			self addPackageToBaseline: aPackage.
-			self addInstallationInstructions.
+			newBaseline := self addPackageToBaseline: aPackage.
+			newBaseline ifTrue: [ self addInstallationInstructions ].
 			button
 				inUIProcessDo: [ button dispatchEvent: BrDropdownHideWish new.
 					button phlow fireUpdateWish ] ] on: Error do: #debug ];
@@ -35,8 +35,8 @@ GtGitPackageAndBaselineCreationForm >> addInstallationInstructions [
 	readme := self repositoryModel repository repositoryDirectory / 'README.md'.
 	readme
 		writeStreamDo: [ :s | 
-			s
-				nextPutAll: '##Installation
+			s setToEnd
+				nextPutAll: '## Installation
 
 ```
 Metacello new
@@ -45,7 +45,9 @@ Metacello new
 	baseline: ''' , (self baseline removePrefix: 'BaselineOf')
 						, ''';
 	load
-```' ].
+```
+
+' ].
 	self repositoryModel repository addFileToIndex: 'README.md'.
 	self repositoryModel announceRepositoryModified
 ]
@@ -65,24 +67,26 @@ GtGitPackageAndBaselineCreationForm >> addPackage [
 { #category : #accessing }
 GtGitPackageAndBaselineCreationForm >> addPackageToBaseline: aPackage [
 	| baselineMethod baselineClass |
-	baseline ifEmpty: [ ^ self ].
+	baseline ifEmpty: [ ^ false ].
 
 	baselineClass := Smalltalk classNamed: baseline.
 	baselineClass
-		ifNil: [ ^ self repositoryModel
+		ifNil: [ self repositoryModel
 				addBaseline: baseline
-				withPackages: (aPackage ifNil: [ {} ] ifNotNil: [ {aPackage} ]) ].
+				withPackages: (aPackage ifNil: [ {} ] ifNotNil: [ {aPackage} ]).
+			^ true ].
 
 	aPackage
 		ifNotNil: [ baselineMethod := baselineClass >> #baseline:.
 			(RBAddMethodChange
-				compile: baselineMethod sourceCode allButLast
+				compile: (baselineMethod sourceCode allButLast: 4)
 						, '.
 			spec package: ''' , aPackage name , ''''
 						, '
 		]'
 				in: baselineClass
-				classified: #baseline) execute ]
+				classified: #baseline) execute ].
+	^ false
 ]
 
 { #category : #accessing }
