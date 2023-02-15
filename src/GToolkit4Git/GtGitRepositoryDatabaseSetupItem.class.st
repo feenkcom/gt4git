@@ -10,13 +10,59 @@ GtGitRepositoryDatabaseSetupItem class >> priority [
 ]
 
 { #category : #accessing }
+GtGitRepositoryDatabaseSetupItem >> addToBaseline: aDatabaseFolder [
+	| baseline |
+	self repository hasBaseline ifFalse: [ ^ self ].
+	baseline := self repository baselines first asClass.
+	(RBAddMethodChange
+		compile: 'loadLepiter
+	IceRepository registry  
+		detect: [ :aRepository |
+			aRepository name = '''
+				, self repository name
+				, ''' ]
+		ifFound: [ :aRepository | 
+			| defaultDatabase currentProperties |
+			defaultDatabase := LeDatabasesRegistry defaultLogicalDatabase.
+			currentProperties := defaultDatabase properties.
+			currentProperties addRegisteredDirectory: aRepository repositoryDirectory / '
+				, aDatabaseFolder
+				, '.
+			defaultDatabase reload ]
+		ifNone: [
+			self inform: ''Repository not found.'' ]'
+		in: baseline class
+		classified: #loading) execute.
+
+	self addToReadme
+]
+
+{ #category : #accessing }
+GtGitRepositoryDatabaseSetupItem >> addToReadme [
+	| readme |
+	readme := self repository repository repositoryDirectory / 'README.md'.
+	readme
+		writeStreamDo: [ :s | 
+			s setToEnd
+				nextPutAll: '## Load Lepiter
+				
+After installing with Metacello, you will be able to execute
+
+```
+#' , self repository baselines first
+						, ' asClass loadLepiter
+```
+
+' ].
+	self repository repository addFileToIndex: 'README.md'.
+	self repository announceRepositoryModified
+]
+
+{ #category : #accessing }
 GtGitRepositoryDatabaseSetupItem >> buildActionsIn: aStream [
 	aStream next
 		appendingAdornment: [ self setupLepiterDatabaseAction ];
-		cr.
-	aStream next
-		appendingAdornment: [ self setupCustomLepiterDatabaseAction ];
-		putAll: ' or '
+		cr
 ]
 
 { #category : #accessing }
@@ -35,30 +81,11 @@ GtGitRepositoryDatabaseSetupItem >> message [
 ]
 
 { #category : #accessing }
-GtGitRepositoryDatabaseSetupItem >> setupCustomLepiterDatabaseAction [
-	^ self
-		actionButtonLabelled: 'Create custom directory'
-		withDropdownContent: [ :aButton | 
-			BrFileSelector new
-				vExact: 250;
-				hExact: 400;
-				folder: self repository repository repositoryDirectory;
-				addAptitude: BrGlamorousWithVerticalResizerAptitude
-						+ BrGlamorousWithHorizontalResizerAptitude
-						+ BrGlamorousWithHorizontalResizerAptitude new beLeft;
-				fileFilterBlock: [ :aFile | aFile isDirectory ];
-				okAction: [ :aDirectory :_ | 
-					aButton fireEvent: BrDropdownHideWish new.
-					self repository addNewDatabaseInDirectory: aDirectory ];
-				buttonLabel: 'Choose';
-				padding: (BlInsets all: 10) ]
-]
-
-{ #category : #accessing }
 GtGitRepositoryDatabaseSetupItem >> setupLepiterDatabaseAction [
-	^ BrButton new
-		label: 'Create default Lepiter directory';
-		aptitude: BrGlamorousButtonWithLabelAptitude;
-		action: [ self repository
-				addNewDatabaseInDirectory: self repository repository repositoryDirectory / 'lepiter' ]
+	^ self
+		actionButtonLabelled: 'Create Lepiter directory'
+		withDropdownContent: [ :aButton | 
+			GtGitDatabaseCreationForm new
+				repositoryModel: self repository;
+				button: aButton ]
 ]
