@@ -50,7 +50,7 @@ GtGitDatabaseCreationForm >> addToBaseline: aDatabaseFolder [
 			defaultDatabase reload ]
 		ifNone: [
 			self inform: ''Repository not found.'' ]'
-		in: baselineClass
+		in: baselineClass class
 		classified: #loading) execute.
 
 	self addToReadme
