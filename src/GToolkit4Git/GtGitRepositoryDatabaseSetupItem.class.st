@@ -10,55 +10,6 @@ GtGitRepositoryDatabaseSetupItem class >> priority [
 ]
 
 { #category : #accessing }
-GtGitRepositoryDatabaseSetupItem >> addToBaseline: aDatabaseFolder [
-	| baseline |
-	self repository hasBaseline ifFalse: [ ^ self ].
-	baseline := self repository baselines first asClass.
-	(RBAddMethodChange
-		compile: 'loadLepiter
-	IceRepository registry  
-		detect: [ :aRepository |
-			aRepository name = '''
-				, self repository name
-				, ''' ]
-		ifFound: [ :aRepository | 
-			| defaultDatabase currentProperties |
-			defaultDatabase := LeDatabasesRegistry defaultLogicalDatabase.
-			currentProperties := defaultDatabase properties.
-			currentProperties addRegisteredDirectory: aRepository repositoryDirectory / '
-				, aDatabaseFolder
-				, '.
-			defaultDatabase reload ]
-		ifNone: [
-			self inform: ''Repository not found.'' ]'
-		in: baseline class
-		classified: #loading) execute.
-
-	self addToReadme
-]
-
-{ #category : #accessing }
-GtGitRepositoryDatabaseSetupItem >> addToReadme [
-	| readme |
-	readme := self repository repository repositoryDirectory / 'README.md'.
-	readme
-		writeStreamDo: [ :s | 
-			s setToEnd
-				nextPutAll: '## Load Lepiter
-				
-After installing with Metacello, you will be able to execute
-
-```
-#' , self repository baselines first
-						, ' asClass loadLepiter
-```
-
-' ].
-	self repository repository addFileToIndex: 'README.md'.
-	self repository announceRepositoryModified
-]
-
-{ #category : #accessing }
 GtGitRepositoryDatabaseSetupItem >> buildActionsIn: aStream [
 	aStream next
 		appendingAdornment: [ self setupLepiterDatabaseAction ];
@@ -77,7 +28,7 @@ GtGitRepositoryDatabaseSetupItem >> isRequired [
 
 { #category : #accessing }
 GtGitRepositoryDatabaseSetupItem >> message [
-	^ 'Add Lepiter Knowledge Base'
+	^ 'Setup Lepiter knowledge base'
 ]
 
 { #category : #accessing }

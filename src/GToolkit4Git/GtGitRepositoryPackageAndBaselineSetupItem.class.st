@@ -23,7 +23,7 @@ GtGitRepositoryPackageAndBaselineSetupItem >> isExecuted [
 
 { #category : #accessing }
 GtGitRepositoryPackageAndBaselineSetupItem >> message [
-	^ 'Setup Packages and Baselines'
+	^ 'Setup package and baseline for code management'
 ]
 
 { #category : #accessing }
