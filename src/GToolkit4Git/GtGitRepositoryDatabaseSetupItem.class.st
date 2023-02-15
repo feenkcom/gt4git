@@ -28,7 +28,7 @@ GtGitRepositoryDatabaseSetupItem >> isRequired [
 
 { #category : #accessing }
 GtGitRepositoryDatabaseSetupItem >> message [
-	^ 'Add Lepiter Knowledge Base'
+	^ 'Setup Lepiter knowledge base'
 ]
 
 { #category : #accessing }

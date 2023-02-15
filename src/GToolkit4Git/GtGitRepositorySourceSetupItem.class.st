@@ -23,7 +23,7 @@ GtGitRepositorySourceSetupItem >> isExecuted [
 
 { #category : #accessing }
 GtGitRepositorySourceSetupItem >> message [
-	^ 'Create metadata'
+	^ 'Setup metadata and source directory'
 ]
 
 { #category : #accessing }
