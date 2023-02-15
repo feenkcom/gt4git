@@ -70,6 +70,11 @@ GtGitRepositorySetupItem >> isExecuted [
 ]
 
 { #category : #accessing }
+GtGitRepositorySetupItem >> isRequired [
+	^ true
+]
+
+{ #category : #accessing }
 GtGitRepositorySetupItem >> message [
 	^ self subclassResponsibility
 ]
