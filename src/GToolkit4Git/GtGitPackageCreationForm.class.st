@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'repositoryModel',
 		'package',
-		'button'
+		'button',
+		'baseline'
 	],
 	#category : #'GToolkit4Git-Model'
 }
@@ -15,7 +16,9 @@ GtGitPackageCreationForm >> acceptAction [
 	^ MAActionDescription new
 		label: 'Accept';
 		action: [ :aModel :aButton | 
-			[ self repositoryModel addPackage: self package.
+			[ | aPackage |
+			aPackage := self addPackage.
+			self addPackageToBaseline: aPackage.
 			button
 				inUIProcessDo: [ button dispatchEvent: BrDropdownHideWish new.
 					button phlow fireUpdateWish.
@@ -24,6 +27,41 @@ GtGitPackageCreationForm >> acceptAction [
 				on: Error
 				do: #debug ];
 		beCommitAction
+]
+
+{ #category : #accessing }
+GtGitPackageCreationForm >> addPackage [
+	| packageClass |
+	self package ifEmpty: [ ^ self ].
+
+	packageClass := Smalltalk classNamed: self package.
+	packageClass ifNil: [ ^ self repositoryModel addPackage: self package ].
+
+	self repositoryModel icebergWorkingCopy addPackageNamed: self package.
+	^ packageClass
+]
+
+{ #category : #accessing }
+GtGitPackageCreationForm >> addPackageToBaseline: aPackage [
+	| baselineMethod baselineClass |
+	baseline ifEmpty: [ ^ self ].
+
+	baselineClass := Smalltalk classNamed: baseline.
+	baselineClass
+		ifNil: [ ^ self repositoryModel
+				addBaseline: baseline
+				withPackages: (aPackage ifNil: [ {} ] ifNotNil: [ {aPackage} ]) ].
+
+	aPackage
+		ifNotNil: [ baselineMethod := baselineClass >> #baseline:.
+			(RBAddMethodChange
+				compile: baselineMethod sourceCode allButLast
+						, '.
+			spec package: ''' , aPackage name , ''''
+						, '
+		]'
+				in: baseline
+				classified: #baseline) execute ]
 ]
 
 { #category : #accessing }
@@ -52,6 +90,32 @@ GtGitPackageCreationForm >> asElement [
 ]
 
 { #category : #accessing }
+GtGitPackageCreationForm >> baseline [
+	^ baseline
+]
+
+{ #category : #accessing }
+GtGitPackageCreationForm >> baseline: anObject [
+	baseline := anObject
+]
+
+{ #category : #accessing }
+GtGitPackageCreationForm >> baselineDescription [
+	<magritteDescription>
+	^ MAStringDescription new
+		label: 'Baseline';
+		priority: 2;
+		accessor: #baseline;
+		textStyler: #glamorousCodeFont;
+		blocCompletion: [ GtStringsCompletionStrategy new
+				completions: (GtPrefixTree withAll: repositoryModel baselines) ];
+		addCondition: [ :aValue | aValue isEmpty or: [ aValue trim beginsWith: 'BaselineOf' ] ]
+			labelled: 'Baseline name must start with BaselineOf';
+		addCondition: [ :aValue | aValue trim isAllAlphaNumerics ]
+			labelled: 'Baseline name must be alphanumeric'
+]
+
+{ #category : #accessing }
 GtGitPackageCreationForm >> button [
 	^ button
 ]
@@ -63,7 +127,8 @@ GtGitPackageCreationForm >> button: anObject [
 
 { #category : #accessing }
 GtGitPackageCreationForm >> initialize [
-	package := ''
+	package := ''.
+	baseline := ''
 ]
 
 { #category : #accessing }
@@ -85,12 +150,7 @@ GtGitPackageCreationForm >> packageDescription [
 		accessor: #package;
 		textStyler: #glamorousCodeFont;
 		blocCompletion: [ GtStringsCompletionStrategy new
-				completions: (GtPrefixTree withAll: (Smalltalk allClasses collect: #name)) ];
-		addCondition: [ :aValue | aValue asString trim isNotEmpty ]
-			labelled: 'Package name must be set';
-		addCondition: [ :aValue | (Smalltalk classNamed: aValue asString trim) isNil ]
-			labelled: 'Package name is already taken';
-		beRequired
+				completions: (GtPrefixTree withAll: (Smalltalk allClasses collect: #name)) ]
 ]
 
 { #category : #accessing }
@@ -101,5 +161,7 @@ GtGitPackageCreationForm >> repositoryModel [
 { #category : #accessing }
 GtGitPackageCreationForm >> repositoryModel: anObject [
 	repositoryModel := anObject.
-	self package: (' ' join: ('-' split: repositoryModel name)) asCamelCase
+	self package: (' ' join: ('-' split: repositoryModel name)) asCamelCase.
+	repositoryModel baselines
+		ifNotEmpty: [ :baselines | self baseline: baselines first ]
 ]

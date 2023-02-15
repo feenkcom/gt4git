@@ -43,25 +43,11 @@ GtGitRepository class >> fromIcebergRepository: anIceRepository [
 { #category : #'api - actions adding/removing' }
 GtGitRepository >> addBaseline: aBaselineName [
 
-	(RBAddPackageChange addPackageNamed: aBaselineName) execute.
-	(RBAddClassChange definition:
-		 'BaselineOf subclass: #' , aBaselineName , '
-	instanceVariableNames: ''''
-	classVariableNames: ''''
-	poolDictionaries: ''''
-	package: ''' , aBaselineName , '''') execute.
-	(RBAddMethodChange
-		 compile: 'baseline: spec
-	<baseline>'
-		 in: aBaselineName asClass
-		 classified: #baseline) execute.
-
-	self icebergWorkingCopy addPackageNamed: aBaselineName.
-	self announceRepositoryModified.
+	self addBaseline: aBaselineName withPackages: {}
 ]
 
 { #category : #'api - actions adding/removing' }
-GtGitRepository >> addBaselineWithAllPackages: aBaselineName [
+GtGitRepository >> addBaseline: aBaselineName withPackages: aListOfPackages [
 	(RBAddPackageChange addPackageNamed: aBaselineName) execute.
 	(RBAddClassChange
 		definition: 'BaselineOf subclass: #' , aBaselineName
@@ -77,7 +63,7 @@ GtGitRepository >> addBaselineWithAllPackages: aBaselineName [
 			'
 				, ('.
 			'
-						join: (self workingCopy packages
+						join: (aListOfPackages
 								collect: [ :aPackage | 'spec package: ''' , aPackage name , '''' ]))
 				, '
 		]'
@@ -89,6 +75,11 @@ GtGitRepository >> addBaselineWithAllPackages: aBaselineName [
 ]
 
 { #category : #'api - actions adding/removing' }
+GtGitRepository >> addBaselineWithAllPackages: aBaselineName [
+	self addBaseline: aBaselineName withPackages: self workingCopy packages
+]
+
+{ #category : #'api - actions adding/removing' }
 GtGitRepository >> addNewDatabaseInDirectory: aDirectory [
 
 	self lepiterWorkingCopy addNewDatabaseInDirectory: aDirectory.
@@ -97,10 +88,13 @@ GtGitRepository >> addNewDatabaseInDirectory: aDirectory [
 
 { #category : #'api - actions adding/removing' }
 GtGitRepository >> addPackage: aPackageName [
-	(RBAddPackageChange addPackageNamed: aPackageName) execute.
+	| aPackage |
+	aPackage := (RBAddPackageChange addPackageNamed: aPackageName) execute.
 
 	self icebergWorkingCopy addPackageNamed: aPackageName.
-	self announceRepositoryModified
+	self announceRepositoryModified.
+
+	^ aPackage
 ]
 
 { #category : #announcer }
@@ -873,7 +867,7 @@ GtGitRepository >> gtRepositoryDirectoryFor: aView [
 GtGitRepository >> gtSetupHelpFor: aView [
 	<gtView>
 	<gtRepositoryView>
-	self isSetupDone ifTrue: [ ^ aView empty ].
+	(self hasCommits and: [ self isSetupDone ]) ifTrue: [ ^ aView empty ].
 
 	^ aView columnedList
 		title: 'Setup';
@@ -992,7 +986,9 @@ GtGitRepository >> isModified [
 
 { #category : #'gt - extensions' }
 GtGitRepository >> isSetupDone [
-	^ (self setupItems reject: #isExecuted) isEmpty
+	^ (self setupItems
+		reject: [ :aSetupItem | aSetupItem isRequired not or: [ aSetupItem isExecuted ] ])
+		isEmpty
 ]
 
 { #category : #'api - testing' }

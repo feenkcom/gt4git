@@ -13,10 +13,7 @@ GtGitRepositoryPackageSetupItem class >> priority [
 GtGitRepositoryPackageSetupItem >> buildActionsIn: aStream [
 	aStream next
 		appendingAdornment: [ self setupPackageAction ];
-		cr.
-		aStream next
-		appendingAdornment: [ self setupCustomPackageAction ];
-		putAll: ' or '.
+		cr
 ]
 
 { #category : #accessing }
@@ -26,27 +23,13 @@ GtGitRepositoryPackageSetupItem >> isExecuted [
 
 { #category : #accessing }
 GtGitRepositoryPackageSetupItem >> message [
-	^ 'Add Package to Repository'
-]
-
-{ #category : #accessing }
-GtGitRepositoryPackageSetupItem >> setupCustomPackageAction [
-	^ GtSpotterDropdownButtonStencil new
-		valuable: [ RPackage organizer packages ];
-		icon: [ BlElement new
-				size: 0 @ 0;
-				background: BlBackground transparent ] asStencil;
-		label: 'Add Existing Package';
-		actOn: [ :anActOnEvent :anItem | 
-			self repository icebergWorkingCopy addPackageNamed: anItem name asSymbol.
-			self repository announceRepositoryModified.
-			anActOnEvent beActed ]
+	^ 'Setup Packages and Baselines'
 ]
 
 { #category : #accessing }
 GtGitRepositoryPackageSetupItem >> setupPackageAction [
 	^ self
-		actionButtonLabelled: 'Create a package'
+		actionButtonLabelled: 'Create a package and/or baseline'
 		withDropdownContent: [ :aButton | 
 			GtGitPackageCreationForm new
 				repositoryModel: self repository;

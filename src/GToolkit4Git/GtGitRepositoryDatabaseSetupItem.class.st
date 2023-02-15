@@ -25,6 +25,11 @@ GtGitRepositoryDatabaseSetupItem >> isExecuted [
 ]
 
 { #category : #accessing }
+GtGitRepositoryDatabaseSetupItem >> isRequired [
+	^ false
+]
+
+{ #category : #accessing }
 GtGitRepositoryDatabaseSetupItem >> message [
 	^ 'Add Lepiter Knowledge Base'
 ]
