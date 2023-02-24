@@ -93,5 +93,5 @@ GtGitGithubPageForm >> urlDescription [
 		label: 'URL';
 		priority: 1;
 		accessor: #url;
-		textStyler: #glamorousCodeFontAndSmallSize
+		editorAptitude: [ BrGlamorousRegularEditorAptitude new glamorousCodeFontAndSmallSize ]
 ]
