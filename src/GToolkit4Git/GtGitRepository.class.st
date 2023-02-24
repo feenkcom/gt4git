@@ -146,10 +146,7 @@ GtGitRepository >> baselinesDescription [
 							| aLabel |
 							aLabel := BrEditableLabel new
 									text: aTag name;
-									aptitude: (BrGlamorousEditableLabelAptitude new
-											glamorousCodeFont;
-											defaultForeground: Color black;
-											fontSize: 10).
+									aptitude: BrGlamorousEditableLabelAptitude new glamorousFormEditorCodeFontAndSize.
 
 							(GtCompletionController
 								on: aLabel
@@ -235,6 +232,7 @@ GtGitRepository >> codeDirectoryDescription [
 		label: 'Code Directory';
 		priority: 4;
 		labelAptitude: [ BrGlamorousLabelAptitude new glamorousFormLabelStyle ];
+		editorAptitude: [ BrGlamorousLabelAptitude new glamorousFormEditorCodeFontAndSize ];
 		kind: AbstractFileReference;
 		display: #pathString;
 		accessor: (MAPluggableAccessor
@@ -316,10 +314,7 @@ GtGitRepository >> databasesDescription [
 						tagLabel: [ :aTag | 
 							BrEditableLabel new
 								text: (aDescription displayStringFor: aTag name);
-								aptitude: (BrGlamorousEditableLabelAptitude new
-										glamorousCodeFont;
-										defaultForeground: Color black;
-										fontSize: 10);
+								aptitude: BrGlamorousEditableLabelAptitude new glamorousFormEditorCodeFontAndSize;
 								whenKey: BlKeyCombination primaryB
 									labelDo: [ :aShortcutEvent :aShortcut | aTagger phlow spawnObject: aTag name ] ];
 						content: [ :aDropdown :_ | 
@@ -408,6 +403,7 @@ GtGitRepository >> fileFormatDescription [
 		label: 'File Format';
 		priority: 3;
 		labelAptitude: [ BrGlamorousLabelAptitude new glamorousFormLabelStyle ];
+		editorAptitude: [ BrGlamorousLabelAptitude new glamorousFormEditorCodeFontAndSize ];
 		display: [ :aWriter | aWriter ifNil: [ '<unspeficied>' ] ifNotNil: [ aWriter description ] ];
 		accessor: (MAPluggableAccessor
 				read: [ :aModel | 
