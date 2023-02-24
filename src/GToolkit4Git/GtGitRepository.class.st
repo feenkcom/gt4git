@@ -116,76 +116,79 @@ GtGitRepository >> baselines [
 
 { #category : #magritte }
 GtGitRepository >> baselinesDescription [
-
 	<magritteDescription>
 	^ MAToManyRelationDescription new
-		  label: 'Baselines';
-		  priority: 6;
-		  accessor:
-			  (MAPluggableAccessor
-				   read: #baselines
-				   write: [ :aModel :aValue | 
-					   aModel baselines
-						   removeAllFoundIn: aValue;
-						   do: [ :baseline | self removeBaseline: baseline ].
-					   aValue
-						   removeAllFoundIn: aModel baselines;
-						   collect: [ :baseline | self addBaseline: baseline ] ]);
-		  classes: { String };
-		  blocListStencil: [ :aMemento :aDescription :aForm | 
-			  | aTagger |
-			  aTagger := BrTagger new.
-			  aTagger
-				  margin: ((BlInsets left: 7) withBottom: 4);
-				  hMatchParent;
-				  vFitContent.
-			  aForm hMatchParent.
-			  aTagger aptitude: (GtCreationEditableTaggerAptitude new
-					   margin: (BlInsets right: 5);
-					   tagLabel: [ :aTag | 
-						   | aLabel |
-						   aLabel := BrEditableLabel new
-							             text: aTag name;
-							             aptitude: (BrGlamorousEditableLabelAptitude new
-									              glamorousCodeFont;
-									              defaultForeground: Color black;
-									              fontSize: 10).
+		label: 'Baselines';
+		priority: 6;
+		labelAptitude: [ BrGlamorousLabelAptitude new glamorousFormLabelStyle ];
+		accessor: (MAPluggableAccessor
+				read: #baselines
+				write: [ :aModel :aValue | 
+					aModel baselines
+						removeAllFoundIn: aValue;
+						do: [ :baseline | self removeBaseline: baseline ].
+					aValue
+						removeAllFoundIn: aModel baselines;
+						collect: [ :baseline | self addBaseline: baseline ] ]);
+		classes: {String};
+		blocListStencil: [ :aMemento :aDescription :aForm | 
+			| aTagger |
+			aTagger := BrTagger new.
+			aTagger
+				margin: ((BlInsets left: 7) withBottom: 4);
+				hMatchParent;
+				vFitContent.
+			aForm hMatchParent.
+			aTagger
+				aptitude: (GtCreationEditableTaggerAptitude new
+						margin: (BlInsets right: 5);
+						tagLabel: [ :aTag | 
+							| aLabel |
+							aLabel := BrEditableLabel new
+									text: aTag name;
+									aptitude: (BrGlamorousEditableLabelAptitude new
+											glamorousCodeFont;
+											defaultForeground: Color black;
+											fontSize: 10).
 
-						   (GtCompletionController
-							    on: aLabel
-							    strategy: GtBaselinesCompletionStrategy new) install.
+							(GtCompletionController
+								on: aLabel
+								strategy: GtBaselinesCompletionStrategy new) install.
 
-						   aLabel
-							   whenKey: BlKeyCombination primaryB
-							   labelDo: [ :aShortcutEvent :aShortcut | 
-								   aTagger phlow spawnTool:
-									   (GtMethodCoderTool compiledMethod:
-										    (aTag name asClass methodDict at: #baseline:)) ].
+							aLabel
+								whenKey: BlKeyCombination primaryB
+								labelDo: [ :aShortcutEvent :aShortcut | 
+									aTagger phlow
+										spawnTool: (GtMethodCoderTool compiledMethod: (aTag name asClass methodDict at: #baseline:)) ].
 
-						   aLabel ]).
-			  aTagger when: BrTaggerAddTagRequest do: [ :aRequest | 
-				  aMemento
-					  write: ((aTagger tags collect: #name)
-							   add: aRequest tag name;
-							   yourself)
-					  using: aDescription ].
-			  aTagger when: BrTaggerRemoveTagRequest do: [ :aRequest | 
-				  aMemento
-					  write: ((aTagger tags collect: #name)
-							   remove: aRequest tag name;
-							   yourself)
-					  using: aDescription ].
-			  aTagger withAsyncSinkDo: [ :anElementSink | 
-				  anElementSink
-					  sink: AsyncPeekSink new;
-					  whenUpdate: [ :theTagger :aSink | 
-						  | theValues theTexts |
-						  theValues := aSink value currentValue.
-						  theTexts := theValues collect: [ :each | 
-								              aDescription displayStringFor: each ].
-						  theTagger namedTags: theTexts ].
-				  (aMemento readObservableValueUsing: aDescription) observe:
-					  anElementSink ] ]
+							aLabel ]).
+			aTagger
+				when: BrTaggerAddTagRequest
+				do: [ :aRequest | 
+					aMemento
+						write: ((aTagger tags collect: #name)
+								add: aRequest tag name;
+								yourself)
+						using: aDescription ].
+			aTagger
+				when: BrTaggerRemoveTagRequest
+				do: [ :aRequest | 
+					aMemento
+						write: ((aTagger tags collect: #name)
+								remove: aRequest tag name;
+								yourself)
+						using: aDescription ].
+			aTagger
+				withAsyncSinkDo: [ :anElementSink | 
+					anElementSink
+						sink: AsyncPeekSink new;
+						whenUpdate: [ :theTagger :aSink | 
+							| theValues theTexts |
+							theValues := aSink value currentValue.
+							theTexts := theValues
+									collect: [ :each | aDescription displayStringFor: each ].
+							theTagger namedTags: theTexts ].
+					(aMemento readObservableValueUsing: aDescription) observe: anElementSink ] ]
 ]
 
 { #category : #magritte }
@@ -199,7 +202,8 @@ GtGitRepository >> branchDescription [
 				write: [ :aModel :aValue | aModel repository checkoutBranch: aValue ]);
 		blocCompletion: [ GtStringsCompletionStrategy new
 				completions: (GtPrefixTree withAll: (icebergRepository allBranches collect: #name)) ];
-		textStyler: #glamorousCodeFontAndSmallSize;
+		editorAptitude: [ BrGlamorousRegularEditorAptitude new glamorousFormEditorCodeFontAndSize ];
+		labelAptitude: [ BrGlamorousLabelAptitude new glamorousFormLabelStyle ];
 		addCondition: [ :aValue | (aValue includesSubstring: '..') not ]
 			labelled: 'May not contain ".."';
 		addCondition: [ :aValue | (aValue includesAny: '~^:?*[\') not ]
@@ -226,20 +230,18 @@ GtGitRepository >> changes [
 
 { #category : #magritte }
 GtGitRepository >> codeDirectoryDescription [
-
 	<magritteDescription>
 	^ MADirectoryDescription new
-		  label: 'Code Directory';
-		  priority: 4;
-		  kind: AbstractFileReference;
-		  display: #pathString;
-		  accessor: (MAPluggableAccessor
-				   read: [ :aModel | 
-					   aModel repository codeDirectory asFileReference ]
-				   write: [ :aModel :aValue | 
-					   icebergRepository codeDirectory:
-							   (aValue relativeTo: icebergRepository repositoryDirectory)
-								   pathString ])
+		label: 'Code Directory';
+		priority: 4;
+		labelAptitude: [ BrGlamorousLabelAptitude new glamorousFormLabelStyle ];
+		kind: AbstractFileReference;
+		display: #pathString;
+		accessor: (MAPluggableAccessor
+				read: [ :aModel | aModel repository codeDirectory asFileReference ]
+				write: [ :aModel :aValue | 
+					icebergRepository
+						codeDirectory: (aValue relativeTo: icebergRepository repositoryDirectory) pathString ])
 ]
 
 { #category : #accessing }
@@ -288,6 +290,7 @@ GtGitRepository >> databasesDescription [
 	^ MAToManyRelationDescription new
 		label: 'Databases';
 		priority: 5;
+		labelAptitude: [ BrGlamorousLabelAptitude new glamorousFormLabelStyle ];
 		classes: {LeDatabase.
 				FileLocator};
 		accessor: (MAPluggableAccessor
@@ -400,29 +403,25 @@ GtGitRepository >> fetch [
 
 { #category : #magritte }
 GtGitRepository >> fileFormatDescription [
-
 	<magritteDescription>
 	^ MASingleOptionDescription new
-		  label: 'File Format';
-		  priority: 3;
-		  display: [ :aWriter | 
-			aWriter 
-				ifNil: [ '<unspeficied>' ] 
-				ifNotNil: [ aWriter description ]  ];
-		  accessor: (MAPluggableAccessor
-				   read: [ :aModel | 
-					   icebergRepository project isUnborn
-							ifTrue: [ nil ] 
-							ifFalse: [ icebergRepository project repositoryProperties fileFormat ] ]
-				   write: [ :aModel :aValue | 
-					   icebergRepository project fileFormat: (aValue = 'Tonel'
-								    ifTrue: [ IceLibgitTonelWriter ]
-								    ifFalse: [ IceLibgitFiletreeWriter ]).
-					   Iceberg announcer announce:
-							   (IceRepositoryModified for: icebergRepository) ]);
-		  options: { 
-				  IceLibgitTonelWriter.
-				  IceLibgitFiletreeWriter }
+		label: 'File Format';
+		priority: 3;
+		labelAptitude: [ BrGlamorousLabelAptitude new glamorousFormLabelStyle ];
+		display: [ :aWriter | aWriter ifNil: [ '<unspeficied>' ] ifNotNil: [ aWriter description ] ];
+		accessor: (MAPluggableAccessor
+				read: [ :aModel | 
+					icebergRepository project isUnborn
+						ifTrue: [ nil ]
+						ifFalse: [ icebergRepository project repositoryProperties fileFormat ] ]
+				write: [ :aModel :aValue | 
+					icebergRepository project
+						fileFormat: (aValue = 'Tonel'
+								ifTrue: [ IceLibgitTonelWriter ]
+								ifFalse: [ IceLibgitFiletreeWriter ]).
+					Iceberg announcer announce: (IceRepositoryModified for: icebergRepository) ]);
+		options: {IceLibgitTonelWriter.
+				IceLibgitFiletreeWriter}
 ]
 
 { #category : #'api - actions' }
@@ -1023,7 +1022,8 @@ GtGitRepository >> originDescription [
 	^ MAStringDescription new
 		label: 'Origin';
 		priority: 2;
-		textStyler: #glamorousCodeFontAndSmallSize;
+		editorAptitude: [ BrGlamorousRegularEditorAptitude new glamorousFormEditorCodeFontAndSize ];
+		labelAptitude: [ BrGlamorousLabelAptitude new glamorousFormLabelStyle ];
 		accessor: (MAPluggableAccessor
 				read: [ :aModel | aModel repository originUrl ]
 				write: [ :aModel :aValue | aModel repository setOriginTo: aValue ])
