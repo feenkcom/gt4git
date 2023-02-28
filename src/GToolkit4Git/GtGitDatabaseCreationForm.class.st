@@ -119,7 +119,8 @@ GtGitDatabaseCreationForm >> baselineDescription [
 		label: 'Baseline';
 		priority: 2;
 		accessor: #baseline;
-		textStyler: #glamorousCodeFont;
+		editorAptitude: [ BrGlamorousRegularEditorAptitude new glamorousFormEditorCodeFontAndSize ];
+		labelAptitude: [ BrGlamorousLabelAptitude new glamorousFormLabelStyle ];
 		display: [ :aString | aString ifEmpty: [ 'No Baseline' ] ifNotEmpty: [ aString ] ];
 		options: (repositoryModel baselines
 				addFirst: '';
