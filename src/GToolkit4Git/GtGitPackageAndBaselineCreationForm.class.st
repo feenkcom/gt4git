@@ -150,7 +150,8 @@ GtGitPackageAndBaselineCreationForm >> baselineDescription [
 		label: 'Baseline';
 		priority: 2;
 		accessor: #baseline;
-		textStyler: #glamorousCodeFont;
+		editorAptitude: [ BrGlamorousRegularEditorAptitude new glamorousFormEditorCodeFontAndSize ];
+		labelAptitude: [ BrGlamorousLabelAptitude new glamorousFormLabelStyle ];
 		blocCompletion: [ GtStringsCompletionStrategy new
 				completions: (GtPrefixTree withAll: repositoryModel baselines) ];
 		addCondition: [ :aValue | aValue isEmpty or: [ aValue trim beginsWith: 'BaselineOf' ] ]
@@ -204,7 +205,8 @@ GtGitPackageAndBaselineCreationForm >> packageDescription [
 		label: 'Package';
 		priority: 1;
 		accessor: #package;
-		textStyler: #glamorousCodeFont;
+		editorAptitude: [ BrGlamorousRegularEditorAptitude new glamorousFormEditorCodeFontAndSize ];
+		labelAptitude: [ BrGlamorousLabelAptitude new glamorousFormLabelStyle ];
 		blocCompletion: [ GtStringsCompletionStrategy new
 				completions: (GtPrefixTree withAll: (Smalltalk allClasses collect: #name)) ]
 ]
