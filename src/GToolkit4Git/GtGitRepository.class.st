@@ -162,19 +162,23 @@ GtGitRepository >> baselinesDescription [
 			aTagger
 				when: BrTaggerAddTagRequest
 				do: [ :aRequest | 
-					aMemento
-						write: ((aTagger tags collect: #name)
-								add: aRequest tag name;
-								yourself)
-						using: aDescription ].
+					aTagger
+						enqueueTask: (BlPromiseTask new
+								promise: (aMemento
+										write: ((aTagger tags collect: #name)
+												add: aRequest tag name;
+												yourself)
+										using: aDescription) asAsyncPromise) ].
 			aTagger
 				when: BrTaggerRemoveTagRequest
 				do: [ :aRequest | 
-					aMemento
-						write: ((aTagger tags collect: #name)
-								remove: aRequest tag name;
-								yourself)
-						using: aDescription ].
+					aTagger
+						enqueueTask: (BlPromiseTask new
+								promise: (aMemento
+										write: ((aTagger tags collect: #name)
+												remove: aRequest tag name;
+												yourself)
+										using: aDescription) asAsyncPromise) ].
 			aTagger
 				withAsyncSinkDo: [ :anElementSink | 
 					anElementSink
@@ -329,30 +333,36 @@ GtGitRepository >> databasesDescription [
 								okAction: [ :aDirectory :aButton | 
 									aDirectory isDirectory
 										ifTrue: [ aDropdown fireEvent: BrDropdownHideWish new.
-											aMemento
-												write: ((aTagger tags collect: #name)
-														add: aDirectory;
-														yourself)
-												using: aDescription.
+											aTagger
+												enqueueTask: (BlPromiseTask new
+														promise: (aMemento
+																write: ((aTagger tags collect: #name)
+																		add: aDirectory;
+																		yourself)
+																using: aDescription) asAsyncPromise).
 											aDropdown phlow fireUpdateWish ] ];
 								buttonLabel: 'Add database';
 								padding: (BlInsets all: 10) ]).
 			aTagger
 				when: BrTaggerAddTagRequest
 				do: [ :aRequest | 
-					aMemento
-						write: ((aTagger tags collect: #name)
-								add: aRequest tag name;
-								yourself)
-						using: aDescription ].
+					aTagger
+						enqueueTask: (BlPromiseTask new
+								promise: (aMemento
+										write: ((aTagger tags collect: #name)
+												add: aRequest tag name;
+												yourself)
+										using: aDescription) asAsyncPromise) ].
 			aTagger
 				when: BrTaggerRemoveTagRequest
 				do: [ :aRequest | 
-					aMemento
-						write: ((aTagger tags collect: #name)
-								remove: aRequest tag name;
-								yourself)
-						using: aDescription ].
+					aTagger
+						enqueueTask: (BlPromiseTask new
+								promise: (aMemento
+										write: ((aTagger tags collect: #name)
+												remove: aRequest tag name;
+												yourself)
+										using: aDescription) asAsyncPromise) ].
 			aTagger
 				withAsyncSinkDo: [ :anElementSink | 
 					anElementSink
