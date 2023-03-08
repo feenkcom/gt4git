@@ -177,7 +177,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithSearchResult [
 		play.
 
 
-	aScripter keyClick
+	aScripter keyPress
 		label: 'Select repository';
 		key: BlKeyboardKey return;
 		play.
