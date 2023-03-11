@@ -89,6 +89,54 @@ GtGitElementExamples >> scripterOnExpandedElementWithDeletedRepository [
 ]
 
 { #category : #examples }
+GtGitElementExamples >> scripterOnExpandedElementWithEditedBranch [
+	<gtExample>
+	| aScripter |
+	aScripter := self scripterOnExpandedElementWithExpandedProperties.
+
+	aScripter click
+		label: 'Click on branch field';
+		id: (GtMagritteFieldElementId new
+				description: aScripter element pages first contentElement tool repository branchDescription);
+		play.
+
+	aScripter type
+		label: 'Edit branch field';
+		text: 'test';
+		play.
+
+	"this is a mess, because we're getting everything from elements"
+	aScripter check
+		label: 'Check branch';
+		satisfies: [ :aChangeView | 
+			| mementoCache |
+			mementoCache := ((((((aChangeView pages last contentElement tool
+					childNamed: #content) childNamed: #definitions) childNamed: #content)
+					childAt: 1) childAt: 1) userData at: #gtmemento) cache.
+			(mementoCache associationsSelect: [ :a | a key label = 'Branch' ]) anyOne
+				value valueOrNil currentValue = 'test' ];
+		play.
+
+	^ aScripter
+]
+
+{ #category : #examples }
+GtGitElementExamples >> scripterOnExpandedElementWithExpandedProperties [
+	<gtExample>
+	| aScripter |
+	aScripter := self scripterOnExpandedElementWithInitializationDone.
+	
+	aScripter click
+		label: 'Click on expander button';
+		id: #content;
+		id: #definitions;
+		id: #sidebar;
+		play.
+
+	^ aScripter
+]
+
+{ #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithExpandedSearch [
 	<gtExample>
 	| aScripter |
@@ -192,7 +240,6 @@ GtGitElementExamples >> scripterOnExpandedElementWithSearchResult [
 
 { #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithSelectedRepository [
-	<noTest>
 	<gtExample>
 	<after: #cleanUpRepository>
 	| aScripter |
