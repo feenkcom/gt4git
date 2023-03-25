@@ -164,7 +164,7 @@ GtGitPackageAndBaselineCreationForm >> initialize [
 { #category : #accessing }
 GtGitPackageAndBaselineCreationForm >> magritteAcceptAction [
 	<magritteActionDescription>
-	super magritteAcceptAction
+	^ super magritteAcceptAction
 		onSuccessCallback: (GtMagritteActionExecutor new
 			beInUIProcess;
 			action: [ :aModel :aButton :aMemento :aDescription | 

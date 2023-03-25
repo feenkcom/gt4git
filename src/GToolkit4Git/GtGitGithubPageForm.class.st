@@ -39,7 +39,7 @@ GtGitGithubPageForm >> initialize [
 { #category : #accessing }
 GtGitGithubPageForm >> magritteAcceptAction [
 	<magritteActionDescription>
-	super magritteAcceptAction
+	^ super magritteAcceptAction
 		onSuccessCallback: (GtMagritteActionExecutor new
 			beInUIProcess;
 			action: [ :aModel :aButton :aMemento :aDescription | 
