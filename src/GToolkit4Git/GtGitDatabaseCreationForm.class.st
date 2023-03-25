@@ -11,23 +11,6 @@ Class {
 }
 
 { #category : #accessing }
-GtGitDatabaseCreationForm >> acceptAction [
-	<magritteActionDescription>
-	^ MAActionDescription new
-		label: 'Accept';
-		action: [ :aModel :aButton | 
-			[ self directory ensureCreateDirectory.
-			self repositoryModel addNewDatabaseInDirectory: self directory.
-			self
-				addToBaseline: (self directory relativeTo: self repositoryModel repository repositoryDirectory)
-						pathString.
-			button
-				inUIProcessDo: [ button dispatchEvent: BrDropdownHideWish new.
-					button phlow fireUpdateWish ] ] on: Error do: #debug ];
-		beCommitAction
-]
-
-{ #category : #accessing }
 GtGitDatabaseCreationForm >> addToBaseline: aDatabaseFolder [
 	| baselineClass |
 	baseline ifEmpty: [ ^ self ].
@@ -81,17 +64,6 @@ After installing with Metacello, you will be able to execute
 GtGitDatabaseCreationForm >> asElement [
 	| viewModel |
 	viewModel := self asGtMagritteViewModel.
-	viewModel actions first
-		installOn: [ :aModel :aButton :aMemento | 
-			aButton
-				withAsyncSinkDo: [ :anElementSink | 
-					anElementSink
-						sink: AsyncPeekSink new;
-						whenUpdate: [ :theButton :aSink | 
-							| aStatus |
-							aStatus := aSink value.
-							theButton enabled: aStatus isValid ].
-					aMemento overallStatus observe: anElementSink ] ].
 	viewModel
 		onElementCreated: [ :aFrame | 
 			BlFocusFinder new
@@ -163,6 +135,22 @@ GtGitDatabaseCreationForm >> directory: anObject [
 { #category : #accessing }
 GtGitDatabaseCreationForm >> initialize [
 	baseline := ''
+]
+
+{ #category : #accessing }
+GtGitDatabaseCreationForm >> magritteAcceptAction [
+	<magritteActionDescription>
+	super magritteAcceptAction
+		onSuccessCallback: (GtMagritteActionExecutor new
+			beInUIProcess;
+			action: [ :aModel :aButton :aMemento :aDescription | 
+				[ self directory ensureCreateDirectory.
+				self repositoryModel addNewDatabaseInDirectory: self directory.
+				self addToBaseline: (self directory relativeTo: self repositoryModel repository repositoryDirectory)
+							pathString.
+				button dispatchEvent: BrDropdownHideWish new.
+				button phlow fireUpdateWish ] on: Error do: #debug ]);
+		beEnabledOnValidOverallStatus.
 ]
 
 { #category : #accessing }
