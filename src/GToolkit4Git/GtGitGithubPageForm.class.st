@@ -10,26 +10,6 @@ Class {
 }
 
 { #category : #accessing }
-GtGitGithubPageForm >> acceptAction [
-	<magritteActionDescription>
-	^ MAActionDescription new
-		label: 'Clone';
-		action: [ :aModel :aButton | 
-			[ | creator repo |
-			creator := IceRepositoryCreator new
-					remote: (IceGitRemote url: self url);
-					location: self projectLocation.
-			repo := creator createRepository.
-			repo register.
-			dropdown
-				ifNotNil: [ dropdown
-						enqueueTask: (BlTaskAction new
-								action: [ dropdown dispatchEvent: (BrDropdownHideWish new anchor: dropdown) ]) ].
-			self onCreated value: repo ] on: Error do: #debug ];
-		beCommitAction
-]
-
-{ #category : #accessing }
 GtGitGithubPageForm >> asElement [
 	^ (self asGtMagritteViewModel
 		onElementCreated: [ :aFrame | 
@@ -54,6 +34,26 @@ GtGitGithubPageForm >> dropdown: anObject [
 { #category : #accessing }
 GtGitGithubPageForm >> initialize [
 	url := 'https://example.com'
+]
+
+{ #category : #accessing }
+GtGitGithubPageForm >> magritteAcceptAction [
+	<magritteActionDescription>
+	^ super magritteAcceptAction
+		onSuccessCallback: (GtMagritteActionExecutor new
+			beInUIProcess;
+			action: [ :aModel :aButton :aMemento :aDescription | 
+				[ | creator repo |
+				creator := IceRepositoryCreator new
+						remote: (IceGitRemote url: self url);
+						location: self projectLocation.
+				repo := creator createRepository.
+				repo register.
+				dropdown ifNotNil: [ 
+					dropdown dispatchEvent: (
+						BrDropdownHideWish new anchor: dropdown) ].
+				self onCreated value: repo ] on: Error do: #debug ]);
+		beEnabledOnValidOverallStatus.
 ]
 
 { #category : #accessing }

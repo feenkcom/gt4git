@@ -12,22 +12,6 @@ Class {
 }
 
 { #category : #accessing }
-GtGitPackageAndBaselineCreationForm >> acceptAction [
-	<magritteActionDescription>
-	^ MAActionDescription new
-		label: 'Accept';
-		action: [ :aModel :aButton | 
-			[ | aPackage newBaseline |
-			aPackage := self addPackage.
-			newBaseline := self addPackageToBaseline: aPackage.
-			newBaseline ifTrue: [ self addInstallationInstructions ].
-			button
-				inUIProcessDo: [ button dispatchEvent: BrDropdownHideWish new.
-					button phlow fireUpdateWish ] ] on: Error do: #debug ];
-		beCommitAction
-]
-
-{ #category : #accessing }
 GtGitPackageAndBaselineCreationForm >> addInstallationInstructions [
 	| readme |
 	self addToReadme ifFalse: [ ^ self ].
@@ -112,17 +96,6 @@ GtGitPackageAndBaselineCreationForm >> addToReadmeDescription [
 GtGitPackageAndBaselineCreationForm >> asElement [
 	| viewModel |
 	viewModel := self asGtMagritteViewModel.
-	viewModel actions first
-		installOn: [ :aModel :aButton :aMemento | 
-			aButton
-				withAsyncSinkDo: [ :anElementSink | 
-					anElementSink
-						sink: AsyncPeekSink new;
-						whenUpdate: [ :theButton :aSink | 
-							| aStatus |
-							aStatus := aSink value.
-							theButton enabled: aStatus isValid ].
-					aMemento overallStatus observe: anElementSink ] ].
 	viewModel
 		onElementCreated: [ :aFrame | 
 			BlFocusFinder new
@@ -186,6 +159,22 @@ GtGitPackageAndBaselineCreationForm >> initialize [
 	package := ''.
 	baseline := ''.
 	addToReadme := true
+]
+
+{ #category : #accessing }
+GtGitPackageAndBaselineCreationForm >> magritteAcceptAction [
+	<magritteActionDescription>
+	^ super magritteAcceptAction
+		onSuccessCallback: (GtMagritteActionExecutor new
+			beInUIProcess;
+			action: [ :aModel :aButton :aMemento :aDescription | 
+				[ | aPackage newBaseline |
+				aPackage := self addPackage.
+				newBaseline := self addPackageToBaseline: aPackage.
+				newBaseline ifTrue: [ self addInstallationInstructions ].
+				button dispatchEvent: BrDropdownHideWish new.
+				button phlow fireUpdateWish ] on: Error do: #debug ]);
+		beEnabledOnValidOverallStatus.
 ]
 
 { #category : #accessing }
