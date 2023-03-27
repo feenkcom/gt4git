@@ -60,8 +60,7 @@ GtGitSourceDirectoryCreationForm >> directoryDescription [
 GtGitSourceDirectoryCreationForm >> magritteAcceptAction [
 	<magritteActionDescription>
 	^ super magritteAcceptAction
-		onSuccessCallback: (GtMagritteActionExecutor new
-			beInUIProcess;
+		onSuccessCallback: (GtMagritteCallback new
 			action: [ :aModel :aButton :aMemento :aDescription | 
 				[ | model |
 				model := IceBasicProject onRepository: self repositoryModel repository.

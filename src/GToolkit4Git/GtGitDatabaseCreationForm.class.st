@@ -141,8 +141,7 @@ GtGitDatabaseCreationForm >> initialize [
 GtGitDatabaseCreationForm >> magritteAcceptAction [
 	<magritteActionDescription>
 	^ super magritteAcceptAction
-		onSuccessCallback: (GtMagritteActionExecutor new
-			beInUIProcess;
+		onSuccessCallback: (GtMagritteCallback new
 			action: [ :aModel :aButton :aMemento :aDescription | 
 				[ self directory ensureCreateDirectory.
 				self repositoryModel addNewDatabaseInDirectory: self directory.
