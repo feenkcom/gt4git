@@ -162,23 +162,29 @@ GtGitRepository >> baselinesDescription [
 			aTagger
 				when: BrTaggerAddTagRequest
 				do: [ :aRequest | 
-					aTagger
-						enqueueTask: (BlPromiseTask new
-								promise: (aMemento
-										write: ((aTagger tags collect: #name)
-												add: aRequest tag name;
-												yourself)
-										using: aDescription) asAsyncPromise) ].
+					| aValue |
+					aValue := (aTagger tags collect: #name)
+								add: aRequest tag name;
+								yourself.
+					
+					GtMagritteBuilderUtility
+						write: aValue 
+						using: aDescription 
+						memento: aMemento 
+						element: aTagger ].
 			aTagger
 				when: BrTaggerRemoveTagRequest
 				do: [ :aRequest | 
-					aTagger
-						enqueueTask: (BlPromiseTask new
-								promise: (aMemento
-										write: ((aTagger tags collect: #name)
-												remove: aRequest tag name;
-												yourself)
-										using: aDescription) asAsyncPromise) ].
+					| aValue |
+					aValue := (aTagger tags collect: #name)
+								remove: aRequest tag name;
+								yourself.
+					
+					GtMagritteBuilderUtility
+						write: aValue 
+						using: aDescription 
+						memento: aMemento 
+						element: aTagger ].
 			aTagger
 				withAsyncSinkDo: [ :anElementSink | 
 					anElementSink
@@ -332,37 +338,49 @@ GtGitRepository >> databasesDescription [
 								fileFilterBlock: [ :aFile | aFile isDirectory ];
 								okAction: [ :aDirectory :aButton | 
 									aDirectory isDirectory
-										ifTrue: [ aDropdown fireEvent: BrDropdownHideWish new.
-											aTagger
-												enqueueTask: (BlPromiseTask new
-														promise: (aMemento
-																write: ((aTagger tags collect: #name)
+										ifTrue: [ 
+											| aValue |
+											aDropdown fireEvent: BrDropdownHideWish new.
+											
+											aValue := (aTagger tags collect: #name)
 																		add: aDirectory;
-																		yourself)
-																using: aDescription) asAsyncPromise).
+																		yourself.
+										
+											GtMagritteBuilderUtility
+												write: aValue 
+												using: aDescription 
+												memento: aMemento 
+												element: aTagger.
+											
 											aDropdown phlow fireUpdateWish ] ];
 								buttonLabel: 'Add database';
 								padding: (BlInsets all: 10) ]).
 			aTagger
 				when: BrTaggerAddTagRequest
 				do: [ :aRequest | 
-					aTagger
-						enqueueTask: (BlPromiseTask new
-								promise: (aMemento
-										write: ((aTagger tags collect: #name)
-												add: aRequest tag name;
-												yourself)
-										using: aDescription) asAsyncPromise) ].
+					| aValue |
+					aValue := (aTagger tags collect: #name)
+									add: aRequest tag name;
+									yourself.
+					
+					GtMagritteBuilderUtility
+						write: aValue 
+						using: aDescription 
+						memento: aMemento 
+						element: aTagger ].
 			aTagger
 				when: BrTaggerRemoveTagRequest
 				do: [ :aRequest | 
-					aTagger
-						enqueueTask: (BlPromiseTask new
-								promise: (aMemento
-										write: ((aTagger tags collect: #name)
-												remove: aRequest tag name;
-												yourself)
-										using: aDescription) asAsyncPromise) ].
+					| aValue |
+					aValue := (aTagger tags collect: #name)
+								remove: aRequest tag name;
+								yourself.
+					
+					GtMagritteBuilderUtility
+						write: aValue 
+						using: aDescription 
+						memento: aMemento 
+						element: aTagger ].
 			aTagger
 				withAsyncSinkDo: [ :anElementSink | 
 					anElementSink

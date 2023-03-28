@@ -40,8 +40,7 @@ GtGitGithubPageForm >> initialize [
 GtGitGithubPageForm >> magritteAcceptAction [
 	<magritteActionDescription>
 	^ super magritteAcceptAction
-		onSuccessCallback: (GtMagritteActionExecutor new
-			beInUIProcess;
+		onSuccessCallback: (GtMagritteCallback new
 			action: [ :aModel :aButton :aMemento :aDescription | 
 				[ | creator repo |
 				creator := IceRepositoryCreator new
