@@ -479,6 +479,15 @@ GtGitRepository >> gtActionFetchFor: anAction [
 ]
 
 { #category : #'gt - extensions' }
+GtGitRepository >> gtActionForgetFor: anAction [
+	<gtAction>
+	^ anAction button
+		label: 'Forget';
+		priority: 11;
+		action: [ :aButton | self forget ]
+]
+
+{ #category : #'gt - extensions' }
 GtGitRepository >> gtActionPullFor: anAction [
 	<gtAction>
 	
@@ -541,6 +550,15 @@ GtGitRepository >> gtActionRefreshFor: anAction [
 					self announceRepositoryModified. ]. 
 				
 			aButton phlow fireUpdateWish ]. 
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> gtActionRemoveFor: anAction [
+	<gtAction>
+	^ anAction button
+		label: 'Remove';
+		priority: 10;
+		action: [ :aButton | self remove ]
 ]
 
 { #category : #'gt - extensions' }
