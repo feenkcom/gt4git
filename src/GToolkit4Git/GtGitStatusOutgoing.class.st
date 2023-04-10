@@ -5,13 +5,13 @@ Class {
 }
 
 { #category : #accessing }
-GtGitStatusOutgoing >> bareIcon [
-	^ BrGlamorousVectorIcons up
+GtGitStatusOutgoing class >> color [
+	^ BrGlamorousColors selectedListItemColor 
 ]
 
 { #category : #accessing }
-GtGitStatusOutgoing >> color [
-	^ BrGlamorousColors selectedListItemColor 
+GtGitStatusOutgoing >> bareIcon [
+	^ BrGlamorousVectorIcons up
 ]
 
 { #category : #accessing }

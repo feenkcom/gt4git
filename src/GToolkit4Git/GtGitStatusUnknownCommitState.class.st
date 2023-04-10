@@ -5,7 +5,7 @@ Class {
 }
 
 { #category : #accessing }
-GtGitStatusUnknownCommitState >> color [
+GtGitStatusUnknownCommitState class >> color [
 	^ BrGlamorousColors errorBackgroundColor
 ]
 

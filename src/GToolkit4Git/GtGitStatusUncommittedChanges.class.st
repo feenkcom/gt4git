@@ -5,7 +5,7 @@ Class {
 }
 
 { #category : #accessing }
-GtGitStatusUncommittedChanges >> color [
+GtGitStatusUncommittedChanges class >> color [
 	^ BrGlamorousColors newsBackgroundColor 
 ]
 
