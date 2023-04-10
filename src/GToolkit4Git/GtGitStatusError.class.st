@@ -5,7 +5,7 @@ Class {
 }
 
 { #category : #accessing }
-GtGitStatusError >> color [
+GtGitStatusError class >> color [
 	^ BrGlamorousColors errorBackgroundColor
 ]
 

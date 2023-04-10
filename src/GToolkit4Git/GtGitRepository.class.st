@@ -734,16 +734,14 @@ GtGitRepository >> gtCommitsFor: aView [
 				((self incomingCommits contains: [ :aCommit | aCommit = item ])
 					ifTrue: [ (conflicts contains: [ :aCommit | aCommit = item ])
 							ifTrue: [ self
-									statusElementColored: BrGlamorousColors errorBackgroundColor
+									statusElementColored: GtGitStatusConflicting color
 									withTooltip: 'Conflict' ]
 							ifFalse: [ self
-									statusElementColored: BrGlamorousColors successBackgroundColor
+									statusElementColored: GtGitStatusIncoming color
 									withTooltip: 'Incoming' ] ]
 					ifFalse: [ (self viewModel outgoingCommits
 							contains: [ :aCommit | aCommit = item ])
-							ifTrue: [ self
-									statusElementColored: BrGlamorousColors selectedListItemColor
-									withTooltip: 'Outgoing' ]
+							ifTrue: [ self statusElementColored: GtGitStatusOutgoing color withTooltip: 'Outgoing' ]
 							ifFalse: [ BlElement new ] ])
 					size: 12 @ 12;
 					geometry: (BlRoundedRectangleGeometry cornerRadius: 6);
@@ -781,14 +779,16 @@ GtGitRepository >> gtCommitsFor: aView [
 				comment: each comment;
 				repository: each repository;
 				lepiterWorkingCopy: self lepiterWorkingCopy yourself ];
-		contextItemLabel: 'Revert' action: [ :element :item | 
-								item revert.
-								self rawCommit: 'Revert ' , item shortId , ' ' , item comment.
-								element phlow fireUpdateWish ];
-		contextItemLabel: 'Checkout' action: [ :element :item | 
-								item checkout.
-								self announceRepositoryModified.
-								element phlow fireUpdateWish ]
+		contextItemLabel: 'Revert'
+			action: [ :element :item | 
+				item revert.
+				self rawCommit: 'Revert ' , item shortId , ' ' , item comment.
+				element phlow fireUpdateWish ];
+		contextItemLabel: 'Checkout'
+			action: [ :element :item | 
+				item checkout.
+				self announceRepositoryModified.
+				element phlow fireUpdateWish ]
 ]
 
 { #category : #'gt - extensions' }

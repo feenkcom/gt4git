@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #accessing }
+GtGitStatus class >> color [
+	^ self subclassResponsibility
+]
+
+{ #category : #accessing }
 GtGitStatus >> asElement [
 
 	| element |
@@ -14,7 +19,7 @@ GtGitStatus >> asElement [
 					            self label);
 		           margin: (BlInsets right: 10);
 		           layout: BlLinearLayout horizontal alignCenter;
-		           background: self color;
+		           background: self class color;
 		           geometry: (BlRoundedRectangleGeometry cornerRadius: 4);
 		           constraintsDo: [ :c | 
 			           c horizontal fitContent.
@@ -30,7 +35,7 @@ GtGitStatus >> asLabelElement [
 	element := BlElement new
 		           margin: (BlInsets right: 10);
 		           layout: BlLinearLayout horizontal alignCenter;
-		           background: self color;
+		           background: self class color;
 		           geometry: (BlRoundedRectangleGeometry cornerRadius: 4);
 		           constraintsDo: [ :c | 
 			           c horizontal fitContent.
@@ -43,11 +48,6 @@ GtGitStatus >> asLabelElement [
 { #category : #accessing }
 GtGitStatus >> bareIcon [
 	^ self icon
-]
-
-{ #category : #accessing }
-GtGitStatus >> color [
-	^ self subclassResponsibility
 ]
 
 { #category : #accessing }
