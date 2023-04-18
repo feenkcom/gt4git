@@ -19,11 +19,11 @@ GtGitNavigationModel >> announcer [
 GtGitNavigationModel >> initialize [
 	super initialize.
 
-	self announcer
+	self announcer weak
 		when: GtGitRepositorySelected
 		send: #onSelection:
 		to: self.
-	self announcer
+	self announcer weak
 		when: GtGitRepositoryAddedAndSelected
 		send: #onSelection:
 		to: self
