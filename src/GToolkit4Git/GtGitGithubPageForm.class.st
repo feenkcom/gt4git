@@ -48,9 +48,9 @@ GtGitGithubPageForm >> magritteAcceptAction [
 						location: self projectLocation.
 				repo := creator createRepository.
 				repo register.
-				dropdown ifNotNil: [ 
-					dropdown dispatchEvent: (
-						BrDropdownHideWish new anchor: dropdown) ].
+				dropdown ifNotNil: [ :aDropdown |
+					aDropdown enqueueTask: (BlTaskAction new action: [
+						aDropdown dispatchEvent: BrDropdownHideWish new ]) ].
 				self onCreated value: repo ] on: Error do: #debug ]);
 		beEnabledOnValidOverallStatus.
 ]
