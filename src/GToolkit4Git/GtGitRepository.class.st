@@ -87,7 +87,12 @@ GtGitRepository >> addNewDatabaseInDirectory: aDirectory [
 ]
 
 { #category : #'api - actions adding/removing' }
-GtGitRepository >> addPackage: aPackageName(RBAddPackageChange [ addPackageNamed: aPackageName) execute.
+GtGitRepository >> addPackage: aPackageName [
+	"Add a package with a given name to the git repository.
+	Creates a package if it doesn't exist in the image"
+
+	(RPackageOrganizer default includesPackageNamed: aPackageName)
+		ifFalse: [ (RBAddPackageChange addPackageNamed: aPackageName) execute ].
 
 	self icebergWorkingCopy addPackageNamed: aPackageName.
 	self announceRepositoryModified.
