@@ -164,6 +164,7 @@ GtGitPackageAndBaselineCreationForm >> initialize [
 { #category : #accessing }
 GtGitPackageAndBaselineCreationForm >> magritteAcceptAction [
 	<magritteActionDescription>
+
 	^ super magritteAcceptAction
 		onSuccessCallback: (GtMagritteCallback new
 			action: [ :aModel :aButton :aMemento :aDescription | 
@@ -171,8 +172,10 @@ GtGitPackageAndBaselineCreationForm >> magritteAcceptAction [
 				aPackage := self addPackage.
 				newBaseline := self addPackageToBaseline: aPackage.
 				newBaseline ifTrue: [ self addInstallationInstructions ].
-				button dispatchEvent: BrDropdownHideWish new.
-				button phlow fireUpdateWish ] on: Error do: #debug ]);
+				button enqueueTask: (BlTaskAction new action: [
+					button dispatchEvent: BrDropdownHideWish new.
+					button phlow fireUpdateWish
+				]) ] on: Error do: #debug ]);
 		beEnabledOnValidOverallStatus.
 ]
 
