@@ -951,7 +951,8 @@ GtGitRepository >> hasDatabase [
 GtGitRepository >> hasNonSetupCommits [
 	^ self hasCommits
 		and: [ self repository head commits last comment = 'Initial commit'
-				ifTrue: [ self repository head commits size > 1 ] ]
+				ifTrue: [ self repository head commits size > 1 ]
+				ifFalse: [ true ] ]
 ]
 
 { #category : #accessing }
