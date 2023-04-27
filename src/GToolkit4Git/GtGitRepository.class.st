@@ -950,7 +950,7 @@ GtGitRepository >> hasDatabase [
 { #category : #'gt - extensions' }
 GtGitRepository >> hasNonSetupCommits [
 	^ self hasCommits
-		and: [ self repository head commits last message = 'Initial commit'
+		and: [ self repository head commits last comment = 'Initial commit'
 				ifTrue: [ self repository head commits size > 1 ] ]
 ]
 
