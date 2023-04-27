@@ -911,7 +911,7 @@ GtGitRepository >> gtRepositoryDirectoryFor: aView [
 GtGitRepository >> gtSetupHelpFor: aView [
 	<gtView>
 	<gtRepositoryView>
-	(self isMissing or: [ self hasCommits and: [ self isSetupDone ] ])
+	(self isMissing or: [ self hasNonSetupCommits and: [ self isSetupDone ] ])
 		ifTrue: [ ^ aView empty ].
 
 	^ aView columnedList
@@ -945,6 +945,13 @@ GtGitRepository >> hasCommits [
 { #category : #accessing }
 GtGitRepository >> hasDatabase [
 	^ self isMissing not and: [ self lepiterWorkingCopy hasDatabases ]
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepository >> hasNonSetupCommits [
+	^ self hasCommits
+		and: [ self repository head commits last message = 'Initial commit'
+				ifTrue: [ self repository head commits size > 1 ] ]
 ]
 
 { #category : #accessing }
