@@ -27,9 +27,9 @@ GtGitDatabaseCreationForm >> addToBaseline: aDatabaseFolder [
 			| defaultDatabase currentProperties |
 			defaultDatabase := LeDatabasesRegistry defaultLogicalDatabase.
 			currentProperties := defaultDatabase properties.
-			currentProperties addRegisteredDirectory: aRepository repositoryDirectory / '
+			currentProperties addRegisteredDirectory: aRepository repositoryDirectory / '''
 				, aDatabaseFolder
-				, '.
+				, '''.
 			defaultDatabase reload ]
 		ifNone: [
 			self inform: ''Repository not found.'' ]'
