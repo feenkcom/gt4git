@@ -34,8 +34,9 @@ GtGitRepositoryElement >> addPackageNamed: aString [
 { #category : #'private - updating' }
 GtGitRepositoryElement >> createActionsHeaderSeparator [
 	^ BrFrame new
-			vFitContent;
-			hMatchParent
+		vFitContent;
+		hMatchParent;
+		viewModel: BrWidgetModel new
 ]
 
 { #category : #'building - actions' }
