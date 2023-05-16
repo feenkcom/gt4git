@@ -63,7 +63,7 @@ IceLibgitRepository >> gtRawStatusFor: aView [
 	self isMissing ifTrue: [ ^ aView empty ].
 	
 	^ aView columnedList
-		title: 'Raw File Statuses';
+		title: 'Raw file statuses';
 		priority: 100;
 		items: [ self getStatusByFile associations ];
 		column: 'File' text: [:each | each key ];
@@ -138,7 +138,7 @@ IceLibgitRepository >> gtStatusFor: aView [
 	
 	self isMissing ifTrue: [ ^ aView empty ].
 	^ aView columnedTree
-		  title: 'File Statuses';
+		  title: 'File statuses';
 		  priority: 2;
 		  items: [ 
 			  (self getStatusByFile associations groupedBy: [ :each | 

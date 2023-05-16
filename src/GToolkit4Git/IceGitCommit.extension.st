@@ -47,7 +47,7 @@ IceGitCommit >> gtFileSystemItemsFor: aView [
 IceGitCommit >> gtViewLepitereDatabasesFor: aView [
 	<gtView>
 	^ aView forward 
-		title: 'Lepiter Databases';
+		title: 'Lepiter databases';
 		priority: 50;
 		object: [ self lepiterDatabases ];
 		view: #gtItemsFor:
