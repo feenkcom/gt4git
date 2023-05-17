@@ -4,7 +4,7 @@ Extension { #name : #LGitTree }
 LGitTree >> gtViewEntriesFor: aView [
 	<gtView>
 	^ aView forward
-		title: 'Entries List';
+		title: 'Entries list';
 		priority: 100;
 		object: [ self entries ];
 		view: #gtItemsFor:
@@ -14,7 +14,7 @@ LGitTree >> gtViewEntriesFor: aView [
 LGitTree >> gtViewEntriesTreeFor: aView [
 	<gtView>
 	^ aView tree
-		title: 'Entries Tree';
+		title: 'Entries tree';
 		priority: 102;
 		items: [ self entries ];
 		children: [ :anEntry | 

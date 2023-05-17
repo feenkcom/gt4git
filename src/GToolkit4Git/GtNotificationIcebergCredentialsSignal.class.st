@@ -86,7 +86,7 @@ GtNotificationIcebergCredentialsSignal >> gtStackContextFor: aView [
 GtNotificationIcebergCredentialsSignal >> gtUIContextsFor: aView [
 	<gtView>
 	^ aView list
-		title: 'UI Contexts';
+		title: 'UI contexts';
 		priority: 16;
 		items: [ self uiContexts ifNil: [ #() ] ]
 ]

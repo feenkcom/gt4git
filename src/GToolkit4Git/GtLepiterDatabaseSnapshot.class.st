@@ -59,7 +59,7 @@ GtLepiterDatabaseSnapshot >> databaseUuid: anObject [
 GtLepiterDatabaseSnapshot >> gtViewPageSnapshotsFor: aView [
 	<gtView>
 	^ aView columnedList
-		title: 'Page Snapshots';
+		title: 'Page snapshots';
 		items: [ self pageSnapshots ];
 		column: 'Uuid' text: [ :aPageSnapshot | aPageSnapshot pageUuid asString36 ];
 		column: 'Title' text: [ :aPageSnapshot | aPageSnapshot pageTitle ]
