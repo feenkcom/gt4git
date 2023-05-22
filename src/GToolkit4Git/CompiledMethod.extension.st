@@ -28,7 +28,7 @@ CompiledMethod >> gtGitCommitsFor: aView [
 					detect: [ :each | each includesPackageNamed: packageName ]
 					ifFound: [ :repository | 
 						button phlow
-							spawnTool: (GtPhlowValuableTool new
-									valuable: [ GtGitElement new repository: ((GtGitRepository fromIcebergRepository: repository)) ]) ]
+							spawnTool: (GtGitPhlowTool new
+									repository: (GtGitRepository fromIcebergRepository: repository)) ]
 					ifNone: [ {} ] ]
 ]
