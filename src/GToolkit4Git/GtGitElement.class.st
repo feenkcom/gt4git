@@ -141,6 +141,7 @@ GtGitElement >> repository [
 GtGitElement >> repository: aRepository [
 	repository := aRepository.
 	self initializeView.
+	self updateSidebarContent.
 	repository viewModel announcer weak when: GtRepositoryModified send: #onNavigationModelChange: to: self
 ]
 
