@@ -36,34 +36,6 @@ GtGitAddRepositoryStencil >> githubPage [
 ]
 
 { #category : #accessing }
-GtGitAddRepositoryStencil >> initialPage [
-	^ BrVerticalPane new fitContent
-		addChild: (BrSimpleList new
-				itemStencil: [ BrLabel new
-						vFitContent;
-						hMatchParent;
-						aptitude: BrGlamorousLabelAptitude
-								+ (BrStyleCommonAptitude new
-										hovered: [ :aStyle | aStyle background: BrGlamorousColors hoveredListItemColor ]) ];
-				itemDataBinder: [ :anItemElement :anItemObject :anItemIndex | 
-					anItemElement
-						text: anItemObject first;
-						id: anItemObject second;
-						when: BlClickEvent do: anItemObject third ];
-				fitContent;
-				padding: (BlInsets all: 3);
-				items: {{'Clone a remote repository'.
-							#'git-remote'.
-							[ self openGithubPage ]}.
-						{'Load a local repository'.
-							#'git-local'.
-							[ self openLocalPage ]}.
-						{'Create a new repository'.
-							#'git-initial'.
-							[ self openInitialize ]}})
-]
-
-{ #category : #accessing }
 GtGitAddRepositoryStencil >> initializePage [
 	| fileBrowser |
 	fileBrowser := BrFileSelector new margin: (BlInsets all: 5).
@@ -95,6 +67,34 @@ GtGitAddRepositoryStencil >> initializePage [
 			aFileReference isDirectory
 				and: [ (FileSystemDirectoryEntry reference: aFileReference) isHidden not ] ].
 	^ fileBrowser
+]
+
+{ #category : #accessing }
+GtGitAddRepositoryStencil >> initialPage [
+	^ BrVerticalPane new fitContent
+		addChild: (BrSimpleList new
+				itemStencil: [ BrLabel new
+						vFitContent;
+						hMatchParent;
+						aptitude: BrGlamorousLabelAptitude
+								+ (BrStyleCommonAptitude new
+										hovered: [ :aStyle | aStyle background: BrGlamorousColors hoveredListItemColor ]) ];
+				itemDataBinder: [ :anItemElement :anItemObject :anItemIndex | 
+					anItemElement
+						text: anItemObject first;
+						id: anItemObject second;
+						when: BlClickEvent do: anItemObject third ];
+				fitContent;
+				padding: (BlInsets all: 3);
+				items: {{'Clone a remote repository'.
+							#'git-remote'.
+							[ self openGithubPage ]}.
+						{'Load a local repository'.
+							#'git-local'.
+							[ self openLocalPage ]}.
+						{'Create a new repository'.
+							#'git-initial'.
+							[ self openInitialize ]}})
 ]
 
 { #category : #accessing }

@@ -88,6 +88,19 @@ IceNode >> gtViewDiffFor: aView [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceNode >> gtViewNodesTreeFor: aView [
+	<gtView>
+	
+	^ aView columnedTree
+		title: 'Nodes';
+		items: [ { self } ];
+		children: [ :each | each children ];
+		column: 'Node' text: [ :aNode | aNode gtDisplayString ];
+		column: 'Value' text: [ :aNode | aNode value gtDisplayString ];
+		expandAll
+]
+
+{ #category : #'*GToolkit4Git' }
 IceNode >> gtViewNodeValuesTreeFor: aView [
 	<gtView>
 	
@@ -99,19 +112,6 @@ IceNode >> gtViewNodeValuesTreeFor: aView [
 		itemText: [ :aNode | aNode value gtDisplayString ];
 		expandAll;
 		send: [ :aNode | aNode value ]
-]
-
-{ #category : #'*GToolkit4Git' }
-IceNode >> gtViewNodesTreeFor: aView [
-	<gtView>
-	
-	^ aView columnedTree
-		title: 'Nodes';
-		items: [ { self } ];
-		children: [ :each | each children ];
-		column: 'Node' text: [ :aNode | aNode gtDisplayString ];
-		column: 'Value' text: [ :aNode | aNode value gtDisplayString ];
-		expandAll
 ]
 
 { #category : #'*GToolkit4Git' }

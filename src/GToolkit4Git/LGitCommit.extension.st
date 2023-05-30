@@ -9,10 +9,14 @@ LGitCommit >> message [
 		            ifNotNil: [ :anEncodingName | 
 		            ZnCharacterEncoder newForEncoding: anEncodingName ].
 	message := self commit_message: self.
+	message isWideString ifTrue:
+		[ 1 to: message size do: [ :i |
+			(message at: i) codePoint > 128 ifTrue:
+				[ message at: i put: $? ] ] ].
 	"git cannot always be trusted to return the right encoding"
-	^ [ message asByteArray decodeWith: encoding ]
+	^ [ message asByteString asByteArray decodeWith: encoding ]
 		  on: ZnCharacterEncodingError
-		  do: [ message ]
+		  do: [ message asByteString ]
 ]
 
 { #category : #'*GToolkit4Git' }

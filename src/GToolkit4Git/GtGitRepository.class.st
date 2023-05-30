@@ -101,15 +101,15 @@ GtGitRepository >> addPackage: aPackageName [
 ]
 
 { #category : #announcer }
-GtGitRepository >> announceRepositoryModified [
-	Iceberg announcer announce:
-		(IceRepositoryModified for: self icebergRepository)
-]
-
-{ #category : #announcer }
 GtGitRepository >> announcer [
 	<return: #Announcer>
 	^ announcer
+]
+
+{ #category : #announcer }
+GtGitRepository >> announceRepositoryModified [
+	Iceberg announcer announce:
+		(IceRepositoryModified for: self icebergRepository)
 ]
 
 { #category : #accessing }
