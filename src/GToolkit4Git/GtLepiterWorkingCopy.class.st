@@ -298,8 +298,9 @@ GtLepiterWorkingCopy >> updateDatabases [
 	
 	self icebergRepository repositoryDirectory ifNotNil: [ 
 		self databases: (allDatabases select: [ :aDatabase | 
-			 self icebergRepository repositoryDirectory 
-			 	contains: aDatabase monitor localRoot ]) ]
+			aDatabase storeLocation isFile and: 
+				[ self icebergRepository repositoryDirectory 
+			 	contains: aDatabase monitor localRoot ] ]) ]
 ]
 
 { #category : #initialization }
