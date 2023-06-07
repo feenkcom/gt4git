@@ -691,6 +691,8 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 				  disabled: editor text isEmpty;
 				  action: saveAction.
 
+			  editor editor inputFilter: GtGitGitHubUrlFilter new.
+				  
 			  editor editor
 				  when: BrTextEditorModifiedEvent
 				  do: [ :anEvent | button disabled: anEvent text isEmpty ].
