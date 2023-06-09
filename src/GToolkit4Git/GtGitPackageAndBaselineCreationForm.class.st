@@ -145,8 +145,10 @@ GtGitPackageAndBaselineCreationForm >> button: anObject [
 
 { #category : #accessing }
 GtGitPackageAndBaselineCreationForm >> guessRepository [
-	| parser parsed |
-	self repositoryModel repository originUrl isEmptyOrNil ifTrue: [ ^ '' ].
+	| parser parsed originUrl |
+	originUrl := self repositoryModel repository originUrl.
+	
+	(originUrl isEmptyOrNil | originUrl = 'No remote url') ifTrue: [ ^ '' ].
 
 	parser := self urlParser.
 	parsed := parser parse: self repositoryModel repository originUrl.

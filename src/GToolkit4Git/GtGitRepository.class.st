@@ -771,7 +771,7 @@ GtGitRepository >> gtCommitsFor: aView [
 					size: 12 @ 12;
 					geometry: (BlRoundedRectangleGeometry cornerRadius: 6);
 					margin: (BlInsets left: 15) ]
-			width: 40;
+			width: 50;
 		column: 'Timestamp'
 			text: [ :aCommit | aCommit timeStamp asStringYMDHM ]
 			width: 120;
