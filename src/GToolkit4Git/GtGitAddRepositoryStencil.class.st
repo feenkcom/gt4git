@@ -67,6 +67,8 @@ GtGitAddRepositoryStencil >> initialPage [
 GtGitAddRepositoryStencil >> initializePage [
 	| fileBrowser |
 	fileBrowser := BrFileSelector new margin: (BlInsets all: 5).
+	
+	fileBrowser folder: FileLocator gtResource.
 
 	fileBrowser vExact: 400.
 	fileBrowser hExact: 464.
