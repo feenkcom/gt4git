@@ -267,7 +267,7 @@ GtLepiterWorkingCopy >> subscribeDatabase: aDatabase [
 		send: #onDatabaseChanged:
 		to: self.
 	aDatabase monitor announcer weak
-		when: LeLocalStoreMonitorSavedChanges
+		when: LeStoreMonitorSavedChanges
 		send: #onDatabaseSaved:
 		to: self
 ]
