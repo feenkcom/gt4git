@@ -33,6 +33,20 @@ GtIceGitRepository >> basicNewRemoteBranchNamed: aString [
 	^ IceGitRemoteBranch named: aString inRepository: self
 ]
 
+{ #category : #'private - changes' }
+GtIceGitRepository >> changedFilesBetween: aCommitish and: otherCommitish [
+	"Answer a list of files that changed between two commits"
+	| proc |
+	proc := self git
+			arguments: {'diff'.
+					'--name-only'.
+					aCommitish id .
+					otherCommitish id}.
+	proc runAndWait.
+	proc isSuccess ifFalse: [ self error: 'git error' ].
+	^proc stdout lines
+]
+
 { #category : #'api - registry' }
 GtIceGitRepository >> checkForRegistryConflicts [
 	
@@ -64,7 +78,7 @@ and the original repository''s url is {3}.'
 
 { #category : #'private - commits' }
 GtIceGitRepository >> commitFromGitCommit: commitIdString [
-	| proc lines author parents message id datetime |
+	| proc lines |
 	proc := self git
 			arguments: {'show'.
 					'-s'.
@@ -73,26 +87,25 @@ GtIceGitRepository >> commitFromGitCommit: commitIdString [
 	proc runAndWait.
 	proc isSuccess ifFalse: [ self error: 'git error' ].
 	lines := proc stdout lines.
-	id := lines at: 1.
-	author := lines at: 2.
-	datetime := DateAndTime fromUnixTime: (lines at: 3) asInteger.
-	parents := (lines at: 4) splitOn: ' '.
-	message := String
-			streamContents: [ :str | 
-				6
-					to: lines size
-					do: [ :i | 
-						str
-							nextPutAll: (lines at: i);
-							cr ] ].
-	^ IceGitCommit new
-		id: id;
-		author: author;
-		datetime: datetime;
-		ancestorIds: parents;
-		comment: message;
-		repository: self;
-		yourself
+	^ self iceGitCommitFromLines: lines
+]
+
+{ #category : #'private - commits' }
+GtIceGitRepository >> commitsFromIds: idCollection [
+	"Note: This code expects the collection to consist of sequence of commits"
+
+	| proc lines commitLines |
+	proc := self git
+			arguments: {'show'.
+					'-s'.
+					'--format=format:%H%n%an%n%at%n%P%n%n%B%n@@@'.
+					idCollection last , '..' , idCollection first}.
+	proc runAndWait.
+	proc isSuccess ifFalse: [ self error: 'git error' ].
+	lines := proc stdout lines.
+	commitLines := lines splitOn: [ :each | each = '@@@' ].
+	commitLines removeLast.
+	^ commitLines collect: [ :each | self iceGitCommitFromLines: each ]
 ]
 
 { #category : #actions }
@@ -122,6 +135,31 @@ GtIceGitRepository >> head [
 	^ ((lines at: 2) includesSubstring: '->')
 		ifTrue: [ self basicNewBranchNamed: ((lines at: 2) splitOn: ' -> ') second ]
 		ifFalse: [ self commitFromGitCommit: head ]
+]
+
+{ #category : #'private - commits' }
+GtIceGitRepository >> iceGitCommitFromLines: lines [
+	| author datetime message id parents |
+	id := lines at: 1.
+	author := lines at: 2.
+	datetime := DateAndTime fromUnixTime: (lines at: 3) asInteger.
+	parents := (lines at: 4) splitOn: ' '.
+	message := String
+			streamContents: [ :str | 
+				6
+					to: lines size
+					do: [ :i | 
+						str
+							nextPutAll: (lines at: i);
+							cr ] ].
+	^ GtIceGitCommit new
+		id: id;
+		author: author;
+		datetime: datetime;
+		ancestorIds: parents;
+		comment: message;
+		repository: self;
+		yourself
 ]
 
 { #category : #actions }
@@ -198,6 +236,11 @@ GtIceGitRepository >> peelTag: anIceTag [
 	^ self lookupCommit: id
 ]
 
+{ #category : #'API - project' }
+GtIceGitRepository >> project [
+	^ self workingCopy project
+]
+
 { #category : #accessing }
 GtIceGitRepository >> properties [
 	^ self workingCopy repositoryProperties
@@ -256,6 +299,27 @@ GtIceGitRepository >> revListForBranch: aBranch [
 	proc isSuccess ifFalse: [ self error: 'git error' ].
 	revs := proc stdout lines collect: #trimBoth.
 	^ revs
+]
+
+{ #category : #'API - accessing' }
+GtIceGitRepository >> subdirectory [
+	^ self project sourceDirectory
+]
+
+{ #category : #'API - accessing' }
+GtIceGitRepository >> subdirectoryPath [
+	
+	"API compatible both with Pharo6 and Pharo7.
+	This could be replaced by the Pharo7 API
+	
+	RelativePath with: self subdirectory
+	"
+	^ RelativePath withAll: (RelativePath canonicalizeElements: ($/ split: self subdirectory))
+]
+
+{ #category : #accessing }
+GtIceGitRepository >> subdirectoryReference [
+	^ self location resolve: self subdirectoryPath
 ]
 
 { #category : #'API - tags' }
