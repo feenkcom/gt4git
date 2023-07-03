@@ -17,9 +17,14 @@ GtGitCommitStore class >> on: aCommitId inRepo: aGtIceGitRepository [
 ]
 
 { #category : #accessing }
+GtGitCommitStore >> basenameFromEntry: aNode [
+	^ (aNode splitOn: Character tab) last
+]
+
+{ #category : #accessing }
 GtGitCommitStore >> basicEntry: directoryEntry path: aPath nodesDo: aBlock [
 	| dirid proc |
-	dirid := (directoryEntry splitOn: $ ) copyUpTo: Character tab.
+	dirid := (directoryEntry splitOn: $ ) third copyUpTo: Character tab.
 	proc := repository git
 			arguments: {'ls-tree'.
 					dirid}.
@@ -62,7 +67,8 @@ GtGitCommitStore >> entryByPath: aString ifAbsent: aBlock [
 					aString}.
 	proc runAndWait.
 	proc isSuccess ifFalse: [ self error: 'git error' ].
-	^ proc stdout
+	^proc stdout ifEmpty: aBlock
+
 ]
 
 { #category : #accessing }
