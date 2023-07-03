@@ -4,8 +4,26 @@ Class {
 	#instVars : [
 		'location'
 	],
+	#classInstVars : [
+		'spawnCount'
+	],
 	#category : #'GToolkit4Git-Libgit-replace'
 }
+
+{ #category : #actions }
+GtIceGitRepository class >> incSpawnCount [
+	spawnCount := spawnCount + 1
+]
+
+{ #category : #accessing }
+GtIceGitRepository class >> spawnCount [
+	^ spawnCount
+]
+
+{ #category : #accessing }
+GtIceGitRepository class >> spawnCount: anObject [
+	spawnCount := anObject
+]
 
 { #category : #accessing }
 GtIceGitRepository >> addFilesToIndex: aCollection [
@@ -110,6 +128,7 @@ GtIceGitRepository >> commitsFromIds: idCollection [
 
 { #category : #actions }
 GtIceGitRepository >> git [
+	self class incSpawnCount.
 	^ GtSubprocessWithInMemoryOutput new
 		command: 'git';
 		workingDirectory: location
@@ -276,17 +295,6 @@ GtIceGitRepository >> remoteTrackedBranches [
 { #category : #'API - accessing' }
 GtIceGitRepository >> repositoryDirectory [
 	^ self location
-]
-
-{ #category : #'API - commits' }
-GtIceGitRepository >> revList [
-	| revs proc |
-	proc := self git
-			arguments: {'rev-list'}.
-	proc runAndWait.
-	proc isSuccess ifFalse: [ self error: 'git error' ].
-	revs := proc stdout lines collect: #trimBoth.
-	^revs
 ]
 
 { #category : #'API - commits' }
