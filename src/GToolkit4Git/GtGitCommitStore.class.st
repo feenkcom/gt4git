@@ -3,7 +3,8 @@ Class {
 	#superclass : #FileSystemStore,
 	#instVars : [
 		'id',
-		'repository'
+		'repository',
+		'entries'
 	],
 	#category : #'GToolkit4Git-Libgit-replace'
 }
@@ -59,16 +60,24 @@ GtGitCommitStore >> delimiter [
 ]
 
 { #category : #accessing }
-GtGitCommitStore >> entryByPath: aString ifAbsent: aBlock [
+GtGitCommitStore >> entries [
 	| proc |
+	entries ifNotNil: [ ^ entries ].
+	entries := Dictionary new.
 	proc := repository git
 			arguments: {'ls-tree'.
-					self treeIdFromCommit.
-					aString}.
+					'-rt'.
+					self treeIdFromCommit}.
 	proc runAndWait.
 	proc isSuccess ifFalse: [ self error: 'git error' ].
-	^proc stdout ifEmpty: aBlock
+	proc stdout lines
+		do: [ :each | entries at: (self basenameFromEntry: each) put: each ].
+	^ entries
+]
 
+{ #category : #accessing }
+GtGitCommitStore >> entryByPath: aString ifAbsent: aBlock [
+	^ self entries at: aString ifAbsent: aBlock
 ]
 
 { #category : #accessing }
