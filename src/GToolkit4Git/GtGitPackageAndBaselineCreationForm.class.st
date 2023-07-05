@@ -145,15 +145,14 @@ GtGitPackageAndBaselineCreationForm >> button: anObject [
 
 { #category : #accessing }
 GtGitPackageAndBaselineCreationForm >> guessRepository [
-	| parser parsed originUrl |
-	originUrl := self repositoryModel repository originUrl.
-	
-	(originUrl isEmptyOrNil | originUrl = 'No remote url') ifTrue: [ ^ '' ].
+	| parser parsed |
+	self repositoryModel repository origin isUndefined ifTrue: [ ^ '' ].
 
 	parser := self urlParser.
 	parsed := parser parse: self repositoryModel repository originUrl.
 	^ 'github://' , (parsed at: 1) , '/' , (parsed at: 2) , ':'
-		, self repositoryModel repository branchName , '/' , self repositoryModel repository subdirectory
+		, self repositoryModel repository branchName , '/'
+		, self repositoryModel repository subdirectory
 ]
 
 { #category : #accessing }

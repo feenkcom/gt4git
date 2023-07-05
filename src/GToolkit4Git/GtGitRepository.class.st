@@ -1083,7 +1083,13 @@ GtGitRepository >> originDescription [
 		labelAptitude: [ BrGlamorousLabelAptitude new glamorousFormLabelStyle ];
 		accessor: (MAPluggableAccessor
 				read: [ :aModel | aModel repository originUrl ]
-				write: [ :aModel :aValue | aModel repository setOriginTo: aValue ])
+				write: [ :aModel :aValue | 
+					aModel repository origin isUndefined
+						ifTrue: [ | remote |
+							remote := IceGitRemote name: 'origin' url: aValue.
+							aModel repository addRemote: remote.
+							remote fetch ]
+						ifFalse: [ aModel repository setOriginTo: aValue ] ])
 ]
 
 { #category : #'api - repository' }
