@@ -35,6 +35,15 @@ GtGitRepository class >> forPackage: aPackage [
 ]
 
 { #category : #'instance creation' }
+GtGitRepository class >> forRepoNamed: repoName [
+	"GtGitRepository forRepoNamed: 'gtoolkit'"
+
+	| repo |
+	repo := IceRepository registry detect: [ :aRepo | aRepo name = repoName ].
+	^ GtGitRepository fromIcebergRepository: repo
+]
+
+{ #category : #'instance creation' }
 GtGitRepository class >> fromIcebergRepository: anIceRepository [
 	^ self new 
 		icebergRepository: anIceRepository

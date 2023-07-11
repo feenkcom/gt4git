@@ -1,10 +1,16 @@
 Class {
 	#name : #GtIceGitCommit,
 	#superclass : #IceGitCommit,
+	#instVars : [
+		'fileSystem'
+	],
 	#category : #'GToolkit4Git-Libgit-replace'
 }
 
 { #category : #'accessing - file' }
 GtIceGitCommit >> fileSystem [
-	^ (FileSystem store: (GtGitCommitStore on: id inRepo: repository)) root
+	fileSystem
+		ifNil: [ fileSystem := (FileSystem store: (GtGitCommitStore on: id inRepo: repository))
+					root ].
+	^ fileSystem
 ]
