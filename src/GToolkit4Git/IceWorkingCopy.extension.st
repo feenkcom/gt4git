@@ -45,7 +45,7 @@ IceWorkingCopy >> gtPackagesFor: aView [
 					valuable: [ RPackage organizer packages ];
 					tooltip: 'Add Package';
 					icon: BrGlamorousVectorIcons add;
-					actOn: [ :anActOnEvent :anItem | 
+					objectActOn: [ :anActOnEvent :anItem | 
 						self addPackageNamed: anItem name.
 						Iceberg announcer
 							announce: (IceRepositoryModified new repository: self repository).

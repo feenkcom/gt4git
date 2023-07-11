@@ -63,7 +63,7 @@ GtGitNavigationStencil >> createListFor: aView [
 					valuable: [ self repositories ];
 					tooltip: 'Search Repositories';
 					icon: BrGlamorousVectorIcons search;
-					actOn: [ :anActOnEvent :anItem | 
+					objectActOn: [ :anActOnEvent :anItem | 
 						anActOnEvent beActed.
 						self announce: (GtGitRepositorySelected new repository: anItem).
 						anElement phlow fireUpdateWish ] ]
