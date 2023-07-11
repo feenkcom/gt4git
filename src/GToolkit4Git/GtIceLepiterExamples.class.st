@@ -314,7 +314,8 @@ GtIceLepiterExamples >> createBasicIcebergRepositoryWithName: repositoryName [
 	(self repositories includesKey: repositoryName)
 		ifTrue: [ Error signal: 'Repository already present.' ].
 
-	reposioryFolder := self randomTempFolderFor: repositoryName.
+	reposioryFolder := (FileLocator localDirectory / #gt4git / repositoryName)
+			asFileReference.
 	self
 		assert: reposioryFolder exists not
 		description: 'Repository folder should not exist'.
@@ -1283,11 +1284,6 @@ GtIceLepiterExamples >> mainBranchName [
 GtIceLepiterExamples >> mainBranchNames [
 	^ {'master'.
 		'main'}
-]
-
-{ #category : #'creation repositories' }
-GtIceLepiterExamples >> randomTempFolderFor: aName [
-	^ (FileReference newTempFilePrefix: aName suffix: 'dir') ensureCreateDirectory
 ]
 
 { #category : #'setUp-tearDown' }
