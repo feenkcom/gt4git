@@ -1286,8 +1286,8 @@ GtIceLepiterExamples >> mainBranchNames [
 ]
 
 { #category : #'creation repositories' }
-GtIceLepiterExamples >> randomTempFolderFor: aName [
-	^ (FileReference newTempFilePrefix: aName suffix: 'dir') ensureCreateDirectory
+GtIceLepiterExamples >> randomTempFolderFor: repositoryName [
+	^ FileReference newTempFilePrefix: repositoryName suffix: 'dir'
 ]
 
 { #category : #'setUp-tearDown' }
