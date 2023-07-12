@@ -12,12 +12,12 @@ Class {
 
 { #category : #actions }
 GtIceGitRepository class >> incSpawnCount [
-	spawnCount := spawnCount + 1
+	self spawnCount: self spawnCount + 1
 ]
 
 { #category : #accessing }
 GtIceGitRepository class >> spawnCount [
-	^ spawnCount
+	^ spawnCount ifNil: [0]
 ]
 
 { #category : #accessing }
@@ -42,7 +42,7 @@ GtIceGitRepository >> addFilesToIndex: aCollection [
 { #category : #'API - branches' }
 GtIceGitRepository >> basicNewBranchNamed: aString [ 
 
-	^ IceGitLocalBranch named: aString inRepository: self
+	^ GtIceGitLocalBranch named: aString inRepository: self
 ]
 
 { #category : #'API - branches' }
@@ -196,6 +196,20 @@ GtIceGitRepository >> isMissing [
 		or: [ self repositoryDirectory exists not ]
 ]
 
+{ #category : #'API - branches' }
+GtIceGitRepository >> localBranches [
+	| branches proc |
+	proc := self git
+			arguments: {'branch'.
+					'--format=%(refname:short)'}.
+	proc runAndWait.
+	proc isSuccess ifFalse: [ self error: 'git error' ].
+	branches := proc stdout lines.
+	^ OrderedCollection
+		new: 10
+		streamContents: [ :stream | branches do: [ :br | stream nextPut: (self basicNewBranchNamed: br) ] ]
+]
+
 { #category : #accessing }
 GtIceGitRepository >> location [
 	^ location
@@ -209,6 +223,19 @@ GtIceGitRepository >> location: aLocation [
 { #category : #'API - commits' }
 GtIceGitRepository >> lookupCommit: commitId ifAbsent: aBlock [
 	^ [ self commitFromGitCommit: commitId ] onErrorDo: [ aBlock value ]
+]
+
+{ #category : #'API - branches' }
+GtIceGitRepository >> lookupLocalBranch: branchName [
+	| proc |
+	proc := self git
+			arguments: {'branch'.
+					branchName.
+					'--list'.
+					'--format=%(objectname)'}.
+	proc runAndWait.
+	proc isSuccess ifFalse: [ self error: 'git error' ].
+	^proc stdout lines first
 ]
 
 { #category : #'*GToolkit4Git' }
