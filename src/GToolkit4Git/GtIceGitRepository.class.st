@@ -142,17 +142,19 @@ GtIceGitRepository >> handleLibgitError: aBlock [
 
 { #category : #'api - accessing' }
 GtIceGitRepository >> head [
-	| head proc lines |
+	| head proc lines ref |
 	proc := self git
 			arguments: {'show'.
+					'-s'.
 					'--format=tformat:%H%n%D'.
 					'HEAD'}.
 	proc runAndWait.
 	proc isSuccess ifFalse: [ ^ IceGitUnbornBranch inRepository: self ].
 	lines := proc stdout lines.
 	head := lines at: 1.
-	^ ((lines at: 2) includesSubstring: '->')
-		ifTrue: [ self basicNewBranchNamed: ((lines at: 2) splitOn: ' -> ') second ]
+	ref := ((lines at: 2) splitOn: ', ') first.
+	^ (ref includesSubstring: '->')
+		ifTrue: [ self basicNewBranchNamed: (ref splitOn: ' -> ') second ]
 		ifFalse: [ self commitFromGitCommit: head ]
 ]
 
@@ -278,7 +280,7 @@ GtIceGitRepository >> peelTag: anIceTag [
 					anIceTag name}.
 	proc runAndWait.
 	proc isSuccess ifFalse: [ self error: 'git error' ].
-	id := proc stdout.
+	id := proc stdout lines first.
 	^ self lookupCommit: id
 ]
 
@@ -361,6 +363,18 @@ GtIceGitRepository >> subdirectoryReference [
 GtIceGitRepository >> tags [
 	| proc |
 	proc := self git arguments: {'tag'}.
+	proc runAndWait.
+	proc isSuccess ifFalse: [ self error: 'git error' ].
+	^ proc stdout lines collect: [ :each | IceTag named: each inRepository: self ]
+]
+
+{ #category : #'API - tags' }
+GtIceGitRepository >> tagsFor: anId [
+	| proc |
+	proc := self git
+			arguments: {'tag'.
+					'--points-at'.
+					anId}.
 	proc runAndWait.
 	proc isSuccess ifFalse: [ self error: 'git error' ].
 	^ proc stdout lines collect: [ :each | IceTag named: each inRepository: self ]

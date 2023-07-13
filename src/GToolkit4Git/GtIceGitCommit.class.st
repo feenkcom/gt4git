@@ -14,3 +14,9 @@ GtIceGitCommit >> fileSystem [
 					root ].
 	^ fileSystem
 ]
+
+{ #category : #accessing }
+GtIceGitCommit >> tags [
+	
+	^ self repository tagsFor: id
+]
