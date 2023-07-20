@@ -10,6 +10,18 @@ Class {
 	#category : #'GToolkit4Git-Libgit-replace'
 }
 
+{ #category : #'instance creation' }
+GtIceGitRepository class >> fromLibGitRepository: aRepo [
+	| repo |
+	repo := self new
+			location: aRepo location;
+			name: aRepo name.
+	repo workingCopy
+		referenceCommit: (repo commitFromGitCommit: aRepo workingCopy referenceCommit id).
+	repo workingCopy initializePackagesFromRepository.
+	^ repo
+]
+
 { #category : #actions }
 GtIceGitRepository class >> incSpawnCount [
 	self spawnCount: self spawnCount + 1
@@ -126,12 +138,121 @@ GtIceGitRepository >> commitsFromIds: idCollection [
 	^ commitLines collect: [ :each | self iceGitCommitFromLines: each ]
 ]
 
+{ #category : #'*GToolkit4Git' }
+GtIceGitRepository >> getStatusByFile [
+	| res proc flagMap |
+	flagMap := {$M -> 2.
+			$T -> 16.
+			$A -> 1.
+			$D -> 4.
+			$R -> 8.
+			$? -> 128.
+			$! -> 16384} asDictionary.
+	res := Dictionary new.
+	proc := self git
+			arguments: {'status'.
+					'--porcelain'}.
+	proc runAndWait.
+	proc isSuccess ifFalse: [ self error: 'git error' ].
+	proc stdout lines
+		do: [ :each | 
+			| status path |
+			status := each first.
+			path := each copyFrom: 4 to: each size.
+			res at: path put: (LGitStatusEnum basicNew value: (flagMap at: status)) ].
+	^ res
+]
+
 { #category : #actions }
 GtIceGitRepository >> git [
 	self class incSpawnCount.
 	^ GtSubprocessWithInMemoryOutput new
 		command: 'git';
 		workingDirectory: location
+]
+
+{ #category : #'*GToolkit4Git' }
+GtIceGitRepository >> gtRepositoryDirectoryFor: aView [
+	<gtView>
+	
+	| status |
+	self isMissing ifTrue: [ ^ aView empty ].
+	
+	status := self getStatusByFile.
+	^ (self repositoryDirectory gtTreeFor: aView)
+		  title: 'Repository directory';
+		  priority: 35;
+		  column: 'Tracked' translated icon: [ :each | 
+			  | relative |
+			  relative := (each relativeTo: self repositoryDirectory)
+				              pathString.
+			  (status includesKey: relative)
+				  ifTrue: [ 
+					  (status at: relative) = LGitStatusEnum git_status_wt_new
+						  ifTrue: [ BrGlamorousIcons close ]
+						  ifFalse: [ BrGlamorousIcons accept ] ]
+				  ifFalse: [ "exclude directories"
+					  each isDirectory
+						  ifTrue: [ BrGlamorousIcons empty ]
+						  ifFalse: [ BrGlamorousIcons accept ] ] ] width: 50;
+		  column: 'Actions' translated stencil: [ :each | 
+			  | relative |
+			  relative := each relativeTo: self repositoryDirectory.
+			  ((status includesKey: relative pathString) and: [ 
+					   (status at: relative pathString)
+					   = LGitStatusEnum git_status_wt_new ])
+				  ifTrue: [ 
+					  BrButton new
+						  aptitude: BrGlamorousButtonWithIconAptitude;
+						  icon: BrGlamorousVectorIcons add;
+						  label: 'Add ' , relative pathString;
+						  beTinySize;
+						  action: [ :_ | 
+							  self index
+								  addPath: relative;
+								  addToGitIndex ] ]
+				  ifFalse: [ 
+					  BrButton new
+						  aptitude: BrGlamorousButtonWithIconAptitude;
+						  icon: BrGlamorousVectorIcons remove;
+						  label: 'Remove ' , relative pathString;
+						  beTinySize;
+						  action: [ :_ | 
+							  each isDirectory
+								  ifTrue: [ self index removeDirectoryFromIndex: relative pathString ]
+								  ifFalse: [ self index removeFileFromIndex: relative pathString ] ] ] ];
+		  actionButtonIcon: BrGlamorousIcons go
+		  tooltip: 'Open in OS'
+		  action: [ WebBrowser openOn: self location fullName ]
+]
+
+{ #category : #accessing }
+GtIceGitRepository >> gtStatusFor: aView [
+	<gtView>
+	
+	self isMissing ifTrue: [ ^ aView empty ].
+	^ aView columnedTree
+		  title: 'File statuses';
+		  priority: 2;
+		  items: [ 
+			  (self getStatusByFile associations groupedBy: [ :each | 
+					   each value categoryName ]) associations sort: [ :a | 
+					  a key = 'Untracked'
+						  ifTrue: [ 0 ]
+						  ifFalse: [ 
+							  a key = 'Staged'
+								  ifTrue: [ 2 ]
+								  ifFalse: [ 1 ] ] ] descending ];
+		  children: [ :each | 
+			  each value isArray
+				  ifTrue: [ each value ]
+				  ifFalse: [ {  } ] ];
+		  column: 'File' text: [ :each | each key ];
+		  column: 'Status' text: [ :each | 
+			  each value isArray
+				  ifTrue: [ '' ]
+				  ifFalse: [ each value statusName ] ];
+		  expandAll
 ]
 
 { #category : #accessing }
@@ -242,6 +363,17 @@ GtIceGitRepository >> lookupLocalBranch: branchName [
 
 { #category : #'*GToolkit4Git' }
 GtIceGitRepository >> makeSafe [
+]
+
+{ #category : #'as yet unclassified' }
+GtIceGitRepository >> mcVersionFor: iceVersion [
+	[ | commit |
+	commit := iceVersion commit.
+	^ (iceVersion commit readerClass on: commit iceVersion: iceVersion) version ]
+		on: Error
+		do: [ IceVersionDoesNotExist new
+				version: iceVersion;
+				signal ]
 ]
 
 { #category : #'API - accessing' }
