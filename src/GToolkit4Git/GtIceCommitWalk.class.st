@@ -17,6 +17,11 @@ GtIceCommitWalk >> fromBranch: branch [
 	ids := repository revListForBranch: branch
 ]
 
+{ #category : #'walk definition' }
+GtIceCommitWalk >> fromTag: tag [
+	ids := repository revListForBranch: tag
+]
+
 { #category : #walking }
 GtIceCommitWalk >> rawResultsDo: aBlock [
 	ids do: [ :each | aBlock value: each ]
