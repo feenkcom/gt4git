@@ -26,3 +26,8 @@ GtIceCommitWalk >> fromTag: tag [
 GtIceCommitWalk >> rawResultsDo: aBlock [
 	ids do: [ :each | aBlock value: each ]
 ]
+
+{ #category : #'walk definition' }
+GtIceCommitWalk >> uptoCommit: commit [
+	ids := ids copyUpTo: commit
+]
