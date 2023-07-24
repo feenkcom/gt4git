@@ -87,7 +87,7 @@ GtGitCommitStore >> handleClass [
 
 { #category : #accessing }
 GtGitCommitStore >> nodeAt: anAbsolutePath ifPresent: aBlockClosure ifAbsent: aBlockClosure3 [
-	anAbsolutePath isRoot ifTrue: [ ^ aBlockClosure value: self treeIdFromCommit ].
+	anAbsolutePath isRoot ifTrue: [ ^ aBlockClosure value: self rootEntry ].
 	^ aBlockClosure
 		value: (self
 				entryByPath: (anAbsolutePath relativeTo: Path root) pathString
@@ -102,6 +102,11 @@ GtGitCommitStore >> repository [
 { #category : #'instance creation' }
 GtGitCommitStore >> repository: aGtIceGitRepository [
 	repository := aGtIceGitRepository
+]
+
+{ #category : #accessing }
+GtGitCommitStore >> rootEntry [
+	^ '040000 tree ', self treeIdFromCommit, Character tab asString, '.'
 ]
 
 { #category : #accessing }
