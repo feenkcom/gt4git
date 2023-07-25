@@ -134,12 +134,15 @@ GtIceGitRepository >> commitFromGitCommit: commitIdString [
 GtIceGitRepository >> commitsFromIds: idCollection [
 	"Note: This code expects the collection to consist of sequence of commits"
 
-	| proc lines commitLines |
+	| proc lines commitLines range |
+	range := idCollection size = 1
+			ifTrue: [ idCollection first ]
+			ifFalse: [ idCollection last , '..' , idCollection first ].
 	proc := self git
 			arguments: {'show'.
 					'-s'.
 					'--format=format:%H%n%an%n%at%n%P%n%n%B%n@@@'.
-					idCollection last , '^..' , idCollection first}.
+					range}.
 	proc runAndWait.
 	proc isSuccess ifFalse: [ self error: 'git error' ].
 	lines := proc stdout lines.
@@ -525,6 +528,18 @@ GtIceGitRepository >> revListForBranch: aBranch [
 	proc := self git
 			arguments: {'rev-list'.
 					aBranch name}.
+	proc runAndWait.
+	proc isSuccess ifFalse: [ self error: 'git error' ].
+	revs := proc stdout lines collect: #trimBoth.
+	^ revs
+]
+
+{ #category : #'API - commits' }
+GtIceGitRepository >> revListForCommit: aCommit [
+	| revs proc |
+	proc := self git
+			arguments: {'rev-list'.
+					aCommit}.
 	proc runAndWait.
 	proc isSuccess ifFalse: [ self error: 'git error' ].
 	revs := proc stdout lines collect: #trimBoth.

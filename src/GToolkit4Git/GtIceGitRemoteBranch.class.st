@@ -12,6 +12,16 @@ GtIceGitRemoteBranch >> commit [
 ]
 
 { #category : #accessing }
+GtIceGitRemoteBranch >> name [
+	^ self fullname withoutPrefix: self prefix
+]
+
+{ #category : #accessing }
+GtIceGitRemoteBranch >> prefix [
+	^ 'refs/remotes/'
+]
+
+{ #category : #accessing }
 GtIceGitRemoteBranch >> remoteName [
 	^ (self fullname substrings: '/') third
 ]
