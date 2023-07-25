@@ -18,6 +18,11 @@ GtIceCommitWalk >> fromBranch: branch [
 ]
 
 { #category : #'walk definition' }
+GtIceCommitWalk >> fromCommit: commit [
+	ids := repository revListForCommit: commit id
+]
+
+{ #category : #'walk definition' }
 GtIceCommitWalk >> fromTag: tag [
 	ids := repository revListForBranch: tag
 ]
