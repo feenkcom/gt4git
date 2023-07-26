@@ -7,6 +7,11 @@ Class {
 	#category : #'GToolkit4Git-Libgit-replace'
 }
 
+{ #category : #accessing }
+GtIceCommitWalk >> commitStream [
+	^ (repository commitsFromIds: ids) asAsyncStream
+]
+
 { #category : #walking }
 GtIceCommitWalk >> commitsDo: aBlock [
 	(repository commitsFromIds: ids) do: [ :each | aBlock value: each ]

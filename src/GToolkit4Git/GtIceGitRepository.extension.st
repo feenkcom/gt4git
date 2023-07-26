@@ -1,6 +1,12 @@
 Extension { #name : #GtIceGitRepository }
 
 { #category : #'*GToolkit4Git' }
+GtIceGitRepository >> getDeltasForFullDiff [
+	#TODO.
+	^ #()
+]
+
+{ #category : #'*GToolkit4Git' }
 GtIceGitRepository >> getStatusByFile [
 	| res proc flagMap |
 	flagMap := {$M -> 2.

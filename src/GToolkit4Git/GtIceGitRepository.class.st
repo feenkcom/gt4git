@@ -135,6 +135,7 @@ GtIceGitRepository >> commitsFromIds: idCollection [
 	"Note: This code expects the collection to consist of sequence of commits"
 
 	| proc lines commitLines range |
+	idCollection isEmpty ifTrue: [ ^ #() ].
 	range := idCollection size = 1
 			ifTrue: [ idCollection first ]
 			ifFalse: [ idCollection last , '..' , idCollection first ].
@@ -149,6 +150,12 @@ GtIceGitRepository >> commitsFromIds: idCollection [
 	commitLines := lines splitOn: [ :each | each = '@@@' ].
 	commitLines removeLast.
 	^ commitLines collect: [ :each | self iceGitCommitFromLines: each ]
+]
+
+{ #category : #'*GToolkit4Git' }
+GtIceGitRepository >> getDeltasForFullDiff [
+	#TODO.
+	^ #()
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -434,13 +441,16 @@ GtIceGitRepository >> newNoCommit [
 
 { #category : #'API - remotes' }
 GtIceGitRepository >> origin [
-	
 	^ self
 		remoteNamed: 'origin'
-		ifAbsent: [
-			IceUndefinedRemote new
+		ifAbsent: [ IceUndefinedRemote new
 				name: 'origin';
 				yourself ]
+]
+
+{ #category : #'API - remotes' }
+GtIceGitRepository >> originUrl [
+	^ self origin url
 ]
 
 { #category : #'private - tags' }
