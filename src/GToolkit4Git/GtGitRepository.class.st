@@ -599,8 +599,9 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 	<gtView>
 	<gtRepositoryView>
 	
-	| aViewModel changes chosen |
+	| aViewModel changes chosen viewMap|
 	chosen := Set new.
+	viewMap := Dictionary new. "item -> checkbox"
 
 	 (self isMissing  
 		or: [ self workingCopy isDetached not
@@ -639,8 +640,8 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 							              BrGlamorousSimpleContextMenuContent new
 								              items: contextMenuOptions;
 								              yourself ]).
-			  anIceNode value hasChanges ifTrue: [ 
-				  element addChild: (BrCheckbox new
+			  anIceNode value hasChanges ifTrue: [ |cb|
+				  element addChild: (cb := BrCheckbox new
 						   aptitude: BrGlamorousCheckboxAptitude
 							   +
 								   (BrGlamorousWithLabelTooltipAptitude new text:
@@ -649,7 +650,8 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 						   whenCheckedDo: [ chosen add: anIceNode value ];
 						   margin: (BlInsets right: 8);
 						   whenUncheckedDo: [ 
-							   chosen remove: anIceNode value ifAbsent: [  ] ]) ].
+							   chosen remove: anIceNode value ifAbsent: [  ] ]).
+				   viewMap at: anIceNode value put: cb].
 			  element
 				  addChild:
 					  (anIceNode value icon asElement constraintsDo: [ :c | 
@@ -663,6 +665,12 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 								    bottom: 0
 								    right: 3);
 						   constraintsDo: [ :c | c linear horizontal alignCenter ]) ];
+
+		  actionButtonLabel: 'Toggle All' action: [
+		  	changes do: [:change | change value hasChanges ifTrue: [ 
+		  		viewMap at: change value ifPresent: [:cb |
+		  			cb checked: cb isChecked not ]]]];
+
 		  actionDropdownButtonLabel: 'Commit'
 		  tooltip: 'Commit changes'
 		  content: [ :aDropdown :aTarget | 
