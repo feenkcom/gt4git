@@ -23,9 +23,14 @@ GtGitCommitStore >> basenameFromEntry: aNode [
 ]
 
 { #category : #accessing }
+GtGitCommitStore >> basicCreationTimeOf: anEntry [ 
+	^ DateAndTime now
+]
+
+{ #category : #accessing }
 GtGitCommitStore >> basicEntry: directoryEntry path: aPath nodesDo: aBlock [
 	| dirid proc |
-	dirid := (directoryEntry splitOn: $ ) third copyUpTo: Character tab.
+	dirid := (directoryEntry splitOn: $ ) third.
 	proc := repository git
 			arguments: {'ls-tree'.
 					dirid}.
@@ -49,6 +54,13 @@ GtGitCommitStore >> basicOpen: path writable: aBoolean [
 				ifTrue: [ self shouldNotImplement ] ]
 ]
 
+{ #category : #abstract }
+GtGitCommitStore >> basicSizeOf: aNode [
+	^ (self basicIsDirectory: aNode)
+		ifTrue: [ 0 ]
+		ifFalse: [ ((aNode splitOn: Character space) fourth copyUpTo: Character tab) asInteger ]
+]
+
 { #category : #'instance creation' }
 GtGitCommitStore >> commit: aCommitId [
 	id := aCommitId
@@ -67,6 +79,7 @@ GtGitCommitStore >> entries [
 	proc := repository git
 			arguments: {'ls-tree'.
 					'-rt'.
+					'--format=%(objectmode) %(objecttype) %(objectname) %(objectsize)%x09%(path)'.
 					self treeIdFromCommit}.
 	proc runAndWait.
 	proc isSuccess ifFalse: [ self error: 'git error' ].
@@ -87,7 +100,7 @@ GtGitCommitStore >> handleClass [
 
 { #category : #accessing }
 GtGitCommitStore >> nodeAt: anAbsolutePath ifPresent: aBlockClosure ifAbsent: aBlockClosure3 [
-	anAbsolutePath isRoot ifTrue: [ ^ aBlockClosure value: self treeIdFromCommit ].
+	anAbsolutePath isRoot ifTrue: [ ^ aBlockClosure value: self rootEntry ].
 	^ aBlockClosure
 		value: (self
 				entryByPath: (anAbsolutePath relativeTo: Path root) pathString
@@ -102,6 +115,12 @@ GtGitCommitStore >> repository [
 { #category : #'instance creation' }
 GtGitCommitStore >> repository: aGtIceGitRepository [
 	repository := aGtIceGitRepository
+]
+
+{ #category : #accessing }
+GtGitCommitStore >> rootEntry [
+	^ '040000 tree ' , self treeIdFromCommit , ' -'
+		, Character tab asString , '.'
 ]
 
 { #category : #accessing }

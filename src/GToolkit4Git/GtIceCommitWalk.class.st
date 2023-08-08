@@ -7,6 +7,11 @@ Class {
 	#category : #'GToolkit4Git-Libgit-replace'
 }
 
+{ #category : #accessing }
+GtIceCommitWalk >> commitStream [
+	^ (repository commitsFromIds: ids) asAsyncStream
+]
+
 { #category : #walking }
 GtIceCommitWalk >> commitsDo: aBlock [
 	(repository commitsFromIds: ids) do: [ :each | aBlock value: each ]
@@ -18,6 +23,11 @@ GtIceCommitWalk >> fromBranch: branch [
 ]
 
 { #category : #'walk definition' }
+GtIceCommitWalk >> fromCommit: commit [
+	ids := repository revListForCommit: commit id
+]
+
+{ #category : #'walk definition' }
 GtIceCommitWalk >> fromTag: tag [
 	ids := repository revListForBranch: tag
 ]
@@ -25,4 +35,9 @@ GtIceCommitWalk >> fromTag: tag [
 { #category : #walking }
 GtIceCommitWalk >> rawResultsDo: aBlock [
 	ids do: [ :each | aBlock value: each ]
+]
+
+{ #category : #'walk definition' }
+GtIceCommitWalk >> uptoCommit: commit [
+	ids := ids copyUpTo: commit
 ]

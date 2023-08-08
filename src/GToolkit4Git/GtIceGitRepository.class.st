@@ -16,6 +16,7 @@ GtIceGitRepository class >> fromLibGitRepository: aRepo [
 	repo := self new
 			location: aRepo location;
 			name: aRepo name.
+	aRepo location ifNil: [ ^ repo ].
 	repo workingCopy
 		referenceCommit: (repo commitFromGitCommit: aRepo workingCopy referenceCommit id).
 	repo workingCopy initializePackagesFromRepository.
@@ -60,7 +61,16 @@ GtIceGitRepository >> basicNewBranchNamed: aString [
 { #category : #'API - branches' }
 GtIceGitRepository >> basicNewRemoteBranchNamed: aString [ 
 
-	^ IceGitRemoteBranch named: aString inRepository: self
+	^ GtIceGitRemoteBranch named: aString inRepository: self
+]
+
+{ #category : #'API - branches' }
+GtIceGitRepository >> branchNamed: aString ifPresent: presentBlock ifAbsent: absentBlock [
+	| found |
+	found := self lookupLocalBranch: aString ifAbsent: [ nil ].
+	^ found
+		ifNil: absentBlock
+		ifNotNil: [ presentBlock value: (self basicNewBranchNamed: found) ]
 ]
 
 { #category : #'private - changes' }
@@ -124,18 +134,28 @@ GtIceGitRepository >> commitFromGitCommit: commitIdString [
 GtIceGitRepository >> commitsFromIds: idCollection [
 	"Note: This code expects the collection to consist of sequence of commits"
 
-	| proc lines commitLines |
+	| proc lines commitLines range |
+	idCollection isEmpty ifTrue: [ ^ #() ].
+	range := idCollection size = 1
+			ifTrue: [ idCollection first ]
+			ifFalse: [ idCollection last , '..' , idCollection first ].
 	proc := self git
 			arguments: {'show'.
 					'-s'.
 					'--format=format:%H%n%an%n%at%n%P%n%n%B%n@@@'.
-					idCollection last , '..' , idCollection first}.
+					range}.
 	proc runAndWait.
 	proc isSuccess ifFalse: [ self error: 'git error' ].
 	lines := proc stdout lines.
 	commitLines := lines splitOn: [ :each | each = '@@@' ].
 	commitLines removeLast.
 	^ commitLines collect: [ :each | self iceGitCommitFromLines: each ]
+]
+
+{ #category : #'*GToolkit4Git' }
+GtIceGitRepository >> getDeltasForFullDiff [
+	#TODO.
+	^ #()
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -350,6 +370,11 @@ GtIceGitRepository >> lookupCommit: commitId ifAbsent: aBlock [
 
 { #category : #'API - branches' }
 GtIceGitRepository >> lookupLocalBranch: branchName [
+	^ self lookupLocalBranch: branchName ifAbsent: [ nil ]
+]
+
+{ #category : #'API - branches' }
+GtIceGitRepository >> lookupLocalBranch: branchName ifAbsent: aBlock [
 	| proc |
 	proc := self git
 			arguments: {'branch'.
@@ -358,7 +383,30 @@ GtIceGitRepository >> lookupLocalBranch: branchName [
 					'--format=%(objectname)'}.
 	proc runAndWait.
 	proc isSuccess ifFalse: [ self error: 'git error' ].
-	^proc stdout lines first
+	^ proc stdout isEmpty
+		ifTrue: [ aBlock value ]
+		ifFalse: [ proc stdout lines first ]
+]
+
+{ #category : #'API - branches' }
+GtIceGitRepository >> lookupRemoteBranch: branchName [
+	^self lookupRemoteBranch: branchName ifAbsent: [nil]
+]
+
+{ #category : #'API - branches' }
+GtIceGitRepository >> lookupRemoteBranch: branchName ifAbsent: aBlock [
+	| proc |
+	proc := self git
+			arguments: {'branch'.
+					branchName.
+					'--remotes'.
+					'--list'.
+					'--format=%(objectname)'}.
+	proc runAndWait.
+	proc isSuccess ifFalse: [ self error: 'git error' ].
+	^ proc stdout isEmpty
+		ifTrue: [ aBlock value ]
+		ifFalse: [ proc stdout lines first ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -393,13 +441,16 @@ GtIceGitRepository >> newNoCommit [
 
 { #category : #'API - remotes' }
 GtIceGitRepository >> origin [
-	
 	^ self
 		remoteNamed: 'origin'
-		ifAbsent: [
-			IceUndefinedRemote new
+		ifAbsent: [ IceUndefinedRemote new
 				name: 'origin';
 				yourself ]
+]
+
+{ #category : #'API - remotes' }
+GtIceGitRepository >> originUrl [
+	^ self origin url
 ]
 
 { #category : #'private - tags' }
@@ -446,11 +497,34 @@ GtIceGitRepository >> remoteTrackedBranches [
 	| branches proc |
 	proc := self git
 			arguments: {'branch'.
-					'--remote'}.
+					'--remote'.
+					'--format=%(refname)'}.
 	proc runAndWait.
 	proc isSuccess ifFalse: [ self error: 'git error' ].
 	branches := proc stdout lines collect: #trimBoth.
 	^ branches collect: [ :each | self basicNewRemoteBranchNamed: each ]
+]
+
+{ #category : #'API - remotes' }
+GtIceGitRepository >> remotes [
+	| proc lines |
+	proc := self git arguments: {'remote'}.
+	proc runAndWait.
+	proc isSuccess ifFalse: [ self error: 'git error' ].
+	proc closeAndCleanStreams.
+	lines := proc stdout lines.
+	^ lines
+		collect: [ :each | 
+			proc := self git
+					arguments: {'remote'.
+							'get-url'.
+							each}.
+			proc runAndWait.
+			proc isSuccess ifFalse: [ self error: 'git error' ].
+			proc closeAndCleanStreams.
+			(IceGitRemote name: each url: proc stdout)
+				localRepository: self;
+				yourself ]
 ]
 
 { #category : #'API - accessing' }
@@ -464,6 +538,18 @@ GtIceGitRepository >> revListForBranch: aBranch [
 	proc := self git
 			arguments: {'rev-list'.
 					aBranch name}.
+	proc runAndWait.
+	proc isSuccess ifFalse: [ self error: 'git error' ].
+	revs := proc stdout lines collect: #trimBoth.
+	^ revs
+]
+
+{ #category : #'API - commits' }
+GtIceGitRepository >> revListForCommit: aCommit [
+	| revs proc |
+	proc := self git
+			arguments: {'rev-list'.
+					aCommit}.
 	proc runAndWait.
 	proc isSuccess ifFalse: [ self error: 'git error' ].
 	revs := proc stdout lines collect: #trimBoth.
