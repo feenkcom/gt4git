@@ -19,14 +19,13 @@ GtGitFileHandle >> open [
 
 { #category : #accessing }
 GtGitFileHandle >> readStream [
-	| id proc |
-	id := (entry splitOn: $ ) third copyUpTo: Character tab.
+	| proc |
 	proc := reference fileSystem store repository git.
 	proc
 		arguments: {'cat-file'.
 				'blob'.
-				id}.
+				entry id}.
 	proc runAndWait.
 	proc isSuccess ifFalse: [ self error: 'git error' ].
-	^ ZnBufferedReadStream on: (proc stdout asByteArray readStream)
+	^ ZnBufferedReadStream on: proc stdout asByteArray readStream
 ]

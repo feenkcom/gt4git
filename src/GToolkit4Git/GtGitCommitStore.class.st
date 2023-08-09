@@ -19,7 +19,7 @@ GtGitCommitStore class >> on: aCommitId inRepo: aGtIceGitRepository [
 
 { #category : #accessing }
 GtGitCommitStore >> basenameFromEntry: aNode [
-	^ (aNode splitOn: Character tab) last
+	^ aNode path
 ]
 
 { #category : #accessing }
@@ -29,19 +29,19 @@ GtGitCommitStore >> basicCreationTimeOf: anEntry [
 
 { #category : #accessing }
 GtGitCommitStore >> basicEntry: directoryEntry path: aPath nodesDo: aBlock [
-	| dirid proc |
-	dirid := (directoryEntry splitOn: $ ) third.
+	| proc |
 	proc := repository git
 			arguments: {'ls-tree'.
-					dirid}.
+					'--format=%(objectmode) %(objecttype) %(objectname) %(objectsize)%x09%(path)'.
+					directoryEntry id}.
 	proc runAndWait.
 	proc isSuccess ifFalse: [ self error: 'git error' ].
-	proc stdout lines do: [ :each | aBlock value: each ]
+	proc stdout lines do: [ :each | aBlock value: (GtGitFileEntry fromLine: each) ]
 ]
 
 { #category : #accessing }
 GtGitCommitStore >> basicIsDirectory: aNode [
-	^ (aNode splitOn: $ ) second = 'tree'
+	^ aNode type = 'tree'
 ]
 
 { #category : #accessing }
@@ -56,9 +56,7 @@ GtGitCommitStore >> basicOpen: path writable: aBoolean [
 
 { #category : #abstract }
 GtGitCommitStore >> basicSizeOf: aNode [
-	^ (self basicIsDirectory: aNode)
-		ifTrue: [ 0 ]
-		ifFalse: [ ((aNode splitOn: Character space) fourth copyUpTo: Character tab) asInteger ]
+	^ aNode size
 ]
 
 { #category : #'instance creation' }
@@ -72,8 +70,8 @@ GtGitCommitStore >> delimiter [
 ]
 
 { #category : #accessing }
-GtGitCommitStore >> entries [
-	| proc |
+GtGitCommitStore >> entnries [
+	| proc entryList |
 	entries ifNotNil: [ ^ entries ].
 	entries := Dictionary new.
 	proc := repository git
@@ -83,8 +81,27 @@ GtGitCommitStore >> entries [
 					self treeIdFromCommit}.
 	proc runAndWait.
 	proc isSuccess ifFalse: [ self error: 'git error' ].
-	proc stdout lines
-		do: [ :each | entries at: (self basenameFromEntry: each) put: each ].
+	entryList := proc stdout lines
+			collect: [ :each | GtGitFileEntry fromLine: each ].
+	entryList do: [ :each | entries at: (self basenameFromEntry: each) put: each ].
+	^ entries
+]
+
+{ #category : #accessing }
+GtGitCommitStore >> entries [
+	| proc entryList |
+	entries ifNotNil: [ ^ entries ].
+	entries := Dictionary new.
+	proc := repository git
+			arguments: {'ls-tree'.
+					'-rt'.
+					'--format=%(objectmode) %(objecttype) %(objectname) %(objectsize)%x09%(path)'.
+					self treeIdFromCommit}.
+	proc runAndWait.
+	proc isSuccess ifFalse: [ self error: 'git error' ].
+	entryList := proc stdout lines
+			collect: [ :each | GtGitFileEntry fromLine: each ].
+	entryList do: [ :each | entries at: (self basenameFromEntry: each) put: each ].
 	^ entries
 ]
 
@@ -119,8 +136,13 @@ GtGitCommitStore >> repository: aGtIceGitRepository [
 
 { #category : #accessing }
 GtGitCommitStore >> rootEntry [
-	^ '040000 tree ' , self treeIdFromCommit , ' -'
-		, Character tab asString , '.'
+	^ GtGitFileEntry new
+		mode: '040000';
+		type: 'tree';
+		id: self treeIdFromCommit;
+		size: 0;
+		path: '.';
+		yourself
 ]
 
 { #category : #accessing }
