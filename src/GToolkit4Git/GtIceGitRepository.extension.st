@@ -8,7 +8,7 @@ GtIceGitRepository >> getDeltasForFullDiff [
 
 { #category : #'*GToolkit4Git' }
 GtIceGitRepository >> getStatusByFile [
-	| res proc flagMap |
+	| res flagMap lines |
 	flagMap := {$M -> 2.
 			$T -> 16.
 			$A -> 1.
@@ -17,12 +17,10 @@ GtIceGitRepository >> getStatusByFile [
 			$? -> 128.
 			$! -> 16384} asDictionary.
 	res := Dictionary new.
-	proc := self git
-			arguments: {'status'.
+	lines := self
+			runGitWithArgs: {'status'.
 					'--porcelain'}.
-	proc runAndWait.
-	proc isSuccess ifFalse: [ self error: 'git error' ].
-	proc stdout lines
+	lines
 		do: [ :each | 
 			| status path |
 			status := each first.

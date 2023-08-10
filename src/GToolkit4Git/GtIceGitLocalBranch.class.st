@@ -55,16 +55,13 @@ GtIceGitLocalBranch >> upstream [
 
 { #category : #accessing }
 GtIceGitLocalBranch >> upstreamIfNone: aBlock [
-	| proc upstream |
-	proc := repository git.
-	proc
-		arguments: {'branch'.
-				'--list'.
-				'--format=%(upstream)'.
-				name}.
-	proc runAndWait.
-	proc isSuccess ifFalse: [ self error: 'git error' ].
-	upstream := proc stdout lines first.
+	| upstream lines |
+	lines := repository
+			runGitWithArgs: {'branch'.
+					'--list'.
+					'--format=%(upstream)'.
+					name}.
+	upstream := lines first.
 	upstream isEmpty ifTrue: [ ^ aBlock value ].
 	^ GtIceGitRemoteBranch named: upstream inRepository: repository
 ]

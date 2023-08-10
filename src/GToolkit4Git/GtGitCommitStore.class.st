@@ -29,14 +29,12 @@ GtGitCommitStore >> basicCreationTimeOf: anEntry [
 
 { #category : #accessing }
 GtGitCommitStore >> basicEntry: directoryEntry path: aPath nodesDo: aBlock [
-	| proc |
-	proc := repository git
-			arguments: {'ls-tree'.
+	| lines |
+	lines := repository
+			runGitWithArgs: {'ls-tree'.
 					'--format=%(objectmode) %(objecttype) %(objectname) %(objectsize)%x09%(path)'.
 					directoryEntry id}.
-	proc runAndWait.
-	proc isSuccess ifFalse: [ self error: 'git error' ].
-	proc stdout lines do: [ :each | aBlock value: (GtGitFileEntry fromLine: each) ]
+	lines do: [ :each | aBlock value: (GtGitFileEntry fromLine: each) ]
 ]
 
 { #category : #accessing }
@@ -70,37 +68,16 @@ GtGitCommitStore >> delimiter [
 ]
 
 { #category : #accessing }
-GtGitCommitStore >> entnries [
-	| proc entryList |
-	entries ifNotNil: [ ^ entries ].
-	entries := Dictionary new.
-	proc := repository git
-			arguments: {'ls-tree'.
-					'-rt'.
-					'--format=%(objectmode) %(objecttype) %(objectname) %(objectsize)%x09%(path)'.
-					self treeIdFromCommit}.
-	proc runAndWait.
-	proc isSuccess ifFalse: [ self error: 'git error' ].
-	entryList := proc stdout lines
-			collect: [ :each | GtGitFileEntry fromLine: each ].
-	entryList do: [ :each | entries at: (self basenameFromEntry: each) put: each ].
-	^ entries
-]
-
-{ #category : #accessing }
 GtGitCommitStore >> entries [
-	| proc entryList |
+	| proc entryList lines |
 	entries ifNotNil: [ ^ entries ].
 	entries := Dictionary new.
-	proc := repository git
-			arguments: {'ls-tree'.
+	lines := repository
+			runGitWithArgs: {'ls-tree'.
 					'-rt'.
 					'--format=%(objectmode) %(objecttype) %(objectname) %(objectsize)%x09%(path)'.
 					self treeIdFromCommit}.
-	proc runAndWait.
-	proc isSuccess ifFalse: [ self error: 'git error' ].
-	entryList := proc stdout lines
-			collect: [ :each | GtGitFileEntry fromLine: each ].
+	entryList := lines collect: [ :each | GtGitFileEntry fromLine: each ].
 	entryList do: [ :each | entries at: (self basenameFromEntry: each) put: each ].
 	^ entries
 ]
@@ -147,13 +124,9 @@ GtGitCommitStore >> rootEntry [
 
 { #category : #accessing }
 GtGitCommitStore >> treeIdFromCommit [
-	| proc |
-	proc := repository git
-			arguments: {'show'.
-					'-s'.
-					'--format=format:%T'.
-					id}.
-	proc runAndWait.
-	proc isSuccess ifFalse: [ self error: 'git error' ].
-	^ proc stdout
+	^ (repository
+		runGitWithArgs: {'show'.
+				'-s'.
+				'--format=format:%T'.
+				id}) first
 ]
