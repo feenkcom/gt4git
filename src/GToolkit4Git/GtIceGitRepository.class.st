@@ -4,9 +4,6 @@ Class {
 	#instVars : [
 		'location'
 	],
-	#classInstVars : [
-		'spawnCount'
-	],
 	#category : #'GToolkit4Git-Libgit-replace'
 }
 
@@ -21,21 +18,6 @@ GtIceGitRepository class >> fromLibGitRepository: aRepo [
 		referenceCommit: (repo commitFromGitCommit: aRepo workingCopy referenceCommit id).
 	repo workingCopy initializePackagesFromRepository.
 	^ repo
-]
-
-{ #category : #actions }
-GtIceGitRepository class >> incSpawnCount [
-	self spawnCount: self spawnCount + 1
-]
-
-{ #category : #accessing }
-GtIceGitRepository class >> spawnCount [
-	^ spawnCount ifNil: [0]
-]
-
-{ #category : #accessing }
-GtIceGitRepository class >> spawnCount: anObject [
-	spawnCount := anObject
 ]
 
 { #category : #accessing }
@@ -172,7 +154,6 @@ GtIceGitRepository >> getStatusByFile [
 
 { #category : #actions }
 GtIceGitRepository >> git [
-	self class incSpawnCount.
 	^ GtSubprocessWithInMemoryOutput new
 		command: 'git';
 		workingDirectory: location
