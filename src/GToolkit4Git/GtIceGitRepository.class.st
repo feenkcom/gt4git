@@ -497,6 +497,7 @@ GtIceGitRepository >> runGitWithArgs: args [
 	"Runs CLI git with the passed arguments and returns the lines from std out"
 
 	| proc |
+	(GtGitCliSignal args: args) emit.
 	proc := self git arguments: args.
 	proc runAndWait.
 	proc isSuccess ifFalse: [ self error: 'git error' ].
