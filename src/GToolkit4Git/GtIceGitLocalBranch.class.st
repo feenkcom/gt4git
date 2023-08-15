@@ -1,14 +1,19 @@
 Class {
 	#name : #GtIceGitLocalBranch,
 	#superclass : #IceLocalBranch,
+	#instVars : [
+		'commit',
+		'upstream'
+	],
 	#category : #'GToolkit4Git-Libgit-replace'
 }
 
 { #category : #accessing }
 GtIceGitLocalBranch >> commit [
 	| gitId |
+	commit ifNotNil: [^commit].
 	gitId := repository lookupLocalBranch: self name.
-	^ self repository commitFromGitCommit: gitId
+	^ commit := self repository commitFromGitCommit: gitId
 ]
 
 { #category : #accessing }
@@ -55,13 +60,14 @@ GtIceGitLocalBranch >> upstream [
 
 { #category : #accessing }
 GtIceGitLocalBranch >> upstreamIfNone: aBlock [
-	| upstream lines |
+	| upStreamName lines |
+	upstream notNil ifTrue: [^upstream].
 	lines := repository
 			runGitWithArgs: {'branch'.
 					'--list'.
 					'--format=%(upstream)'.
 					name}.
-	upstream := lines first.
-	upstream isEmpty ifTrue: [ ^ aBlock value ].
-	^ GtIceGitRemoteBranch named: upstream inRepository: repository
+	upStreamName := lines first.
+	upStreamName isEmpty ifTrue: [ ^ aBlock value ].
+	^ upstream := GtIceGitRemoteBranch named: upStreamName inRepository: repository
 ]
