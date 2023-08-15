@@ -2,7 +2,11 @@ Class {
 	#name : #GtIceGitRepository,
 	#superclass : #IceRepository,
 	#instVars : [
-		'location'
+		'location',
+		'head',
+		'remoteMap',
+		'branchMap',
+		'revListMap'
 	],
 	#category : #'GToolkit4Git-Libgit-replace'
 }
@@ -251,17 +255,18 @@ GtIceGitRepository >> handleLibgitError: aBlock [
 
 { #category : #'api - accessing' }
 GtIceGitRepository >> head [
-	| head lines ref |
+	| headRef lines ref |
+	head notNil ifTrue: [ ^ head ].
 	lines := [ self
 			runGitWithArgs: {'show'.
 					'-s'.
 					'--format=tformat:%H%n%D'.
 					'HEAD'} ] onErrorDo: [ ^ IceGitUnbornBranch inRepository: self ].
-	head := lines at: 1.
+	headRef := lines at: 1.
 	ref := ((lines at: 2) splitOn: ', ') first.
-	^ (ref includesSubstring: '->')
-		ifTrue: [ self basicNewBranchNamed: (ref splitOn: ' -> ') second ]
-		ifFalse: [ self commitFromGitCommit: head ]
+	^ head := (ref includesSubstring: '->')
+			ifTrue: [ self basicNewBranchNamed: (ref splitOn: ' -> ') second ]
+			ifFalse: [ self commitFromGitCommit: headRef ]
 ]
 
 { #category : #'private - commits' }
@@ -295,6 +300,14 @@ GtIceGitRepository >> initBare: isBareRepository [
 	args := {'init'} asOrderedCollection.
 	isBareRepository ifTrue: [ args add: '--bare' ].
 	self runGitWithArgs: args
+]
+
+{ #category : #initialization }
+GtIceGitRepository >> initialize [
+	super initialize.
+	remoteMap := Dictionary new.
+	branchMap := Dictionary new.
+	revListMap := Dictionary new.
 ]
 
 { #category : #testing }
@@ -336,13 +349,15 @@ GtIceGitRepository >> lookupLocalBranch: branchName [
 
 { #category : #'API - branches' }
 GtIceGitRepository >> lookupLocalBranch: branchName ifAbsent: aBlock [
-	| lines |
-	lines := self
-			runGitWithArgs: {'branch'.
-					branchName.
-					'--list'.
-					'--format=%(objectname)'}.
-	^ lines isEmpty ifTrue: [ aBlock value ] ifFalse: [ lines first ]
+	^ branchMap
+		at: branchName
+		ifAbsentPut: [ | lines |
+			lines := self
+					runGitWithArgs: {'branch'.
+							branchName.
+							'--list'.
+							'--format=%(objectname)'}.
+			lines isEmpty ifTrue: [ aBlock value ] ifFalse: [ lines first ] ]
 ]
 
 { #category : #'API - branches' }
@@ -352,14 +367,16 @@ GtIceGitRepository >> lookupRemoteBranch: branchName [
 
 { #category : #'API - branches' }
 GtIceGitRepository >> lookupRemoteBranch: branchName ifAbsent: aBlock [
-	| lines |
-	lines := self
-			runGitWithArgs: {'branch'.
-					branchName.
-					'--remotes'.
-					'--list'.
-					'--format=%(objectname)'}.
-	^ lines isEmpty ifTrue: [ aBlock value ] ifFalse: [ lines first ]
+	^ branchMap
+		at: branchName
+		ifAbsentPut: [ | lines |
+			lines := self
+					runGitWithArgs: {'branch'.
+							branchName.
+							'--remotes'.
+							'--list'.
+							'--format=%(objectname)'}.
+			lines isEmpty ifTrue: [ aBlock value ] ifFalse: [ lines first ] ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -395,10 +412,10 @@ GtIceGitRepository >> newNoCommit [
 { #category : #'API - remotes' }
 GtIceGitRepository >> origin [
 	^ self
-		remoteNamed: 'origin'
-		ifAbsent: [ IceUndefinedRemote new
-				name: 'origin';
-				yourself ]
+			remoteNamed: 'origin'
+			ifAbsent: [ IceUndefinedRemote new
+					name: 'origin';
+					yourself ]
 ]
 
 { #category : #'API - remotes' }
@@ -430,15 +447,17 @@ GtIceGitRepository >> properties [
 
 { #category : #'API - remotes' }
 GtIceGitRepository >> remoteNamed: aName ifAbsent: aBlockClosure [
-	| gitRemote lines |
-	lines := [ self
-			runGitWithArgs: {'remote'.
-					'get-url'.
-					aName} ] onErrorDo: [ ^ aBlockClosure value ].
-	gitRemote := lines first trimBoth.
-	^ (IceGitRemote name: aName url: gitRemote)
-		localRepository: self;
-		yourself
+	^ remoteMap
+		at: aName
+		ifAbsentPut: [ | gitRemote lines |
+			lines := [ self
+					runGitWithArgs: {'remote'.
+							'get-url'.
+							aName} ] onErrorDo: [ ^ aBlockClosure value ].
+			gitRemote := lines first trimBoth.
+			(IceGitRemote name: aName url: gitRemote)
+				localRepository: self;
+				yourself ]
 ]
 
 { #category : #'API - branches' }
@@ -475,21 +494,25 @@ GtIceGitRepository >> repositoryDirectory [
 
 { #category : #'API - commits' }
 GtIceGitRepository >> revListForBranch: aBranch [
-	| revs lines |
-	lines := self
-			runGitWithArgs: {'rev-list'.
-					aBranch name}.
-	revs := lines collect: #trimBoth.
-	^ revs
+	^ revListMap
+		at: aBranch
+		ifAbsentPut: [ | revs lines |
+			lines := self
+					runGitWithArgs: {'rev-list'.
+							aBranch name}.
+			revs := lines collect: #trimBoth.
+			revs ]
 ]
 
 { #category : #'API - commits' }
 GtIceGitRepository >> revListForCommit: aCommit [
-	| lines |
-	lines := self
-			runGitWithArgs: {'rev-list'.
-					aCommit}.
-	^ lines collect: #trimBoth
+	^ revListMap
+		at: aCommit
+		ifAbsentPut: [ | lines |
+			lines := self
+					runGitWithArgs: {'rev-list'.
+							aCommit}.
+			lines collect: #trimBoth ]
 ]
 
 { #category : #'private - changes' }

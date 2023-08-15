@@ -1,14 +1,18 @@
 Class {
 	#name : #GtIceGitRemoteBranch,
 	#superclass : #IceRemoteBranch,
+	#instVars : [
+		'commit'
+	],
 	#category : #'GToolkit4Git-Libgit-replace'
 }
 
 { #category : #accessing }
 GtIceGitRemoteBranch >> commit [
 	| gitId |
+	commit ifNotNil: [ ^ commit ].
 	gitId := repository lookupRemoteBranch: self name.
-	^ self repository commitFromGitCommit: gitId
+	^ commit := self repository commitFromGitCommit: gitId
 ]
 
 { #category : #accessing }
