@@ -2,10 +2,19 @@ Class {
 	#name : #GtGitCommit,
 	#superclass : #IceGitCommit,
 	#instVars : [
-		'lepiterWorkingCopy'
+		'lepiterWorkingCopy',
+		'fileSystem'
 	],
 	#category : #'GToolkit4Git-Model'
 }
+
+{ #category : #accessing }
+GtGitCommit >> fileSystem [
+	fileSystem ifNotNil: [ ^ fileSystem ].
+	^ fileSystem := (repository isKindOf: GtIceGitRepository)
+			ifTrue: [ (repository commitFromGitCommit: id) fileSystem ]
+			ifFalse: [ super fileSystem ]
+]
 
 { #category : #accessing }
 GtGitCommit >> gtActionCheckoutFor: anAction [
@@ -38,4 +47,11 @@ GtGitCommit >> lepiterWorkingCopy [
 { #category : #accessing }
 GtGitCommit >> lepiterWorkingCopy: aLepiterWorkingCopy [
 	lepiterWorkingCopy := aLepiterWorkingCopy
+]
+
+{ #category : #accessing }
+GtGitCommit >> tags [
+	^ (repository respondsTo: #tagsFor:)
+		ifTrue: [ repository tagsFor: id ]
+		ifFalse: [ repository tags select: [ :each | each commit = self ] ]
 ]
