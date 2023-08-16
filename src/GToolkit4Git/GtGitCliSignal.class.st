@@ -1,6 +1,8 @@
 Class {
 	#name : #GtGitCliSignal,
 	#superclass : #BeaconSignal,
+	#traits : 'TGtBeaconSignalStartEndType',
+	#classTraits : 'TGtBeaconSignalStartEndType classTrait',
 	#instVars : [
 		'args'
 	],
@@ -10,6 +12,11 @@ Class {
 { #category : #'instance creation' }
 GtGitCliSignal class >> args: aCollection [
 	^self new args: aCollection
+]
+
+{ #category : #accessing }
+GtGitCliSignal class >> eventType [
+	^GtGitCliEvent
 ]
 
 { #category : #accessing }

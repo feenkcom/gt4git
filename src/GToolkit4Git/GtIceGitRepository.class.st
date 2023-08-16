@@ -520,11 +520,12 @@ GtIceGitRepository >> runGitWithArgs: args [
 	"Runs CLI git with the passed arguments and returns the lines from std out"
 
 	| proc |
-	(GtGitCliSignal args: args) emit.
+	(GtGitCliSignal args: args) markAsStartSignal emit.
 	proc := self git arguments: args.
 	proc runAndWait.
 	proc isSuccess ifFalse: [ self error: 'git error' ].
 	proc closeAndCleanStreams.
+	(GtGitCliSignal args: args) markAsEndSignal emit.
 	^ proc stdout lines
 ]
 
