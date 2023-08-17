@@ -36,6 +36,18 @@ GtIceGitRepository >> addFilesToIndex: aCollection [
 	self runGitWithArgs: args
 ]
 
+{ #category : #accessing }
+GtIceGitRepository >> allBranches [
+	^ self localBranches , self remoteTrackedBranches
+]
+
+{ #category : #'API - accessing' }
+GtIceGitRepository >> basicCodeDirectory [
+	^ self subdirectory isEmptyOrNil
+		ifTrue: [ self repositoryDirectory ]
+		ifFalse: [ self repositoryDirectory / self subdirectory ]
+]
+
 { #category : #'API - branches' }
 GtIceGitRepository >> basicNewBranchNamed: aString [ 
 
@@ -95,6 +107,14 @@ but with a different origin URL.
 You provided {2} 
 and the original repository''s url is {3}.'
 					 format: {self location. self origin. repo origin}) ]].
+]
+
+{ #category : #'API - accessing' }
+GtIceGitRepository >> codeDirectory [
+	"Code repository might have been deleted or image might have been moved."
+	self repositoryDirectory exists
+		ifTrue: [ ^ self basicCodeDirectory ]
+		ifFalse: [ IceLocalRepositoryMissing signalFor: self ]
 ]
 
 { #category : #'private - commits' }
