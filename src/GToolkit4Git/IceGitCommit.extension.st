@@ -1,6 +1,11 @@
 Extension { #name : #IceGitCommit }
 
 { #category : #'*GToolkit4Git' }
+IceGitCommit >> cliGitCommit [
+	^repository commitFromGitCommit: self id
+]
+
+{ #category : #'*GToolkit4Git' }
 IceGitCommit >> gtActionCheckoutFor: anAction [
 	<gtAction>
 	^ anAction dropdown
