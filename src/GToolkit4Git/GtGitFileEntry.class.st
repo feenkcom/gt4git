@@ -33,6 +33,11 @@ GtGitFileEntry class >> fromLine: aString [
 ]
 
 { #category : #accessing }
+GtGitFileEntry >> filename [
+	^path
+]
+
+{ #category : #accessing }
 GtGitFileEntry >> id [
 	^ id
 ]

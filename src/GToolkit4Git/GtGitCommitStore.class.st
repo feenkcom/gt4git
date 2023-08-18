@@ -69,7 +69,7 @@ GtGitCommitStore >> delimiter [
 
 { #category : #accessing }
 GtGitCommitStore >> entries [
-	| proc entryList lines |
+	| entryList lines |
 	entries ifNotNil: [ ^ entries ].
 	entries := Dictionary new.
 	lines := repository
@@ -85,6 +85,11 @@ GtGitCommitStore >> entries [
 { #category : #accessing }
 GtGitCommitStore >> entryByPath: aString ifAbsent: aBlock [
 	^ self entries at: aString ifAbsent: aBlock
+]
+
+{ #category : #public }
+GtGitCommitStore >> entryFromNode: node path: path for: aFileSystem [
+	^ aFileSystem referenceTo: path / node path
 ]
 
 { #category : #accessing }

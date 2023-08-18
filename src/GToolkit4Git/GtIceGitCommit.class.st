@@ -7,6 +7,13 @@ Class {
 	#category : #'GToolkit4Git-Libgit-replace'
 }
 
+{ #category : #accessing }
+GtIceGitCommit >> entryByPath: aString ifAbsent: aBlock [
+	| ref |
+	ref := self fileSystem resolveString: aString.
+	^ ref exists ifTrue: [ ref ] ifFalse: [ aBlock value ]
+]
+
 { #category : #'accessing - file' }
 GtIceGitCommit >> fileSystem [
 	fileSystem

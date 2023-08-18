@@ -403,10 +403,10 @@ GtIceGitRepository >> lookupRemoteBranch: branchName ifAbsent: aBlock [
 GtIceGitRepository >> makeSafe [
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GtIceGitRepository >> mcVersionFor: iceVersion [
 	[ | commit |
-	commit := iceVersion commit.
+	commit := iceVersion commit cliGitCommit.
 	^ (iceVersion commit readerClass on: commit iceVersion: iceVersion) version ]
 		on: Error
 		do: [ IceVersionDoesNotExist new
