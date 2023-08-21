@@ -12,16 +12,16 @@ GtGitCliEventsGroup >> gtItemsFor: aView [
 		priority: 10;
 		items: [ self ];
 		children: #subEvents;
-		column: 'Event Type' text: [ :anEvent | anEvent class eventLabel ];
-		column: 'Timestamp' text: #timestamp;
-		column: 'Duration' text: [ :anEvent | anEvent duration ];
-		column: 'Command' text: [ :anEvent | anEvent args first ];
+		column: 'Event Type' text: [ :anEvent | anEvent class eventLabel ] weight: 1;
+		column: 'Timestamp' text: #timestamp weight: 1;
+		column: 'Duration' text: [ :anEvent | anEvent duration ] weight: 1;
+		column: 'Command' text: [ :anEvent | anEvent args first ] weight: 1;
 		column: 'Args'
 			text: [ :anEvent | 
 				String
 					streamContents: [ :aStream | 
 						anEvent args allButFirst
 							do: [ :arg | aStream print: arg ]
-							separatedBy: [ aStream nextPut: $  ] ] ];
+							separatedBy: [ aStream nextPut: $  ] ] ] weight: 1;
 		yourself
 ]

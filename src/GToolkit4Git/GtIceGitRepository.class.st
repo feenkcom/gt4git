@@ -465,6 +465,21 @@ GtIceGitRepository >> properties [
 	^ self workingCopy repositoryProperties
 ]
 
+{ #category : #accessing }
+GtIceGitRepository >> readStreamOn: aGtGitFileHandle [
+	| proc args |
+	args := {'cat-file'.
+			'blob'.
+			aGtGitFileHandle entry id}.
+	(GtGitCliSignal args: args) markAsStartSignal emit.
+	proc := self git.
+	proc arguments: args.
+	proc runAndWait.
+	proc isSuccess ifFalse: [ aGtGitFileHandle error: 'git error' ].
+	(GtGitCliSignal args: args) markAsEndSignal emit.
+	^ ZnBufferedReadStream on: proc stdout asByteArray readStream
+]
+
 { #category : #'API - remotes' }
 GtIceGitRepository >> remoteNamed: aName ifAbsent: aBlockClosure [
 	^ remoteMap
