@@ -13,19 +13,21 @@ GtGitFileHandle >> binaryReadStream [
 ]
 
 { #category : #accessing }
+GtGitFileHandle >> entry [
+	^ entry
+]
+
+{ #category : #accessing }
+GtGitFileHandle >> entry: anObject [
+	entry := anObject
+]
+
+{ #category : #accessing }
 GtGitFileHandle >> open [
 	entry := self basicOpen
 ]
 
 { #category : #accessing }
 GtGitFileHandle >> readStream [
-	| proc |
-	proc := reference fileSystem store repository git.
-	proc
-		arguments: {'cat-file'.
-				'blob'.
-				entry id}.
-	proc runAndWait.
-	proc isSuccess ifFalse: [ self error: 'git error' ].
-	^ ZnBufferedReadStream on: proc stdout asByteArray readStream
+	^ reference fileSystem store repository readStreamOn: self
 ]
