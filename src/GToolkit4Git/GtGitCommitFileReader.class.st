@@ -9,8 +9,16 @@ Class {
 		'stderr',
 		'buffer'
 	],
+	#classVars : [
+		'Registry'
+	],
 	#category : #'GToolkit4Git-Libgit-replace'
 }
+
+{ #category : #accessing }
+GtGitCommitFileReader class >> registry [
+	^ Registry ifNil: [ Registry := WeakRegistry new ]
+]
 
 { #category : #accessing }
 GtGitCommitFileReader >> eatNewline [
@@ -65,6 +73,9 @@ GtGitCommitFileReader >> start [
 	stderr := externalProcess asynchronousStderr.
 	stdin := externalProcess stdin.
 	buffer := OrderedCollection new.
+	self class registry
+		add: self
+		executor: (ObjectFinalizer receiver: self selector: #terminate)
 ]
 
 { #category : #accessing }
@@ -72,10 +83,6 @@ GtGitCommitFileReader >> terminate [
 	externalProcess
 		ifNotNil: [ externalProcess terminate.
 			externalProcess := nil ].
-	messageHandler
-		ifNotNil: [ (messageHandler isTerminated or: [ messageHandler isTerminating ])
-				ifFalse: [ messageHandler terminate ].
-			messageHandler := nil ].
 	stderr
 		ifNotNil: [ stderr release.
 			stderr := nil ].
