@@ -64,7 +64,7 @@ GtGitCommitFileReader >> start [
 	stdout := externalProcess asynchronousStdout.
 	stderr := externalProcess asynchronousStderr.
 	stdin := externalProcess stdin.
-	buffer := OrderedCollection new.
+	buffer := OrderedCollection new
 ]
 
 { #category : #accessing }
@@ -72,10 +72,6 @@ GtGitCommitFileReader >> terminate [
 	externalProcess
 		ifNotNil: [ externalProcess terminate.
 			externalProcess := nil ].
-	messageHandler
-		ifNotNil: [ (messageHandler isTerminated or: [ messageHandler isTerminating ])
-				ifFalse: [ messageHandler terminate ].
-			messageHandler := nil ].
 	stderr
 		ifNotNil: [ stderr release.
 			stderr := nil ].

@@ -108,7 +108,7 @@ GtGitCommitStore >> entryFromNode: node path: path for: aFileSystem [
 
 { #category : #accessing }
 GtGitCommitStore >> finalize [
-	gitFileReader ifNotNil: [ :reader | reader stop ].
+	gitFileReader ifNotNil: [ :reader | reader terminate ].
 	super finalize
 ]
 
