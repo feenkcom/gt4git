@@ -4,7 +4,11 @@ Class {
 	#instVars : [
 		'id',
 		'repository',
-		'entries'
+		'entries',
+		'gitFileReader'
+	],
+	#classVars : [
+		'Registry'
 	],
 	#category : #'GToolkit4Git-Libgit-replace'
 }
@@ -15,6 +19,16 @@ GtGitCommitStore class >> on: aCommitId inRepo: aGtIceGitRepository [
 		commit: aCommitId;
 		repository: aGtIceGitRepository;
 		yourself
+]
+
+{ #category : #finalization }
+GtGitCommitStore class >> register: anObject [
+	^self registry add: anObject
+]
+
+{ #category : #accessing }
+GtGitCommitStore class >> registry [
+	^Registry ifNil: [Registry := WeakRegistry new]
 ]
 
 { #category : #accessing }
@@ -93,6 +107,21 @@ GtGitCommitStore >> entryFromNode: node path: path for: aFileSystem [
 ]
 
 { #category : #accessing }
+GtGitCommitStore >> finalize [
+	gitFileReader ifNotNil: [ :reader | reader stop ].
+	super finalize
+]
+
+{ #category : #accessing }
+GtGitCommitStore >> gitFileReader [
+	^ gitFileReader
+		ifNil: [ self class register: self.
+			gitFileReader := GtGitCommitFileReader new
+					workingDirectory: repository location;
+					start ]
+]
+
+{ #category : #accessing }
 GtGitCommitStore >> handleClass [
 	^ GtGitFileHandle
 ]
@@ -104,6 +133,11 @@ GtGitCommitStore >> nodeAt: anAbsolutePath ifPresent: aBlockClosure ifAbsent: aB
 		value: (self
 				entryByPath: (anAbsolutePath relativeTo: Path root) pathString
 				ifAbsent: [ ^ aBlockClosure3 value ])
+]
+
+{ #category : #accessing }
+GtGitCommitStore >> readStreamOn: aGtGitFileHandle [
+	^ self gitFileReader readStreamFor: aGtGitFileHandle entry id
 ]
 
 { #category : #accessing }

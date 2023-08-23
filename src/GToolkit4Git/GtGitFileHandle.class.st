@@ -29,5 +29,5 @@ GtGitFileHandle >> open [
 
 { #category : #accessing }
 GtGitFileHandle >> readStream [
-	^ reference fileSystem store repository readStreamOn: self
+	^ reference fileSystem store readStreamOn: self
 ]
