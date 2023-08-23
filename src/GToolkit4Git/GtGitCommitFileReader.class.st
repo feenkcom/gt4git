@@ -9,16 +9,8 @@ Class {
 		'stderr',
 		'buffer'
 	],
-	#classVars : [
-		'Registry'
-	],
 	#category : #'GToolkit4Git-Libgit-replace'
 }
-
-{ #category : #accessing }
-GtGitCommitFileReader class >> registry [
-	^ Registry ifNil: [ Registry := WeakRegistry new ]
-]
 
 { #category : #accessing }
 GtGitCommitFileReader >> eatNewline [
@@ -72,10 +64,7 @@ GtGitCommitFileReader >> start [
 	stdout := externalProcess asynchronousStdout.
 	stderr := externalProcess asynchronousStderr.
 	stdin := externalProcess stdin.
-	buffer := OrderedCollection new.
-	self class registry
-		add: self
-		executor: (ObjectFinalizer receiver: self selector: #terminate)
+	buffer := OrderedCollection new
 ]
 
 { #category : #accessing }
