@@ -1,9 +1,6 @@
 Class {
 	#name : #GtIceGitCommit,
 	#superclass : #IceGitCommit,
-	#instVars : [
-		'fileSystem'
-	],
 	#category : #'GToolkit4Git-Libgit-replace'
 }
 
@@ -16,10 +13,8 @@ GtIceGitCommit >> entryByPath: aString ifAbsent: aBlock [
 
 { #category : #'accessing - file' }
 GtIceGitCommit >> fileSystem [
-	fileSystem
-		ifNil: [ fileSystem := (FileSystem store: (GtGitCommitStore on: id inRepo: repository))
-					root ].
-	^ fileSystem
+	^(FileSystem store: (GtGitCommitStore on: id inRepo: repository))
+					root
 ]
 
 { #category : #accessing }
