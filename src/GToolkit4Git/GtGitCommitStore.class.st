@@ -57,6 +57,11 @@ GtGitCommitStore >> basicIsDirectory: aNode [
 ]
 
 { #category : #accessing }
+GtGitCommitStore >> basicIsFile: aNode [
+	^ aNode type = 'blob'
+]
+
+{ #category : #accessing }
 GtGitCommitStore >> basicOpen: path writable: aBoolean [
 	^ self
 		nodeAt: path
@@ -110,6 +115,11 @@ GtGitCommitStore >> entryFromNode: node path: path for: aFileSystem [
 GtGitCommitStore >> finalize [
 	gitFileReader ifNotNil: [ :reader | reader terminate ].
 	super finalize
+]
+
+{ #category : #printing }
+GtGitCommitStore >> forReferencePrintOn: aStream [
+	aStream nextPutAll: 'git://'
 ]
 
 { #category : #accessing }
