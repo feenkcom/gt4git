@@ -539,14 +539,15 @@ GtIceGitRepository >> revListForCommit: aCommit [
 GtIceGitRepository >> runGitWithArgs: args [
 	"Runs CLI git with the passed arguments and returns the lines from std out"
 
-	| proc |
+	| proc lines|
 	(GtGitCliSignal args: args) markAsStartSignal emit.
 	proc := self git arguments: args.
 	proc runAndWait.
 	proc isSuccess ifFalse: [ self error: 'git error' ].
+	lines := proc stdout lines.
 	proc closeAndCleanStreams.
 	(GtGitCliSignal args: args) markAsEndSignal emit.
-	^ proc stdout lines
+	^ lines
 ]
 
 { #category : #'API - accessing' }
