@@ -178,7 +178,7 @@ GtIceGitRepository >> getStatusByFile [
 
 { #category : #actions }
 GtIceGitRepository >> git [
-	^ GtSubprocessWithInMemoryOutput new
+	^ GtExternalProcessBuilder new
 		command: 'git';
 		workingDirectory: location
 ]
@@ -539,13 +539,12 @@ GtIceGitRepository >> revListForCommit: aCommit [
 GtIceGitRepository >> runGitWithArgs: args [
 	"Runs CLI git with the passed arguments and returns the lines from std out"
 
-	| proc lines|
+	| proc lines output |
 	(GtGitCliSignal args: args) markAsStartSignal emit.
-	proc := self git arguments: args.
-	proc runAndWait.
-	proc isSuccess ifFalse: [ self error: 'git error' ].
-	lines := proc stdout lines.
-	proc closeAndCleanStreams.
+	proc := self git args: args.
+	output := proc output.
+	output status isSuccess ifFalse: [ self error: 'git error' ].
+	lines := output stdoutString lines.
 	(GtGitCliSignal args: args) markAsEndSignal emit.
 	^ lines
 ]
