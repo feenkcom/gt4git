@@ -24,6 +24,13 @@ GtIceGitRepository class >> fromLibGitRepository: aRepo [
 	^ repo
 ]
 
+{ #category : #'instance creation' }
+GtIceGitRepository class >> on: aFileReference [
+	^ self basicNew
+		initialize;
+		initializeOn: aFileReference
+]
+
 { #category : #accessing }
 GtIceGitRepository >> addFilesToIndex: aCollection [
 	| args |
@@ -328,6 +335,11 @@ GtIceGitRepository >> initialize [
 	remoteMap := Dictionary new.
 	branchMap := Dictionary new.
 	revListMap := Dictionary new.
+]
+
+{ #category : #initialization }
+GtIceGitRepository >> initializeOn: aFileReference [
+	location := aFileReference
 ]
 
 { #category : #testing }

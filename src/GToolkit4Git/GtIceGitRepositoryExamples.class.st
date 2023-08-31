@@ -27,6 +27,7 @@ GtIceGitRepositoryExamples >> commitFilesystem [
 { #category : #accessing }
 GtIceGitRepositoryExamples >> commitInformation [
 	<gtExample>
+	<notest>
 	| commit |
 	commit := self repositoryTagInformation commit.
 	self assert: (commit id beginsWith: '2ff1365').
@@ -37,8 +38,47 @@ GtIceGitRepositoryExamples >> commitInformation [
 ]
 
 { #category : #accessing }
+GtIceGitRepositoryExamples >> createRepository [
+	<gtExample>
+	<notest>
+	| iceRepository repositoryFolder repositoryName |
+	"(IceRepository registry
+		contains: [ :rep | 
+			repositoryName := self exampleRepositoryName.
+			rep name = repositoryName ]) ifTrue: [ ^ self ]."
+	repositoryFolder := FileReference
+			newTempFilePrefix: self exampleRepositoryName
+			suffix: 'dir'.
+
+	iceRepository := GtIceRepositoryCreator
+			fromUrl: 'https://github.com/feenkcom/gt4git.git'
+			to: repositoryFolder.
+
+
+	self assert: (self mainBranchNames includes: iceRepository branchName).
+
+	iceRepository workingCopy commitWithMessage: 'Add properties and project files'.	"Ideally do not register the repository with Iceberg.
+	Registered for now to make ot easy to debug."
+	IceRepository registerRepository: iceRepository.
+	self repositories at: repositoryName put: iceRepository.	"Ensure the repo was creates successfully"
+	self assert: iceRepository isMissing not description: 'Repository is present'.
+	self
+		assert: iceRepository isModified not
+		description: 'Repository is not modified'.
+	self assert: iceRepository branch commits size equals: 1.
+
+	^ iceRepository
+]
+
+{ #category : #accessing }
+GtIceGitRepositoryExamples >> exampleRepositoryName [
+	^ 'gt4git'
+]
+
+{ #category : #accessing }
 GtIceGitRepositoryExamples >> gt4gitRepository [
 	<gtExample>
+	<notest>
 	^ GtIceGitRepository
 		fromLibGitRepository: (IceRepository registry detect: [ :each | each name = 'gt4git' ])
 ]
@@ -46,6 +86,7 @@ GtIceGitRepositoryExamples >> gt4gitRepository [
 { #category : #accessing }
 GtIceGitRepositoryExamples >> repositoryPackages [
 	<gtExample>
+	<notest>
 	| repo packages |
 	repo := self gt4gitRepository.
 	packages := repo packages.
@@ -56,6 +97,7 @@ GtIceGitRepositoryExamples >> repositoryPackages [
 { #category : #accessing }
 GtIceGitRepositoryExamples >> repositoryTagInformation [
 	<gtExample>
+	<notest>
 	| tag |
 	tag := self repositoryTags detect: [:each | each name = 'v0.8.99'].
 	self assert: (tag commit id beginsWith: '2ff1365').
@@ -65,6 +107,7 @@ GtIceGitRepositoryExamples >> repositoryTagInformation [
 { #category : #accessing }
 GtIceGitRepositoryExamples >> repositoryTags [
 	<gtExample>
+	<notest>
 	| repo tags |
 	repo := self gt4gitRepository.
 	tags := repo tags.
