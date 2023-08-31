@@ -7,6 +7,7 @@ Class {
 { #category : #accessing }
 GtIceGitRepositoryExamples >> commitChanges [
 	<gtExample>
+	<noTest>
 	| commit diff |
 	commit := self commitInformation ancestors first.
 	diff := IceDiff from: commit to: commit parent.
@@ -17,6 +18,7 @@ GtIceGitRepositoryExamples >> commitChanges [
 { #category : #accessing }
 GtIceGitRepositoryExamples >> commitFilesystem [
 	<gtExample>
+	<noTest>
 	| fs |
 	fs := self commitInformation fileSystem fileSystem.
 	self assert: (fs referenceTo: '.project') exists.
@@ -27,6 +29,7 @@ GtIceGitRepositoryExamples >> commitFilesystem [
 { #category : #accessing }
 GtIceGitRepositoryExamples >> commitInformation [
 	<gtExample>
+	<noTest>
 	| commit |
 	commit := self repositoryTagInformation commit.
 	self assert: (commit id beginsWith: '2ff1365').
@@ -39,6 +42,7 @@ GtIceGitRepositoryExamples >> commitInformation [
 { #category : #accessing }
 GtIceGitRepositoryExamples >> createRepository [
 	<gtExample>
+	<noTest>
 	| iceRepository repositoryFolder |
 	(IceRepository registry
 		contains: [ :rep | rep name = self exampleRepositoryName ]) ifTrue: [ ^ self ].
@@ -61,6 +65,7 @@ GtIceGitRepositoryExamples >> exampleRepositoryName [
 { #category : #accessing }
 GtIceGitRepositoryExamples >> gt4gitRepository [
 	<gtExample>
+	<noTest>
 	^ GtIceGitRepository
 		fromLibGitRepository: (IceRepository registry detect: [ :each | each name = 'gt4git' ])
 ]
@@ -68,6 +73,7 @@ GtIceGitRepositoryExamples >> gt4gitRepository [
 { #category : #accessing }
 GtIceGitRepositoryExamples >> repositoryPackages [
 	<gtExample>
+	<noTest>
 	| repo packages |
 	repo := self gt4gitRepository.
 	packages := repo packages.
@@ -78,6 +84,7 @@ GtIceGitRepositoryExamples >> repositoryPackages [
 { #category : #accessing }
 GtIceGitRepositoryExamples >> repositoryTagInformation [
 	<gtExample>
+	<noTest>
 	| tag |
 	tag := self repositoryTags detect: [:each | each name = 'v0.8.99'].
 	self assert: (tag commit id beginsWith: '2ff1365').
@@ -87,6 +94,7 @@ GtIceGitRepositoryExamples >> repositoryTagInformation [
 { #category : #accessing }
 GtIceGitRepositoryExamples >> repositoryTags [
 	<gtExample>
+	<noTest>
 	| repo tags |
 	repo := self gt4gitRepository.
 	tags := repo tags.
