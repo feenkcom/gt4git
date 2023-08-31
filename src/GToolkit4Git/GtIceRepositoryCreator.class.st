@@ -7,7 +7,9 @@ Class {
 		'url',
 		'subdirectory',
 		'repository',
-		'isBareRepository'
+		'isBareRepository',
+		'ensureProjectFile',
+		'branchName'
 	],
 	#category : #'GToolkit4Git-Libgit-replace'
 }
@@ -17,11 +19,45 @@ GtIceRepositoryCreator class >> defaultSubdirectory [
 	^ ''
 ]
 
+{ #category : #'as yet unclassified' }
+GtIceRepositoryCreator class >> fromUrl: aUrl to: aFileReference [
+	^ self new 
+		remote: (IceGitRemote url: aUrl);
+  location: aFileReference;
+  createRepository
+]
+
 { #category : #private }
 GtIceRepositoryCreator class >> isGitRoot: aReference [
 	^ aReference isDirectory
 		and: [ (aReference directoriesMatching: '.git') notEmpty
 				and: [ (aReference / '.git' / 'config') exists ] ]
+]
+
+{ #category : #accessing }
+GtIceRepositoryCreator >> addLocalRepository [
+	self shouldBeImplemented
+]
+
+{ #category : #accessing }
+GtIceRepositoryCreator >> cloneRepository [
+	self executeGitClone.
+	self repository location: self locationToUse.
+		
+	self commitishName 
+		ifNotNil: [ self repository switchToCommitishNamed: self commitishName ].
+	self repository pluginManager repositoryWillBeCreated: self repository.	
+
+	self doEnsureProject.
+	self repository workingCopy initializePackagesFromRepository.
+		
+	self repository pluginManager repositoryWasCreated: self repository.
+	^ self repository
+]
+
+{ #category : #accessing }
+GtIceRepositoryCreator >> commitishName: aName [
+	branchName := aName
 ]
 
 { #category : #actions }
@@ -45,6 +81,19 @@ GtIceRepositoryCreator >> createNewRepositoryNamed: aString [
 	^ repository
 ]
 
+{ #category : #accessing }
+GtIceRepositoryCreator >> createRepository [
+	^ [
+		self validate.
+		self isCloning
+			ifTrue: [ self cloneRepository ]
+			ifFalse: [ self addLocalRepository ] ]
+	on: IceDuplicatedRepository 
+	do: [ :e | 
+		"This is a HACK to allow process to recover from here"
+		e signal ]
+]
+
 { #category : #'private - accessing' }
 GtIceRepositoryCreator >> defaultLocation [
 	| remoteToUse |
@@ -54,11 +103,51 @@ GtIceRepositoryCreator >> defaultLocation [
 		/ remoteToUse projectName
 ]
 
+{ #category : #accessing }
+GtIceRepositoryCreator >> ensureProjectFile [
+	ensureProjectFile := true
+]
+
+{ #category : #accessing }
+GtIceRepositoryCreator >> executeGitClone [
+	| repo cloneOptions checkoutOptions callbacks |
+	location exists
+		ifTrue: [ IceCloneLocationAlreadyExists signalFor: location ].
+	
+	[location ensureCreateDirectory.
+	
+	repo := GtIceGitRepository on: location.
+	cloneOptions := repo cloneOptionsStructureClass withCredentialsProvider: (IceCredentialsProvider defaultForRemoteUrl: url).
+
+	"Keeping references, because if not the GC take them."
+	checkoutOptions := cloneOptions checkoutOptions.
+	callbacks := cloneOptions fetchOptions callbacks.
+	callbacks transferProgress: IceGitTransferProgress new.
+	
+	checkoutOptions checkoutStrategy: LGitCheckoutStrategyEnum git_checkout_force.
+	checkoutOptions progressCallback: IceGitCheckoutProgress new.
+
+	repo clone: url options: cloneOptions.
+
+	(LGitRemote of: repo named: 'origin')
+		lookup;
+		setUrl: url.
+		
+	] on: LGitCallReturnHandler , IceWrongUrl do: [ :error |
+		location exists ifTrue: [ location ensureDeleteAll ].
+		error acceptError: (IceLibgitErrorVisitor onContext: self) ].
+]
+
 { #category : #initialization }
 GtIceRepositoryCreator >> initialize [
 	super initialize.
-	"ensureProjectFile := false."
+	ensureProjectFile := false.
 	isBareRepository := false
+]
+
+{ #category : #accessing }
+GtIceRepositoryCreator >> isCloning [
+	^ self remoteToUse notNil
 ]
 
 { #category : #private }
@@ -81,6 +170,11 @@ GtIceRepositoryCreator >> remote [
 	^remote
 ]
 
+{ #category : #accessing }
+GtIceRepositoryCreator >> remote: aString [
+	remote := aString
+]
+
 { #category : #'private - accessing' }
 GtIceRepositoryCreator >> remoteToUse [
 	self remote ifNotNil: [ ^ self remote ].
@@ -91,6 +185,11 @@ GtIceRepositoryCreator >> remoteToUse [
 { #category : #accessing }
 GtIceRepositoryCreator >> subdirectory [
 	^ subdirectory ifNil: [ self class defaultSubdirectory ]
+]
+
+{ #category : #accessing }
+GtIceRepositoryCreator >> subdirectory: aString [
+	subdirectory := aString
 ]
 
 { #category : #accessing }

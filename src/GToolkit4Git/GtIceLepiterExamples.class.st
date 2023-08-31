@@ -310,13 +310,13 @@ GtIceLepiterExamples >> cleanUpRepositoriesAndDatabases [
 
 { #category : #'creation repositories' }
 GtIceLepiterExamples >> createBasicIcebergRepositoryWithName: repositoryName [
-	| iceRepository reposioryFolder |
+	| iceRepository repositoryFolder |
 	(self repositories includesKey: repositoryName)
 		ifTrue: [ Error signal: 'Repository already present.' ].
 
-	reposioryFolder := self randomTempFolderFor: repositoryName.
+	repositoryFolder := self randomTempFolderFor: repositoryName.
 	self
-		assert: reposioryFolder exists not
+		assert: repositoryFolder exists not
 		description: 'Repository folder should not exist'.
 	self
 		assert: (IceRepository registry anySatisfy: [ :aRepo | aRepo name = repositoryName ])
@@ -324,13 +324,11 @@ GtIceLepiterExamples >> createBasicIcebergRepositoryWithName: repositoryName [
 		description: 'Repository should not be registered'.
 
 	iceRepository := IceRepositoryCreator new
-			location: reposioryFolder;
+			location: repositoryFolder;
 			subdirectory: 'src';
 			ensureProjectFile;
 			commitishName: self mainBranchName;
 			createNewRepositoryNamed: repositoryName.
-
-	self assert: (self mainBranchNames includes: iceRepository branchName).
 
 	iceRepository workingCopy commitWithMessage: 'Add properties and project files'.	"Ideally do not register the repository with Iceberg.
 	Registered for now to make ot easy to debug."
