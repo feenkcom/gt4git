@@ -42,17 +42,16 @@ GtIceRepositoryCreator >> addLocalRepository [
 { #category : #accessing }
 GtIceRepositoryCreator >> cloneRepository [
 	self executeGitClone.
-	self repository location: self locationToUse.
-		
-	self commitishName 
-		ifNotNil: [ self repository switchToCommitishNamed: self commitishName ].
-	self repository pluginManager repositoryWillBeCreated: self repository.	
+	repository location: self locationToUse.
+
+	branchName ifNotNil: [ repository switchToCommitishNamed: branchName ].
+	repository pluginManager repositoryWillBeCreated: repository.
 
 	self doEnsureProject.
-	self repository workingCopy initializePackagesFromRepository.
-		
-	self repository pluginManager repositoryWasCreated: self repository.
-	^ self repository
+	repository workingCopy initializePackagesFromRepository.
+
+	repository pluginManager repositoryWasCreated: repository.
+	^ repository
 ]
 
 { #category : #accessing }
@@ -104,38 +103,36 @@ GtIceRepositoryCreator >> defaultLocation [
 ]
 
 { #category : #accessing }
+GtIceRepositoryCreator >> doEnsureProject [
+	ensureProjectFile ifFalse: [ ^ self ].
+	repository project isUnborn ifFalse: [ ^ self ].
+
+	repository workingCopy
+		project: (IceBasicProject onRepository: repository withSourceDirectory: self subdirectory).
+	repository workingCopy refreshRepositoryProperties.	"If the properties file has no format, set it the default legacy format"
+	repository workingCopy properties properties
+		at: #format
+		ifAbsent: [ repository workingCopy properties
+				fileFormat: (TIceRepositoryWriter users
+						detect: #isLegacyDefault
+						ifNone: [ Smalltalk at: #IceLibgitFiletreeWriter ]) ].
+
+	repository workingCopy refreshPackages
+]
+
+{ #category : #accessing }
 GtIceRepositoryCreator >> ensureProjectFile [
 	ensureProjectFile := true
 ]
 
 { #category : #accessing }
 GtIceRepositoryCreator >> executeGitClone [
-	| repo cloneOptions checkoutOptions callbacks |
-	location exists
-		ifTrue: [ IceCloneLocationAlreadyExists signalFor: location ].
-	
-	[location ensureCreateDirectory.
-	
-	repo := GtIceGitRepository on: location.
-	cloneOptions := repo cloneOptionsStructureClass withCredentialsProvider: (IceCredentialsProvider defaultForRemoteUrl: url).
+	location exists ifTrue: [ IceCloneLocationAlreadyExists signalFor: location ].
 
-	"Keeping references, because if not the GC take them."
-	checkoutOptions := cloneOptions checkoutOptions.
-	callbacks := cloneOptions fetchOptions callbacks.
-	callbacks transferProgress: IceGitTransferProgress new.
-	
-	checkoutOptions checkoutStrategy: LGitCheckoutStrategyEnum git_checkout_force.
-	checkoutOptions progressCallback: IceGitCheckoutProgress new.
-
-	repo clone: url options: cloneOptions.
-
-	(LGitRemote of: repo named: 'origin')
-		lookup;
-		setUrl: url.
-		
-	] on: LGitCallReturnHandler , IceWrongUrl do: [ :error |
-		location exists ifTrue: [ location ensureDeleteAll ].
-		error acceptError: (IceLibgitErrorVisitor onContext: self) ].
+	location ensureCreateDirectory.
+	url := self remoteToUse url.
+	repository := GtIceGitRepository on: location.
+	repository clone: url
 ]
 
 { #category : #initialization }

@@ -116,6 +116,14 @@ and the original repository''s url is {3}.'
 					 format: {self location. self origin. repo origin}) ]].
 ]
 
+{ #category : #actions }
+GtIceGitRepository >> clone: aString [
+	self
+		runGitWithArgs: {'clone'.
+				aString . 
+				'.'}
+]
+
 { #category : #'API - accessing' }
 GtIceGitRepository >> codeDirectory [
 	"Code repository might have been deleted or image might have been moved."

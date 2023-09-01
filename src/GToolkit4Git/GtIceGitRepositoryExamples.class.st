@@ -43,32 +43,17 @@ GtIceGitRepositoryExamples >> commitInformation [
 GtIceGitRepositoryExamples >> createRepository [
 	<gtExample>
 	<noTest>
-	| iceRepository repositoryFolder repositoryName |
-	"(IceRepository registry
-		contains: [ :rep | 
-			repositoryName := self exampleRepositoryName.
-			rep name = repositoryName ]) ifTrue: [ ^ self ]."
+	| iceRepository repositoryFolder |
+	(IceRepository registry
+		contains: [ :rep | rep name = self exampleRepositoryName ]) ifTrue: [ ^ self ].
 	repositoryFolder := FileReference
 			newTempFilePrefix: self exampleRepositoryName
 			suffix: 'dir'.
-
 	iceRepository := GtIceRepositoryCreator
 			fromUrl: 'https://github.com/feenkcom/gt4git.git'
 			to: repositoryFolder.
-
-
-	self assert: (self mainBranchNames includes: iceRepository branchName).
-
-	iceRepository workingCopy commitWithMessage: 'Add properties and project files'.	"Ideally do not register the repository with Iceberg.
-	Registered for now to make ot easy to debug."
 	IceRepository registerRepository: iceRepository.
-	self repositories at: repositoryName put: iceRepository.	"Ensure the repo was creates successfully"
-	self assert: iceRepository isMissing not description: 'Repository is present'.
-	self
-		assert: iceRepository isModified not
-		description: 'Repository is not modified'.
-	self assert: iceRepository branch commits size equals: 1.
-
+	self assert: iceRepository branchName = 'main'.
 	^ iceRepository
 ]
 
@@ -81,6 +66,7 @@ GtIceGitRepositoryExamples >> exampleRepositoryName [
 GtIceGitRepositoryExamples >> gt4gitRepository [
 	<gtExample>
 	<noTest>
+	self createRepository.
 	^ GtIceGitRepository
 		fromLibGitRepository: (IceRepository registry detect: [ :each | each name = 'gt4git' ])
 ]
