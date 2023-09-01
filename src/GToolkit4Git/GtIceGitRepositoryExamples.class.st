@@ -7,6 +7,7 @@ Class {
 { #category : #accessing }
 GtIceGitRepositoryExamples >> commitChanges [
 	<gtExample>
+	<noTest>
 	| commit diff |
 	commit := self commitInformation ancestors first.
 	diff := IceDiff from: commit to: commit parent.
@@ -17,6 +18,7 @@ GtIceGitRepositoryExamples >> commitChanges [
 { #category : #accessing }
 GtIceGitRepositoryExamples >> commitFilesystem [
 	<gtExample>
+	<noTest>
 	| fs |
 	fs := self commitInformation fileSystem fileSystem.
 	self assert: (fs referenceTo: '.project') exists.
@@ -70,6 +72,7 @@ GtIceGitRepositoryExamples >> gt4gitRepository [
 { #category : #accessing }
 GtIceGitRepositoryExamples >> repositoryPackages [
 	<gtExample>
+	<noTest>
 	| repo packages |
 	repo := self gt4gitRepository.
 	packages := repo packages.
