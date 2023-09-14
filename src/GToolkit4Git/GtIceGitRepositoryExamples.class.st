@@ -98,3 +98,13 @@ GtIceGitRepositoryExamples >> repositoryTags [
 	self assert: (tags contains: [ :tag | tag name = 'v0.8.99' ]).
 	^ tags
 ]
+
+{ #category : #accessing }
+GtIceGitRepositoryExamples >> revListForBranch [
+	<gtExample>
+	<noTest>
+	| repo branch |
+	repo := self gt4gitRepository.
+	branch := repo branchNamed: 'main'.
+	^ repo revListForBranch: branch
+]

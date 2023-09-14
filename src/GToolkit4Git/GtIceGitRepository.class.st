@@ -73,7 +73,7 @@ GtIceGitRepository >> branchNamed: aString ifPresent: presentBlock ifAbsent: abs
 	found := self lookupLocalBranch: aString ifAbsent: [ nil ].
 	^ found
 		ifNil: absentBlock
-		ifNotNil: [ presentBlock value: (self basicNewBranchNamed: found) ]
+		ifNotNil: [ presentBlock value: (self basicNewBranchNamed: aString) ]
 ]
 
 { #category : #'private - changes' }
@@ -534,14 +534,7 @@ GtIceGitRepository >> repositoryDirectory [
 
 { #category : #'API - commits' }
 GtIceGitRepository >> revListForBranch: aBranch [
-	^ revListMap
-		at: aBranch
-		ifAbsentPut: [ | revs lines |
-			lines := self
-					runGitWithArgs: {'rev-list'.
-							aBranch name}.
-			revs := lines collect: #trimBoth.
-			revs ]
+	^ self revListForCommit: aBranch commit id
 ]
 
 { #category : #'API - commits' }
