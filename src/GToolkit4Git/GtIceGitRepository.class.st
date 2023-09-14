@@ -534,14 +534,7 @@ GtIceGitRepository >> repositoryDirectory [
 
 { #category : #'API - commits' }
 GtIceGitRepository >> revListForBranch: aBranch [
-	^ revListMap
-		at: aBranch
-		ifAbsentPut: [ | revs lines |
-			lines := self
-					runGitWithArgs: {'rev-list'.
-							aBranch name}.
-			revs := lines collect: #trimBoth.
-			revs ]
+	^ self revListForCommit: aBranch commit
 ]
 
 { #category : #'API - commits' }
