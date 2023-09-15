@@ -29,6 +29,7 @@ GtIceGitRepositoryExamples >> commitFilesystem [
 { #category : #accessing }
 GtIceGitRepositoryExamples >> commitInformation [
 	<gtExample>
+	<noTest>
 	| commit |
 	commit := self repositoryTagInformation commit.
 	self assert: (commit id beginsWith: '2ff1365').
@@ -41,6 +42,7 @@ GtIceGitRepositoryExamples >> commitInformation [
 { #category : #accessing }
 GtIceGitRepositoryExamples >> createRepository [
 	<gtExample>
+	<noTest>
 	| iceRepository repositoryFolder |
 	(IceRepository registry
 		contains: [ :rep | rep name = self exampleRepositoryName ]) ifTrue: [ ^ self ].
@@ -64,6 +66,7 @@ GtIceGitRepositoryExamples >> exampleRepositoryName [
 { #category : #accessing }
 GtIceGitRepositoryExamples >> gt4gitRepository [
 	<gtExample>
+	<noTest>
 	self createRepository.
 	^ GtIceGitRepository
 		fromLibGitRepository: (IceRepository registry detect: [ :each | each name = 'gt4git' ])
@@ -83,6 +86,7 @@ GtIceGitRepositoryExamples >> repositoryPackages [
 { #category : #accessing }
 GtIceGitRepositoryExamples >> repositoryTagInformation [
 	<gtExample>
+	<noTest>
 	| tag |
 	tag := self repositoryTags detect: [:each | each name = 'v0.8.99'].
 	self assert: (tag commit id beginsWith: '2ff1365').
@@ -92,6 +96,7 @@ GtIceGitRepositoryExamples >> repositoryTagInformation [
 { #category : #accessing }
 GtIceGitRepositoryExamples >> repositoryTags [
 	<gtExample>
+	<noTest>
 	| repo tags |
 	repo := self gt4gitRepository.
 	tags := repo tags.
