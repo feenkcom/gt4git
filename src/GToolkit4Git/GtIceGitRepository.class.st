@@ -570,6 +570,14 @@ GtIceGitRepository >> runGitWithArgs: args [
 ]
 
 { #category : #'API - accessing' }
+GtIceGitRepository >> setHead: aGtIceGitLocalBranch [ 
+		self
+		runGitWithArgs: {'update-ref'.
+				'HEAD'.
+				aGtIceGitLocalBranch commit id}.
+]
+
+{ #category : #'API - accessing' }
 GtIceGitRepository >> subdirectory [
 	^ self project sourceDirectory
 ]
@@ -623,10 +631,6 @@ GtIceGitRepository >> writeCommit: indexTreeId message: message parents: parentC
 	self
 		runGitWithArgs: {'update-ref'.
 				ref.
-				commitId}.
-	self
-		runGitWithArgs: {'update-ref'.
-				'HEAD'.
 				commitId}.
 	^ commitId
 ]
