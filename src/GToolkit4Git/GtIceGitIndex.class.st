@@ -35,10 +35,7 @@ GtIceGitIndex >> addToGitIndex [
 { #category : #'API - commiting' }
 GtIceGitIndex >> commitWithMessage: message andParents: parentCommits [
 	| signature indexTreeId commitId |
-self halt. 
-	self addToGitIndex.	"[ signature := self repositoryHandle defaultSignature ]
-			on: LGit_GIT_ENOTFOUND, LGit_GIT_ERROR
-			do: [ :e | IceGitUsernameOrEmailNotFound guessKind: e ifNot: [ e pass ] ]."
+	self addToGitIndex.
 	indexTreeId := repository writeTreeAndReturnOid.
 	commitId := repository
 			writeCommit: indexTreeId
@@ -47,7 +44,7 @@ self halt.
 			updateReference: repository head name
 			author: signature
 			committer: signature.
-	^ commitId
+	^ repository commitFromGitCommit: commitId
 ]
 
 { #category : #accessing }
