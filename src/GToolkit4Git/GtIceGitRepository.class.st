@@ -350,6 +350,13 @@ GtIceGitRepository >> initializeOn: aFileReference [
 	location := aFileReference
 ]
 
+{ #category : #'private - commits' }
+GtIceGitRepository >> internalStoreVersion: aMCVersion [
+	self writerClass
+		forInternalStoreFileOut: aMCVersion 
+		on: self
+]
+
 { #category : #testing }
 GtIceGitRepository >> isMissing [
 	^ self repositoryDirectory isNil 
@@ -563,6 +570,14 @@ GtIceGitRepository >> runGitWithArgs: args [
 ]
 
 { #category : #'API - accessing' }
+GtIceGitRepository >> setHead: aGtIceGitLocalBranch [ 
+		self
+		runGitWithArgs: {'update-ref'.
+				'HEAD'.
+				aGtIceGitLocalBranch commit id}.
+]
+
+{ #category : #'API - accessing' }
 GtIceGitRepository >> subdirectory [
 	^ self project sourceDirectory
 ]
@@ -602,13 +617,22 @@ GtIceGitRepository >> tagsFor: anId [
 
 { #category : #accessing }
 GtIceGitRepository >> writeCommit: indexTreeId message: message parents: parentCommits updateReference: ref author: author committer: committer [
-	| lines |
+	| lines commitId parentArgs |
+	parentArgs := (parentCommits
+			collect: [ :each | 
+				{'-p'.
+					each id} ]) flatten.
 	lines := self
 			runGitWithArgs: {'commit-tree'.
-					indexTreeId.
-					'-m'.
-					message}.
-	^ lines first trimBoth
+					indexTreeId} , parentArgs
+					, {'-m'.
+							message}.
+	commitId := lines first trimBoth.
+	self
+		runGitWithArgs: {'update-ref'.
+				ref.
+				commitId}.
+	^ commitId
 ]
 
 { #category : #accessing }
@@ -621,4 +645,9 @@ GtIceGitRepository >> writeTreeAndReturnOid [
 	| lines |
 	lines := self runGitWithArgs: {'write-tree'}.
 	^ lines first trimBoth
+]
+
+{ #category : #'private - commits' }
+GtIceGitRepository >> writerClass [
+	^ self project writerClass
 ]
