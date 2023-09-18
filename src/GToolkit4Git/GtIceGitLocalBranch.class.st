@@ -16,6 +16,12 @@ GtIceGitLocalBranch >> commit [
 	^ commit := self repository commitFromGitCommit: gitId
 ]
 
+{ #category : #'as yet unclassified' }
+GtIceGitLocalBranch >> fileSystem [
+	
+	^ self commit fileSystem
+]
+
 { #category : #accessing }
 GtIceGitLocalBranch >> hasUpstream [
 	self upstreamIfNone: [ ^ false ].
