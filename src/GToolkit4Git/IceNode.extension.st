@@ -6,6 +6,7 @@ IceNode >> gtBrowseActionFor: anAction [
 	self value definition needsRepositoryForTool ifTrue: [ ^ anAction noAction ].
 
 	^ anAction button
+		priority: 1;
 		icon: BrGlamorousVectorIcons emphasizedBrowse;
 		tooltip: 'Browse current version';
 		action: [ :aButton | aButton phlow spawnTool: (self value definition toolIn: nil) ]
