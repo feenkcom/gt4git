@@ -1,6 +1,9 @@
 Class {
 	#name : #GtIceGitCommit,
 	#superclass : #IceGitCommit,
+	#instVars : [
+		'project'
+	],
 	#category : #'GToolkit4Git-Libgit-replace'
 }
 
@@ -15,6 +18,11 @@ GtIceGitCommit >> entryByPath: aString ifAbsent: aBlock [
 GtIceGitCommit >> fileSystem [
 	^(FileSystem store: (GtGitCommitStore on: id inRepo: repository))
 					root
+]
+
+{ #category : #accessing }
+GtIceGitCommit >> project [
+	^project ifNil: [project := super project]
 ]
 
 { #category : #accessing }
