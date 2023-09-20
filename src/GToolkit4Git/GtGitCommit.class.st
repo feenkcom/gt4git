@@ -3,7 +3,8 @@ Class {
 	#superclass : #IceGitCommit,
 	#instVars : [
 		'lepiterWorkingCopy',
-		'fileSystem'
+		'fileSystem',
+		'project'
 	],
 	#category : #'GToolkit4Git-Model'
 }
@@ -47,6 +48,11 @@ GtGitCommit >> lepiterWorkingCopy [
 { #category : #accessing }
 GtGitCommit >> lepiterWorkingCopy: aLepiterWorkingCopy [
 	lepiterWorkingCopy := aLepiterWorkingCopy
+]
+
+{ #category : #accessing }
+GtGitCommit >> project [
+	^project ifNil: [project := super project]
 ]
 
 { #category : #accessing }
