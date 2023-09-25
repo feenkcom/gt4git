@@ -24,6 +24,12 @@ GtGitCommitFileReader >> getNext: anInteger [
 ]
 
 { #category : #accessing }
+GtGitCommitFileReader >> getNextByte [
+	[ buffer isEmpty ] whileTrue: [ buffer addAll: stdout pollBytes ].
+	^ buffer removeFirst
+]
+
+{ #category : #accessing }
 GtGitCommitFileReader >> getNextChar [
 	[ buffer isEmpty ] whileTrue: [ buffer addAll: stdout pollString ].
 	^ buffer removeFirst
@@ -33,9 +39,11 @@ GtGitCommitFileReader >> getNextChar [
 GtGitCommitFileReader >> getNextLine [
 	^ String
 		streamContents: [ :str | 
-			| ch |
-			[ ch := self getNextChar.
-			ch = Character lf ] whileFalse: [ str nextPut: ch ] ]
+			| ch lfCode |
+			lfCode := Character lf asciiValue.
+			[
+			ch := self getNextByte.
+			ch = lfCode ] whileFalse: [ str nextPut: (Character value: ch) ] ]
 ]
 
 { #category : #accessing }
