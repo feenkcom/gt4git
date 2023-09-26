@@ -7,7 +7,8 @@ Class {
 		'stdout',
 		'stdin',
 		'stderr',
-		'buffer'
+		'buffer',
+		'lock'
 	],
 	#category : #'GToolkit4Git-Libgit-replace'
 }
@@ -49,14 +50,15 @@ GtGitCommitFileReader >> getNextLine [
 { #category : #accessing }
 GtGitCommitFileReader >> readStreamFor: aString [
 	| out line bytes |
-	stdin
-		nextPutAll: aString;
-		lf.
-	line := self getNextLine.
-	bytes := (line splitOn: Character space) third asInteger.
-	out := self getNext: bytes.
-	self eatNewline.
-	^ ZnBufferedReadStream on: out readStream
+	lock
+		critical: [ stdin
+				nextPutAll: aString;
+				lf.
+			line := self getNextLine.
+			bytes := (line splitOn: Character space) third asInteger.
+			out := self getNext: bytes.
+			self eatNewline.
+			^ ZnBufferedReadStream on: out readStream ]
 ]
 
 { #category : #accessing }
@@ -72,7 +74,8 @@ GtGitCommitFileReader >> start [
 	stdout := externalProcess asynchronousStdout.
 	stderr := externalProcess asynchronousStderr.
 	stdin := externalProcess stdin.
-	buffer := OrderedCollection new
+	buffer := OrderedCollection new.
+	lock := Mutex new.
 ]
 
 { #category : #accessing }
