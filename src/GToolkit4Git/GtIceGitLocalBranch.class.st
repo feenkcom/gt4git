@@ -55,7 +55,7 @@ GtIceGitLocalBranch >> remoteBranchFor: aRemote ifNone: aBlock [
 			lookupRemoteBranch: aRemote name , '/' , self name
 			ifAbsent: [ nil ].
 	^ found
-		ifNil: aBlock value
+		ifNil: [aBlock value]
 		ifNotNil: [ repository basicNewRemoteBranchNamed: found name ]
 ]
 
