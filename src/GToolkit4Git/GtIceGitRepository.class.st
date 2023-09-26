@@ -441,6 +441,16 @@ GtIceGitRepository >> mcVersionFor: iceVersion [
 				signal ]
 ]
 
+{ #category : #ancestry }
+GtIceGitRepository >> mergeBaseBetween: id1 and: id2 [
+	| lines |
+	lines := self
+			runGitWithArgs: {'merge-base'.
+					id1.
+					id2}.
+	^ lines first
+]
+
 { #category : #'API - accessing' }
 GtIceGitRepository >> newCommitWalk [
 	^ GtIceCommitWalk forRepository: self

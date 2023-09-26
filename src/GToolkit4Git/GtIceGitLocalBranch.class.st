@@ -56,7 +56,7 @@ GtIceGitLocalBranch >> remoteBranchFor: aRemote ifNone: aBlock [
 			ifAbsent: [ nil ].
 	^ found
 		ifNil: [aBlock value]
-		ifNotNil: [ repository basicNewRemoteBranchNamed: found name ]
+		ifNotNil: [ repository basicNewRemoteBranchNamed: self name ]
 ]
 
 { #category : #accessing }
