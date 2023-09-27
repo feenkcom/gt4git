@@ -40,9 +40,9 @@ GtIceGitLocalBranch >> incomingCommitsFrom: aRemote [
 { #category : #accessing }
 GtIceGitLocalBranch >> outgoingCommitsTo: aRemote [
 	| remoteBranch walk |
-	remoteBranch := repository
-			lookupRemoteBranch: aRemote name , '/' , self name
-			ifAbsent: [ ^ self reducedOutgoingCommitsWhenNoRemote ].
+	remoteBranch := self
+			remoteBranchFor: aRemote
+			ifNone: [ ^ self reducedOutgoingCommitsWhenNoRemote ].
 	walk := self newCommitWalk.
 	walk uptoCommit: remoteBranch.
 	^ walk commits
@@ -50,13 +50,12 @@ GtIceGitLocalBranch >> outgoingCommitsTo: aRemote [
 
 { #category : #accessing }
 GtIceGitLocalBranch >> remoteBranchFor: aRemote ifNone: aBlock [
-	| found |
-	found := repository
-			lookupRemoteBranch: aRemote name , '/' , self name
-			ifAbsent: [ nil ].
+	| found remoteName |
+	remoteName := aRemote name , '/' , self name.
+	found := repository lookupRemoteBranch: remoteName ifAbsent: [ nil ].
 	^ found
-		ifNil: aBlock value
-		ifNotNil: [ repository basicNewRemoteBranchNamed: found name ]
+		ifNil: [ aBlock value ]
+		ifNotNil: [ repository basicNewRemoteBranchNamed: remoteName ]
 ]
 
 { #category : #accessing }

@@ -32,6 +32,11 @@ GtIceCommitWalk >> fromTag: tag [
 	ids := repository revListForBranch: tag
 ]
 
+{ #category : #accessing }
+GtIceCommitWalk >> ids [
+	^ids
+]
+
 { #category : #walking }
 GtIceCommitWalk >> rawResultsDo: aBlock [
 	ids do: [ :each | aBlock value: each ]
@@ -39,5 +44,5 @@ GtIceCommitWalk >> rawResultsDo: aBlock [
 
 { #category : #'walk definition' }
 GtIceCommitWalk >> uptoCommit: commit [
-	ids := ids copyUpTo: commit
+	ids := ids copyWithoutAll: commit newCommitWalk ids asSet.
 ]

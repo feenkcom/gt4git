@@ -7,6 +7,13 @@ Class {
 	#category : #'GToolkit4Git-Libgit-replace'
 }
 
+{ #category : #ancestry }
+GtIceGitCommit >> commonAncestorWithCommit: anIceGitCommit [
+	| mergeBaseId |
+	mergeBaseId := repository mergeBaseBetween: id and: anIceGitCommit id.
+	^ mergeBaseId ifNotNil: [ self repository lookupCommit: mergeBaseId ]
+]
+
 { #category : #accessing }
 GtIceGitCommit >> entryByPath: aString ifAbsent: aBlock [
 	| ref |
