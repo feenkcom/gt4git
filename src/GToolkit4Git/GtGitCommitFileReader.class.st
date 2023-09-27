@@ -15,24 +15,18 @@ Class {
 
 { #category : #accessing }
 GtGitCommitFileReader >> eatNewline [
-	self getNextChar
+	self getNextByte
 ]
 
 { #category : #accessing }
 GtGitCommitFileReader >> getNext: anInteger [
 	^ ByteArray
-		streamContents: [ :str | anInteger timesRepeat: [ str nextPut: self getNextChar asInteger ] ]
+		streamContents: [ :str | anInteger timesRepeat: [ str nextPut: self getNextByte ] ]
 ]
 
 { #category : #accessing }
 GtGitCommitFileReader >> getNextByte [
 	[ buffer isEmpty ] whileTrue: [ buffer addAll: stdout pollBytes ].
-	^ buffer removeFirst
-]
-
-{ #category : #accessing }
-GtGitCommitFileReader >> getNextChar [
-	[ buffer isEmpty ] whileTrue: [ buffer addAll: stdout pollString ].
 	^ buffer removeFirst
 ]
 
