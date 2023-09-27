@@ -628,6 +628,7 @@ GtIceGitRepository >> tagsFor: anId [
 { #category : #accessing }
 GtIceGitRepository >> writeCommit: indexTreeId message: message parents: parentCommits updateReference: ref author: author committer: committer [
 	| lines commitId parentArgs |
+	head := nil.
 	parentArgs := (parentCommits
 			collect: [ :each | 
 				{'-p'.
@@ -647,11 +648,6 @@ GtIceGitRepository >> writeCommit: indexTreeId message: message parents: parentC
 				'HEAD'.
 				commitId}.
 	^ commitId
-]
-
-{ #category : #accessing }
-GtIceGitRepository >> writeTree: indexTreeId message: message parents: parentCommits updateReference: ref author: author committer: committer [
-	
 ]
 
 { #category : #accessing }
