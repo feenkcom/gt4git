@@ -642,6 +642,10 @@ GtIceGitRepository >> writeCommit: indexTreeId message: message parents: parentC
 		runGitWithArgs: {'update-ref'.
 				ref.
 				commitId}.
+	self
+		runGitWithArgs: {'update-ref'.
+				'HEAD'.
+				commitId}.
 	^ commitId
 ]
 
