@@ -48,6 +48,11 @@ GtIceGitLocalBranch >> outgoingCommitsTo: aRemote [
 	^ walk commits
 ]
 
+{ #category : #'API - remotes' }
+GtIceGitLocalBranch >> pushTo: aRemote [
+	repository pushBranch: self name to: aRemote name
+]
+
 { #category : #accessing }
 GtIceGitLocalBranch >> remoteBranchFor: aRemote ifNone: aBlock [
 	| found remoteName |
