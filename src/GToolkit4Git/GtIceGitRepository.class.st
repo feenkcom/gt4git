@@ -162,6 +162,11 @@ GtIceGitRepository >> commitsFromIds: idCollection [
 	^ commitLines collect: [ :each | self iceGitCommitFromLines: each ]
 ]
 
+{ #category : #'as yet unclassified' }
+GtIceGitRepository >> configureUpstreamIfNecessary [
+	#TODO
+]
+
 { #category : #'*GToolkit4Git' }
 GtIceGitRepository >> getDeltasForFullDiff [
 	#TODO.
@@ -502,6 +507,13 @@ GtIceGitRepository >> properties [
 	^ self workingCopy repositoryProperties
 ]
 
+{ #category : #accessing }
+GtIceGitRepository >> pushBranch: aString to: aRemoteName [
+	self runGitWithArgs: {'push' .
+	    aRemoteName . 
+	    aString}
+]
+
 { #category : #'API - remotes' }
 GtIceGitRepository >> remoteNamed: aName ifAbsent: aBlockClosure [
 	^ remoteMap
@@ -628,6 +640,8 @@ GtIceGitRepository >> tagsFor: anId [
 { #category : #accessing }
 GtIceGitRepository >> writeCommit: indexTreeId message: message parents: parentCommits updateReference: ref author: author committer: committer [
 	| lines commitId parentArgs |
+	head := nil.
+	branchMap := Dictionary new.
 	parentArgs := (parentCommits
 			collect: [ :each | 
 				{'-p'.
@@ -642,12 +656,11 @@ GtIceGitRepository >> writeCommit: indexTreeId message: message parents: parentC
 		runGitWithArgs: {'update-ref'.
 				ref.
 				commitId}.
+	self
+		runGitWithArgs: {'update-ref'.
+				'HEAD'.
+				commitId}.
 	^ commitId
-]
-
-{ #category : #accessing }
-GtIceGitRepository >> writeTree: indexTreeId message: message parents: parentCommits updateReference: ref author: author committer: committer [
-	
 ]
 
 { #category : #accessing }
