@@ -629,6 +629,7 @@ GtIceGitRepository >> tagsFor: anId [
 GtIceGitRepository >> writeCommit: indexTreeId message: message parents: parentCommits updateReference: ref author: author committer: committer [
 	| lines commitId parentArgs |
 	head := nil.
+	branchMap := Dictionary new.
 	parentArgs := (parentCommits
 			collect: [ :each | 
 				{'-p'.
