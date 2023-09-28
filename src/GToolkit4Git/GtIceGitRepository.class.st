@@ -162,6 +162,11 @@ GtIceGitRepository >> commitsFromIds: idCollection [
 	^ commitLines collect: [ :each | self iceGitCommitFromLines: each ]
 ]
 
+{ #category : #'as yet unclassified' }
+GtIceGitRepository >> configureUpstreamIfNecessary [
+	#TODO
+]
+
 { #category : #'*GToolkit4Git' }
 GtIceGitRepository >> getDeltasForFullDiff [
 	#TODO.
