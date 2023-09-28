@@ -50,7 +50,7 @@ GtIceGitLocalBranch >> outgoingCommitsTo: aRemote [
 
 { #category : #'API - remotes' }
 GtIceGitLocalBranch >> pushTo: aRemote [
-	repository pushBranch: self to: aRemote
+	repository pushBranch: self name to: aRemote name
 ]
 
 { #category : #accessing }

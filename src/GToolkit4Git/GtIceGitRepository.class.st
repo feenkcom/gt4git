@@ -507,6 +507,13 @@ GtIceGitRepository >> properties [
 	^ self workingCopy repositoryProperties
 ]
 
+{ #category : #accessing }
+GtIceGitRepository >> pushBranch: aString to: aRemoteName [
+	self runGitWithArgs: {'push' .
+	    aRemoteName . 
+	    aString}
+]
+
 { #category : #'API - remotes' }
 GtIceGitRepository >> remoteNamed: aName ifAbsent: aBlockClosure [
 	^ remoteMap
