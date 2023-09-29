@@ -24,7 +24,10 @@ LGitCommit >> message [
 	"git cannot always be trusted to return the right encoding"
 	^ [ messageBytes decodeWith: encoding ]
 		  on: ZnCharacterEncodingError
-		  do: [ message asByteString ]
+		  do: [ 
+		  	self 
+		  		forPharo11OrNewer: [ messageBytes asString ]
+		  		forPharo10: [ message asByteString ] ]
 ]
 
 { #category : #'*GToolkit4Git' }
