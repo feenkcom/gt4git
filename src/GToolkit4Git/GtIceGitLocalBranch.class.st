@@ -23,6 +23,17 @@ GtIceGitLocalBranch >> fileSystem [
 ]
 
 { #category : #accessing }
+GtIceGitLocalBranch >> gtPullFrom: aRemote inWorkingCopy: aLepiterWorkingCopy [
+	"A copy of the #pullFrom: method to support a Lepiter-aware pull."
+
+	| remoteBranch |
+	repository pullBranch: self name from: aRemote.
+	remoteBranch := repository
+			basicNewRemoteBranchNamed: aRemote name , '/' , self name.
+	aLepiterWorkingCopy mergeCommit: remoteBranch commit
+]
+
+{ #category : #accessing }
 GtIceGitLocalBranch >> hasUpstream [
 	self upstreamIfNone: [ ^ false ].
 	^ true

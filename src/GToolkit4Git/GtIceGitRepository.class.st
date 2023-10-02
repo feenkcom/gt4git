@@ -116,6 +116,12 @@ and the original repository''s url is {3}.'
 					 format: {self location. self origin. repo origin}) ]].
 ]
 
+{ #category : #accessing }
+GtIceGitRepository >> clearCaches [
+	head := nil.
+	branchMap := Dictionary new
+]
+
 { #category : #actions }
 GtIceGitRepository >> clone: aString [
 	self
@@ -165,6 +171,15 @@ GtIceGitRepository >> commitsFromIds: idCollection [
 { #category : #'as yet unclassified' }
 GtIceGitRepository >> configureUpstreamIfNecessary [
 	#TODO
+]
+
+{ #category : #accessing }
+GtIceGitRepository >> fetch [
+	"Fetch all commits and branches from all remotes"
+
+	self
+		runGitWithArgs: {'fetch'.
+				'--all'}
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -507,6 +522,15 @@ GtIceGitRepository >> properties [
 	^ self workingCopy repositoryProperties
 ]
 
+{ #category : #'as yet unclassified' }
+GtIceGitRepository >> pullBranch: aString from: aRemote [
+	self
+		runGitWithArgs: {'pull'.
+				aRemote name.
+				aString}.
+	self clearCaches
+]
+
 { #category : #accessing }
 GtIceGitRepository >> pushBranch: aString to: aRemoteName [
 	self runGitWithArgs: {'push' .
@@ -640,8 +664,7 @@ GtIceGitRepository >> tagsFor: anId [
 { #category : #accessing }
 GtIceGitRepository >> writeCommit: indexTreeId message: message parents: parentCommits updateReference: ref author: author committer: committer [
 	| lines commitId parentArgs |
-	head := nil.
-	branchMap := Dictionary new.
+	self clearCaches.
 	parentArgs := (parentCommits
 			collect: [ :each | 
 				{'-p'.
