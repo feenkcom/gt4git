@@ -753,7 +753,7 @@ GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts inPane: con
 						label: self incomingCommits size asString;
 						icon: BrGlamorousVectorIcons down;
 						action: [ :aButton | 
-							self pull.
+							self gtLepiterAwarePull.
 							aButton phlow fireUpdateWish ]) ]
 ]
 
