@@ -45,13 +45,14 @@ GtGitElementExamples >> scripterOnExpandedElementWithAddDialogOpen [
 	<gtExample>
 	| aScripter |
 	aScripter := self scripterOnExpandedElement.
-	aScripter click
-		label: 'Click search';
-		id: #sidebar;
-		id: #toolbar;
-		onChildAt: 1;
-		onChildAt: 1;
-		play.
+	aScripter
+		clickStep: [ :s | 
+			s
+				label: 'Click search';
+				id: #sidebar;
+				id: #toolbar;
+				onChildAt: 1;
+				onChildAt: 1 ].
 
 	^ aScripter
 ]
@@ -61,29 +62,33 @@ GtGitElementExamples >> scripterOnExpandedElementWithDeletedRepository [
 	<gtExample>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDone.
-	aScripter click
-		label: 'Click on delete button';
-		id: #content;
-		id: #toolbar;
-		onChildAt: 2;
-		play.
+	aScripter
+		clickStep: [ :s | 
+			s
+				label: 'Click on delete button';
+				id: #content;
+				id: #toolbar;
+				onChildAt: 2 ].
 
-	aScripter click
-		label: 'Click on checkbox';
-		onSpaceRoot;
-		id: #'git-repository-removal-checkbox';
-		play.
+	aScripter
+		clickStep: [ :s | 
+			s
+				label: 'Click on checkbox';
+				onSpaceRoot;
+				id: #'git-repository-removal-checkbox' ].
 
-	aScripter click
-		label: 'Click on remove button';
-		onSpaceRoot;
-		id: #'change-button-action';
-		play.
+	aScripter
+		clickStep: [ :s | 
+			s
+				label: 'Click on remove button';
+				onSpaceRoot;
+				id: #'change-button-action' ].
 
-	aScripter check
-		label: 'Check repository';
-		satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository isNil ];
-		play.
+	aScripter
+		checkStep: [ :s | 
+			s
+				label: 'Check repository';
+				satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository isNil ] ].
 
 	^ aScripter
 ]
@@ -94,28 +99,29 @@ GtGitElementExamples >> scripterOnExpandedElementWithEditedBranch [
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithExpandedProperties.
 
-	aScripter click
-		label: 'Click on branch field';
-		id: (GtMagritteFieldElementId new
-				description: aScripter element pages first contentElement tool repository branchDescription);
-		play.
+	aScripter
+		clickStep: [ :s | 
+			s
+				label: 'Click on branch field';
+				id: (GtMagritteFieldElementId new
+						description: aScripter element pages first contentElement tool repository branchDescription) ].
 
-	aScripter type
-		label: 'Edit branch field';
-		text: 'test';
-		play.
-
-	"this is a mess, because we're getting everything from elements"
-	aScripter check
-		label: 'Check branch';
-		satisfies: [ :aChangeView | 
-			| mementoCache |
-			mementoCache := ((((((aChangeView pages last contentElement tool
-					childNamed: #content) childNamed: #definitions) childNamed: #content)
-					childAt: 1) childAt: 1) userData at: #gtmemento) cache.
-			(mementoCache associationsSelect: [ :a | a key label = 'Branch' ]) anyOne
-				value valueOrNil currentValue = 'test' ];
-		play.
+	aScripter
+		typeStep: [ :s | 
+			s
+				label: 'Edit branch field';
+				text: 'test' ].	"this is a mess, because we're getting everything from elements"
+	aScripter
+		checkStep: [ :s | 
+			s
+				label: 'Check branch';
+				satisfies: [ :aChangeView | 
+					| mementoCache |
+					mementoCache := ((((((aChangeView pages last contentElement tool
+							childNamed: #content) childNamed: #definitions) childNamed: #content)
+							childAt: 1) childAt: 1) userData at: #gtmemento) cache.
+					(mementoCache associationsSelect: [ :a | a key label = 'Branch' ]) anyOne
+						value valueOrNil currentValue = 'test' ] ].
 
 	^ aScripter
 ]
@@ -125,13 +131,14 @@ GtGitElementExamples >> scripterOnExpandedElementWithExpandedProperties [
 	<gtExample>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDone.
-	
-	aScripter click
-		label: 'Click on expander button';
-		id: #content;
-		id: #definitions;
-		id: #sidebar;
-		play.
+
+	aScripter
+		clickStep: [ :s | 
+			s
+				label: 'Click on expander button';
+				id: #content;
+				id: #definitions;
+				id: #sidebar ].
 
 	^ aScripter
 ]
@@ -141,13 +148,14 @@ GtGitElementExamples >> scripterOnExpandedElementWithExpandedSearch [
 	<gtExample>
 	| aScripter |
 	aScripter := self scripterOnExpandedElement.
-	aScripter click
-		label: 'Click search';
-		id: #sidebar;
-		id: #toolbar;
-		onChildAt: 1;
-		onChildAt: 3;
-		play.
+	aScripter
+		clickStep: [ :s | 
+			s
+				label: 'Click search';
+				id: #sidebar;
+				id: #toolbar;
+				onChildAt: 1;
+				onChildAt: 3 ].
 
 	^ aScripter
 ]
@@ -175,11 +183,12 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogOpen [
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithAddDialogOpen.
 	(FileLocator imageDirectory / self repositoryName) ensureCreateDirectory.
-	aScripter click
-		label: 'Click initialization';
-		onSpaceRoot;
-		id: #'git-initial';
-		play.
+	aScripter
+		clickStep: [ :s | 
+			s
+				label: 'Click initialization';
+				onSpaceRoot;
+				id: #'git-initial' ].
 
 	^ aScripter
 ]
@@ -190,19 +199,19 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDone [
 	<after: #cleanUpRepository>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDialogNavigated.
-	aScripter click
-		label: 'Click on directory';
-		onSpaceRoot;
-		id: #'git-initialize-page';
-		onChildAt: 3;
-		onChildAt: 1;
-		play.
-
-	"this will need to be changed once we select correctly"
-	aScripter check
-		label: 'Check repository';
-		satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository isNotNil ];
-		play.
+	aScripter
+		clickStep: [ :s | 
+			s
+				label: 'Click on directory';
+				onSpaceRoot;
+				id: #'git-initialize-page';
+				onChildAt: 3;
+				onChildAt: 1 ].	"this will need to be changed once we select correctly"
+	aScripter
+		checkStep: [ :s | 
+			s
+				label: 'Check repository';
+				satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository isNotNil ] ].
 
 	^ aScripter
 ]
@@ -214,26 +223,30 @@ GtGitElementExamples >> scripterOnExpandedElementWithSearchResult [
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithExpandedSearch.
 
-	aScripter check
-		label: 'Check no repository';
-		satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository isNil ];
-		play.
+	aScripter
+		checkStep: [ :s | 
+			s
+				label: 'Check no repository';
+				satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository isNil ] ].
 
-	aScripter type
-		label: 'Search for GToolkit repository';
-		text: 'gtoolkit';
-		play.
+	aScripter
+		typeStep: [ :s | 
+			s
+				label: 'Search for GToolkit repository';
+				text: 'gtoolkit' ].
 
 
-	aScripter keyPress
-		label: 'Select repository';
-		key: BlKeyboardKey return;
-		play.
+	aScripter
+		keyPressStep: [ :s | 
+			s
+				label: 'Select repository';
+				key: BlKeyboardKey return ].
 
-	aScripter check
-		label: 'Check repository';
-		satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository name = 'gtoolkit' ];
-		play.
+	aScripter
+		checkStep: [ :s | 
+			s
+				label: 'Check repository';
+				satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository name = 'gtoolkit' ] ].
 
 	^ aScripter
 ]
@@ -246,38 +259,43 @@ GtGitElementExamples >> scripterOnExpandedElementWithSelectedRepository [
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDone.
 
-	aScripter check
-		label: 'Unselect repository';
-		do: [ :aChangeView | 
-			aChangeView pages last contentElement tool
-				onNavigationModelChange: (GtGitRepositorySelected new repository: nil) ];
-		play.
+	aScripter
+		checkStep: [ :s | 
+			s
+				label: 'Unselect repository';
+				do: [ :aChangeView | 
+					aChangeView pages last contentElement tool
+						onNavigationModelChange: (GtGitRepositorySelected new repository: nil) ] ].
 
-	aScripter check
-		label: 'Check no repository';
-		satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository isNil ];
-		play.
+	aScripter
+		checkStep: [ :s | 
+			s
+				label: 'Check no repository';
+				satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository isNil ] ].
 
-	aScripter click
-		label: 'Click first repository';
-		id: #sidebar;
-		id: #content;
-		id: #scrollable;
-		onChildAt: 1;
-		play.
+	aScripter
+		clickStep: [ :s | 
+			s
+				label: 'Click first repository';
+				id: #sidebar;
+				id: #content;
+				id: #scrollable;
+				onChildAt: 1 ].
 
-	aScripter check
-		label: 'Check repository selected';
-		satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository isNotNil ];
-		play.
+	aScripter
+		checkStep: [ :s | 
+			s
+				label: 'Check repository selected';
+				satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository isNotNil ] ].
 
-	aScripter check
-		label: 'Check repository rendering basics (name is shown)';
-		satisfies: [ :aChangeView | 
-			((aChangeView pages last contentElement tool childNamed: #content)
-				childNamed: #toolbar) children first text asString
-				= aChangeView pages last contentElement tool repository name ];
-		play.
+	aScripter
+		checkStep: [ :s | 
+			s
+				label: 'Check repository rendering basics (name is shown)';
+				satisfies: [ :aChangeView | 
+					((aChangeView pages last contentElement tool childNamed: #content)
+						childNamed: #toolbar) children first text asString
+						= aChangeView pages last contentElement tool repository name ] ].
 
 	^ aScripter
 ]
