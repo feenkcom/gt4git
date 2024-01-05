@@ -10,7 +10,7 @@ BaselineOfGToolkit4Git >> baseline: spec [
 	spec for: #'common' do: [
 		spec
 			baseline: 'Brick' with: [
-				spec repository: 'github://feenkcom/Brick:v0.8.1092/src' ].
+				spec repository: 'github://feenkcom/Brick:v0.8.1093/src' ].
 
 		spec package: 'GToolkit4Git' with: [
 			spec requires: #('Brick') ].
