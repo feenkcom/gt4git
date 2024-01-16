@@ -22,7 +22,7 @@ GtGitPackageAndBaselineCreationForm >> addInstallationInstructions [
 			s setToEnd
 				nextPutAll: '## Installation
 
-```
+```st
 Metacello new
 	repository: ''' , self guessRepository
 						, ''';
