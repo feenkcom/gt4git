@@ -6,6 +6,7 @@ CompiledMethod >> gtGitCommitsFor: aView [
 	| packageName |
 	^ aView columnedList
 		title: 'Git history';
+		priority: 15;
 		items: [ packageName := self package name.
 			IceRepository registry
 				detect: [ :each | each includesPackageNamed: packageName ]
