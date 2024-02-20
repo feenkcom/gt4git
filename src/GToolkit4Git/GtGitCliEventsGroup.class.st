@@ -12,7 +12,7 @@ GtGitCliEventsGroup >> gtItemsFor: aView [
 		priority: 10;
 		items: [ self ];
 		children: #subEvents;
-		column: 'Event Type' text: [ :anEvent | anEvent class eventLabel ] weight: 1;
+		column: 'Event Type' text: [ :anEvent | anEvent eventLabel ] weight: 1;
 		column: 'Timestamp' text: #timestamp weight: 1;
 		column: 'Duration' text: [ :anEvent | anEvent duration ] weight: 1;
 		column: 'Command' text: [ :anEvent | anEvent args first ] weight: 1;
