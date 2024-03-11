@@ -51,7 +51,7 @@ GtGitAddRepositoryStencil >> initialPage [
 						id: anItemObject second;
 						when: BlClickEvent do: anItemObject third ];
 				fitContent;
-				padding: (BlInsets all: 3);
+				padding: (BlInsets all: 10);
 				items: {{'Clone a remote repository'.
 							#'git-remote'.
 							[ self openGithubPage ]}.
@@ -66,10 +66,11 @@ GtGitAddRepositoryStencil >> initialPage [
 { #category : #accessing }
 GtGitAddRepositoryStencil >> initializePage [
 	| fileBrowser |
-	fileBrowser := BrFileSelector new margin: (BlInsets all: 5).
+	fileBrowser := BrFileSelector new margin: (BlInsets all: 10).
 
-	fileBrowser vExact: 400.
-	fileBrowser hExact: 464.
+	fileBrowser
+		vExact: 400;
+		hExact: 464.
 
 	fileBrowser
 		buttonLabel: 'Initialize';
@@ -99,29 +100,32 @@ GtGitAddRepositoryStencil >> initializePage [
 
 { #category : #accessing }
 GtGitAddRepositoryStencil >> localPage [
-
 	| fileBrowser |
-	fileBrowser := BrFileSelector new margin: (BlInsets all: 5).
+	fileBrowser := BrFileSelector new margin: (BlInsets all: 10).
 
-	fileBrowser matchParent.
+	fileBrowser
+		vExact: 400;
+		hExact: 464.
 
 	fileBrowser buttonLabel: 'Import'.
-	fileBrowser okAction: [ :filePath | 
-		| repo |
-		repo := IceRepositoryCreator new
-			        location: filePath;
-			        createRepository.
-		repo register.
-		Iceberg announcer announce: (IceRepositoryAnnouncement for: repo).
-		self onCreated value: repo.
-		dropdown ifNotNil: [ 
-			dropdown enqueueTask: (BlTaskAction new action: [ 
-					 dropdown dispatchEvent:
-						 (BrDropdownHideWish new anchor: dropdown) ]) ] ].
+	fileBrowser
+		okAction: [ :filePath | 
+			| repo |
+			repo := IceRepositoryCreator new
+					location: filePath;
+					createRepository.
+			repo register.
+			Iceberg announcer announce: (IceRepositoryAnnouncement for: repo).
+			self onCreated value: repo.
+			dropdown
+				ifNotNil: [ dropdown
+						enqueueTask: (BlTaskAction new
+								action: [ dropdown dispatchEvent: (BrDropdownHideWish new anchor: dropdown) ]) ] ].
 
-	fileBrowser fileFilterBlock: [ :aFileReference | 
-		aFileReference isDirectory and: [ 
-			(FileSystemDirectoryEntry reference: aFileReference) isHidden not ] ].
+	fileBrowser
+		fileFilterBlock: [ :aFileReference | 
+			aFileReference isDirectory
+				and: [ (FileSystemDirectoryEntry reference: aFileReference) isHidden not ] ].
 	^ fileBrowser
 ]
 
