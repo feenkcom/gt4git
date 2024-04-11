@@ -24,7 +24,7 @@ IceWorkingCopy >> gtPackagesFor: aView [
 				item remove.
 				Iceberg announcer
 					announce: (IceRepositoryModified new repository: self repository).
-				element phlow fireUpdateWish ];
+				element phlow fireToolUpdateWish ];
 		contextItemLabel: 'Reload (Force)'
 			action: [ :element :item | [ item reload ] on: MCMergeOrLoadWarning do: [ :err | err load ] ];
 		contextItemLabel: 'Reload (Merge)'
@@ -49,7 +49,7 @@ IceWorkingCopy >> gtPackagesFor: aView [
 						self addPackageNamed: anItem name.
 						Iceberg announcer
 							announce: (IceRepositoryModified new repository: self repository).
-						anElement phlow fireUpdateWish.
+						anElement phlow fireToolUpdateWish.
 						anActOnEvent beActed ] ]
 			tooltip: 'Add Package'
 ]

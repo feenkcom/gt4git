@@ -366,7 +366,7 @@ GtGitRepository >> databasesDescription [
 												memento: aMemento 
 												element: aTagger.
 											
-											aDropdown phlow fireUpdateWish ] ];
+											aDropdown phlow fireToolUpdateWish ] ];
 								buttonLabel: 'Add database';
 								padding: (BlInsets all: 10) ]).
 			aTagger
@@ -489,7 +489,7 @@ GtGitRepository >> gtActionFetchFor: anAction [
 		action: [ :aButton |
 			(IceTipRepositoryModel on: self icebergRepository) fetch.
 			self announceRepositoryModified.
-			aButton phlow fireUpdateWish ]
+			aButton phlow fireToolUpdateWish ]
 ]
 
 { #category : #'gt - extensions' }
@@ -515,7 +515,7 @@ GtGitRepository >> gtActionPullFor: anAction [
 			  [ self gtLepiterAwarePull ]
 				  on: IceMergeResolutionRequest
 				  do: [ :r | aButton phlow spawnObject: r merge ].
-			  aButton phlow fireUpdateWish ]
+			  aButton phlow fireToolUpdateWish ]
 ]
 
 { #category : #'gt - extensions' }
@@ -532,7 +532,7 @@ GtGitRepository >> gtActionPushFor: anAction [
 			self icebergRepository push.
 			self announceRepositoryModified.
 			
-			aButton phlow fireUpdateWish ]
+			aButton phlow fireToolUpdateWish ]
 ]
 
 { #category : #'gt - extensions' }
@@ -563,7 +563,7 @@ GtGitRepository >> gtActionRefreshFor: anAction [
 					each beDirty: (diff includesPackageNamed: each name) ].
 					self announceRepositoryModified. ]. 
 				
-			aButton phlow fireUpdateWish ]. 
+			aButton phlow fireToolUpdateWish ]. 
 ]
 
 { #category : #'gt - extensions' }
@@ -694,7 +694,7 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 				                (BlTaskAction new action: [ 
 					                 aDropdown dispatchEvent:
 						                 (BrDropdownHideWish new anchor: aDropdown) ]).
-			                aDropdown phlow fireUpdateWish ].
+			                aDropdown phlow fireToolUpdateWish ].
 
 			  editor addEditorShortcut: (BlShortcutWithAction new
 					   combination: BlKeyCombination primaryS;
@@ -743,7 +743,7 @@ GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts inPane: con
 						icon: BrGlamorousVectorIcons up;
 						action: [ :aButton | 
 							self push.
-							aButton phlow fireUpdateWish ]) ].
+							aButton phlow fireToolUpdateWish ]) ].
 
 	(self incomingCommits size > 0
 		and: [ self incomingCommits first = item and: [ self repository remotes isNotEmpty ] ])
@@ -754,7 +754,7 @@ GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts inPane: con
 						icon: BrGlamorousVectorIcons down;
 						action: [ :aButton | 
 							self gtLepiterAwarePull.
-							aButton phlow fireUpdateWish ]) ]
+							aButton phlow fireToolUpdateWish ]) ]
 ]
 
 { #category : #'gt - extensions' }
@@ -825,12 +825,12 @@ GtGitRepository >> gtCommitsFor: aView [
 			action: [ :element :item | 
 				item revert.
 				self rawCommit: 'Revert ' , item shortId , ' ' , item comment.
-				element phlow fireUpdateWish ];
+				element phlow fireToolUpdateWish ];
 		contextItemLabel: 'Checkout'
 			action: [ :element :item | 
 				item checkout.
 				self announceRepositoryModified.
-				element phlow fireUpdateWish ]
+				element phlow fireToolUpdateWish ]
 ]
 
 { #category : #'gt - extensions' }

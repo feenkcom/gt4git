@@ -23,7 +23,7 @@ IceMerge >> gtActionMergeFor: anAction [
 			  Iceberg announcer announce: (IceRepositoryModified for: self repository).
 			  Iceberg announcer announce: (IceCommited for: self repository).
 			
-			  aButton phlow fireUpdateWish ]
+			  aButton phlow fireToolUpdateWish ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -90,7 +90,7 @@ IceMerge >> gtViewInspectorDiffFor: aView [
 							              c linear horizontal alignCenter ]).
 			  Iceberg announcer
 				  when: GtIceMergeConflictResolved
-				  do: [ element phlow fireUpdateWish ].
+				  do: [ element phlow fireToolUpdateWish ].
 
 			  anIceNode value isUnresolvedConflict ifTrue: [ 
 				  element addChild:
