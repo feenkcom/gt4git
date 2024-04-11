@@ -75,7 +75,7 @@ GtGitSourceDirectoryCreationForm >> magritteAcceptAction [
 				self repositoryModel announceRepositoryModified.
 				
 				button dispatchEvent: BrDropdownHideWish new.
-				button phlow fireUpdateWish ] on: Error do: #debug ]);
+				button phlow fireToolUpdateWish ] on: Error do: #debug ]);
 		beEnabledOnValidOverallStatus.
 ]
 

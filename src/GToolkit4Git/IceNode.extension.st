@@ -34,7 +34,7 @@ IceNode >> gtResolveConflictActionForView: aView [
 					aDropdown enqueueTask: (BlTaskAction new action: [ 
 									 aDropdown dispatchEvent:
 											 (BrDropdownHideWish new anchor: aDropdown) ]).
-					rightButton phlow fireUpdateWish ].
+					rightButton phlow fireToolUpdateWish ].
 
 			rightButton := BrButton new.
 			rightButton
@@ -47,7 +47,7 @@ IceNode >> gtResolveConflictActionForView: aView [
 					aDropdown enqueueTask: (BlTaskAction new action: [ 
 									 aDropdown dispatchEvent:
 											 (BrDropdownHideWish new anchor: aDropdown) ]).
-					rightButton phlow fireUpdateWish ].
+					rightButton phlow fireToolUpdateWish ].
 
 			BrHorizontalPane new
 				hFitContent;

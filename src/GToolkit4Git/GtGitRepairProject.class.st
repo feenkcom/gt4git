@@ -22,7 +22,7 @@ GtGitRepairProject >> createFor: pathString in: container [
 		ifNotNil: [ dropdown
 				enqueueTask: (BlTaskAction new
 						action: [ dropdown dispatchEvent: (BrDropdownHideWish new anchor: dropdown).
-							dropdown phlow fireUpdateWish ]) ]
+							dropdown phlow fireToolUpdateWish ]) ]
 ]
 
 { #category : #accessing }

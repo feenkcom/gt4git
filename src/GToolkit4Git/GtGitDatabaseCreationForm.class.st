@@ -148,7 +148,7 @@ GtGitDatabaseCreationForm >> magritteAcceptAction [
 				self addToBaseline: (self directory relativeTo: self repositoryModel repository repositoryDirectory)
 							pathString.
 				button dispatchEvent: BrDropdownHideWish new.
-				button phlow fireUpdateWish ] on: Error do: #debug ]);
+				button phlow fireToolUpdateWish ] on: Error do: #debug ]);
 		beEnabledOnValidOverallStatus.
 ]
 

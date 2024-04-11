@@ -102,6 +102,11 @@ GtGitRepositoryViewModel >> isMissing [
 	^ self repositoryModel isMissing
 ]
 
+{ #category : #accessing }
+GtGitRepositoryViewModel >> localCommits [
+	^ self repositoryModel repository head commitStream toArray wait
+]
+
 { #category : #'api - repository' }
 GtGitRepositoryViewModel >> name [
 	^ (self hasRepository 
@@ -138,10 +143,12 @@ GtGitRepositoryViewModel >> outgoingCommits [
 	self repositoryModel isCommittable not ifTrue: [ ^ {} ].
 
 	self repositoryModel repository branch hasUpstream
-		ifFalse: [ self repositoryModel repository
-				remoteBranchNamed: 'origin/' , self repositoryModel repository branch name
-				ifPresent: [ :aBranch | self repositoryModel repository branch setUpstream: aBranch ]
-				ifAbsent: [ ^ {} ] ].
+		ifFalse: [ | repository |
+			repository := self repositoryModel repository.
+			repository
+				remoteBranchNamed: repository origin name , '/' , repository branch name
+				ifPresent: [ :aBranch | repository branch setUpstream: aBranch ]
+				ifAbsent: [ ^ self localCommits ] ].
 
 	^ self repositoryModel outgoingCommits
 ]

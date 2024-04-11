@@ -66,7 +66,7 @@ GtGitNavigationStencil >> createListFor: aView [
 					objectActOn: [ :anActOnEvent :anItem | 
 						anActOnEvent beActed.
 						self announce: (GtGitRepositorySelected new repository: anItem).
-						anElement phlow fireUpdateWish ] ]
+						anElement phlow fireToolUpdateWish ] ]
 			tooltip: 'Search Repositories';
 		actionUpdateButtonTooltip: 'Refresh List of Repositories';
 		rowDataBinder: [ :aRowElement :aRepository |
