@@ -7,9 +7,11 @@ IceNode >> gtBrowseActionFor: anAction [
 
 	^ anAction button
 		priority: 1;
+		label: 'Browse';
 		icon: BrGlamorousVectorIcons emphasizedBrowse;
 		tooltip: 'Browse current version';
-		action: [ :aButton | aButton phlow spawnTool: (self value definition toolIn: nil) ]
+		action: [ :aButton | 
+			aButton phlow spawnTool: (self value definition toolIn: nil) ]
 ]
 
 { #category : #'*GToolkit4Git' }
