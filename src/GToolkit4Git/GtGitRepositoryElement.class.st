@@ -128,7 +128,7 @@ GtGitRepositoryElement >> createRemoveRepositoryButton [
 				ifTrue: [ self repositoryViewModel remove ]
 				ifFalse: [ self repositoryViewModel forget ].
 			navigationModel announce: (GtGitRepositorySelected new repository: nil).
-			aButton phlow fireUpdateWish ];
+			aButton phlow fireToolUpdateWish ];
 		changeStencil: [ BrVerticalPane new
 				hFitContent;
 				vFitContent;
@@ -194,7 +194,7 @@ GtGitRepositoryElement >> definitionsElement [
 { #category : #initialization }
 GtGitRepositoryElement >> fetchAllRepositoriesFrom: aButton [ 
 	self repositoryViewModel fetch.
-	aButton phlow fireUpdateWish
+	aButton phlow fireToolUpdateWish
 ]
 
 { #category : #accessing }
@@ -314,13 +314,13 @@ GtGitRepositoryElement >> pullFrom: aButton [
 		on: IceMergeResolutionRequest
 		do: [ :mergeException | 
 			self phlow spawnObject: mergeException merge ].
-	aButton phlow fireUpdateWish
+	aButton phlow fireToolUpdateWish
 ]
 
 { #category : #'private - updating' }
 GtGitRepositoryElement >> pushFrom: aButton [
 	self repositoryViewModel push.
-	aButton phlow fireUpdateWish
+	aButton phlow fireToolUpdateWish
 ]
 
 { #category : #'private - updating' }

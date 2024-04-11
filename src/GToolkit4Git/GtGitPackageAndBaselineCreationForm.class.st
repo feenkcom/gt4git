@@ -175,7 +175,7 @@ GtGitPackageAndBaselineCreationForm >> magritteAcceptAction [
 				newBaseline ifTrue: [ self addInstallationInstructions ].
 				button enqueueTask: (BlTaskAction new action: [
 					button dispatchEvent: BrDropdownHideWish new.
-					button phlow fireUpdateWish
+					button phlow fireToolUpdateWish
 				]) ] on: Error do: #debug ]);
 		beEnabledOnValidOverallStatus.
 ]
