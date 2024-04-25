@@ -144,13 +144,53 @@ GtGitPackageAndBaselineCreationForm >> button: anObject [
 ]
 
 { #category : #accessing }
+GtGitPackageAndBaselineCreationForm >> githubUrlParser [
+	| user domain organization repository ssh separator https |
+	user := '@' asPParser negate plus flatten.
+	domain := 'github.com' asPParser.
+	ssh := (user , '@' asPParser , domain , ':' asPParser)
+			==> [ :t | 
+				{t first.
+					t third} ].
+	separator := '/' asPParser.
+	https := ('https://' asPParser , separator negate plus flatten , separator)
+			==> #second.
+	organization := separator negate plus flatten.
+	repository := '.git' asPParser negate plus flatten.
+	^ (https / ssh , organization , separator , repository , '.git' asPParser)
+		==> [ :t | 
+			{t second.
+				t fourth} ]
+]
+
+{ #category : #accessing }
+GtGitPackageAndBaselineCreationForm >> gitlabUrlParser [
+	| user domain organization repository ssh separator https |
+	user := '@' asPParser negate plus flatten.
+	domain := 'gitlab.com' asPParser.
+	ssh := (user , '@' asPParser , domain , ':' asPParser)
+			==> [ :t | 
+				{t first.
+					t third} ].
+	separator := '/' asPParser.
+	https := ('https://' asPParser , separator negate plus flatten , separator)
+			==> #second.
+	organization := separator negate plus flatten.
+	repository := '.git' asPParser negate plus flatten.
+	^ (https / ssh , organization , separator , repository , '.git' asPParser)
+		==> [ :t | 
+			{t second.
+				t fourth} ]
+]
+
+{ #category : #accessing }
 GtGitPackageAndBaselineCreationForm >> guessRepository [
 	| parser parsed |
 	self repositoryModel repository origin isUndefined ifTrue: [ ^ '' ].
 
-	parser := self urlParser.
+	parser := self selectParser.
 	parsed := parser parse: self repositoryModel repository originUrl.
-	^ 'github://' , (parsed at: 1) , '/' , (parsed at: 2) , ':'
+	^ self selectPrefix , (parsed at: 1) , '/' , (parsed at: 2) , ':'
 		, self repositoryModel repository branchName , '/'
 		, self repositoryModel repository subdirectory
 ]
@@ -218,21 +258,25 @@ GtGitPackageAndBaselineCreationForm >> repositoryModel: anObject [
 ]
 
 { #category : #accessing }
-GtGitPackageAndBaselineCreationForm >> urlParser [
-	| user domain organization repository ssh separator https |
-	user := '@' asPParser negate plus flatten.
-	domain := 'github.com' asPParser.
-	ssh := (user , '@' asPParser , domain , ':' asPParser)
-			==> [ :t | 
-				{t first.
-					t third} ].
-	separator := '/' asPParser.
-	https := ('https://' asPParser , separator negate plus flatten , separator)
-			==> #second.
-	organization := separator negate plus flatten.
-	repository := '.git' asPParser negate plus flatten.
-	^ (https / ssh , organization , separator , repository , '.git' asPParser)
-		==> [ :t | 
-			{t second.
-				t fourth} ]
+GtGitPackageAndBaselineCreationForm >> selectParser [
+	| url |
+	url := self repositoryModel repository originUrl.
+
+	(url includesSubstring: 'github.com') ifTrue: [ ^ self githubUrlParser ].
+	(url includesSubstring: 'gitlab.com') ifTrue: [ ^ self gitlabUrlParser ].
+
+	^ self
+		error: 'The URL schema could not be parsed—currently only GitHub and GitLab URLs are supported to add Baseline information to the README.'
+]
+
+{ #category : #accessing }
+GtGitPackageAndBaselineCreationForm >> selectPrefix [
+	| url |
+	url := self repositoryModel repository originUrl.
+
+	(url includesSubstring: 'github.com') ifTrue: [ ^ 'github://' ].
+	(url includesSubstring: 'gitlab.com') ifTrue: [ ^ 'gitlab://' ].
+
+	^ self
+		error: 'The URL schema could not be parsed—currently only GitHub and GitLab URLs are supported to add Baseline information to the README.'
 ]
