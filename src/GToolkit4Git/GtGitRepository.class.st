@@ -1119,7 +1119,10 @@ GtGitRepository >> outgoingCommits [
 
 { #category : #printing }
 GtGitRepository >> printOn: aStream [
-	aStream nextPutAll: self icebergRepository name
+	aStream
+		nextPutAll: (self icebergRepository
+				ifNil: [ '<unknown>' ]
+				ifNotNil: [ self icebergRepository name ])
 ]
 
 { #category : #'api - actions' }
