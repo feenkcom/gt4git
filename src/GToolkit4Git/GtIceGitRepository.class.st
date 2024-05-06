@@ -17,7 +17,7 @@ GtIceGitRepository class >> fromLibGitRepository: aRepo [
 	repo := self new
 			location: aRepo location;
 			name: aRepo name.
-	aRepo location ifNil: [ ^ repo ].
+	aRepo isMissing ifTrue: [ repo ].
 	repo workingCopy
 		referenceCommit: (repo commitFromGitCommit: aRepo workingCopy referenceCommit id).
 	repo workingCopy initializePackagesFromRepository.
