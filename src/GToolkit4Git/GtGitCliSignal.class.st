@@ -68,5 +68,10 @@ GtGitCliSignal >> output: aCollectionOfStrings [
 
 { #category : #printing }
 GtGitCliSignal >> printOneLineContentsOn: aStream [
-	args do: [ :arg | aStream print: arg ] separatedBy: [ aStream nextPut: $  ]
+	args do: [ :arg | aStream nextPutAll: arg ] separatedBy: [ aStream nextPut: $  ]
+]
+
+{ #category : #accessing }
+GtGitCliSignal >> signalTypeLabel [
+	^ 'GtGitCliSignal'
 ]
