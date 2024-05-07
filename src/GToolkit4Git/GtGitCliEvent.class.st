@@ -13,3 +13,17 @@ GtGitCliEvent class >> eventLabel [
 GtGitCliEvent >> args [
 	^ self eventStartedSignal args
 ]
+
+{ #category : #'gt - extensions' }
+GtGitCliEvent >> gtGitInvocationFor: aView [
+	<gtView>
+	^ aView list
+		title: 'Git call';
+		priority: 5;
+		items: [ self args , #('' '=>' '') , self output ]
+]
+
+{ #category : #accessing }
+GtGitCliEvent >> output [
+	^ self eventCompletedSignal output
+]
