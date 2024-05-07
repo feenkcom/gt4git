@@ -4,7 +4,8 @@ Class {
 	#traits : 'TGtBeaconSignalStartEndType',
 	#classTraits : 'TGtBeaconSignalStartEndType classTrait',
 	#instVars : [
-		'args'
+		'args',
+		'output'
 	],
 	#category : #'GToolkit4Git-Libgit-replace'
 }
@@ -12,6 +13,14 @@ Class {
 { #category : #'instance creation' }
 GtGitCliSignal class >> args: aCollection [
 	^self new args: aCollection
+]
+
+{ #category : #'instance creation' }
+GtGitCliSignal class >> args: aCollection output: aCollectionOfStrings [
+	^ self new
+		args: aCollection;
+		output: aCollectionOfStrings;
+		yourself
 ]
 
 { #category : #accessing }
@@ -25,8 +34,36 @@ GtGitCliSignal >> args [
 ]
 
 { #category : #accessing }
-GtGitCliSignal >> args: anObject [
-	args := anObject
+GtGitCliSignal >> args: aCollection [
+	args := aCollection
+]
+
+{ #category : #'gt extensions' }
+GtGitCliSignal >> gtGitInvocationFor: aView [
+	<gtView>
+	^ aView list
+		title: 'Git args';
+		priority: 30;
+		items: [ self args ]
+]
+
+{ #category : #'gt extensions' }
+GtGitCliSignal >> gtGitOutputFor: aView [
+	<gtView>
+	^ aView list
+		title: 'Git output';
+		priority: 35;
+		items: [ self output ifNil: [ #() ] ]
+]
+
+{ #category : #accessing }
+GtGitCliSignal >> output [
+	^ output
+]
+
+{ #category : #accessing }
+GtGitCliSignal >> output: aCollectionOfStrings [
+	output := aCollectionOfStrings
 ]
 
 { #category : #printing }

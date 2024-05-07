@@ -609,9 +609,11 @@ GtIceGitRepository >> runGitWithArgs: args [
 	(GtGitCliSignal args: args) markAsStartSignal emit.
 	proc := self git args: args.
 	output := proc output.
-	output status isSuccess ifFalse: [ self error: 'git error' ].
+	output status isSuccess ifFalse: [
+		(GtGitCliSignal args: args output: output stderrString lines) markAsEndSignal emit.
+		self error: 'git error' ].
 	lines := output stdoutString lines.
-	(GtGitCliSignal args: args) markAsEndSignal emit.
+	(GtGitCliSignal args: args output: lines) markAsEndSignal emit.
 	^ lines
 ]
 
