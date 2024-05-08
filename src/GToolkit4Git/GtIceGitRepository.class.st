@@ -151,9 +151,7 @@ GtIceGitRepository >> commitFromGitCommit: commitIdString [
 
 { #category : #'private - commits' }
 GtIceGitRepository >> commitsFromIds: idCollection [
-	"Note: This code expects the collection to consist of sequence of commits"
-
-	| lines commitLines range |
+	| lines commitLines range commits |
 	idCollection isEmpty ifTrue: [ ^ #() ].
 	range := idCollection size = 1
 			ifTrue: [ idCollection first ]
@@ -165,7 +163,11 @@ GtIceGitRepository >> commitsFromIds: idCollection [
 					range}.
 	commitLines := lines splitOn: [ :each | each = '@@@' ].
 	commitLines removeLast.
-	^ commitLines collect: [ :each | self iceGitCommitFromLines: each ]
+	commits := commitLines collect: [ :each | self iceGitCommitFromLines: each ].
+	"the last commit from the range query above is not resolved, fetch it individually"
+	idCollection size > 1
+		ifTrue: [ commits := commits , (self commitsFromIds: { idCollection last }) ].
+	^ commits
 ]
 
 { #category : #'as yet unclassified' }
