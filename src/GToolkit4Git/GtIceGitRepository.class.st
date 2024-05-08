@@ -330,15 +330,12 @@ GtIceGitRepository >> iceGitCommitFromLines: lines [
 	id := lines at: 1.
 	author := lines at: 2.
 	datetime := DateAndTime fromUnixTime: (lines at: 3) asInteger.
-	parents := (lines at: 4) splitOn: ' '.
-	message := String
-			streamContents: [ :str | 
-				6
-					to: lines size
-					do: [ :i | 
-						str
-							nextPutAll: (lines at: i);
-							cr ] ].
+	parents := (lines at: 4) 
+			ifEmpty: [ #() ] 
+			ifNotEmpty: [ :line | line splitOn: ' ' ].
+	message := String streamContents: [ :str | 
+			6 to: lines size do: [ :i | 
+				str nextPutAll: (lines at: i); cr ] ].
 	^ GtIceGitCommit new
 		id: id;
 		author: author;
