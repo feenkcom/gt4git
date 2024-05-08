@@ -151,9 +151,7 @@ GtIceGitRepository >> commitFromGitCommit: commitIdString [
 
 { #category : #'private - commits' }
 GtIceGitRepository >> commitsFromIds: idCollection [
-	"Note: This code expects the collection to consist of sequence of commits"
-
-	| lines commitLines range |
+	| lines commitLines range commits |
 	idCollection isEmpty ifTrue: [ ^ #() ].
 	range := idCollection size = 1
 			ifTrue: [ idCollection first ]
@@ -165,7 +163,11 @@ GtIceGitRepository >> commitsFromIds: idCollection [
 					range}.
 	commitLines := lines splitOn: [ :each | each = '@@@' ].
 	commitLines removeLast.
-	^ commitLines collect: [ :each | self iceGitCommitFromLines: each ]
+	commits := commitLines collect: [ :each | self iceGitCommitFromLines: each ].
+	"the last commit from the range query above is not resolved, fetch it individually"
+	idCollection size > 1
+		ifTrue: [ commits := commits , (self commitsFromIds: { idCollection last }) ].
+	^ commits
 ]
 
 { #category : #'as yet unclassified' }
@@ -330,15 +332,12 @@ GtIceGitRepository >> iceGitCommitFromLines: lines [
 	id := lines at: 1.
 	author := lines at: 2.
 	datetime := DateAndTime fromUnixTime: (lines at: 3) asInteger.
-	parents := (lines at: 4) splitOn: ' '.
-	message := String
-			streamContents: [ :str | 
-				6
-					to: lines size
-					do: [ :i | 
-						str
-							nextPutAll: (lines at: i);
-							cr ] ].
+	parents := (lines at: 4) 
+			ifEmpty: [ #() ] 
+			ifNotEmpty: [ :line | line splitOn: ' ' ].
+	message := String streamContents: [ :str | 
+			6 to: lines size do: [ :i | 
+				str nextPutAll: (lines at: i); cr ] ].
 	^ GtIceGitCommit new
 		id: id;
 		author: author;
