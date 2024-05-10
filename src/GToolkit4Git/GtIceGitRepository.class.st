@@ -609,9 +609,14 @@ GtIceGitRepository >> runGitWithArgs: args [
 	(GtGitCliSignal args: args) markAsStartSignal emit.
 	processBuilder := self git args: args.
 	output := self waitForProcessAsync: processBuilder.
-	output status isSuccess ifFalse: [
-		(GtGitCliSignal args: args output: output stderr lines) markAsEndSignal emit.
-		^ self error: 'git error' ].
+	output status isSuccess 
+		ifFalse: [
+			(GtGitCliSignal args: args output: output stderr lines) markAsEndSignal emit.
+			^ GtGitCliError new
+				args: args;
+				stderr: output stderr;
+				status: output status code;
+				signal ].
 	lines := output stdout lines.
 	(GtGitCliSignal args: args output: lines) markAsEndSignal emit.
 	^ lines
@@ -675,11 +680,13 @@ GtIceGitRepository >> waitForProcess: processBuilder [
 { #category : #private }
 GtIceGitRepository >> waitForProcessAsync: processBuilder [
 	"Run the native process described in processBuilder and wait for it to complete and produce output.
-	The output, an instance of GtNativeExternalProcessOutput, can be queried for its status and stdout.
+	The output, an instance of GtNativeExternalProcessOutput, can be queried for its status, stdout and stderr.
 	This wait will block the current process but not the VM"
 
 	| nativeProcess |
-	processBuilder pipeStdout.
+	processBuilder 
+		pipeStdout; 
+		pipeStderr.
 	nativeProcess := processBuilder spawn.
 	^ nativeProcess waitAsyncWithOutput
 ]
