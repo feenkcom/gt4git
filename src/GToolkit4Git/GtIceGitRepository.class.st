@@ -170,7 +170,7 @@ GtIceGitRepository >> commitsFromIds: idCollection [
 	^ commits
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GtIceGitRepository >> configureUpstreamIfNecessary [
 	#TODO
 ]
@@ -521,7 +521,7 @@ GtIceGitRepository >> properties [
 	^ self workingCopy repositoryProperties
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GtIceGitRepository >> pullBranch: aString from: aRemote [
 	self
 		runGitWithArgs: {'pull'.
@@ -600,18 +600,19 @@ GtIceGitRepository >> revListForCommit: aCommit [
 			lines collect: #trimBoth ]
 ]
 
-{ #category : #'private - changes' }
+{ #category : #private }
 GtIceGitRepository >> runGitWithArgs: args [
-	"Runs CLI git with the passed arguments and returns the lines from std out"
+	"Run CLI git with the passed arguments and return the lines from standard output.
+	Wait for the git command to complete. Signal an error when not successful."
 
-	| proc lines output |
+	| processBuilder lines output |
 	(GtGitCliSignal args: args) markAsStartSignal emit.
-	proc := self git args: args.
-	output := proc output.
+	processBuilder := self git args: args.
+	output := self waitForProcessAsync: processBuilder.
 	output status isSuccess ifFalse: [
-		(GtGitCliSignal args: args output: output stderrString lines) markAsEndSignal emit.
-		self error: 'git error' ].
-	lines := output stdoutString lines.
+		(GtGitCliSignal args: args output: output stderr lines) markAsEndSignal emit.
+		^ self error: 'git error' ].
+	lines := output stdout lines.
 	(GtGitCliSignal args: args output: lines) markAsEndSignal emit.
 	^ lines
 ]
@@ -660,6 +661,27 @@ GtIceGitRepository >> tagsFor: anId [
 					'--points-at'.
 					anId}.
 	^ lines collect: [ :each | IceTag named: each inRepository: self ]
+]
+
+{ #category : #private }
+GtIceGitRepository >> waitForProcess: processBuilder [
+	"Run the native process described in processBuilder and wait for it to complete and produce output.
+	The output, an instance of GtNativeExternalProcessOutput, can be queried for its status and stdout.
+	This wait will block the VM."
+	
+	^ processBuilder output
+]
+
+{ #category : #private }
+GtIceGitRepository >> waitForProcessAsync: processBuilder [
+	"Run the native process described in processBuilder and wait for it to complete and produce output.
+	The output, an instance of GtNativeExternalProcessOutput, can be queried for its status and stdout.
+	This wait will block the current process but not the VM"
+
+	| nativeProcess |
+	processBuilder pipeStdout.
+	nativeProcess := processBuilder spawn.
+	^ nativeProcess waitAsyncWithOutput
 ]
 
 { #category : #accessing }
