@@ -29,6 +29,20 @@ GtGitCliSignal class >> eventType [
 ]
 
 { #category : #accessing }
+GtGitCliSignal class >> logToStdout [
+	self stopLoggingToStdout.
+	^ Beacon instance announcer
+		when: GtGitCliSignal 
+		do: [ :signal | Stdio stdout nextPutAll: signal printString; lf; flush ] 
+		for: #git_cli_log_to_stdout
+]
+
+{ #category : #accessing }
+GtGitCliSignal class >> stopLoggingToStdout [
+	^ Beacon instance unsubscribe: #git_cli_log_to_stdout
+]
+
+{ #category : #accessing }
 GtGitCliSignal >> args [
 	^ args
 ]
