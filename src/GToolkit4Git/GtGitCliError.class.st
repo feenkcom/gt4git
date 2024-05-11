@@ -72,6 +72,7 @@ GtGitCliError >> gtGitSummaryFor: aView [
 	^ aView textEditor
 		title: 'Git CLI failed';
 		priority: 20;
+		aptitude: BrGlamorousCodeEditorAptitude;
 		text: [ 
 			String streamContents: [ :out |
 				out 
