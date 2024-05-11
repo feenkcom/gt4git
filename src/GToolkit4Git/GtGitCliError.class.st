@@ -4,14 +4,14 @@ Class {
 	#instVars : [
 		'stderr',
 		'args',
-		'status'
+		'exitCode'
 	],
 	#category : #'GToolkit4Git-Libgit-replace'
 }
 
 { #category : #accessing }
 GtGitCliError >> args [
-	^ args
+	^ args ifNil: [ #() ]
 ]
 
 { #category : #accessing }
@@ -20,18 +20,86 @@ GtGitCliError >> args: anObject [
 ]
 
 { #category : #accessing }
-GtGitCliError >> status [
-	^ status
+GtGitCliError >> commandLine [
+	^ Character space join: ({ 'git' } , self args)
 ]
 
 { #category : #accessing }
-GtGitCliError >> status: anObject [
-	status := anObject
+GtGitCliError >> errorLine [
+	^ self stderr detect: [ :line | line beginsWith: 'ERROR' ] ifNone: [ nil ]
+]
+
+{ #category : #accessing }
+GtGitCliError >> exitCode [
+	^ exitCode
+]
+
+{ #category : #accessing }
+GtGitCliError >> exitCode: anObject [
+	exitCode := anObject
+]
+
+{ #category : #'gt extensions' }
+GtGitCliError >> gtGitExitCodeFor: aView [
+	<gtView>
+	^ aView textEditor
+		title: 'Exitcode';
+		priority: 40;
+		text: [ self exitCode ifNil: [ 'no exit code' ] ]
+]
+
+{ #category : #accessing }
+GtGitCliError >> gtGitInvocationFor: aView [
+	<gtView>
+	^ aView list
+		title: 'Args';
+		priority: 20;
+		items: [ self args ]
+]
+
+{ #category : #accessing }
+GtGitCliError >> gtGitOutputFor: aView [
+	<gtView>
+	^ aView list
+		title: 'Stderr';
+		priority: 30;
+		items: [ self stderr ]
+]
+
+{ #category : #'gt extensions' }
+GtGitCliError >> gtGitSummaryFor: aView [
+	<gtExceptionView>
+	^ aView textEditor
+		title: 'Git CLI failed';
+		priority: 20;
+		aptitude: BrGlamorousCodeEditorAptitude;
+		text: [ 
+			String streamContents: [ :out |
+				out 
+					nextPutAll: self commandLine;
+					nextPutAll: ' failed.';
+					cr;
+					cr.
+				self stderr do: [ :line |
+					out nextPutAll: line; cr ] ] ]
+]
+
+{ #category : #accessing }
+GtGitCliError >> messageText [
+	^ messageText ifNil: [ 
+		messageText := String streamContents: [ :out |
+			out 
+				nextPutAll: self commandLine;
+				nextPutAll: ' failed.'.
+			self errorLine ifNotNil: [ :line | 
+				out 
+					space; 
+					nextPutAll: self errorLine ] ] ]
 ]
 
 { #category : #accessing }
 GtGitCliError >> stderr [
-	^ stderr
+	^ stderr ifNil: [ #() ]
 ]
 
 { #category : #accessing }
