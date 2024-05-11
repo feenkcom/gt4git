@@ -611,11 +611,12 @@ GtIceGitRepository >> runGitWithArgs: args [
 	output := self waitForProcessAsync: processBuilder.
 	output status isSuccess 
 		ifFalse: [
-			(GtGitCliSignal args: args output: output stderr lines) markAsEndSignal emit.
+			lines := output stderr lines.
+			(GtGitCliSignal args: args output: lines) markAsEndSignal emit.
 			^ GtGitCliError new
 				args: args;
-				stderr: output stderr;
-				status: output status code;
+				stderr: lines;
+				exitCode: output status code;
 				signal ].
 	lines := output stdout lines.
 	(GtGitCliSignal args: args output: lines) markAsEndSignal emit.
