@@ -21,10 +21,10 @@ GtIceRepositoryCreator class >> defaultSubdirectory [
 
 { #category : #'as yet unclassified' }
 GtIceRepositoryCreator class >> fromUrl: aUrl to: aFileReference [
-	^ self new 
+	^ self new
 		remote: (IceGitRemote url: aUrl);
-  location: aFileReference;
-  createRepository
+		location: aFileReference;
+		createRepository
 ]
 
 { #category : #private }
@@ -34,9 +34,25 @@ GtIceRepositoryCreator class >> isGitRoot: aReference [
 				and: [ (aReference / '.git' / 'config') exists ] ]
 ]
 
+{ #category : #'as yet unclassified' }
+GtIceRepositoryCreator class >> on: aFileReference [
+	^ self new
+		location: aFileReference;
+		createRepository
+]
+
 { #category : #accessing }
 GtIceRepositoryCreator >> addLocalRepository [
-	self shouldBeImplemented
+	repository := GtIceGitRepository on: self locationToUse.
+
+	branchName ifNotNil: [ repository switchToCommitishNamed: branchName ].
+	repository pluginManager repositoryWillBeCreated: repository.
+	
+	self doEnsureProject.
+	repository workingCopy initializePackagesFromRepository.
+	
+	repository pluginManager repositoryWasCreated: repository.
+	^ repository
 ]
 
 { #category : #accessing }
