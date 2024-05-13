@@ -33,7 +33,7 @@ GtGitCliSignal class >> logToStdout [
 	self stopLoggingToStdout.
 	^ Beacon instance announcer
 		when: GtGitCliSignal 
-		do: [ :signal | Stdio stdout nextPutAll: signal printString; lf; flush ] 
+		do: [ :signal | Stdio stdout nextPutAll: signal stdoutPrintString; lf; flush ] 
 		for: #git_cli_log_to_stdout
 ]
 
@@ -70,6 +70,21 @@ GtGitCliSignal >> gtGitOutputFor: aView [
 		items: [ self output ifNil: [ #() ] ]
 ]
 
+{ #category : #testing }
+GtGitCliSignal >> hasOutput [
+	^ self output notNil
+]
+
+{ #category : #accessing }
+GtGitCliSignal >> initializeFromTimestamp: aDateAndTime andData: aCollection [ 
+	timestamp := aDateAndTime.
+	processId := aCollection third.
+	aCollection fourth = 'S' 
+		ifTrue: [ self markAsStartSignal ] 
+		ifFalse: [ self markAsEndSignal ].
+	args := aCollection fifth splitOn: Character space
+]
+
 { #category : #accessing }
 GtGitCliSignal >> output [
 	^ output
@@ -88,4 +103,21 @@ GtGitCliSignal >> printOneLineContentsOn: aStream [
 { #category : #accessing }
 GtGitCliSignal >> signalTypeLabel [
 	^ 'GtGitCliSignal'
+]
+
+{ #category : #printing }
+GtGitCliSignal >> stdoutPrintString [
+	^ String streamContents: [ :out |
+		self timestamp printOn: out.
+		out 
+			nextPutAll: ' | ';
+			nextPutAll: self class name;
+			nextPutAll: ' | ';
+			nextPutAll: self processId;
+			nextPutAll: ' | '.
+		eventType ifNotNil: [
+			out 
+				nextPut: (self isStartSignalType ifTrue: [ $S ] ifFalse: [ $E ]);
+				nextPutAll: ' | ' ].
+		self printOneLineContentsOn: out ]
 ]
