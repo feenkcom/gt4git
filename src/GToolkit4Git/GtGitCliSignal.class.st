@@ -33,7 +33,7 @@ GtGitCliSignal class >> logToStdout [
 	self stopLoggingToStdout.
 	^ Beacon instance announcer
 		when: GtGitCliSignal 
-		do: [ :signal | Stdio stdout nextPutAll: signal printString; lf; flush ] 
+		do: [ :signal | Stdio stdout nextPutAll: signal stdoutPrintString; lf; flush ] 
 		for: #git_cli_log_to_stdout
 ]
 
@@ -88,4 +88,21 @@ GtGitCliSignal >> printOneLineContentsOn: aStream [
 { #category : #accessing }
 GtGitCliSignal >> signalTypeLabel [
 	^ 'GtGitCliSignal'
+]
+
+{ #category : #printing }
+GtGitCliSignal >> stdoutPrintString [
+	^ String streamContents: [ :out |
+		self timestamp printOn: out.
+		out 
+			nextPutAll: ' | ';
+			nextPutAll: self class name;
+			nextPutAll: ' | ';
+			nextPutAll: self processId;
+			nextPutAll: ' | '.
+		eventType ifNotNil: [
+			out 
+				nextPut: (self isStartSignalType ifTrue: [ $S ] ifFalse: [ $E ]);
+				nextPutAll: ' | ' ].
+		self printOneLineContentsOn: out ]
 ]
