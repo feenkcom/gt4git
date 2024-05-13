@@ -70,6 +70,21 @@ GtGitCliSignal >> gtGitOutputFor: aView [
 		items: [ self output ifNil: [ #() ] ]
 ]
 
+{ #category : #testing }
+GtGitCliSignal >> hasOutput [
+	^ self output notNil
+]
+
+{ #category : #accessing }
+GtGitCliSignal >> initializeFromTimestamp: aDateAndTime andData: aCollection [ 
+	timestamp := aDateAndTime.
+	processId := aCollection third.
+	aCollection fourth = 'S' 
+		ifTrue: [ self markAsStartSignal ] 
+		ifFalse: [ self markAsEndSignal ].
+	args := aCollection fifth splitOn: Character space
+]
+
 { #category : #accessing }
 GtGitCliSignal >> output [
 	^ output

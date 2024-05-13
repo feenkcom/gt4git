@@ -20,7 +20,11 @@ GtGitCliEvent >> gtGitInvocationFor: aView [
 	^ aView list
 		title: 'Git call';
 		priority: 5;
-		items: [ self args , #('' '=>' '') , self output ]
+		items: [ 
+			self eventCompletedSignal hasOutput
+				ifTrue: [
+					self args , #('' '=>' '') , self output ] 
+				ifFalse: [ self args ] ]
 ]
 
 { #category : #accessing }
