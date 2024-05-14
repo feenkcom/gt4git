@@ -44,10 +44,10 @@ GtGitCommitStore >> basicCreationTimeOf: anEntry [
 { #category : #accessing }
 GtGitCommitStore >> basicEntry: directoryEntry path: aPath nodesDo: aBlock [
 	| lines |
-	lines := repository
-			runGitWithArgs: {'ls-tree'.
-					'--format=%(objectmode) %(objecttype) %(objectname) %(objectsize)%x09%(path)'.
-					directoryEntry id}.
+	lines := repository runGitWithArgs: {
+		'ls-tree'.
+		'--format=%(objectmode) %(objecttype) %(objectname) %(objectsize)%x09%(path)'.
+		directoryEntry id }.
 	lines do: [ :each | aBlock value: (GtGitFileEntry fromLine: each) ]
 ]
 
@@ -91,11 +91,11 @@ GtGitCommitStore >> entries [
 	| entryList lines |
 	entries ifNotNil: [ ^ entries ].
 	entries := Dictionary new.
-	lines := repository
-			runGitWithArgs: {'ls-tree'.
-					'-rt'.
-					'--format=%(objectmode) %(objecttype) %(objectname) %(objectsize)%x09%(path)'.
-					self treeIdFromCommit}.
+	lines := repository runGitWithArgs: {
+		'ls-tree'.
+		'-rt'.
+		'--format=%(objectmode) %(objecttype) %(objectname) %(objectsize)%x09%(path)'.
+		self treeIdFromCommit }.
 	entryList := lines collect: [ :each | GtGitFileEntry fromLine: each ].
 	entryList do: [ :each | entries at: (self basenameFromEntry: each) put: each ].
 	^ entries
@@ -173,9 +173,9 @@ GtGitCommitStore >> rootEntry [
 
 { #category : #accessing }
 GtGitCommitStore >> treeIdFromCommit [
-	^ (repository
-		runGitWithArgs: {'show'.
-				'-s'.
-				'--format=format:%T'.
-				id}) first
+	^ (repository runGitWithArgs: {
+		'show'.
+		'-s'.
+		'--format=format:%T'.
+		id }) first
 ]

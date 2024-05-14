@@ -24,6 +24,20 @@ GtIceGitRepository class >> fromLibGitRepository: aRepo [
 	^ repo
 ]
 
+{ #category : #'gt extensions' }
+GtIceGitRepository class >> gtViewGitCallsIn: composite [
+	<gtClassView>
+	
+	^ composite columnedList
+		title: 'Git calls';
+		priority: 30;
+		items: [ 
+			(#runGitWithArgs: gtReferences & #gtViewGitCallsIn: gtImplementors not) 
+				contents sort: #selector ascending ];
+		column: 'Selector' text: [ :each | each selector ];
+		column: 'Class' text: [ :each | each methodClass ]
+]
+
 { #category : #'instance creation' }
 GtIceGitRepository class >> on: aFileReference [
 	^ self basicNew
@@ -34,7 +48,7 @@ GtIceGitRepository class >> on: aFileReference [
 { #category : #accessing }
 GtIceGitRepository >> addFilesToIndex: aCollection [
 	| args |
-	args := {'add'} asOrderedCollection.
+	args := { 'add' } asOrderedCollection.
 	args
 		addAll: (aCollection
 				collect: [ :each | 
@@ -80,11 +94,11 @@ GtIceGitRepository >> branchNamed: aString ifPresent: presentBlock ifAbsent: abs
 GtIceGitRepository >> changedFilesBetween: aCommitish and: otherCommitish [
 	"Answer a list of files that changed between two commits"
 
-	^ self
-		runGitWithArgs: {'diff'.
-				'--name-only'.
-				aCommitish id.
-				otherCommitish id}
+	^ self runGitWithArgs: {
+		'diff'.
+		'--name-only'.
+		aCommitish id.
+		otherCommitish id }
 ]
 
 { #category : #'api - registry' }
@@ -124,10 +138,10 @@ GtIceGitRepository >> clearCaches [
 
 { #category : #actions }
 GtIceGitRepository >> clone: aString [
-	self
-		runGitWithArgs: {'clone'.
-				aString . 
-				'.'}
+	self runGitWithArgs: {
+		'clone'.
+		aString . 
+		'.' }
 ]
 
 { #category : #'API - accessing' }
@@ -141,11 +155,11 @@ GtIceGitRepository >> codeDirectory [
 { #category : #'private - commits' }
 GtIceGitRepository >> commitFromGitCommit: commitIdString [
 	| lines |
-	lines := self
-			runGitWithArgs: {'show'.
-					'-s'.
-					'--format=tformat:%H%n%an%n%at%n%P%n%n%B'.
-					commitIdString}.
+	lines := self runGitWithArgs: {
+		'show'.
+		'-s'.
+		'--format=tformat:%H%n%an%n%at%n%P%n%n%B'.
+		commitIdString }.
 	^ self iceGitCommitFromLines: lines
 ]
 
@@ -156,11 +170,11 @@ GtIceGitRepository >> commitsFromIds: idCollection [
 	range := idCollection size = 1
 			ifTrue: [ idCollection first ]
 			ifFalse: [ idCollection last , '..' , idCollection first ].
-	lines := self
-			runGitWithArgs: {'show'.
-					'-s'.
-					'--format=format:%H%n%an%n%at%n%P%n%n%B%n@@@'.
-					range}.
+	lines := self runGitWithArgs: {
+		'show'.
+		'-s'.
+		'--format=format:%H%n%an%n%at%n%P%n%n%B%n@@@'.
+		range }.
 	commitLines := lines splitOn: [ :each | each = '@@@' ].
 	commitLines removeLast.
 	commits := commitLines collect: [ :each | self iceGitCommitFromLines: each ].
@@ -179,9 +193,9 @@ GtIceGitRepository >> configureUpstreamIfNecessary [
 GtIceGitRepository >> fetch [
 	"Fetch all commits and branches from all remotes"
 
-	self
-		runGitWithArgs: {'fetch'.
-				'--all'}
+	self runGitWithArgs: {
+		'fetch'.
+		'--all' }
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -193,17 +207,17 @@ GtIceGitRepository >> getDeltasForFullDiff [
 { #category : #'*GToolkit4Git' }
 GtIceGitRepository >> getStatusByFile [
 	| res flagMap lines |
-	flagMap := {$M -> 2.
+	flagMap := { $M -> 2.
 			$T -> 16.
 			$A -> 1.
 			$D -> 4.
 			$R -> 8.
 			$? -> 128.
-			$! -> 16384} asDictionary.
+			$! -> 16384 } asDictionary.
 	res := Dictionary new.
-	lines := self
-			runGitWithArgs: {'status'.
-					'--porcelain'}.
+	lines := self runGitWithArgs: {
+		'status'.
+		'--porcelain' }.
 	lines
 		do: [ :each | 
 			| status path |
@@ -314,11 +328,11 @@ GtIceGitRepository >> handleLibgitError: aBlock [
 GtIceGitRepository >> head [
 	| headRef lines ref |
 	head notNil ifTrue: [ ^ head ].
-	lines := [ self
-			runGitWithArgs: {'show'.
-					'-s'.
-					'--format=tformat:%H%n%D'.
-					'HEAD'} ] onErrorDo: [ ^ IceGitUnbornBranch inRepository: self ].
+	lines := [ self runGitWithArgs: {
+		'show'.
+		'-s'.
+		'--format=tformat:%H%n%D'.
+		'HEAD' } ] onErrorDo: [ ^ IceGitUnbornBranch inRepository: self ].
 	headRef := lines at: 1.
 	ref := ((lines at: 2) splitOn: ', ') first.
 	^ head := (ref includesSubstring: '->')
@@ -351,7 +365,7 @@ GtIceGitRepository >> iceGitCommitFromLines: lines [
 { #category : #actions }
 GtIceGitRepository >> initBare: isBareRepository [
 	| args |
-	args := {'init'} asOrderedCollection.
+	args := { 'init' } asOrderedCollection.
 	isBareRepository ifTrue: [ args add: '--bare' ].
 	self runGitWithArgs: args
 ]
@@ -385,12 +399,11 @@ GtIceGitRepository >> isMissing [
 { #category : #'API - branches' }
 GtIceGitRepository >> localBranches [
 	| branches |
-	branches := self
-			runGitWithArgs: {'branch'.
-					'--format=%(refname:short)'}.
-	^ OrderedCollection
-		new: 10
-		streamContents: [ :stream | branches do: [ :br | stream nextPut: (self basicNewBranchNamed: br) ] ]
+	branches := self runGitWithArgs: {
+		'branch'.
+		'--format=%(refname:short)' }.
+	^ OrderedCollection streamContents: [ :stream | 
+		branches do: [ :br | stream nextPut: (self basicNewBranchNamed: br) ] ]
 ]
 
 { #category : #accessing }
@@ -418,11 +431,11 @@ GtIceGitRepository >> lookupLocalBranch: branchName ifAbsent: aBlock [
 	^ branchMap
 		at: branchName
 		ifAbsentPut: [ | lines |
-			lines := self
-					runGitWithArgs: {'branch'.
-							branchName.
-							'--list'.
-							'--format=%(objectname)'}.
+			lines := self runGitWithArgs: {
+				'branch'.
+				branchName.
+				'--list'.
+				'--format=%(objectname)' }.
 			lines isEmpty ifTrue: [ aBlock value ] ifFalse: [ lines first ] ]
 ]
 
@@ -436,12 +449,12 @@ GtIceGitRepository >> lookupRemoteBranch: branchName ifAbsent: aBlock [
 	^ branchMap
 		at: branchName
 		ifAbsentPut: [ | lines |
-			lines := self
-					runGitWithArgs: {'branch'.
-							branchName.
-							'--remotes'.
-							'--list'.
-							'--format=%(objectname)'}.
+			lines := self runGitWithArgs: {
+				'branch'.
+				branchName.
+				'--remotes'.
+				'--list'.
+				'--format=%(objectname)' }.
 			lines isEmpty ifTrue: [ aBlock value ] ifFalse: [ lines first ] ]
 ]
 
@@ -463,10 +476,10 @@ GtIceGitRepository >> mcVersionFor: iceVersion [
 { #category : #ancestry }
 GtIceGitRepository >> mergeBaseBetween: id1 and: id2 [
 	| lines |
-	lines := self
-			runGitWithArgs: {'merge-base'.
-					id1.
-					id2}.
+	lines := self runGitWithArgs: {
+		'merge-base'.
+		id1.
+		id2 }.
 	^ lines first
 ]
 
@@ -502,11 +515,11 @@ GtIceGitRepository >> originUrl [
 { #category : #'private - tags' }
 GtIceGitRepository >> peelTag: anIceTag [
 	| id lines |
-	lines := self
-			runGitWithArgs: {'show'.
-					'-s'.
-					'--format=tformat:%H'.
-					anIceTag name}.
+	lines := self runGitWithArgs: {
+		'show'.
+		'-s'.
+		'--format=tformat:%H'.
+		anIceTag name }.
 	id := lines first.
 	^ self lookupCommit: id
 ]
@@ -523,18 +536,19 @@ GtIceGitRepository >> properties [
 
 { #category : #accessing }
 GtIceGitRepository >> pullBranch: aString from: aRemote [
-	self
-		runGitWithArgs: {'pull'.
-				aRemote name.
-				aString}.
+	self runGitWithArgs: {
+		'pull'.
+		aRemote name.
+		aString }.
 	self clearCaches
 ]
 
 { #category : #accessing }
 GtIceGitRepository >> pushBranch: aString to: aRemoteName [
-	self runGitWithArgs: {'push' .
+	self runGitWithArgs: {
+		'push' .
 	    aRemoteName . 
-	    aString}
+	    aString }
 ]
 
 { #category : #'API - remotes' }
@@ -542,10 +556,10 @@ GtIceGitRepository >> remoteNamed: aName ifAbsent: aBlockClosure [
 	^ remoteMap
 		at: aName
 		ifAbsentPut: [ | gitRemote lines |
-			lines := [ self
-					runGitWithArgs: {'remote'.
-							'get-url'.
-							aName} ] onErrorDo: [ ^ aBlockClosure value ].
+			lines := [ self runGitWithArgs: {
+				'remote'.
+				'get-url'.
+				aName } ] onErrorDo: [ ^ aBlockClosure value ].
 			gitRemote := lines first trimBoth.
 			(IceGitRemote name: aName url: gitRemote)
 				localRepository: self;
@@ -555,10 +569,10 @@ GtIceGitRepository >> remoteNamed: aName ifAbsent: aBlockClosure [
 { #category : #'API - branches' }
 GtIceGitRepository >> remoteTrackedBranches [
 	| branches lines |
-	lines := self
-			runGitWithArgs: {'branch'.
-					'--remote'.
-					'--format=%(refname)'}.
+	lines := self runGitWithArgs: {
+		'branch'.
+		'--remote'.
+		'--format=%(refname)' }.
 	branches := lines collect: #trimBoth.
 	^ branches collect: [ :each | self basicNewRemoteBranchNamed: each ]
 ]
@@ -566,14 +580,14 @@ GtIceGitRepository >> remoteTrackedBranches [
 { #category : #'API - remotes' }
 GtIceGitRepository >> remotes [
 	| lines |
-	lines := self runGitWithArgs: {'remote'}.
+	lines := self runGitWithArgs: { 'remote' }.
 	^ lines
 		collect: [ :each | 
 			| l |
-			l := self
-					runGitWithArgs: {'remote'.
-							'get-url'.
-							each}.
+			l := self runGitWithArgs: {
+				'remote'.
+				'get-url'.
+				each }.
 			(IceGitRemote name: each url: l first)
 				localRepository: self;
 				yourself ]
@@ -594,9 +608,9 @@ GtIceGitRepository >> revListForCommit: aCommit [
 	^ revListMap
 		at: aCommit
 		ifAbsentPut: [ | lines |
-			lines := self
-					runGitWithArgs: {'rev-list'.
-							aCommit}.
+			lines := self runGitWithArgs: {
+				'rev-list'.
+				aCommit }.
 			lines collect: #trimBoth ]
 ]
 
@@ -624,11 +638,11 @@ GtIceGitRepository >> runGitWithArgs: args [
 ]
 
 { #category : #'API - accessing' }
-GtIceGitRepository >> setHead: aGtIceGitLocalBranch [ 
-		self
-		runGitWithArgs: {'update-ref'.
-				'HEAD'.
-				aGtIceGitLocalBranch commit id}.
+GtIceGitRepository >> setHead: aGtIceGitLocalBranch [
+	self runGitWithArgs: {
+		'update-ref'.
+		'HEAD'.
+		aGtIceGitLocalBranch commit id }
 ]
 
 { #category : #'API - accessing' }
@@ -655,17 +669,17 @@ GtIceGitRepository >> subdirectoryReference [
 { #category : #'API - tags' }
 GtIceGitRepository >> tags [
 	| lines |
-	lines := self runGitWithArgs: {'tag'}.
+	lines := self runGitWithArgs: { 'tag' }.
 	^ lines collect: [ :each | IceTag named: each inRepository: self ]
 ]
 
 { #category : #'API - tags' }
 GtIceGitRepository >> tagsFor: anId [
 	| lines |
-	lines := self
-			runGitWithArgs: {'tag'.
-					'--points-at'.
-					anId}.
+	lines := self runGitWithArgs: {
+		'tag'.
+		'--points-at'.
+		anId }.
 	^ lines collect: [ :each | IceTag named: each inRepository: self ]
 ]
 
@@ -698,29 +712,35 @@ GtIceGitRepository >> writeCommit: indexTreeId message: message parents: parentC
 	self clearCaches.
 	parentArgs := (parentCommits
 			collect: [ :each | 
-				{'-p'.
-					each id} ]) flatten.
-	lines := self
-			runGitWithArgs: {'commit-tree'.
-					indexTreeId} , parentArgs
-					, {'-m'.
-							message}.
+				{ '-p'. each id } ]) flatten.
+	lines := self runGitWithArgs: 
+		{
+		'commit-tree'.
+		indexTreeId 
+		} 
+		, 
+		parentArgs
+		, 
+		{
+		'-m'.
+		message 
+		}.
 	commitId := lines first trimBoth.
-	self
-		runGitWithArgs: {'update-ref'.
-				ref.
-				commitId}.
-	self
-		runGitWithArgs: {'update-ref'.
-				'HEAD'.
-				commitId}.
+	self runGitWithArgs: {
+		'update-ref'.
+		ref.
+		commitId }.
+	self runGitWithArgs: {
+		'update-ref'.
+		'HEAD'.
+		commitId }.
 	^ commitId
 ]
 
 { #category : #accessing }
 GtIceGitRepository >> writeTreeAndReturnOid [
 	| lines |
-	lines := self runGitWithArgs: {'write-tree'}.
+	lines := self runGitWithArgs: { 'write-tree' }.
 	^ lines first trimBoth
 ]
 
