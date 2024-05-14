@@ -28,13 +28,14 @@ GtIceGitRepository class >> fromLibGitRepository: aRepo [
 GtIceGitRepository class >> gtViewGitCallsIn: composite [
 	<gtClassView>
 	
-	^ composite list
+	^ composite columnedList
 		title: 'Git calls';
 		priority: 30;
 		items: [ 
 			(#runGitWithArgs: gtReferences & #gtViewGitCallsIn: gtImplementors not) 
 				contents sort: #selector ascending ];
-		itemText: [ :each | each selector ]
+		column: 'Selector' text: [ :each | each selector ];
+		column: 'Class' text: [ :each | each methodClass ]
 ]
 
 { #category : #'instance creation' }
