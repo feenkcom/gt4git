@@ -24,6 +24,19 @@ GtIceGitRepository class >> fromLibGitRepository: aRepo [
 	^ repo
 ]
 
+{ #category : #'gt extensions' }
+GtIceGitRepository class >> gtViewGitCallsIn: composite [
+	<gtClassView>
+	
+	^ composite list
+		title: 'Git calls';
+		priority: 30;
+		items: [ 
+			(#runGitWithArgs: gtReferences & #gtViewGitCallsIn: gtImplementors not) 
+				contents sort: #selector ascending ];
+		itemText: [ :each | each selector ]
+]
+
 { #category : #'instance creation' }
 GtIceGitRepository class >> on: aFileReference [
 	^ self basicNew
