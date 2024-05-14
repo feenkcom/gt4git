@@ -83,11 +83,11 @@ GtIceGitLocalBranch >> upstream [
 GtIceGitLocalBranch >> upstreamIfNone: aBlock [
 	| upStreamName lines |
 	upstream notNil ifTrue: [^upstream].
-	lines := repository
-			runGitWithArgs: {'branch'.
-					'--list'.
-					'--format=%(upstream)'.
-					name}.
+	lines := repository runGitWithArgs: {
+		'branch'.
+		'--list'.
+		'--format=%(upstream)'.
+		name }.
 	upStreamName := lines first.
 	upStreamName isEmpty ifTrue: [ ^ aBlock value ].
 	^ upstream := GtIceGitRemoteBranch named: upStreamName inRepository: repository
