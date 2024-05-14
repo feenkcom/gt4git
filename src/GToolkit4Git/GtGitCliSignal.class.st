@@ -52,6 +52,16 @@ GtGitCliSignal >> args: aCollection [
 	args := aCollection
 ]
 
+{ #category : #accessing }
+GtGitCliSignal >> asJson [
+	^ NeoJSONObject new
+		timestamp: self timestamp printString;
+		name: self name;
+		processId: self processId;
+		eventType: eventType;
+		args: self args
+]
+
 { #category : #'gt extensions' }
 GtGitCliSignal >> gtGitInvocationFor: aView [
 	<gtView>
@@ -97,7 +107,9 @@ GtGitCliSignal >> output: aCollectionOfStrings [
 
 { #category : #printing }
 GtGitCliSignal >> printOneLineContentsOn: aStream [
-	args do: [ :arg | aStream nextPutAll: arg ] separatedBy: [ aStream nextPut: $  ]
+	args
+		do: [ :arg | aStream nextPutAll: arg ]
+		separatedBy: [ aStream nextPut: $  ]
 ]
 
 { #category : #accessing }
@@ -111,7 +123,7 @@ GtGitCliSignal >> stdoutPrintString [
 		self timestamp printOn: out.
 		out 
 			nextPutAll: ' | ';
-			nextPutAll: self class name;
+			nextPutAll: self name;
 			nextPutAll: ' | ';
 			nextPutAll: self processId;
 			nextPutAll: ' | '.
