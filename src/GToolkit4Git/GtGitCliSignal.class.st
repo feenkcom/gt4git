@@ -149,7 +149,7 @@ GtGitCliSignal >> stdoutPrintString [
 			nextPutAll: self processId;
 			nextPutAll: ' | '.
 		operation 
-			ifNotNil: [ out nextPutAll: ' | '; print: operation ].
+			ifNotNil: [ out print: operation; nextPutAll: ' | ' ].
 		eventType ifNotNil: [
 			out 
 				nextPut: (self isStartSignalType ifTrue: [ $S ] ifFalse: [ $E ]);
