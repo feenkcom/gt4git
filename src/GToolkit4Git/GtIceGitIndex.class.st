@@ -4,10 +4,10 @@ Class {
 	#instVars : [
 		'modifiedFilePaths'
 	],
-	#category : #'GToolkit4Git-Libgit-replace'
+	#category : #'GToolkit4Git-Libgit-CLI'
 }
 
-{ #category : #'*GToolkit4Git' }
+{ #category : #adding }
 GtIceGitIndex >> addLepiterDatabase: aDatabaseDefinition [
 	self addPath: (RelativePath 
 		withAll: aDatabaseDefinition localRootRelativePath)
@@ -63,7 +63,7 @@ GtIceGitIndex >> isEmpty [
 	^ modifiedFilePaths isEmpty
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : #removing }
 GtIceGitIndex >> removeDirectoryFromIndex: aString [
 	#TODO
 ]
@@ -77,7 +77,7 @@ GtIceGitIndex >> removeFileDefinition: anIceFileDefinition [
 	self addPath: anIceFileDefinition path
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : #removing }
 GtIceGitIndex >> removeFileFromIndex: aString [
 	#TODO
 ]

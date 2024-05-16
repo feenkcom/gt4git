@@ -1,3 +1,6 @@
+"
+I really should add class comments
+"
 Class {
 	#name : #GtIceGitRepository,
 	#superclass : #IceRepository,
@@ -6,9 +9,10 @@ Class {
 		'head',
 		'remoteMap',
 		'branchMap',
-		'revListMap'
+		'revListMap',
+		'commitMap'
 	],
-	#category : #'GToolkit4Git-Libgit-replace'
+	#category : #'GToolkit4Git-Libgit-CLI'
 }
 
 { #category : #'instance creation' }
@@ -57,7 +61,7 @@ GtIceGitRepository >> addFilesToIndex: aCollection [
 	self runGitWithArgs: args
 ]
 
-{ #category : #accessing }
+{ #category : #'API - branches' }
 GtIceGitRepository >> allBranches [
 	^ self localBranches , self remoteTrackedBranches
 ]
@@ -101,7 +105,7 @@ GtIceGitRepository >> changedFilesBetween: aCommitish and: otherCommitish [
 		otherCommitish id }
 ]
 
-{ #category : #'api - registry' }
+{ #category : #'API - registry' }
 GtIceGitRepository >> checkForRegistryConflicts [
 	
 	"If the repository has no location, do not check for conflicts."
@@ -155,12 +159,14 @@ GtIceGitRepository >> codeDirectory [
 { #category : #'private - commits' }
 GtIceGitRepository >> commitFromGitCommit: commitIdString [
 	| lines |
-	lines := self runGitWithArgs: {
-		'show'.
-		'-s'.
-		'--format=tformat:%H%n%an%n%at%n%P%n%n%B'.
-		commitIdString }.
-	^ self iceGitCommitFromLines: lines
+	^ commitMap
+		at: commitIdString
+		ifAbsentPut: [ lines := self
+					runGitWithArgs: {'show'.
+							'-s'.
+							'--format=tformat:%H%n%an%n%at%n%P%n%n%B'.
+							commitIdString}.
+			self iceGitCommitFromLines: lines ]
 ]
 
 { #category : #'private - commits' }
@@ -190,6 +196,22 @@ GtIceGitRepository >> configureUpstreamIfNecessary [
 ]
 
 { #category : #accessing }
+GtIceGitRepository >> directoryNameForPackage: package [
+
+	^ (self writerClass 
+		directoryNameFor: package)
+		asString
+]
+
+{ #category : #accessing }
+GtIceGitRepository >> directoryPathStringForPackage: aMCPackage [ 
+
+	^ self subdirectory isEmptyOrNil 
+		ifTrue: [ self directoryNameForPackage: aMCPackage ]
+		ifFalse: [ self subdirectory, '/',  (self directoryNameForPackage: aMCPackage) ]
+]
+
+{ #category : #'API - remotes' }
 GtIceGitRepository >> fetch [
 	"Fetch all commits and branches from all remotes"
 
@@ -198,13 +220,13 @@ GtIceGitRepository >> fetch [
 		'--all' }
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : #'API - accessing' }
 GtIceGitRepository >> getDeltasForFullDiff [
 	#TODO.
 	^ #()
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : #'API - accessing' }
 GtIceGitRepository >> getStatusByFile [
 	| res flagMap lines |
 	flagMap := { $M -> 2.
@@ -234,7 +256,7 @@ GtIceGitRepository >> git [
 		workingDirectory: location
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : #'gt extensions' }
 GtIceGitRepository >> gtRepositoryDirectoryFor: aView [
 	<gtView>
 	
@@ -289,7 +311,7 @@ GtIceGitRepository >> gtRepositoryDirectoryFor: aView [
 		  action: [ WebBrowser openOn: self location fullName ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt extensions' }
 GtIceGitRepository >> gtStatusFor: aView [
 	<gtView>
 	
@@ -324,7 +346,7 @@ GtIceGitRepository >> handleLibgitError: aBlock [
 	aBlock value
 ]
 
-{ #category : #'api - accessing' }
+{ #category : #'API - accessing' }
 GtIceGitRepository >> head [
 	| headRef lines ref |
 	head notNil ifTrue: [ ^ head ].
@@ -376,6 +398,7 @@ GtIceGitRepository >> initialize [
 	remoteMap := Dictionary new.
 	branchMap := Dictionary new.
 	revListMap := Dictionary new.
+	commitMap := Dictionary new
 ]
 
 { #category : #initialization }
@@ -414,6 +437,16 @@ GtIceGitRepository >> location [
 { #category : #actions }
 GtIceGitRepository >> location: aLocation [
 	location := aLocation 
+]
+
+{ #category : #accessing }
+GtIceGitRepository >> log [
+	^ self logClass for: self
+]
+
+{ #category : #accessing }
+GtIceGitRepository >> logClass [
+	^ GtGitTonelLog
 ]
 
 { #category : #'API - commits' }
@@ -458,7 +491,7 @@ GtIceGitRepository >> lookupRemoteBranch: branchName ifAbsent: aBlock [
 			lines isEmpty ifTrue: [ aBlock value ] ifFalse: [ lines first ] ]
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : #actions }
 GtIceGitRepository >> makeSafe [
 ]
 
@@ -493,7 +526,7 @@ GtIceGitRepository >> newIndex [
 	^ GtIceGitIndex on: self
 ]
 
-{ #category : #accessing }
+{ #category : #'API - commits' }
 GtIceGitRepository >> newNoCommit [
 	^ IceNoCommit repository: self
 ]
@@ -534,7 +567,7 @@ GtIceGitRepository >> properties [
 	^ self workingCopy repositoryProperties
 ]
 
-{ #category : #accessing }
+{ #category : #'API - branches' }
 GtIceGitRepository >> pullBranch: aString from: aRemote [
 	self runGitWithArgs: {
 		'pull'.
@@ -543,7 +576,7 @@ GtIceGitRepository >> pullBranch: aString from: aRemote [
 	self clearCaches
 ]
 
-{ #category : #accessing }
+{ #category : #'API - branches' }
 GtIceGitRepository >> pushBranch: aString to: aRemoteName [
 	self runGitWithArgs: {
 		'push' .
@@ -614,26 +647,47 @@ GtIceGitRepository >> revListForCommit: aCommit [
 			lines collect: #trimBoth ]
 ]
 
+{ #category : #'API - commits' }
+GtIceGitRepository >> revListForCommit: aCommit andPath: aPath [
+	| lines |
+	lines := self runGitWithArgs: {
+		'rev-list'.
+		aCommit.
+		'--'.
+		aPath }.
+	^ lines collect: #trimBoth
+]
+
 { #category : #private }
 GtIceGitRepository >> runGitWithArgs: args [
 	"Run CLI git with the passed arguments and return the lines from standard output.
 	Wait for the git command to complete. Signal an error when not successful."
 
-	| processBuilder lines output |
-	(GtGitCliSignal args: args) markAsStartSignal emit.
+	| processBuilder lines output operation |
+	operation := thisContext sender method selector.
+	(GtGitCliSignal args: args) 
+		operation: operation; 
+		markAsStartSignal; 
+		emit.
 	processBuilder := self git args: args.
 	output := self waitForProcessAsync: processBuilder.
 	output status isSuccess 
 		ifFalse: [
 			lines := output stderr lines.
-			(GtGitCliSignal args: args output: lines) markAsEndSignal emit.
+			(GtGitCliSignal args: args output: lines)
+				operation: operation;
+				markAsEndSignal;
+				emit.
 			^ GtGitCliError new
 				args: args;
 				stderr: lines;
 				exitCode: output status code;
 				signal ].
 	lines := output stdout lines.
-	(GtGitCliSignal args: args output: lines) markAsEndSignal emit.
+	(GtGitCliSignal args: args output: lines)
+		operation: operation;
+		markAsEndSignal;
+		emit.
 	^ lines
 ]
 
@@ -706,7 +760,7 @@ GtIceGitRepository >> waitForProcessAsync: processBuilder [
 	^ nativeProcess waitAsyncWithOutput
 ]
 
-{ #category : #accessing }
+{ #category : #'API - commit' }
 GtIceGitRepository >> writeCommit: indexTreeId message: message parents: parentCommits updateReference: ref author: author committer: committer [
 	| lines commitId parentArgs |
 	self clearCaches.
@@ -737,7 +791,7 @@ GtIceGitRepository >> writeCommit: indexTreeId message: message parents: parentC
 	^ commitId
 ]
 
-{ #category : #accessing }
+{ #category : #'API - commit' }
 GtIceGitRepository >> writeTreeAndReturnOid [
 	| lines |
 	lines := self runGitWithArgs: { 'write-tree' }.

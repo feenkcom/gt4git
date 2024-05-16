@@ -8,7 +8,7 @@ Class {
 		'size',
 		'path'
 	],
-	#category : #'GToolkit4Git-Libgit-replace'
+	#category : #'GToolkit4Git-Libgit-CLI'
 }
 
 { #category : #'instance creation' }

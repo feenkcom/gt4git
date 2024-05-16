@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'project'
 	],
-	#category : #'GToolkit4Git-Libgit-replace'
+	#category : #'GToolkit4Git-Libgit-CLI'
 }
 
 { #category : #ancestry }
@@ -25,6 +25,11 @@ GtIceGitCommit >> entryByPath: aString ifAbsent: aBlock [
 GtIceGitCommit >> fileSystem [
 	^(FileSystem store: (GtGitCommitStore on: id inRepo: repository))
 					root
+]
+
+{ #category : #accessing }
+GtIceGitCommit >> numberOfParents [
+	^self ancestorIds size
 ]
 
 { #category : #accessing }
