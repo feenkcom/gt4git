@@ -1,3 +1,6 @@
+"
+I really should add class comments
+"
 Class {
 	#name : #GtIceGitRepository,
 	#superclass : #IceRepository,
