@@ -28,6 +28,11 @@ GtIceGitCommit >> fileSystem [
 ]
 
 { #category : #accessing }
+GtIceGitCommit >> numberOfParents [
+	^self ancestorIds size
+]
+
+{ #category : #accessing }
 GtIceGitCommit >> project [
 	^project ifNil: [project := super project]
 ]

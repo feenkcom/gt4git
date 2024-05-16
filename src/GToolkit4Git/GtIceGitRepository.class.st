@@ -189,6 +189,22 @@ GtIceGitRepository >> configureUpstreamIfNecessary [
 	#TODO
 ]
 
+{ #category : #'as yet unclassified' }
+GtIceGitRepository >> directoryNameForPackage: package [
+
+	^ (self writerClass 
+		directoryNameFor: package)
+		asString
+]
+
+{ #category : #'as yet unclassified' }
+GtIceGitRepository >> directoryPathStringForPackage: aMCPackage [ 
+
+	^ self subdirectory isEmptyOrNil 
+		ifTrue: [ self directoryNameForPackage: aMCPackage ]
+		ifFalse: [ self subdirectory, '/',  (self directoryNameForPackage: aMCPackage) ]
+]
+
 { #category : #accessing }
 GtIceGitRepository >> fetch [
 	"Fetch all commits and branches from all remotes"
@@ -416,6 +432,16 @@ GtIceGitRepository >> location: aLocation [
 	location := aLocation 
 ]
 
+{ #category : #'as yet unclassified' }
+GtIceGitRepository >> log [
+	^ self logClass for: self
+]
+
+{ #category : #accessing }
+GtIceGitRepository >> logClass [
+	^ GtGitTonelLog
+]
+
 { #category : #'API - commits' }
 GtIceGitRepository >> lookupCommit: commitId ifAbsent: aBlock [
 	^ [ self commitFromGitCommit: commitId ] onErrorDo: [ aBlock value ]
@@ -612,6 +638,17 @@ GtIceGitRepository >> revListForCommit: aCommit [
 				'rev-list'.
 				aCommit }.
 			lines collect: #trimBoth ]
+]
+
+{ #category : #'API - commits' }
+GtIceGitRepository >> revListForCommit: aCommit andPath: aPath [
+	| lines |
+	lines := self
+			runGitWithArgs: {'rev-list'.
+					aCommit.
+					'--'.
+					aPath}.
+	^ lines collect: #trimBoth
 ]
 
 { #category : #private }
