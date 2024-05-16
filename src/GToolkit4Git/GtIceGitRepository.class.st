@@ -9,7 +9,8 @@ Class {
 		'head',
 		'remoteMap',
 		'branchMap',
-		'revListMap'
+		'revListMap',
+		'commitMap'
 	],
 	#category : #'GToolkit4Git-Libgit-CLI'
 }
@@ -158,12 +159,14 @@ GtIceGitRepository >> codeDirectory [
 { #category : #'private - commits' }
 GtIceGitRepository >> commitFromGitCommit: commitIdString [
 	| lines |
-	lines := self runGitWithArgs: {
-		'show'.
-		'-s'.
-		'--format=tformat:%H%n%an%n%at%n%P%n%n%B'.
-		commitIdString }.
-	^ self iceGitCommitFromLines: lines
+	^ commitMap
+		at: commitIdString
+		ifAbsentPut: [ lines := self
+					runGitWithArgs: {'show'.
+							'-s'.
+							'--format=tformat:%H%n%an%n%at%n%P%n%n%B'.
+							commitIdString}.
+			self iceGitCommitFromLines: lines ]
 ]
 
 { #category : #'private - commits' }
@@ -395,6 +398,7 @@ GtIceGitRepository >> initialize [
 	remoteMap := Dictionary new.
 	branchMap := Dictionary new.
 	revListMap := Dictionary new.
+	commitMap := Dictionary new
 ]
 
 { #category : #initialization }
