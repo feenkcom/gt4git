@@ -656,21 +656,31 @@ GtIceGitRepository >> runGitWithArgs: args [
 	"Run CLI git with the passed arguments and return the lines from standard output.
 	Wait for the git command to complete. Signal an error when not successful."
 
-	| processBuilder lines output |
-	(GtGitCliSignal args: args) markAsStartSignal emit.
+	| processBuilder lines output operation |
+	operation := thisContext sender method selector.
+	(GtGitCliSignal args: args) 
+		operation: operation; 
+		markAsStartSignal; 
+		emit.
 	processBuilder := self git args: args.
 	output := self waitForProcessAsync: processBuilder.
 	output status isSuccess 
 		ifFalse: [
 			lines := output stderr lines.
-			(GtGitCliSignal args: args output: lines) markAsEndSignal emit.
+			(GtGitCliSignal args: args output: lines)
+				operation: operation;
+				markAsEndSignal;
+				emit.
 			^ GtGitCliError new
 				args: args;
 				stderr: lines;
 				exitCode: output status code;
 				signal ].
 	lines := output stdout lines.
-	(GtGitCliSignal args: args output: lines) markAsEndSignal emit.
+	(GtGitCliSignal args: args output: lines)
+		operation: operation;
+		markAsEndSignal;
+		emit.
 	^ lines
 ]
 

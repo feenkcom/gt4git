@@ -486,6 +486,7 @@ GtGitRepository >> gtActionFetchFor: anAction [
 	^ anAction button
 		label: 'Fetch';
 		priority: 2;
+		tooltip: 'Fetch all commits and branches from all remotes';
 		action: [ :aButton |
 			(IceTipRepositoryModel on: self icebergRepository) fetch.
 			self announceRepositoryModified.
@@ -498,6 +499,7 @@ GtGitRepository >> gtActionForgetFor: anAction [
 	^ anAction button
 		label: 'Forget';
 		priority: 11;
+		tooltip: 'Forget this repository by unregistering it from the system';
 		action: [ :aButton | self forget ]
 ]
 
@@ -511,6 +513,7 @@ GtGitRepository >> gtActionPullFor: anAction [
 	^ anAction button
 		  label: 'Pull';
 		  priority: 3;
+		  tooltip: 'Pull all commits and branches from all remotes and merge';
 		  action: [ :aButton | 
 			  [ self gtLepiterAwarePull ]
 				  on: IceMergeResolutionRequest
@@ -528,6 +531,7 @@ GtGitRepository >> gtActionPushFor: anAction [
 	^ anAction button
 		label: 'Push';
 		priority: 4;
+		tooltip: 'Push current commits to the default push remote';
 		action: [ :aButton | 
 			self icebergRepository push.
 			self announceRepositoryModified.
@@ -541,6 +545,7 @@ GtGitRepository >> gtActionRefreshFor: anAction [
 	^ anAction button
 		label: 'Refresh';
 		priority: 1;
+		tooltip: 'Refresh by recomputing changes in dirty packages';
 		action: [ :aButton |
 		
 			"Aim to only recalculate the dirty flag for packages that are marked as dirty.
@@ -551,7 +556,7 @@ GtGitRepository >> gtActionRefreshFor: anAction [
 				"If the repository is not marked as modified no action is needed here"
 
 
-				"We compite the diff but only recalculate the status for dirty packages"
+				"We compute the diff but only recalculate the status for dirty packages"
 				diff := IceDiff new
 					sourceVersion: self icebergRepository workingCopy;
 					targetVersion: self icebergRepository workingCopy referenceCommit;
@@ -572,17 +577,21 @@ GtGitRepository >> gtActionRemoveFor: anAction [
 	^ anAction button
 		label: 'Remove';
 		priority: 10;
+		tooltip: 'Remove this repository';
 		action: [ :aButton | self remove ]
 ]
 
 { #category : #'gt - extensions' }
 GtGitRepository >> gtActionRepairFor: anAction [
 	<gtAction>
+	| label |
 	(GtGitRepairAction subclasses
 		select: [ :sc | sc iceTipClass isAvailableFor: icebergRepository ]) size = 0
 		ifTrue: [ ^ anAction noAction ].
+	label := self isUninitialized ifTrue: [ 'Initialize' ] ifFalse: [ 'Repair' ].
 	^ anAction dropdown
-		label: (self isUninitialized ifTrue: [ 'Initialize' ] ifFalse: [ 'Repair' ]);
+		label: label;
+		tooltip: label , ' this repository';
 		content: [ :aDropdown | 
 			GtGitRepositoryRepairStencil new
 				repository: icebergRepository;
