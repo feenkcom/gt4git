@@ -8,7 +8,7 @@ Class {
 		'output',
 		'operation'
 	],
-	#category : #'GToolkit4Git-Libgit-replace'
+	#category : #'GToolkit4Git-Libgit-CLI'
 }
 
 { #category : #'instance creation' }

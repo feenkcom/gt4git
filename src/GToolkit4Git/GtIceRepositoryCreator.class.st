@@ -11,7 +11,7 @@ Class {
 		'ensureProjectFile',
 		'branchName'
 	],
-	#category : #'GToolkit4Git-Libgit-replace'
+	#category : #'GToolkit4Git-Libgit-CLI'
 }
 
 { #category : #accessing }
@@ -19,7 +19,7 @@ GtIceRepositoryCreator class >> defaultSubdirectory [
 	^ ''
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #public }
 GtIceRepositoryCreator class >> fromUrl: aUrl to: aFileReference [
 	^ self new
 		remote: (IceGitRemote url: aUrl);
@@ -34,7 +34,7 @@ GtIceRepositoryCreator class >> isGitRoot: aReference [
 				and: [ (aReference / '.git' / 'config') exists ] ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #public }
 GtIceRepositoryCreator class >> on: aFileReference [
 	^ self new
 		location: aFileReference;

@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'project'
 	],
-	#category : #'GToolkit4Git-Libgit-replace'
+	#category : #'GToolkit4Git-Libgit-CLI'
 }
 
 { #category : #ancestry }

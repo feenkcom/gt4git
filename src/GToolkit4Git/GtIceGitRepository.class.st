@@ -8,7 +8,7 @@ Class {
 		'branchMap',
 		'revListMap'
 	],
-	#category : #'GToolkit4Git-Libgit-replace'
+	#category : #'GToolkit4Git-Libgit-CLI'
 }
 
 { #category : #'instance creation' }
@@ -57,7 +57,7 @@ GtIceGitRepository >> addFilesToIndex: aCollection [
 	self runGitWithArgs: args
 ]
 
-{ #category : #accessing }
+{ #category : #'API - branches' }
 GtIceGitRepository >> allBranches [
 	^ self localBranches , self remoteTrackedBranches
 ]
@@ -101,7 +101,7 @@ GtIceGitRepository >> changedFilesBetween: aCommitish and: otherCommitish [
 		otherCommitish id }
 ]
 
-{ #category : #'api - registry' }
+{ #category : #'API - registry' }
 GtIceGitRepository >> checkForRegistryConflicts [
 	
 	"If the repository has no location, do not check for conflicts."
@@ -189,7 +189,7 @@ GtIceGitRepository >> configureUpstreamIfNecessary [
 	#TODO
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GtIceGitRepository >> directoryNameForPackage: package [
 
 	^ (self writerClass 
@@ -197,7 +197,7 @@ GtIceGitRepository >> directoryNameForPackage: package [
 		asString
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GtIceGitRepository >> directoryPathStringForPackage: aMCPackage [ 
 
 	^ self subdirectory isEmptyOrNil 
@@ -205,7 +205,7 @@ GtIceGitRepository >> directoryPathStringForPackage: aMCPackage [
 		ifFalse: [ self subdirectory, '/',  (self directoryNameForPackage: aMCPackage) ]
 ]
 
-{ #category : #accessing }
+{ #category : #'API - remotes' }
 GtIceGitRepository >> fetch [
 	"Fetch all commits and branches from all remotes"
 
@@ -214,13 +214,13 @@ GtIceGitRepository >> fetch [
 		'--all' }
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : #'API - accessing' }
 GtIceGitRepository >> getDeltasForFullDiff [
 	#TODO.
 	^ #()
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : #'API - accessing' }
 GtIceGitRepository >> getStatusByFile [
 	| res flagMap lines |
 	flagMap := { $M -> 2.
@@ -250,7 +250,7 @@ GtIceGitRepository >> git [
 		workingDirectory: location
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : #'gt extensions' }
 GtIceGitRepository >> gtRepositoryDirectoryFor: aView [
 	<gtView>
 	
@@ -305,7 +305,7 @@ GtIceGitRepository >> gtRepositoryDirectoryFor: aView [
 		  action: [ WebBrowser openOn: self location fullName ]
 ]
 
-{ #category : #accessing }
+{ #category : #'gt extensions' }
 GtIceGitRepository >> gtStatusFor: aView [
 	<gtView>
 	
@@ -340,7 +340,7 @@ GtIceGitRepository >> handleLibgitError: aBlock [
 	aBlock value
 ]
 
-{ #category : #'api - accessing' }
+{ #category : #'API - accessing' }
 GtIceGitRepository >> head [
 	| headRef lines ref |
 	head notNil ifTrue: [ ^ head ].
@@ -432,7 +432,7 @@ GtIceGitRepository >> location: aLocation [
 	location := aLocation 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GtIceGitRepository >> log [
 	^ self logClass for: self
 ]
@@ -484,7 +484,7 @@ GtIceGitRepository >> lookupRemoteBranch: branchName ifAbsent: aBlock [
 			lines isEmpty ifTrue: [ aBlock value ] ifFalse: [ lines first ] ]
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : #actions }
 GtIceGitRepository >> makeSafe [
 ]
 
@@ -519,7 +519,7 @@ GtIceGitRepository >> newIndex [
 	^ GtIceGitIndex on: self
 ]
 
-{ #category : #accessing }
+{ #category : #'API - commits' }
 GtIceGitRepository >> newNoCommit [
 	^ IceNoCommit repository: self
 ]
@@ -560,7 +560,7 @@ GtIceGitRepository >> properties [
 	^ self workingCopy repositoryProperties
 ]
 
-{ #category : #accessing }
+{ #category : #'API - branches' }
 GtIceGitRepository >> pullBranch: aString from: aRemote [
 	self runGitWithArgs: {
 		'pull'.
@@ -569,7 +569,7 @@ GtIceGitRepository >> pullBranch: aString from: aRemote [
 	self clearCaches
 ]
 
-{ #category : #accessing }
+{ #category : #'API - branches' }
 GtIceGitRepository >> pushBranch: aString to: aRemoteName [
 	self runGitWithArgs: {
 		'push' .
@@ -643,11 +643,11 @@ GtIceGitRepository >> revListForCommit: aCommit [
 { #category : #'API - commits' }
 GtIceGitRepository >> revListForCommit: aCommit andPath: aPath [
 	| lines |
-	lines := self
-			runGitWithArgs: {'rev-list'.
-					aCommit.
-					'--'.
-					aPath}.
+	lines := self runGitWithArgs: {
+		'rev-list'.
+		aCommit.
+		'--'.
+		aPath }.
 	^ lines collect: #trimBoth
 ]
 
@@ -753,7 +753,7 @@ GtIceGitRepository >> waitForProcessAsync: processBuilder [
 	^ nativeProcess waitAsyncWithOutput
 ]
 
-{ #category : #accessing }
+{ #category : #'API - commit' }
 GtIceGitRepository >> writeCommit: indexTreeId message: message parents: parentCommits updateReference: ref author: author committer: committer [
 	| lines commitId parentArgs |
 	self clearCaches.
@@ -784,7 +784,7 @@ GtIceGitRepository >> writeCommit: indexTreeId message: message parents: parentC
 	^ commitId
 ]
 
-{ #category : #accessing }
+{ #category : #'API - commit' }
 GtIceGitRepository >> writeTreeAndReturnOid [
 	| lines |
 	lines := self runGitWithArgs: { 'write-tree' }.

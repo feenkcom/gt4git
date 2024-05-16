@@ -5,7 +5,7 @@ Class {
 		'commit',
 		'upstream'
 	],
-	#category : #'GToolkit4Git-Libgit-replace'
+	#category : #'GToolkit4Git-Libgit-CLI'
 }
 
 { #category : #accessing }
@@ -16,7 +16,7 @@ GtIceGitLocalBranch >> commit [
 	^ commit := self repository commitFromGitCommit: gitId
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GtIceGitLocalBranch >> fileSystem [
 	
 	^ self commit fileSystem

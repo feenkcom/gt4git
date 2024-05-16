@@ -6,7 +6,7 @@ Class {
 		'args',
 		'exitCode'
 	],
-	#category : #'GToolkit4Git-Libgit-replace'
+	#category : #'GToolkit4Git-Libgit-CLI'
 }
 
 { #category : #accessing }

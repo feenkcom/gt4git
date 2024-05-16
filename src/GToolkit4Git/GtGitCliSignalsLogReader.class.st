@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'signalTypeIndicator'
 	],
-	#category : #'GToolkit4Git-Libgit-replace'
+	#category : #'GToolkit4Git-Libgit-CLI'
 }
 
 { #category : #api }

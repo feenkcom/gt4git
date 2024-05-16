@@ -1,7 +1,7 @@
 Class {
 	#name : #GtGitCliEvent,
 	#superclass : #GtBeaconLogEvent,
-	#category : #'GToolkit4Git-Libgit-replace'
+	#category : #'GToolkit4Git-Libgit-CLI'
 }
 
 { #category : #accessing }
@@ -14,7 +14,7 @@ GtGitCliEvent >> args [
 	^ self eventStartedSignal args
 ]
 
-{ #category : #'gt - extensions' }
+{ #category : #'gt extensions' }
 GtGitCliEvent >> gtGitInvocationFor: aView [
 	<gtView>
 	^ aView list
