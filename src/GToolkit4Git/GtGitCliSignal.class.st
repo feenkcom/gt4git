@@ -5,7 +5,8 @@ Class {
 	#classTraits : 'TGtBeaconSignalStartEndType classTrait',
 	#instVars : [
 		'args',
-		'output'
+		'output',
+		'operation'
 	],
 	#category : #'GToolkit4Git-Libgit-replace'
 }
@@ -72,6 +73,16 @@ GtGitCliSignal >> gtGitInvocationFor: aView [
 ]
 
 { #category : #'gt extensions' }
+GtGitCliSignal >> gtGitOperationFor: aView [
+	<gtView>
+	self operation ifNil: [ ^ aView empty ].
+	^ aView text
+		title: 'Git operation';
+		priority: 20;
+		text: [ self operation ]
+]
+
+{ #category : #'gt extensions' }
 GtGitCliSignal >> gtGitOutputFor: aView [
 	<gtView>
 	^ aView list
@@ -93,6 +104,16 @@ GtGitCliSignal >> initializeFromTimestamp: aDateAndTime andData: aCollection [
 		ifTrue: [ self markAsStartSignal ] 
 		ifFalse: [ self markAsEndSignal ].
 	args := aCollection fifth splitOn: Character space
+]
+
+{ #category : #accessing }
+GtGitCliSignal >> operation [
+	^ operation
+]
+
+{ #category : #accessing }
+GtGitCliSignal >> operation: aSelector [
+	operation := aSelector
 ]
 
 { #category : #accessing }
@@ -127,6 +148,8 @@ GtGitCliSignal >> stdoutPrintString [
 			nextPutAll: ' | ';
 			nextPutAll: self processId;
 			nextPutAll: ' | '.
+		operation 
+			ifNotNil: [ out nextPutAll: ' | '; print: operation ].
 		eventType ifNotNil: [
 			out 
 				nextPut: (self isStartSignalType ifTrue: [ $S ] ifFalse: [ $E ]);

@@ -23,8 +23,13 @@ GtGitCliEvent >> gtGitInvocationFor: aView [
 		items: [ 
 			self eventCompletedSignal hasOutput
 				ifTrue: [
-					self args , #('' '=>' '') , self output ] 
+					{ self operation . '' } , self args , #('' '=>' '') , self output ] 
 				ifFalse: [ self args ] ]
+]
+
+{ #category : #accessing }
+GtGitCliEvent >> operation [
+	^ self eventStartedSignal operation
 ]
 
 { #category : #accessing }
