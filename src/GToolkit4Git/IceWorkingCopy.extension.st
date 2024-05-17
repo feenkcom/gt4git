@@ -32,6 +32,7 @@ IceWorkingCopy >> gtPackagesFor: aView [
 		contextItemLabel: 'Reload (Bail)'
 			action: [ :element :item | [ item reload ] on: MCMergeOrLoadWarning do: [ :err | err cancel ] ];
 		updateWhen: IceRepositoryModified in: Iceberg announcer;
+		actionUpdateButton;
 		column: 'Name' text: #gtPackageDescription;
 		column: 'Status'
 			icon: #gtPackageStatus
