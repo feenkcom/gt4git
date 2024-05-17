@@ -2,7 +2,7 @@
 I really should add class comments
 "
 Class {
-	#name : #GtIceGitRepository,
+	#name : #IceGitCliRepository,
 	#superclass : #IceRepository,
 	#instVars : [
 		'location',
@@ -16,7 +16,7 @@ Class {
 }
 
 { #category : #'instance creation' }
-GtIceGitRepository class >> fromLibGitRepository: aRepo [
+IceGitCliRepository class >> fromLibGitRepository: aRepo [
 	| repo |
 	repo := self new
 			location: aRepo location;
@@ -29,7 +29,7 @@ GtIceGitRepository class >> fromLibGitRepository: aRepo [
 ]
 
 { #category : #'gt extensions' }
-GtIceGitRepository class >> gtViewGitCallsIn: composite [
+IceGitCliRepository class >> gtViewGitCallsIn: composite [
 	<gtClassView>
 	
 	^ composite columnedList
@@ -43,14 +43,14 @@ GtIceGitRepository class >> gtViewGitCallsIn: composite [
 ]
 
 { #category : #'instance creation' }
-GtIceGitRepository class >> on: aFileReference [
+IceGitCliRepository class >> on: aFileReference [
 	^ self basicNew
 		initialize;
 		initializeOn: aFileReference
 ]
 
 { #category : #accessing }
-GtIceGitRepository >> addFilesToIndex: aCollection [
+IceGitCliRepository >> addFilesToIndex: aCollection [
 	| args |
 	args := { 'add' } asOrderedCollection.
 	args
@@ -62,31 +62,31 @@ GtIceGitRepository >> addFilesToIndex: aCollection [
 ]
 
 { #category : #'API - branches' }
-GtIceGitRepository >> allBranches [
+IceGitCliRepository >> allBranches [
 	^ self localBranches , self remoteTrackedBranches
 ]
 
 { #category : #'API - accessing' }
-GtIceGitRepository >> basicCodeDirectory [
+IceGitCliRepository >> basicCodeDirectory [
 	^ self subdirectory isEmptyOrNil
 		ifTrue: [ self repositoryDirectory ]
 		ifFalse: [ self repositoryDirectory / self subdirectory ]
 ]
 
 { #category : #'API - branches' }
-GtIceGitRepository >> basicNewBranchNamed: aString [ 
+IceGitCliRepository >> basicNewBranchNamed: aString [ 
 
 	^ GtIceGitLocalBranch named: aString inRepository: self
 ]
 
 { #category : #'API - branches' }
-GtIceGitRepository >> basicNewRemoteBranchNamed: aString [ 
+IceGitCliRepository >> basicNewRemoteBranchNamed: aString [ 
 
 	^ GtIceGitRemoteBranch named: aString inRepository: self
 ]
 
 { #category : #'API - branches' }
-GtIceGitRepository >> branchNamed: aString ifPresent: presentBlock ifAbsent: absentBlock [
+IceGitCliRepository >> branchNamed: aString ifPresent: presentBlock ifAbsent: absentBlock [
 	| found |
 	found := self lookupLocalBranch: aString ifAbsent: [ nil ].
 	^ found
@@ -95,7 +95,7 @@ GtIceGitRepository >> branchNamed: aString ifPresent: presentBlock ifAbsent: abs
 ]
 
 { #category : #'private - changes' }
-GtIceGitRepository >> changedFilesBetween: aCommitish and: otherCommitish [
+IceGitCliRepository >> changedFilesBetween: aCommitish and: otherCommitish [
 	"Answer a list of files that changed between two commits"
 
 	^ self runGitWithArgs: {
@@ -106,7 +106,7 @@ GtIceGitRepository >> changedFilesBetween: aCommitish and: otherCommitish [
 ]
 
 { #category : #'API - registry' }
-GtIceGitRepository >> checkForRegistryConflicts [
+IceGitCliRepository >> checkForRegistryConflicts [
 	
 	"If the repository has no location, do not check for conflicts."
 	self location ifNil: [ ^ self ].
@@ -135,13 +135,13 @@ and the original repository''s url is {3}.'
 ]
 
 { #category : #accessing }
-GtIceGitRepository >> clearCaches [
+IceGitCliRepository >> clearCaches [
 	head := nil.
 	branchMap := Dictionary new
 ]
 
 { #category : #actions }
-GtIceGitRepository >> clone: aString [
+IceGitCliRepository >> clone: aString [
 	self runGitWithArgs: {
 		'clone'.
 		aString . 
@@ -149,7 +149,7 @@ GtIceGitRepository >> clone: aString [
 ]
 
 { #category : #'API - accessing' }
-GtIceGitRepository >> codeDirectory [
+IceGitCliRepository >> codeDirectory [
 	"Code repository might have been deleted or image might have been moved."
 	self repositoryDirectory exists
 		ifTrue: [ ^ self basicCodeDirectory ]
@@ -157,7 +157,7 @@ GtIceGitRepository >> codeDirectory [
 ]
 
 { #category : #'private - commits' }
-GtIceGitRepository >> commitFromGitCommit: commitIdString [
+IceGitCliRepository >> commitFromGitCommit: commitIdString [
 	| lines |
 	^ commitMap
 		at: commitIdString
@@ -170,7 +170,7 @@ GtIceGitRepository >> commitFromGitCommit: commitIdString [
 ]
 
 { #category : #'private - commits' }
-GtIceGitRepository >> commitsFromIds: idCollection [
+IceGitCliRepository >> commitsFromIds: idCollection [
 	| lines commitLines range commits |
 	idCollection isEmpty ifTrue: [ ^ #() ].
 	range := idCollection size = 1
@@ -191,12 +191,12 @@ GtIceGitRepository >> commitsFromIds: idCollection [
 ]
 
 { #category : #accessing }
-GtIceGitRepository >> configureUpstreamIfNecessary [
+IceGitCliRepository >> configureUpstreamIfNecessary [
 	#TODO
 ]
 
 { #category : #accessing }
-GtIceGitRepository >> directoryNameForPackage: package [
+IceGitCliRepository >> directoryNameForPackage: package [
 
 	^ (self writerClass 
 		directoryNameFor: package)
@@ -204,7 +204,7 @@ GtIceGitRepository >> directoryNameForPackage: package [
 ]
 
 { #category : #accessing }
-GtIceGitRepository >> directoryPathStringForPackage: aMCPackage [ 
+IceGitCliRepository >> directoryPathStringForPackage: aMCPackage [ 
 
 	^ self subdirectory isEmptyOrNil 
 		ifTrue: [ self directoryNameForPackage: aMCPackage ]
@@ -212,7 +212,7 @@ GtIceGitRepository >> directoryPathStringForPackage: aMCPackage [
 ]
 
 { #category : #'API - remotes' }
-GtIceGitRepository >> fetch [
+IceGitCliRepository >> fetch [
 	"Fetch all commits and branches from all remotes"
 
 	self runGitWithArgs: {
@@ -221,13 +221,13 @@ GtIceGitRepository >> fetch [
 ]
 
 { #category : #'API - accessing' }
-GtIceGitRepository >> getDeltasForFullDiff [
+IceGitCliRepository >> getDeltasForFullDiff [
 	#TODO.
 	^ #()
 ]
 
 { #category : #'API - accessing' }
-GtIceGitRepository >> getStatusByFile [
+IceGitCliRepository >> getStatusByFile [
 	| res flagMap lines |
 	flagMap := { $M -> 2.
 			$T -> 16.
@@ -250,14 +250,14 @@ GtIceGitRepository >> getStatusByFile [
 ]
 
 { #category : #actions }
-GtIceGitRepository >> git [
+IceGitCliRepository >> git [
 	^ GtExternalProcessBuilder new
 		command: 'git';
 		workingDirectory: location
 ]
 
 { #category : #'gt extensions' }
-GtIceGitRepository >> gtRepositoryDirectoryFor: aView [
+IceGitCliRepository >> gtRepositoryDirectoryFor: aView [
 	<gtView>
 	
 	| status |
@@ -312,7 +312,7 @@ GtIceGitRepository >> gtRepositoryDirectoryFor: aView [
 ]
 
 { #category : #'gt extensions' }
-GtIceGitRepository >> gtStatusFor: aView [
+IceGitCliRepository >> gtStatusFor: aView [
 	<gtView>
 	
 	self isMissing ifTrue: [ ^ aView empty ].
@@ -341,13 +341,13 @@ GtIceGitRepository >> gtStatusFor: aView [
 ]
 
 { #category : #accessing }
-GtIceGitRepository >> handleLibgitError: aBlock [
+IceGitCliRepository >> handleLibgitError: aBlock [
 	"Just evaluate the block since we aren't libgit"
 	aBlock value
 ]
 
 { #category : #'API - accessing' }
-GtIceGitRepository >> head [
+IceGitCliRepository >> head [
 	| headRef lines ref |
 	head notNil ifTrue: [ ^ head ].
 	lines := [ self runGitWithArgs: {
@@ -363,7 +363,7 @@ GtIceGitRepository >> head [
 ]
 
 { #category : #'private - commits' }
-GtIceGitRepository >> iceGitCommitFromLines: lines [
+IceGitCliRepository >> iceGitCommitFromLines: lines [
 	| author datetime message id parents |
 	id := lines at: 1.
 	author := lines at: 2.
@@ -385,7 +385,7 @@ GtIceGitRepository >> iceGitCommitFromLines: lines [
 ]
 
 { #category : #actions }
-GtIceGitRepository >> initBare: isBareRepository [
+IceGitCliRepository >> initBare: isBareRepository [
 	| args |
 	args := { 'init' } asOrderedCollection.
 	isBareRepository ifTrue: [ args add: '--bare' ].
@@ -393,7 +393,7 @@ GtIceGitRepository >> initBare: isBareRepository [
 ]
 
 { #category : #initialization }
-GtIceGitRepository >> initialize [
+IceGitCliRepository >> initialize [
 	super initialize.
 	remoteMap := Dictionary new.
 	branchMap := Dictionary new.
@@ -402,25 +402,25 @@ GtIceGitRepository >> initialize [
 ]
 
 { #category : #initialization }
-GtIceGitRepository >> initializeOn: aFileReference [
+IceGitCliRepository >> initializeOn: aFileReference [
 	location := aFileReference
 ]
 
 { #category : #'private - commits' }
-GtIceGitRepository >> internalStoreVersion: aMCVersion [
+IceGitCliRepository >> internalStoreVersion: aMCVersion [
 	self writerClass
 		forInternalStoreFileOut: aMCVersion 
 		on: self
 ]
 
 { #category : #testing }
-GtIceGitRepository >> isMissing [
+IceGitCliRepository >> isMissing [
 	^ self repositoryDirectory isNil 
 		or: [ self repositoryDirectory exists not ]
 ]
 
 { #category : #'API - branches' }
-GtIceGitRepository >> localBranches [
+IceGitCliRepository >> localBranches [
 	| branches |
 	branches := self runGitWithArgs: {
 		'branch'.
@@ -430,37 +430,37 @@ GtIceGitRepository >> localBranches [
 ]
 
 { #category : #accessing }
-GtIceGitRepository >> location [
+IceGitCliRepository >> location [
 	^ location
 ]
 
 { #category : #actions }
-GtIceGitRepository >> location: aLocation [
+IceGitCliRepository >> location: aLocation [
 	location := aLocation 
 ]
 
 { #category : #accessing }
-GtIceGitRepository >> log [
+IceGitCliRepository >> log [
 	^ self logClass for: self
 ]
 
 { #category : #accessing }
-GtIceGitRepository >> logClass [
+IceGitCliRepository >> logClass [
 	^ GtGitTonelLog
 ]
 
 { #category : #'API - commits' }
-GtIceGitRepository >> lookupCommit: commitId ifAbsent: aBlock [
+IceGitCliRepository >> lookupCommit: commitId ifAbsent: aBlock [
 	^ [ self commitFromGitCommit: commitId ] onErrorDo: [ aBlock value ]
 ]
 
 { #category : #'API - branches' }
-GtIceGitRepository >> lookupLocalBranch: branchName [
+IceGitCliRepository >> lookupLocalBranch: branchName [
 	^ self lookupLocalBranch: branchName ifAbsent: [ nil ]
 ]
 
 { #category : #'API - branches' }
-GtIceGitRepository >> lookupLocalBranch: branchName ifAbsent: aBlock [
+IceGitCliRepository >> lookupLocalBranch: branchName ifAbsent: aBlock [
 	^ branchMap
 		at: branchName
 		ifAbsentPut: [ | lines |
@@ -473,12 +473,12 @@ GtIceGitRepository >> lookupLocalBranch: branchName ifAbsent: aBlock [
 ]
 
 { #category : #'API - branches' }
-GtIceGitRepository >> lookupRemoteBranch: branchName [
+IceGitCliRepository >> lookupRemoteBranch: branchName [
 	^self lookupRemoteBranch: branchName ifAbsent: [nil]
 ]
 
 { #category : #'API - branches' }
-GtIceGitRepository >> lookupRemoteBranch: branchName ifAbsent: aBlock [
+IceGitCliRepository >> lookupRemoteBranch: branchName ifAbsent: aBlock [
 	^ branchMap
 		at: branchName
 		ifAbsentPut: [ | lines |
@@ -492,11 +492,11 @@ GtIceGitRepository >> lookupRemoteBranch: branchName ifAbsent: aBlock [
 ]
 
 { #category : #actions }
-GtIceGitRepository >> makeSafe [
+IceGitCliRepository >> makeSafe [
 ]
 
 { #category : #accessing }
-GtIceGitRepository >> mcVersionFor: iceVersion [
+IceGitCliRepository >> mcVersionFor: iceVersion [
 	[ | commit |
 	commit := iceVersion commit cliGitCommit.
 	^ (iceVersion commit readerClass on: commit iceVersion: iceVersion) version ]
@@ -507,7 +507,7 @@ GtIceGitRepository >> mcVersionFor: iceVersion [
 ]
 
 { #category : #ancestry }
-GtIceGitRepository >> mergeBaseBetween: id1 and: id2 [
+IceGitCliRepository >> mergeBaseBetween: id1 and: id2 [
 	| lines |
 	lines := self runGitWithArgs: {
 		'merge-base'.
@@ -517,22 +517,22 @@ GtIceGitRepository >> mergeBaseBetween: id1 and: id2 [
 ]
 
 { #category : #'API - accessing' }
-GtIceGitRepository >> newCommitWalk [
+IceGitCliRepository >> newCommitWalk [
 	^ GtIceCommitWalk forRepository: self
 ]
 
 { #category : #'private - changes' }
-GtIceGitRepository >> newIndex [
+IceGitCliRepository >> newIndex [
 	^ GtIceGitIndex on: self
 ]
 
 { #category : #'API - commits' }
-GtIceGitRepository >> newNoCommit [
+IceGitCliRepository >> newNoCommit [
 	^ IceNoCommit repository: self
 ]
 
 { #category : #'API - remotes' }
-GtIceGitRepository >> origin [
+IceGitCliRepository >> origin [
 	^ self
 			remoteNamed: 'origin'
 			ifAbsent: [ IceUndefinedRemote new
@@ -541,12 +541,12 @@ GtIceGitRepository >> origin [
 ]
 
 { #category : #'API - remotes' }
-GtIceGitRepository >> originUrl [
+IceGitCliRepository >> originUrl [
 	^ self origin url
 ]
 
 { #category : #'private - tags' }
-GtIceGitRepository >> peelTag: anIceTag [
+IceGitCliRepository >> peelTag: anIceTag [
 	| id lines |
 	lines := self runGitWithArgs: {
 		'show'.
@@ -558,17 +558,17 @@ GtIceGitRepository >> peelTag: anIceTag [
 ]
 
 { #category : #'API - project' }
-GtIceGitRepository >> project [
+IceGitCliRepository >> project [
 	^ self workingCopy project
 ]
 
 { #category : #accessing }
-GtIceGitRepository >> properties [
+IceGitCliRepository >> properties [
 	^ self workingCopy repositoryProperties
 ]
 
 { #category : #'API - branches' }
-GtIceGitRepository >> pullBranch: aString from: aRemote [
+IceGitCliRepository >> pullBranch: aString from: aRemote [
 	self runGitWithArgs: {
 		'pull'.
 		aRemote name.
@@ -577,7 +577,7 @@ GtIceGitRepository >> pullBranch: aString from: aRemote [
 ]
 
 { #category : #'API - branches' }
-GtIceGitRepository >> pushBranch: aString to: aRemoteName [
+IceGitCliRepository >> pushBranch: aString to: aRemoteName [
 	self runGitWithArgs: {
 		'push' .
 	    aRemoteName . 
@@ -585,7 +585,7 @@ GtIceGitRepository >> pushBranch: aString to: aRemoteName [
 ]
 
 { #category : #'API - remotes' }
-GtIceGitRepository >> remoteNamed: aName ifAbsent: aBlockClosure [
+IceGitCliRepository >> remoteNamed: aName ifAbsent: aBlockClosure [
 	^ remoteMap
 		at: aName
 		ifAbsentPut: [ | gitRemote lines |
@@ -600,7 +600,7 @@ GtIceGitRepository >> remoteNamed: aName ifAbsent: aBlockClosure [
 ]
 
 { #category : #'API - branches' }
-GtIceGitRepository >> remoteTrackedBranches [
+IceGitCliRepository >> remoteTrackedBranches [
 	| branches lines |
 	lines := self runGitWithArgs: {
 		'branch'.
@@ -611,7 +611,7 @@ GtIceGitRepository >> remoteTrackedBranches [
 ]
 
 { #category : #'API - remotes' }
-GtIceGitRepository >> remotes [
+IceGitCliRepository >> remotes [
 	| lines |
 	lines := self runGitWithArgs: { 'remote' }.
 	^ lines
@@ -627,17 +627,17 @@ GtIceGitRepository >> remotes [
 ]
 
 { #category : #'API - accessing' }
-GtIceGitRepository >> repositoryDirectory [
+IceGitCliRepository >> repositoryDirectory [
 	^ self location
 ]
 
 { #category : #'API - commits' }
-GtIceGitRepository >> revListForBranch: aBranch [
+IceGitCliRepository >> revListForBranch: aBranch [
 	^ self revListForCommit: aBranch commit id
 ]
 
 { #category : #'API - commits' }
-GtIceGitRepository >> revListForCommit: aCommit [
+IceGitCliRepository >> revListForCommit: aCommit [
 	^ revListMap
 		at: aCommit
 		ifAbsentPut: [ | lines |
@@ -648,7 +648,7 @@ GtIceGitRepository >> revListForCommit: aCommit [
 ]
 
 { #category : #'API - commits' }
-GtIceGitRepository >> revListForCommit: aCommit andPath: aPath [
+IceGitCliRepository >> revListForCommit: aCommit andPath: aPath [
 	| lines |
 	lines := self runGitWithArgs: {
 		'rev-list'.
@@ -659,7 +659,7 @@ GtIceGitRepository >> revListForCommit: aCommit andPath: aPath [
 ]
 
 { #category : #private }
-GtIceGitRepository >> runGitWithArgs: args [
+IceGitCliRepository >> runGitWithArgs: args [
 	"Run CLI git with the passed arguments and return the lines from standard output.
 	Wait for the git command to complete. Signal an error when not successful."
 
@@ -692,7 +692,7 @@ GtIceGitRepository >> runGitWithArgs: args [
 ]
 
 { #category : #'API - accessing' }
-GtIceGitRepository >> setHead: aGtIceGitLocalBranch [
+IceGitCliRepository >> setHead: aGtIceGitLocalBranch [
 	self runGitWithArgs: {
 		'update-ref'.
 		'HEAD'.
@@ -700,12 +700,12 @@ GtIceGitRepository >> setHead: aGtIceGitLocalBranch [
 ]
 
 { #category : #'API - accessing' }
-GtIceGitRepository >> subdirectory [
+IceGitCliRepository >> subdirectory [
 	^ self project sourceDirectory
 ]
 
 { #category : #'API - accessing' }
-GtIceGitRepository >> subdirectoryPath [
+IceGitCliRepository >> subdirectoryPath [
 	
 	"API compatible both with Pharo6 and Pharo7.
 	This could be replaced by the Pharo7 API
@@ -716,19 +716,19 @@ GtIceGitRepository >> subdirectoryPath [
 ]
 
 { #category : #accessing }
-GtIceGitRepository >> subdirectoryReference [
+IceGitCliRepository >> subdirectoryReference [
 	^ self location resolve: self subdirectoryPath
 ]
 
 { #category : #'API - tags' }
-GtIceGitRepository >> tags [
+IceGitCliRepository >> tags [
 	| lines |
 	lines := self runGitWithArgs: { 'tag' }.
 	^ lines collect: [ :each | IceTag named: each inRepository: self ]
 ]
 
 { #category : #'API - tags' }
-GtIceGitRepository >> tagsFor: anId [
+IceGitCliRepository >> tagsFor: anId [
 	| lines |
 	lines := self runGitWithArgs: {
 		'tag'.
@@ -738,7 +738,7 @@ GtIceGitRepository >> tagsFor: anId [
 ]
 
 { #category : #private }
-GtIceGitRepository >> waitForProcess: processBuilder [
+IceGitCliRepository >> waitForProcess: processBuilder [
 	"Run the native process described in processBuilder and wait for it to complete and produce output.
 	The output, an instance of GtNativeExternalProcessOutput, can be queried for its status and stdout.
 	This wait will block the VM."
@@ -747,7 +747,7 @@ GtIceGitRepository >> waitForProcess: processBuilder [
 ]
 
 { #category : #private }
-GtIceGitRepository >> waitForProcessAsync: processBuilder [
+IceGitCliRepository >> waitForProcessAsync: processBuilder [
 	"Run the native process described in processBuilder and wait for it to complete and produce output.
 	The output, an instance of GtNativeExternalProcessOutput, can be queried for its status, stdout and stderr.
 	This wait will block the current process but not the VM"
@@ -761,7 +761,7 @@ GtIceGitRepository >> waitForProcessAsync: processBuilder [
 ]
 
 { #category : #'API - commit' }
-GtIceGitRepository >> writeCommit: indexTreeId message: message parents: parentCommits updateReference: ref author: author committer: committer [
+IceGitCliRepository >> writeCommit: indexTreeId message: message parents: parentCommits updateReference: ref author: author committer: committer [
 	| lines commitId parentArgs |
 	self clearCaches.
 	parentArgs := (parentCommits
@@ -792,13 +792,13 @@ GtIceGitRepository >> writeCommit: indexTreeId message: message parents: parentC
 ]
 
 { #category : #'API - commit' }
-GtIceGitRepository >> writeTreeAndReturnOid [
+IceGitCliRepository >> writeTreeAndReturnOid [
 	| lines |
 	lines := self runGitWithArgs: { 'write-tree' }.
 	^ lines first trimBoth
 ]
 
 { #category : #'private - commits' }
-GtIceGitRepository >> writerClass [
+IceGitCliRepository >> writerClass [
 	^ self project writerClass
 ]

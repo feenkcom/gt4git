@@ -68,7 +68,7 @@ GtIceGitRepositoryExamples >> gt4gitRepository [
 	<gtExample>
 	<noTest>
 	self createRepository.
-	^ GtIceGitRepository
+	^ IceGitCliRepository
 		fromLibGitRepository: (IceRepository registry detect: [ :each | each name = 'gt4git' ])
 ]
 

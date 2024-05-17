@@ -43,7 +43,7 @@ GtIceRepositoryCreator class >> on: aFileReference [
 
 { #category : #accessing }
 GtIceRepositoryCreator >> addLocalRepository [
-	repository := GtIceGitRepository on: self locationToUse.
+	repository := IceGitCliRepository on: self locationToUse.
 
 	branchName ifNotNil: [ repository switchToCommitishNamed: branchName ].
 	repository pluginManager repositoryWillBeCreated: repository.
@@ -85,7 +85,7 @@ GtIceRepositoryCreator >> createNewRepositoryNamed: aString [
 	locationToUse ensureCreateDirectory.
 	self subdirectory
 		ifNotEmpty: [ (locationToUse resolve: self subdirectory) ensureCreateDirectory ].	
-	repository := GtIceGitRepository new
+	repository := IceGitCliRepository new
 		name: aString;
 		location: locationToUse;
 		initBare: isBareRepository;
@@ -147,7 +147,7 @@ GtIceRepositoryCreator >> executeGitClone [
 
 	location ensureCreateDirectory.
 	url := self remoteToUse url.
-	repository := GtIceGitRepository on: location.
+	repository := IceGitCliRepository on: location.
 	repository clone: url
 ]
 
