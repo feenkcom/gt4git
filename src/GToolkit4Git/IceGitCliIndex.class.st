@@ -1,5 +1,5 @@
 Class {
-	#name : #GtIceGitIndex,
+	#name : #IceGitCliIndex,
 	#superclass : #IceIndex,
 	#instVars : [
 		'modifiedFilePaths'
@@ -8,13 +8,13 @@ Class {
 }
 
 { #category : #adding }
-GtIceGitIndex >> addLepiterDatabase: aDatabaseDefinition [
+IceGitCliIndex >> addLepiterDatabase: aDatabaseDefinition [
 	self addPath: (RelativePath 
 		withAll: aDatabaseDefinition localRootRelativePath)
 ]
 
 { #category : #adding }
-GtIceGitIndex >> addPackage: anIcePackageDefinition [
+IceGitCliIndex >> addPackage: anIcePackageDefinition [
 	| pathSegments |
 	pathSegments := repository subdirectoryPath segments asOrderedCollection.
 	pathSegments
@@ -23,17 +23,17 @@ GtIceGitIndex >> addPackage: anIcePackageDefinition [
 ]
 
 { #category : #storing }
-GtIceGitIndex >> addPath: aPath [
+IceGitCliIndex >> addPath: aPath [
 	modifiedFilePaths add: aPath
 ]
 
 { #category : #'API - commiting' }
-GtIceGitIndex >> addToGitIndex [
+IceGitCliIndex >> addToGitIndex [
 	repository addFilesToIndex: modifiedFilePaths
 ]
 
 { #category : #'API - commiting' }
-GtIceGitIndex >> commitWithMessage: message andParents: parentCommits [
+IceGitCliIndex >> commitWithMessage: message andParents: parentCommits [
 	| signature indexTreeId commitId |
 	self addToGitIndex.
 	indexTreeId := repository writeTreeAndReturnOid.
@@ -48,28 +48,28 @@ GtIceGitIndex >> commitWithMessage: message andParents: parentCommits [
 ]
 
 { #category : #accessing }
-GtIceGitIndex >> includes: aRelativePath [
+IceGitCliIndex >> includes: aRelativePath [
 	^ modifiedFilePaths includes: aRelativePath
 ]
 
 { #category : #initialization }
-GtIceGitIndex >> initialize [
+IceGitCliIndex >> initialize [
 	super initialize.
 	modifiedFilePaths := Set new
 ]
 
 { #category : #testing }
-GtIceGitIndex >> isEmpty [
+IceGitCliIndex >> isEmpty [
 	^ modifiedFilePaths isEmpty
 ]
 
 { #category : #removing }
-GtIceGitIndex >> removeDirectoryFromIndex: aString [
+IceGitCliIndex >> removeDirectoryFromIndex: aString [
 	#TODO
 ]
 
 { #category : #storing }
-GtIceGitIndex >> removeFileDefinition: anIceFileDefinition [ 
+IceGitCliIndex >> removeFileDefinition: anIceFileDefinition [ 
 	
 	(repository location resolve: anIceFileDefinition path)
 		ensureDelete.
@@ -78,12 +78,12 @@ GtIceGitIndex >> removeFileDefinition: anIceFileDefinition [
 ]
 
 { #category : #removing }
-GtIceGitIndex >> removeFileFromIndex: aString [
+IceGitCliIndex >> removeFileFromIndex: aString [
 	#TODO
 ]
 
 { #category : #storing }
-GtIceGitIndex >> storeFileDefinition: anIceFileDefinition [ 
+IceGitCliIndex >> storeFileDefinition: anIceFileDefinition [ 
 	
 	(repository location resolve: anIceFileDefinition path)
 		ensureDelete;
@@ -94,7 +94,7 @@ GtIceGitIndex >> storeFileDefinition: anIceFileDefinition [
 ]
 
 { #category : #storing }
-GtIceGitIndex >> storeMCVersion: aMCVersion [ 
+IceGitCliIndex >> storeMCVersion: aMCVersion [ 
 
 	| pathSegments |
 	repository internalStoreVersion: aMCVersion.
@@ -107,13 +107,13 @@ GtIceGitIndex >> storeMCVersion: aMCVersion [
 ]
 
 { #category : #storing }
-GtIceGitIndex >> storeVersion: aMCVersion [ 
+IceGitCliIndex >> storeVersion: aMCVersion [ 
 	
 	repository internalStoreVersion: aMCVersion
 ]
 
 { #category : #updating }
-GtIceGitIndex >> updateDiskWorkingCopy: anIceDiff [
+IceGitCliIndex >> updateDiskWorkingCopy: anIceDiff [
 	anIceDiff tree
 		accept:
 			(IceGitWorkingCopyUpdateVisitor new

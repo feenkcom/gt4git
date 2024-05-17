@@ -1,5 +1,5 @@
 Class {
-	#name : #GtIceGitRemoteBranch,
+	#name : #IceGitCliRemoteBranch,
 	#superclass : #IceRemoteBranch,
 	#instVars : [
 		'commit'
@@ -8,7 +8,7 @@ Class {
 }
 
 { #category : #accessing }
-GtIceGitRemoteBranch >> commit [
+IceGitCliRemoteBranch >> commit [
 	| gitId |
 	commit ifNotNil: [ ^ commit ].
 	gitId := repository lookupRemoteBranch: self name.
@@ -16,16 +16,16 @@ GtIceGitRemoteBranch >> commit [
 ]
 
 { #category : #accessing }
-GtIceGitRemoteBranch >> name [
+IceGitCliRemoteBranch >> name [
 	^ self fullname withoutPrefix: self prefix
 ]
 
 { #category : #accessing }
-GtIceGitRemoteBranch >> prefix [
+IceGitCliRemoteBranch >> prefix [
 	^ 'refs/remotes/'
 ]
 
 { #category : #accessing }
-GtIceGitRemoteBranch >> remoteName [
+IceGitCliRemoteBranch >> remoteName [
 	^ (self fullname substrings: '/') third
 ]

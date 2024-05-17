@@ -1,5 +1,5 @@
 Class {
-	#name : #GtIceCommitWalk,
+	#name : #IceGitCliCommitWalk,
 	#superclass : #IceAbstractCommitWalk,
 	#instVars : [
 		'ids'
@@ -8,41 +8,41 @@ Class {
 }
 
 { #category : #accessing }
-GtIceCommitWalk >> commitStream [
+IceGitCliCommitWalk >> commitStream [
 	^ (repository commitsFromIds: ids) asAsyncStream
 ]
 
 { #category : #walking }
-GtIceCommitWalk >> commitsDo: aBlock [
+IceGitCliCommitWalk >> commitsDo: aBlock [
 	(repository commitsFromIds: ids) do: [ :each | aBlock value: each ]
 ]
 
 { #category : #'walk definition' }
-GtIceCommitWalk >> fromBranch: branch [
+IceGitCliCommitWalk >> fromBranch: branch [
 	ids := repository revListForBranch: branch
 ]
 
 { #category : #'walk definition' }
-GtIceCommitWalk >> fromCommit: commit [
+IceGitCliCommitWalk >> fromCommit: commit [
 	ids := repository revListForCommit: commit id
 ]
 
 { #category : #'walk definition' }
-GtIceCommitWalk >> fromTag: tag [
+IceGitCliCommitWalk >> fromTag: tag [
 	ids := repository revListForBranch: tag
 ]
 
 { #category : #accessing }
-GtIceCommitWalk >> ids [
+IceGitCliCommitWalk >> ids [
 	^ids
 ]
 
 { #category : #walking }
-GtIceCommitWalk >> rawResultsDo: aBlock [
+IceGitCliCommitWalk >> rawResultsDo: aBlock [
 	ids do: [ :each | aBlock value: each ]
 ]
 
 { #category : #'walk definition' }
-GtIceCommitWalk >> uptoCommit: commit [
+IceGitCliCommitWalk >> uptoCommit: commit [
 	ids := ids copyWithoutAll: commit newCommitWalk ids asSet.
 ]

@@ -1,5 +1,5 @@
 Class {
-	#name : #GtIceGitLocalBranch,
+	#name : #IceGitCliLocalBranch,
 	#superclass : #IceLocalBranch,
 	#instVars : [
 		'commit',
@@ -9,7 +9,7 @@ Class {
 }
 
 { #category : #accessing }
-GtIceGitLocalBranch >> commit [
+IceGitCliLocalBranch >> commit [
 	| gitId |
 	commit ifNotNil: [^commit].
 	gitId := repository lookupLocalBranch: self name.
@@ -17,13 +17,13 @@ GtIceGitLocalBranch >> commit [
 ]
 
 { #category : #accessing }
-GtIceGitLocalBranch >> fileSystem [
+IceGitCliLocalBranch >> fileSystem [
 	
 	^ self commit fileSystem
 ]
 
 { #category : #accessing }
-GtIceGitLocalBranch >> gtPullFrom: aRemote inWorkingCopy: aLepiterWorkingCopy [
+IceGitCliLocalBranch >> gtPullFrom: aRemote inWorkingCopy: aLepiterWorkingCopy [
 	"A copy of the #pullFrom: method to support a Lepiter-aware pull."
 
 	| remoteBranch |
@@ -34,13 +34,13 @@ GtIceGitLocalBranch >> gtPullFrom: aRemote inWorkingCopy: aLepiterWorkingCopy [
 ]
 
 { #category : #accessing }
-GtIceGitLocalBranch >> hasUpstream [
+IceGitCliLocalBranch >> hasUpstream [
 	self upstreamIfNone: [ ^ false ].
 	^ true
 ]
 
 { #category : #accessing }
-GtIceGitLocalBranch >> incomingCommitsFrom: aRemote [
+IceGitCliLocalBranch >> incomingCommitsFrom: aRemote [
 	| remoteBranch |
 	remoteBranch := self remoteBranchFor: aRemote ifNone: [ ^ #() ].
 	^ remoteBranch newCommitWalk
@@ -49,7 +49,7 @@ GtIceGitLocalBranch >> incomingCommitsFrom: aRemote [
 ]
 
 { #category : #accessing }
-GtIceGitLocalBranch >> outgoingCommitsTo: aRemote [
+IceGitCliLocalBranch >> outgoingCommitsTo: aRemote [
 	| remoteBranch walk |
 	remoteBranch := self
 			remoteBranchFor: aRemote
@@ -60,12 +60,12 @@ GtIceGitLocalBranch >> outgoingCommitsTo: aRemote [
 ]
 
 { #category : #'API - remotes' }
-GtIceGitLocalBranch >> pushTo: aRemote [
+IceGitCliLocalBranch >> pushTo: aRemote [
 	repository pushBranch: self name to: aRemote name
 ]
 
 { #category : #accessing }
-GtIceGitLocalBranch >> remoteBranchFor: aRemote ifNone: aBlock [
+IceGitCliLocalBranch >> remoteBranchFor: aRemote ifNone: aBlock [
 	| found remoteName |
 	remoteName := aRemote name , '/' , self name.
 	found := repository lookupRemoteBranch: remoteName ifAbsent: [ nil ].
@@ -75,12 +75,12 @@ GtIceGitLocalBranch >> remoteBranchFor: aRemote ifNone: aBlock [
 ]
 
 { #category : #accessing }
-GtIceGitLocalBranch >> upstream [
+IceGitCliLocalBranch >> upstream [
 	^ self upstreamIfNone: [ IceUpstreamNotConfigured signal ]
 ]
 
 { #category : #accessing }
-GtIceGitLocalBranch >> upstreamIfNone: aBlock [
+IceGitCliLocalBranch >> upstreamIfNone: aBlock [
 	| upStreamName lines |
 	upstream notNil ifTrue: [^upstream].
 	lines := repository runGitWithArgs: {
@@ -90,5 +90,5 @@ GtIceGitLocalBranch >> upstreamIfNone: aBlock [
 		name }.
 	upStreamName := lines first.
 	upStreamName isEmpty ifTrue: [ ^ aBlock value ].
-	^ upstream := GtIceGitRemoteBranch named: upStreamName inRepository: repository
+	^ upstream := IceGitCliRemoteBranch named: upStreamName inRepository: repository
 ]
