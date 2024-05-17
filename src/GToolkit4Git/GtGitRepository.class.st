@@ -481,6 +481,35 @@ GtGitRepository >> getDeltasForFullDiff [
 ]
 
 { #category : #'gt - extensions' }
+GtGitRepository >> gtActionExtraMenuFor: anAction [
+	<gtAction>
+	^ anAction 
+		dropdown
+		tooltip: 'More repository operations';
+		icon: BrGlamorousVectorIcons hamburger;
+		content: [ :aButton | 
+			BrGlamorousSimpleContextMenuContent new
+				items: {
+					('Inspect iceberg repository' -> [ :e | 
+						e phlow spawnObject: self icebergRepository.
+						e fireEvent: BrDropdownHideWish new ]).
+					('Inspect iceberg working copy' -> [ :e | 
+						e phlow spawnObject: self icebergWorkingCopy.
+						e fireEvent: BrDropdownHideWish new ]).
+					('Recalculate dirty packages' -> [ :e | 
+						self workingCopy forceCalculateDirtyPackages. 
+						e fireEvent: BrDropdownHideWish new]).
+					('Remove repository' -> [ :e | 
+						self remove. 
+						e fireEvent: BrDropdownHideWish new]).
+					('Forget repository' -> [ :e | 
+						self forget. 
+						e fireEvent: BrDropdownHideWish new ])
+				};
+				yourself ].
+]
+
+{ #category : #'gt - extensions' }
 GtGitRepository >> gtActionFetchFor: anAction [
 	<gtAction>
 	^ anAction button
@@ -495,7 +524,7 @@ GtGitRepository >> gtActionFetchFor: anAction [
 
 { #category : #'gt - extensions' }
 GtGitRepository >> gtActionForgetFor: anAction [
-	<gtAction>
+	"<gtAction>"
 	^ anAction button
 		label: 'Forget';
 		priority: 11;
@@ -573,7 +602,7 @@ GtGitRepository >> gtActionRefreshFor: anAction [
 
 { #category : #'gt - extensions' }
 GtGitRepository >> gtActionRemoveFor: anAction [
-	<gtAction>
+	"<gtAction>"
 	^ anAction button
 		label: 'Remove';
 		priority: 10;
