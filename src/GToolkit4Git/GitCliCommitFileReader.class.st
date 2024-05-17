@@ -1,5 +1,5 @@
 Class {
-	#name : #GtGitCommitFileReader,
+	#name : #GitCliCommitFileReader,
 	#superclass : #Object,
 	#instVars : [
 		'workingDirectory',
@@ -14,24 +14,24 @@ Class {
 }
 
 { #category : #accessing }
-GtGitCommitFileReader >> eatNewline [
+GitCliCommitFileReader >> eatNewline [
 	self getNextByte
 ]
 
 { #category : #accessing }
-GtGitCommitFileReader >> getNext: anInteger [
+GitCliCommitFileReader >> getNext: anInteger [
 	^ ByteArray
 		streamContents: [ :str | anInteger timesRepeat: [ str nextPut: self getNextByte ] ]
 ]
 
 { #category : #accessing }
-GtGitCommitFileReader >> getNextByte [
+GitCliCommitFileReader >> getNextByte [
 	[ buffer isEmpty ] whileTrue: [ buffer addAll: stdout pollBytes ].
 	^ buffer removeFirst
 ]
 
 { #category : #accessing }
-GtGitCommitFileReader >> getNextLine [
+GitCliCommitFileReader >> getNextLine [
 	^ String
 		streamContents: [ :str | 
 			| ch lfCode |
@@ -42,7 +42,7 @@ GtGitCommitFileReader >> getNextLine [
 ]
 
 { #category : #accessing }
-GtGitCommitFileReader >> readStreamFor: aString [
+GitCliCommitFileReader >> readStreamFor: aString [
 	| out line bytes |
 	lock
 		critical: [ stdin
@@ -56,7 +56,7 @@ GtGitCommitFileReader >> readStreamFor: aString [
 ]
 
 { #category : #accessing }
-GtGitCommitFileReader >> start [
+GitCliCommitFileReader >> start [
 	externalProcess := (GtExternalProcessBuilder new: 'git')
 			workingDirectory: workingDirectory;
 			args: {'cat-file'.
@@ -73,7 +73,7 @@ GtGitCommitFileReader >> start [
 ]
 
 { #category : #accessing }
-GtGitCommitFileReader >> terminate [
+GitCliCommitFileReader >> terminate [
 	externalProcess
 		ifNotNil: [ externalProcess terminate.
 			externalProcess := nil ].
@@ -89,6 +89,6 @@ GtGitCommitFileReader >> terminate [
 ]
 
 { #category : #accessing }
-GtGitCommitFileReader >> workingDirectory: aFileRef [
+GitCliCommitFileReader >> workingDirectory: aFileRef [
 	workingDirectory := aFileRef 
 ]

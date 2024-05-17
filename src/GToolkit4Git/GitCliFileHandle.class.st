@@ -1,5 +1,5 @@
 Class {
-	#name : #GtGitFileHandle,
+	#name : #GitCliFileHandle,
 	#superclass : #FileSystemHandle,
 	#instVars : [
 		'entry'
@@ -8,26 +8,26 @@ Class {
 }
 
 { #category : #accessing }
-GtGitFileHandle >> binaryReadStream [
+GitCliFileHandle >> binaryReadStream [
 	^ self readStream
 ]
 
 { #category : #accessing }
-GtGitFileHandle >> entry [
+GitCliFileHandle >> entry [
 	^ entry
 ]
 
 { #category : #accessing }
-GtGitFileHandle >> entry: anObject [
+GitCliFileHandle >> entry: anObject [
 	entry := anObject
 ]
 
 { #category : #accessing }
-GtGitFileHandle >> open [
+GitCliFileHandle >> open [
 	entry := self basicOpen
 ]
 
 { #category : #accessing }
-GtGitFileHandle >> readStream [
+GitCliFileHandle >> readStream [
 	^ reference fileSystem store readStreamOn: self
 ]

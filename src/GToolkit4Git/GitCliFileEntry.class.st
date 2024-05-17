@@ -1,5 +1,5 @@
 Class {
-	#name : #GtGitFileEntry,
+	#name : #GitCliFileEntry,
 	#superclass : #Object,
 	#instVars : [
 		'mode',
@@ -12,7 +12,7 @@ Class {
 }
 
 { #category : #'instance creation' }
-GtGitFileEntry class >> fromLine: aString [
+GitCliFileEntry class >> fromLine: aString [
 	"Create an entry from a git ls-tree line produced with: '--format=%(objectmode) %(objecttype) %(objectname) %(objectsize)%x09%(path)'."
 
 	| tabSplit path spaceSplit mode type id size |
@@ -33,63 +33,63 @@ GtGitFileEntry class >> fromLine: aString [
 ]
 
 { #category : #accessing }
-GtGitFileEntry >> filename [
+GitCliFileEntry >> filename [
 	^path
 ]
 
 { #category : #accessing }
-GtGitFileEntry >> id [
+GitCliFileEntry >> id [
 	^ id
 ]
 
 { #category : #accessing }
-GtGitFileEntry >> id: anObject [
+GitCliFileEntry >> id: anObject [
 	id := anObject
 ]
 
 { #category : #accessing }
-GtGitFileEntry >> mode [
+GitCliFileEntry >> mode [
 	^ mode
 ]
 
 { #category : #accessing }
-GtGitFileEntry >> mode: anObject [
+GitCliFileEntry >> mode: anObject [
 	mode := anObject
 ]
 
 { #category : #accessing }
-GtGitFileEntry >> path [
+GitCliFileEntry >> path [
 	^ path
 ]
 
 { #category : #accessing }
-GtGitFileEntry >> path: anObject [
+GitCliFileEntry >> path: anObject [
 	path := anObject
 ]
 
 { #category : #printing }
-GtGitFileEntry >> printOn: aStream [
+GitCliFileEntry >> printOn: aStream [
 	aStream
 		nextPutAll: self className , ' ' , mode , ' ' , type , ' ' , id , ' ' , size printString
 				, ' ' , path
 ]
 
 { #category : #accessing }
-GtGitFileEntry >> size [
+GitCliFileEntry >> size [
 	^ size
 ]
 
 { #category : #accessing }
-GtGitFileEntry >> size: anObject [
+GitCliFileEntry >> size: anObject [
 	size := anObject
 ]
 
 { #category : #accessing }
-GtGitFileEntry >> type [
+GitCliFileEntry >> type [
 	^ type
 ]
 
 { #category : #accessing }
-GtGitFileEntry >> type: anObject [
+GitCliFileEntry >> type: anObject [
 	type := anObject
 ]

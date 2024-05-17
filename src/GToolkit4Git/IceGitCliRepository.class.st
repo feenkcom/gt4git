@@ -76,13 +76,13 @@ IceGitCliRepository >> basicCodeDirectory [
 { #category : #'API - branches' }
 IceGitCliRepository >> basicNewBranchNamed: aString [ 
 
-	^ GtIceGitLocalBranch named: aString inRepository: self
+	^ IceGitCliLocalBranch named: aString inRepository: self
 ]
 
 { #category : #'API - branches' }
 IceGitCliRepository >> basicNewRemoteBranchNamed: aString [ 
 
-	^ GtIceGitRemoteBranch named: aString inRepository: self
+	^ IceGitCliRemoteBranch named: aString inRepository: self
 ]
 
 { #category : #'API - branches' }
@@ -374,7 +374,7 @@ IceGitCliRepository >> iceGitCommitFromLines: lines [
 	message := String streamContents: [ :str | 
 			6 to: lines size do: [ :i | 
 				str nextPutAll: (lines at: i); cr ] ].
-	^ GtIceGitCommit new
+	^ IceGitCliCommit new
 		id: id;
 		author: author;
 		datetime: datetime;
@@ -446,7 +446,7 @@ IceGitCliRepository >> log [
 
 { #category : #accessing }
 IceGitCliRepository >> logClass [
-	^ GtGitTonelLog
+	^ GitCliTonelLog
 ]
 
 { #category : #'API - commits' }
@@ -518,12 +518,12 @@ IceGitCliRepository >> mergeBaseBetween: id1 and: id2 [
 
 { #category : #'API - accessing' }
 IceGitCliRepository >> newCommitWalk [
-	^ GtIceCommitWalk forRepository: self
+	^ IceGitCliCommitWalk forRepository: self
 ]
 
 { #category : #'private - changes' }
 IceGitCliRepository >> newIndex [
-	^ GtIceGitIndex on: self
+	^ IceGitCliIndex on: self
 ]
 
 { #category : #'API - commits' }
