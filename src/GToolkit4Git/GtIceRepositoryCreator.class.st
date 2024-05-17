@@ -43,6 +43,8 @@ GtIceRepositoryCreator class >> on: aFileReference [
 
 { #category : #accessing }
 GtIceRepositoryCreator >> addLocalRepository [
+	self locationToUse exists 
+		ifFalse: [ DirectoryDoesNotExist signalWith: self locationToUse fullPath ].
 	repository := IceGitCliRepository on: self locationToUse.
 
 	branchName ifNotNil: [ repository switchToCommitishNamed: branchName ].
