@@ -1,11 +1,11 @@
 Class {
-	#name : #GtIceGitRepositoryExamples,
+	#name : #IceGitCliRepositoryExamples,
 	#superclass : #Object,
 	#category : #'GToolkit4Git-Examples'
 }
 
 { #category : #accessing }
-GtIceGitRepositoryExamples >> commitChanges [
+IceGitCliRepositoryExamples >> commitChanges [
 	<gtExample>
 	<noTest>
 	| commit diff |
@@ -16,7 +16,7 @@ GtIceGitRepositoryExamples >> commitChanges [
 ]
 
 { #category : #accessing }
-GtIceGitRepositoryExamples >> commitFilesystem [
+IceGitCliRepositoryExamples >> commitFilesystem [
 	<gtExample>
 	<noTest>
 	| fs |
@@ -27,7 +27,7 @@ GtIceGitRepositoryExamples >> commitFilesystem [
 ]
 
 { #category : #accessing }
-GtIceGitRepositoryExamples >> commitInformation [
+IceGitCliRepositoryExamples >> commitInformation [
 	<gtExample>
 	<noTest>
 	| commit |
@@ -40,7 +40,7 @@ GtIceGitRepositoryExamples >> commitInformation [
 ]
 
 { #category : #accessing }
-GtIceGitRepositoryExamples >> createRepository [
+IceGitCliRepositoryExamples >> createRepository [
 	<gtExample>
 	<noTest>
 	| iceRepository repositoryFolder |
@@ -50,7 +50,7 @@ GtIceGitRepositoryExamples >> createRepository [
 			newTempFilePrefix: self exampleRepositoryName
 			suffix: 'dir'.
 	iceRepository := GtIceRepositoryCreator
-			fromUrl: 'https://github.com/feenkcom/gt4git.git'
+			fromUrl: self exampleRepositoryUrl
 			to: repositoryFolder.
 	iceRepository name: self exampleRepositoryName.
 	IceRepository registerRepository: iceRepository.
@@ -59,21 +59,27 @@ GtIceGitRepositoryExamples >> createRepository [
 ]
 
 { #category : #accessing }
-GtIceGitRepositoryExamples >> exampleRepositoryName [
+IceGitCliRepositoryExamples >> exampleRepositoryName [
 	^ 'gt4git'
 ]
 
 { #category : #accessing }
-GtIceGitRepositoryExamples >> gt4gitRepository [
+IceGitCliRepositoryExamples >> exampleRepositoryUrl [
+	^ 'https://github.com/feenkcom/gt4git.git'
+]
+
+{ #category : #accessing }
+IceGitCliRepositoryExamples >> gt4gitRepository [
 	<gtExample>
 	<noTest>
 	self createRepository.
 	^ IceGitCliRepository
-		fromLibGitRepository: (IceRepository registry detect: [ :each | each name = 'gt4git' ])
+		fromLibGitRepository: (IceRepository registry
+				detect: [ :each | each name = self exampleRepositoryName ])
 ]
 
 { #category : #accessing }
-GtIceGitRepositoryExamples >> repositoryPackages [
+IceGitCliRepositoryExamples >> repositoryPackages [
 	<gtExample>
 	<noTest>
 	| repo packages |
@@ -84,7 +90,7 @@ GtIceGitRepositoryExamples >> repositoryPackages [
 ]
 
 { #category : #accessing }
-GtIceGitRepositoryExamples >> repositoryTagInformation [
+IceGitCliRepositoryExamples >> repositoryTagInformation [
 	<gtExample>
 	<noTest>
 	| tag |
@@ -94,7 +100,7 @@ GtIceGitRepositoryExamples >> repositoryTagInformation [
 ]
 
 { #category : #accessing }
-GtIceGitRepositoryExamples >> repositoryTags [
+IceGitCliRepositoryExamples >> repositoryTags [
 	<gtExample>
 	<noTest>
 	| repo tags |
@@ -105,7 +111,7 @@ GtIceGitRepositoryExamples >> repositoryTags [
 ]
 
 { #category : #accessing }
-GtIceGitRepositoryExamples >> revListForBranch [
+IceGitCliRepositoryExamples >> revListForBranch [
 	<gtExample>
 	<noTest>
 	| repo branch |
