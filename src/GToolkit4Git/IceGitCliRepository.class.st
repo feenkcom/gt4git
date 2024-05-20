@@ -1,5 +1,5 @@
 "
-I really should add class comments
+Implements the same API as IceLibgitRepository only using the git cli command
 "
 Class {
 	#name : #IceGitCliRepository,
