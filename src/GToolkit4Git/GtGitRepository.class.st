@@ -10,7 +10,6 @@ Class {
 	#instVars : [
 		'icebergRepository',
 		'announcer',
-		'isSubscribed',
 		'lepiterWorkingCopy',
 		'status',
 		'viewModel'
@@ -1065,8 +1064,7 @@ GtGitRepository >> incomingCommits [
 { #category : #initialization }
 GtGitRepository >> initialize [
 	super initialize.
-	announcer := Announcer new.
-	isSubscribed := false.
+	announcer := Announcer new
 ]
 
 { #category : #'api - testing' }

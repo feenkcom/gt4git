@@ -130,7 +130,6 @@ GtGitRepositoryViewModel >> onRepositoryModelChanged [
 
 { #category : #callbacks }
 GtGitRepositoryViewModel >> onRepositoryModified: anAnnouncement [
-
 	(self hasRepository and: [ 
 		 anAnnouncement repository = self repositoryModel repository ]) 
 		ifTrue: [ 
