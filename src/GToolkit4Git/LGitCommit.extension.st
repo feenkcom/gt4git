@@ -2,6 +2,8 @@ Extension { #name : #LGitCommit }
 
 { #category : #'*GToolkit4Git' }
 LGitCommit >> message [
+	<gtPharoPatch: #Pharo>
+	
 	| encoding message messageBytes |
 	encoding := (self commit_message_encoding: self)
 		            ifNil: [ ZnCharacterEncoder utf8 ]

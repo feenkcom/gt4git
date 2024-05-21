@@ -65,7 +65,8 @@ IceWorkingCopy >> gtViewDiffToReferenceCommitFor: aView [
 
 { #category : #'*GToolkit4Git' }
 IceWorkingCopy >> notifyPackageModified: aString [
-
+	<gtPharoPatch: #Pharo>
+	
 	self flag: #pharoTodo. "we cannot use #includesPackageNamed: as is because it can happen 
 	that a package is present in a commit but not in image yet?"
 

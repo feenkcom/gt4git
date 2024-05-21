@@ -2,6 +2,7 @@ Extension { #name : #LGitStatusList }
 
 { #category : #'*GToolkit4Git' }
 LGitStatusList >> at: idx [
+	<gtPharoPatch: #Pharo>
 	^ self ffiCallSafely: #(LGitStatusEntry* git_status_byindex(LGitStatusList self, size_t idx)) options: #()
 ]
 
