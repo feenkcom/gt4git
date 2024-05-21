@@ -2,7 +2,8 @@ Class {
 	#name : #IceGitCliCommit,
 	#superclass : #IceGitCommit,
 	#instVars : [
-		'project'
+		'project',
+		'filesystem'
 	],
 	#category : #'GToolkit4Git-Libgit-CLI'
 }
@@ -23,8 +24,9 @@ IceGitCliCommit >> entryByPath: aString ifAbsent: aBlock [
 
 { #category : #'accessing - file' }
 IceGitCliCommit >> fileSystem [
-	^(FileSystem store: (GitCliCommitStore on: id inRepo: repository))
-					root
+	filesystem
+		ifNil: [ filesystem := FileSystem store: (GitCliCommitStore on: id inRepo: repository) ].
+	^ filesystem root
 ]
 
 { #category : #accessing }
