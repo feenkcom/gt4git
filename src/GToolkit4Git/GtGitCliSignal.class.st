@@ -1,6 +1,6 @@
 Class {
 	#name : #GtGitCliSignal,
-	#superclass : #BeaconSignal,
+	#superclass : #ContextStackSignal,
 	#traits : 'TGtBeaconSignalStartEndType',
 	#classTraits : 'TGtBeaconSignalStartEndType classTrait',
 	#instVars : [

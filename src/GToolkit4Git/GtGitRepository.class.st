@@ -761,33 +761,29 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 ]
 
 { #category : #'gt - extensions' }
-GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts inPane: container [
-	| merge |
+GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts incoming: incoming outgoing: outgoing inPane: container [
+	| merge remotes |
+	remotes := self repository remotes.
 	(conflicts contains: [ :aCommit | aCommit = item ])
 		ifTrue: [ container
 				addChild: (BrButton new
 						aptitude: BrGlamorousButtonWithLabelAptitude;
 						label: 'Merge';
 						action: [ :aButton | aButton phlow spawnObject: merge ]) ].
-
-	(self viewModel outgoingCommits size > 0
-		and: [ self viewModel outgoingCommits first = item
-				and: [ self repository remotes isNotEmpty ] ])
+	(outgoing size > 0 and: [ outgoing first = item and: [ remotes isNotEmpty ] ])
 		ifTrue: [ container
 				addChild: (BrButton new
 						aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
-						label: self viewModel outgoingCommits size asString;
+						label: outgoing size asString;
 						icon: BrGlamorousVectorIcons up;
 						action: [ :aButton | 
 							self push.
 							aButton phlow fireToolUpdateWish ]) ].
-
-	(self incomingCommits size > 0
-		and: [ self incomingCommits first = item and: [ self repository remotes isNotEmpty ] ])
+	(incoming size > 0 and: [ incoming first = item and: [ remotes isNotEmpty ] ])
 		ifTrue: [ container
 				addChild: (BrButton new
 						aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
-						label: self incomingCommits size asString;
+						label: incoming size asString;
 						icon: BrGlamorousVectorIcons down;
 						action: [ :aButton | 
 							self gtLepiterAwarePull.
@@ -848,6 +844,8 @@ GtGitRepository >> gtCommitsFor: aView [
 						self
 							gtCommitButtonsFor: item
 							withConflicts: conflicts
+							incoming: incomingCommits
+							outgoing: outgoingCommits
 							inPane: aPane ] ];
 		send: [ :each | 
 			GtGitCommit new
@@ -920,7 +918,7 @@ GtGitRepository >> gtReadmeFor: aView context: aContext [
 
 	^ aView explicit
 		  title: 'README';
-		  priority: 2;
+		  priority: 5;
 		  stencil: [ 
 			  | snippet snippetViewModel |
 			  snippet := LeTextSnippet string: (readme exists
