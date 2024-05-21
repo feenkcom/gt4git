@@ -579,17 +579,8 @@ IceGitCliRepository >> pushBranch: aString to: aRemoteName [
 
 { #category : #'API - remotes' }
 IceGitCliRepository >> remoteNamed: aName ifAbsent: aBlockClosure [
-	^ remoteMap
-		at: aName
-		ifAbsentPut: [ | gitRemote lines |
-			lines := [ self runGitWithArgs: {
-				'remote'.
-				'get-url'.
-				aName } ] onErrorDo: [ ^ aBlockClosure value ].
-			gitRemote := lines first trimBoth.
-			(IceGitRemote name: aName url: gitRemote)
-				localRepository: self;
-				yourself ]
+	self remotes.	"Compute cache if empty"
+	^ remoteMap at: aName ifAbsent: aBlockClosure
 ]
 
 { #category : #'API - branches' }
@@ -606,17 +597,21 @@ IceGitCliRepository >> remoteTrackedBranches [
 { #category : #'API - remotes' }
 IceGitCliRepository >> remotes [
 	| lines |
-	lines := self runGitWithArgs: { 'remote' }.
-	^ lines
-		collect: [ :each | 
-			| l |
-			l := self runGitWithArgs: {
-				'remote'.
-				'get-url'.
-				each }.
-			(IceGitRemote name: each url: l first)
-				localRepository: self;
-				yourself ]
+	remoteMap isEmpty
+		ifTrue: [ lines := self runGitWithArgs: {'remote'}.
+			lines
+				do: [ :each | 
+					| l |
+					l := self
+							runGitWithArgs: {'remote'.
+									'get-url'.
+									each}.
+					remoteMap
+						at: each
+						put: ((IceGitRemote name: each url: l first)
+								localRepository: self;
+								yourself) ] ].
+	^ remoteMap value
 ]
 
 { #category : #'API - accessing' }
