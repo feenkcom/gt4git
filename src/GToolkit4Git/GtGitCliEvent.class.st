@@ -27,6 +27,15 @@ GtGitCliEvent >> gtGitInvocationFor: aView [
 				ifFalse: [ self args ] ]
 ]
 
+{ #category : #'gt extensions' }
+GtGitCliEvent >> gtStackFor: aView [
+	<gtView>
+	^ aView list
+		title: 'Stack';
+		priority: 45;
+		items: [  self stack ]
+]
+
 { #category : #accessing }
 GtGitCliEvent >> operation [
 	^ self eventStartedSignal operation
@@ -35,4 +44,9 @@ GtGitCliEvent >> operation [
 { #category : #accessing }
 GtGitCliEvent >> output [
 	^ self eventCompletedSignal output
+]
+
+{ #category : #accessing }
+GtGitCliEvent >> stack [
+	^ self eventStartedSignal stack
 ]
