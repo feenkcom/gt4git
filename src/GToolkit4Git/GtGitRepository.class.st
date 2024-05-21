@@ -10,7 +10,6 @@ Class {
 	#instVars : [
 		'icebergRepository',
 		'announcer',
-		'isSubscribed',
 		'lepiterWorkingCopy',
 		'status',
 		'viewModel'
@@ -799,19 +798,20 @@ GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts inPane: con
 GtGitRepository >> gtCommitsFor: aView [
 	<gtView>
 	<gtRepositoryView>
-	| conflicts |
+	| conflicts incomingCommits outgoingCommits |
 	self isMissing ifTrue: [ ^ aView empty ].
 
 	conflicts := self conflictingCommits.
-
+	incomingCommits := self incomingCommits.
+	outgoingCommits := self viewModel outgoingCommits.
 	^ aView columnedList
 		title: 'Commits' translated;
 		priority: 2;
-		items: [ (AsyncSequenceStream forCollection: self incomingCommits)
+		items: [ (AsyncSequenceStream forCollection: incomingCommits)
 				merge: self repository head commitStream ];
 		column: 'Status'
 			icon: [ :item | 
-				((self incomingCommits contains: [ :aCommit | aCommit = item ])
+				((incomingCommits contains: [ :aCommit | aCommit = item ])
 					ifTrue: [ (conflicts contains: [ :aCommit | aCommit = item ])
 							ifTrue: [ self
 									statusElementColored: GtGitStatusConflicting color
@@ -819,8 +819,7 @@ GtGitRepository >> gtCommitsFor: aView [
 							ifFalse: [ self
 									statusElementColored: GtGitStatusIncoming color
 									withTooltip: 'Incoming' ] ]
-					ifFalse: [ (self viewModel outgoingCommits
-							contains: [ :aCommit | aCommit = item ])
+					ifFalse: [ (outgoingCommits contains: [ :aCommit | aCommit = item ])
 							ifTrue: [ self statusElementColored: GtGitStatusOutgoing color withTooltip: 'Outgoing' ]
 							ifFalse: [ BlElement new ] ])
 					size: 12 @ 12;
@@ -1065,8 +1064,7 @@ GtGitRepository >> incomingCommits [
 { #category : #initialization }
 GtGitRepository >> initialize [
 	super initialize.
-	announcer := Announcer new.
-	isSubscribed := false.
+	announcer := Announcer new
 ]
 
 { #category : #'api - testing' }

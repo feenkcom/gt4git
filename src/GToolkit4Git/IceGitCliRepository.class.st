@@ -1,5 +1,5 @@
 "
-I really should add class comments
+Implements the same API as IceLibgitRepository only using the git cli command
 "
 Class {
 	#name : #IceGitCliRepository,
@@ -8,7 +8,6 @@ Class {
 		'location',
 		'head',
 		'remoteMap',
-		'branchMap',
 		'revListMap',
 		'commitMap'
 	],
@@ -137,7 +136,6 @@ and the original repository''s url is {3}.'
 { #category : #accessing }
 IceGitCliRepository >> clearCaches [
 	head := nil.
-	branchMap := Dictionary new
 ]
 
 { #category : #actions }
@@ -396,7 +394,6 @@ IceGitCliRepository >> initBare: isBareRepository [
 IceGitCliRepository >> initialize [
 	super initialize.
 	remoteMap := Dictionary new.
-	branchMap := Dictionary new.
 	revListMap := Dictionary new.
 	commitMap := Dictionary new
 ]
@@ -461,15 +458,13 @@ IceGitCliRepository >> lookupLocalBranch: branchName [
 
 { #category : #'API - branches' }
 IceGitCliRepository >> lookupLocalBranch: branchName ifAbsent: aBlock [
-	^ branchMap
-		at: branchName
-		ifAbsentPut: [ | lines |
-			lines := self runGitWithArgs: {
-				'branch'.
-				branchName.
-				'--list'.
-				'--format=%(objectname)' }.
-			lines isEmpty ifTrue: [ aBlock value ] ifFalse: [ lines first ] ]
+	| lines |
+	lines := self
+			runGitWithArgs: {'branch'.
+					branchName.
+					'--list'.
+					'--format=%(objectname)'}.
+	^lines isEmpty ifTrue: [ aBlock value ] ifFalse: [ lines first ]
 ]
 
 { #category : #'API - branches' }
@@ -479,16 +474,14 @@ IceGitCliRepository >> lookupRemoteBranch: branchName [
 
 { #category : #'API - branches' }
 IceGitCliRepository >> lookupRemoteBranch: branchName ifAbsent: aBlock [
-	^ branchMap
-		at: branchName
-		ifAbsentPut: [ | lines |
-			lines := self runGitWithArgs: {
-				'branch'.
-				branchName.
-				'--remotes'.
-				'--list'.
-				'--format=%(objectname)' }.
-			lines isEmpty ifTrue: [ aBlock value ] ifFalse: [ lines first ] ]
+	| lines |
+	lines := self
+			runGitWithArgs: {'branch'.
+					branchName.
+					'--remotes'.
+					'--list'.
+					'--format=%(objectname)'}.
+	^ lines isEmpty ifTrue: [ aBlock value ] ifFalse: [ lines first ]
 ]
 
 { #category : #actions }
