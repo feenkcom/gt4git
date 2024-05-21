@@ -2,6 +2,8 @@ Extension { #name : #IceLibgitFiletreeLog }
 
 { #category : #'*GToolkit4Git' }
 IceLibgitFiletreeLog >> definitionFor: aMethod path: aPath commit: aCommit [
+	<gtPharoPatch: #Pharo>
+	
 	^ ((IceLibgitFiletreeLogReader fileName: aPath on: aCommit)
 		package: aMethod package mcPackage;
 		packageDirectory: (self repository directoryPathStringForPackage: aMethod package);

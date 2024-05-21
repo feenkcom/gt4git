@@ -980,6 +980,36 @@ GtGitRepository >> gtSetupHelpFor: aView [
 		column: 'Action' stencil: [ :item | item buildContent ]
 ]
 
+{ #category : #'gt - extensions' }
+GtGitRepository >> gtViewDetailsIn: composite [
+	<gtView>
+	^ composite columnedList
+		title: 'Details';
+		priority: 45;
+		items: [ {
+			{ 'Name' . self name }.
+			{ 'Origin' . self repository originUrl }.
+			{ 'Branch' . self repository branchName }.
+			{ 'Code directory' . self repository codeDirectory. self repository codeDirectory asFileReference }.
+			{ 'Missing' . self isMissing }.
+			{ 'Setup done' . self isSetupDone }.
+			{ 'Uninitialized' . self isUninitialized }.
+			{ 'Modified' . self isModified }.
+			{ 'Committable' . self isCommittable }.
+			{ 'Has repository' . self hasRepository }.
+			{ 'Has package' . self hasPackage }.
+			{ 'Has database' . self hasDatabase }.
+			{ 'Has basline' . self hasBaseline }.
+			{ 'Has commits' . self hasCommits }.
+			{ 'Has changes' . self hasChanges }.
+			{ 'Status' . self status }
+		} ];
+		column: 'Key' text: #first;
+		column: 'Value' text: #second weight: 3;
+		send: #last;
+		actionUpdateButton
+]
+
 { #category : #accessing }
 GtGitRepository >> hasBaseline [
 	^ (self workingCopy packages detect: #isMetacelloBaseline ifNone: [ nil ])

@@ -2,6 +2,8 @@ Extension { #name : #IceLibgitTonelLog }
 
 { #category : #'*GToolkit4Git' }
 IceLibgitTonelLog >> definitionFor: aMethod path: aPath commit: aCommit [
+	<gtPharoPatch: #Pharo>
+	
 	^ ((IceLibgitTonelLogReader fileName: aPath on: aCommit)
 		package: aMethod package mcPackage;
 		packageDirectory: (self repository directoryPathStringForPackage: aMethod package);
