@@ -918,7 +918,7 @@ GtGitRepository >> gtReadmeFor: aView context: aContext [
 
 	^ aView explicit
 		  title: 'README';
-		  priority: 2;
+		  priority: 5;
 		  stencil: [ 
 			  | snippet snippetViewModel |
 			  snippet := LeTextSnippet string: (readme exists
