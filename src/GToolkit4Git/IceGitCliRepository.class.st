@@ -253,7 +253,7 @@ IceGitCliRepository >> getStatusByFile [
 	lines
 		do: [ :each | 
 			| status path |
-			status := each first.
+			status := each trimLeft first.
 			path := each copyFrom: 4 to: each size.
 			res at: path put: (LGitStatusEnum basicNew value: (flagMap at: status)) ].
 	^ res
