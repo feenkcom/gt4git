@@ -225,9 +225,11 @@ IceGitCliRepository >> directoryPathStringForPackage: aMCPackage [
 IceGitCliRepository >> fetch [
 	"Fetch all commits and branches from all remotes"
 
-	self runGitWithArgs: {
-		'fetch'.
-		'--all' }
+	location isNil ifTrue: [ ^ self ].
+
+	self
+		runGitWithArgs: {'fetch'.
+				'--all'}
 ]
 
 { #category : #'API - accessing' }
