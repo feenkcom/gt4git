@@ -188,6 +188,18 @@ IceGitCliRepository >> commitsFromIds: idCollection [
 	^ commits
 ]
 
+{ #category : #'API - accessing' }
+IceGitCliRepository >> config [
+	"Return a dictionary of the config values applicable to me"
+	| lines values |
+	lines := self runGitWithArgs: #('config' '--list').
+	values := lines collect: [ :line | $= split: line ].
+	values sort: #first ascending.
+	^ values 
+		collect: [ :each | each first -> each second ] 
+		as: OrderedDictionary
+]
+
 { #category : #accessing }
 IceGitCliRepository >> configureUpstreamIfNecessary [
 	#TODO
@@ -252,6 +264,16 @@ IceGitCliRepository >> git [
 	^ GtExternalProcessBuilder new
 		command: 'git';
 		workingDirectory: location
+]
+
+{ #category : #'gt extensions' }
+IceGitCliRepository >> gtConfigFor: composite [
+	<gtView>
+	^ composite forward
+		title: 'Config';
+		priority: 40;
+		object: [ self config ];
+		view: #gtItemsFor:
 ]
 
 { #category : #'gt extensions' }
