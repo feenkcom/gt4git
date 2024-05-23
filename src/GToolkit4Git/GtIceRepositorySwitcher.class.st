@@ -24,6 +24,9 @@ Actions
 
 - deleteDirectory
 
+- switch: (toggle a functioning, registerer repository between the two implementations)
+
+
 
  
 "
@@ -91,6 +94,14 @@ GtIceRepositorySwitcher >> icebergLocation [
 		ifNil: [ icebergLocation := FileLocator localDirectory / 'iceberg' ]
 ]
 
+{ #category : #initialization }
+GtIceRepositorySwitcher >> icebergLocation: aFileReferenceOrNil [
+	"Explicitly set the top level Iceberg location to use.
+	Shortcuts are #useSystem (the default) and #useTemp"
+	
+	icebergLocation := aFileReferenceOrNil
+]
+
 { #category : #operations }
 GtIceRepositorySwitcher >> loadAndCreate [
 	"Given an existing on disk git repository, 
@@ -153,6 +164,30 @@ GtIceRepositorySwitcher >> sshUrl: aString [
 ]
 
 { #category : #operations }
+GtIceRepositorySwitcher >> switch: aRepositoryName [
+	"Look up a functioning, registered Iceberg repository named aRepositoryName
+	and switch its implementation from Libgit2 to Libgit-CLI and vice versa"
+	
+	| existingRepository |
+	existingRepository := IceRepository repositoryNamed: aRepositoryName.
+	existingRepository 
+		ifNil: [ ^ self error: ('repository named {1} not found' format: { aRepositoryName }) ].
+	existingRepository isMissing 
+		ifTrue: [ ^ self error: ('repository named {1} is missing/broken' format: { aRepositoryName }) ].
+	
+	self sshUrl: existingRepository originUrl.
+	self icebergLocation: existingRepository location parent parent.
+	
+	existingRepository isGitCliRepository
+		ifTrue: [ self useLibgit2 ]
+		ifFalse: [ self useLibgitCLI ].
+		
+	self loadAndCreate.
+	
+	self register
+]
+
+{ #category : #operations }
 GtIceRepositorySwitcher >> tool [
 	"Return a GtGitRepository instance on our Iceberg repository.
 	This offers a rudimentary GT views/actions based UI"
@@ -181,7 +216,7 @@ GtIceRepositorySwitcher >> useSystem [
 	"Switch to the main system iceberg location.
 	This is a default"
 	
-	icebergLocation := nil
+	self icebergLocation: nil
 ]
 
 { #category : #initialization }
@@ -189,6 +224,6 @@ GtIceRepositorySwitcher >> useTemp [
 	"The default is to use the main system iceberg location.
 	Switch to a temporary directory"
 	
-	icebergLocation := FileLocator temp / 'iceberg'.
-	icebergLocation ensureCreateDirectory
+	self icebergLocation: FileLocator temp / 'iceberg'.
+	self icebergLocation ensureCreateDirectory
 ]

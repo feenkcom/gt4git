@@ -989,6 +989,7 @@ GtGitRepository >> gtViewDetailsIn: composite [
 			{ 'Origin' . self repository originUrl }.
 			{ 'Branch' . self repository branchName }.
 			{ 'Code directory' . self repository codeDirectory. self repository codeDirectory asFileReference }.
+			{ 'Implementation' . self repository isGitCliRepository ifTrue: [ 'Libgit-CLI' ] ifFalse: [ 'Libgit2 FFI' ] }.
 			{ 'Missing' . self isMissing }.
 			{ 'Setup done' . self isSetupDone }.
 			{ 'Uninitialized' . self isUninitialized }.
