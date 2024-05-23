@@ -986,20 +986,26 @@ GtGitRepository >> gtViewDetailsIn: composite [
 		priority: 45;
 		items: [ {
 			{ 'Name' . self name }.
-			{ 'Origin' . self repository originUrl }.
-			{ 'Branch' . self repository branchName }.
-			{ 'Code directory' . self repository codeDirectory. self repository codeDirectory asFileReference }.
+			{ 'Origin' . [ self repository originUrl ] on: Error do: [ '' ] }.
+			{ 'Branch' . [ self repository branchName ] on: Error do: [ '' ] }.
+			{ 'Code directory' 
+				. [ self repository codeDirectory ] on: Error do: [ '' ]
+				. [ self repository codeDirectory asFileReference ] on: Error do: [ '' ]}.
+			{ 'Implementation' 
+				. self repository isGitCliRepository 
+					ifTrue: [ 'Libgit-CLI' ] 
+					ifFalse: [ 'Libgit2 FFI' ] }.
 			{ 'Missing' . self isMissing }.
 			{ 'Setup done' . self isSetupDone }.
 			{ 'Uninitialized' . self isUninitialized }.
-			{ 'Modified' . self isModified }.
+			{ 'Modified' . [ self isModified ] on: Error do: [ '' ] }.
 			{ 'Committable' . self isCommittable }.
 			{ 'Has repository' . self hasRepository }.
 			{ 'Has package' . self hasPackage }.
 			{ 'Has database' . self hasDatabase }.
 			{ 'Has basline' . self hasBaseline }.
 			{ 'Has commits' . self hasCommits }.
-			{ 'Has changes' . self hasChanges }.
+			{ 'Has changes' . [ self hasChanges ] on: Error do: [ '' ] }.
 			{ 'Status' . self status }
 		} ];
 		column: 'Key' text: #first;

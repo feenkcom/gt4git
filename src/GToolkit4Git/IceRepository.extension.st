@@ -72,6 +72,11 @@ IceRepository >> gtViewDiffToReferenceCommitFor: aView [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceRepository >> isGitCliRepository [
+	^ false
+]
+
+{ #category : #'*GToolkit4Git' }
 IceRepository >> packages [
 	^ self workingCopy packages
 ]
