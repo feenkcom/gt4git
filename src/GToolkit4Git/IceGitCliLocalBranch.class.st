@@ -26,11 +26,12 @@ IceGitCliLocalBranch >> fileSystem [
 IceGitCliLocalBranch >> gtPullFrom: aRemote inWorkingCopy: aLepiterWorkingCopy [
 	"A copy of the #pullFrom: method to support a Lepiter-aware pull."
 
-	| remoteBranch |
-	repository pullBranch: self name from: aRemote.
-	remoteBranch := repository
-			basicNewRemoteBranchNamed: aRemote name , '/' , self name.
-	aLepiterWorkingCopy mergeCommit: remoteBranch commit
+	| remoteBranchCommitId |
+	repository fetchBranch: self fromRemote: aRemote.
+	remoteBranchCommitId := repository
+			lookupRemoteBranch: aRemote name , '/' , self name.
+	commit := repository commitFromGitCommit: remoteBranchCommitId.
+	aLepiterWorkingCopy mergeCommit: commit
 ]
 
 { #category : #accessing }

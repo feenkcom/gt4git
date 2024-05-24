@@ -12,7 +12,7 @@ IceGitCliRemoteBranch >> commit [
 	| gitId |
 	commit ifNotNil: [ ^ commit ].
 	gitId := repository lookupRemoteBranch: self name.
-	^ commit := self repository commitFromGitCommit: gitId
+	^ commit := repository commitFromGitCommit: gitId
 ]
 
 { #category : #accessing }
