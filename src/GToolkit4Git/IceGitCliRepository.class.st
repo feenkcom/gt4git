@@ -1,5 +1,5 @@
 "
-Implements the same API as IceLibgitRepository only using the git cli command
+Implements the same API as IceLibgitRepository only using the git cli command. Requires a git executable in the path.
 "
 Class {
 	#name : #IceGitCliRepository,
