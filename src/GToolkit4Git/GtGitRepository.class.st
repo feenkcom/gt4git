@@ -498,6 +498,12 @@ GtGitRepository >> gtActionExtraMenuFor: anAction [
 					('Recalculate dirty packages' -> [ :e | 
 						self workingCopy forceCalculateDirtyPackages. 
 						e fireEvent: BrDropdownHideWish new]).
+					('Logged signals' -> [ :e | 
+						e phlow spawnObject: GtGitCliSignal memoryLogger.
+						e fireEvent: BrDropdownHideWish new ]).
+					('Grouped events' -> [ :e | 
+						e phlow spawnObject:  GtGitCliSignal groupedEvents.
+						e fireEvent: BrDropdownHideWish new ]).
 					('Remove repository' -> [ :e | 
 						self remove. 
 						e fireEvent: BrDropdownHideWish new]).
