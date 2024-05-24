@@ -455,6 +455,11 @@ IceGitCliRepository >> internalStoreVersion: aMCVersion [
 ]
 
 { #category : #testing }
+IceGitCliRepository >> isGitCliRepository [
+	^ true
+]
+
+{ #category : #testing }
 IceGitCliRepository >> isMissing [
 	^ self repositoryDirectory isNil 
 		or: [ self repositoryDirectory exists not ]

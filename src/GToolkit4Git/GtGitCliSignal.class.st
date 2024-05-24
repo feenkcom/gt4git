@@ -8,6 +8,9 @@ Class {
 		'output',
 		'operation'
 	],
+	#classVars : [
+		'memoryLogger'
+	],
 	#category : #'GToolkit4Git-Libgit-CLI'
 }
 
@@ -29,7 +32,40 @@ GtGitCliSignal class >> eventType [
 	^GtGitCliEvent
 ]
 
-{ #category : #accessing }
+{ #category : #logging }
+GtGitCliSignal class >> groupedEvents [
+	^ GtGitCliEventsGrouper new 
+		processEventSignalsFor: self memoryLogger recordings;
+		yourself
+]
+
+{ #category : #'gt extensions' }
+GtGitCliSignal class >> gtActionGroupedEventsFor: anAction [
+	<gtClassAction>
+	^ anAction button
+		label: 'Events';
+		tooltip: 'Inspect grouped events';
+		priority: 35;
+		action: [ :element | element phlow spawnObject: self groupedEvents ]
+]
+
+{ #category : #'gt extensions' }
+GtGitCliSignal class >> gtActionMemoryLoggerFor: anAction [
+	<gtClassAction>
+	^ anAction button
+		label: 'Logger';
+		tooltip: 'Inspect memory logger';
+		priority: 30;
+		action: [ :element | element phlow spawnObject: self memoryLogger ]
+]
+
+{ #category : #initialization }
+GtGitCliSignal class >> initialize [
+	SessionManager default registerUserClassNamed: self name.
+	self startUp
+]
+
+{ #category : #logging }
 GtGitCliSignal class >> logToStdout [
 	self stopLoggingToStdout.
 	^ Beacon instance announcer
@@ -38,7 +74,22 @@ GtGitCliSignal class >> logToStdout [
 		for: #git_cli_log_to_stdout
 ]
 
-{ #category : #accessing }
+{ #category : #logging }
+GtGitCliSignal class >> memoryLogger [
+	^ memoryLogger
+		ifNil: [ 
+			memoryLogger := CircularMemoryLogger named: self name.
+			memoryLogger entryCount: 64.
+			memoryLogger startFor: self.
+			memoryLogger ]
+]
+
+{ #category : #'system startup & shutdown' }
+GtGitCliSignal class >> startUp [
+	self memoryLogger start
+]
+
+{ #category : #logging }
 GtGitCliSignal class >> stopLoggingToStdout [
 	^ Beacon instance unsubscribe: #git_cli_log_to_stdout
 ]
@@ -61,6 +112,14 @@ GtGitCliSignal >> asJson [
 		processId: self processId;
 		eventType: eventType;
 		args: self args
+]
+
+{ #category : #'gt extensions' }
+GtGitCliSignal >> gtActionMemoryLoggerFor: anAction [
+	<gtClassAction>
+	^ anAction action
+		title: 'Memory logger';
+		priority: 30
 ]
 
 { #category : #'gt extensions' }
