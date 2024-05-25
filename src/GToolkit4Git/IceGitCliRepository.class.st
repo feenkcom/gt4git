@@ -1,5 +1,5 @@
 "
-Implements the same API as IceLibgitRepository only using the git cli command
+Implements the same API as IceLibgitRepository only using the git cli command. Requires a git executable in the path.
 "
 Class {
 	#name : #IceGitCliRepository,
@@ -202,7 +202,20 @@ IceGitCliRepository >> config [
 
 { #category : #accessing }
 IceGitCliRepository >> configureUpstreamIfNecessary [
-	#TODO
+	| aRemote gitRemote |
+	self branch isUnbornBranch ifTrue: [ ^ self ].
+	self branch hasUpstream ifTrue: [ ^ self ].
+	#Todo halt.
+	
+	aRemote := self remoteNamed: 'origin'.
+	gitRemote := (LGitRemote
+		              of: self repositoryHandle
+		              named: aRemote name) lookup.
+	self branch
+		pushBranchToRemote: aRemote
+		gitRemote: gitRemote
+		progress: IcePushTransferProgress new.
+	self branch setUpstreamIfMissing: aRemote
 ]
 
 { #category : #accessing }
@@ -230,6 +243,13 @@ IceGitCliRepository >> fetch [
 	self
 		runGitWithArgs: {'fetch'.
 				'--all'}
+]
+
+{ #category : #accessing }
+IceGitCliRepository >> fetchBranch: aBranch fromRemote: aRemote [
+	self runGitWithArgs: {'fetch'.
+		aRemote name.
+		aBranch name }
 ]
 
 { #category : #'API - accessing' }
@@ -646,6 +666,11 @@ IceGitCliRepository >> remotes [
 { #category : #'API - accessing' }
 IceGitCliRepository >> repositoryDirectory [
 	^ self location
+]
+
+{ #category : #accessing }
+IceGitCliRepository >> repositoryHandle [
+	^self
 ]
 
 { #category : #'API - commits' }
