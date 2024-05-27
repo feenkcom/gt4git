@@ -68,7 +68,7 @@ GtIceRepositorySwitcher >> deleteDirectory [
 	"Delete the whole local directory.
 	Be careful, there is no way back."
 
-	self directory deleteAll
+	self directory exists ifTrue: [ self directory deleteAll ]
 ]
 
 { #category : #accessing }
