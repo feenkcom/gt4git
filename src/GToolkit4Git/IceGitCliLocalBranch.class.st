@@ -17,6 +17,17 @@ IceGitCliLocalBranch >> commit [
 ]
 
 { #category : #accessing }
+IceGitCliLocalBranch >> commit: anIceGitCommit [
+	"Update the branch to point to a commit.
+	If the branch is HEAD, check it out in disk also."
+	
+	self = repository head
+		ifTrue: [ repository resetCurrentBranchTo: anIceGitCommit id ]
+		ifFalse: [ repository setBranch: name to: anIceGitCommit id].
+	commit := nil.
+]
+
+{ #category : #accessing }
 IceGitCliLocalBranch >> fileSystem [
 	
 	^ self commit fileSystem
