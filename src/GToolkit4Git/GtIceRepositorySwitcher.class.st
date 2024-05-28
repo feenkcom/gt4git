@@ -78,6 +78,15 @@ GtIceRepositorySwitcher >> directory [
 	^ self icebergLocation / self owner / self projectName
 ]
 
+{ #category : #operations }
+GtIceRepositorySwitcher >> forget [
+	"Forget our repository by unregistering from the system."
+
+	self iceRepository ifNil: [ ^ self ].
+
+	self iceRepository forget
+]
+
 { #category : #accessing }
 GtIceRepositorySwitcher >> iceRepository [
 	"Return the Iceberg repository that I created"
@@ -116,6 +125,31 @@ GtIceRepositorySwitcher >> loadAndCreate [
 	^ self iceRepository
 ]
 
+{ #category : #initialization }
+GtIceRepositorySwitcher >> lookup: aRepositoryName [
+	"Lookup the registered Iceberg repository named aRepositoryName"
+	
+	| existingRepository |
+	existingRepository := IceRepository repositoryNamed: aRepositoryName.
+	
+	existingRepository 
+		ifNil: [ ^ self error: ('repository named {1} not found' format: { aRepositoryName }) ].
+	existingRepository isMissing 
+		ifTrue: [ ^ self error: ('repository named {1} is missing/broken' format: { aRepositoryName }) ].
+	
+	^ existingRepository.
+]
+
+{ #category : #initialization }
+GtIceRepositorySwitcher >> named: aRepositoryName [
+	"Initialize from the registered Iceberg repository named aRepositoryName"
+	
+	iceRepository := self lookup: aRepositoryName.
+	
+	self sshUrl: iceRepository originUrl.
+	self icebergLocation: iceRepository location parent parent
+]
+
 { #category : #accessing }
 GtIceRepositorySwitcher >> owner [
 	"Return the owner name as extracted from our SSH url"
@@ -137,7 +171,7 @@ GtIceRepositorySwitcher >> register [
 	
 	| index |
 	self iceRepository 
-		ifNil: [ self error: 'Repository not yet created, use #' ].
+		ifNil: [ self error: 'Repository not yet created, use #loadAndCreate, #cloneAndCreate or #named:' ].
 	index := IceRepository registry 
 				findFirst: [ :each | each name = self projectName ].
 	index isZero
@@ -167,14 +201,10 @@ GtIceRepositorySwitcher >> sshUrl: aString [
 GtIceRepositorySwitcher >> switch: aRepositoryName [
 	"Look up a functioning, registered Iceberg repository named aRepositoryName
 	and switch its implementation from Libgit2 to Libgit-CLI and vice versa"
-	
+
 	| existingRepository |
-	existingRepository := IceRepository repositoryNamed: aRepositoryName.
-	existingRepository 
-		ifNil: [ ^ self error: ('repository named {1} not found' format: { aRepositoryName }) ].
-	existingRepository isMissing 
-		ifTrue: [ ^ self error: ('repository named {1} is missing/broken' format: { aRepositoryName }) ].
-	
+	existingRepository := self lookup: aRepositoryName.
+
 	self sshUrl: existingRepository originUrl.
 	self icebergLocation: existingRepository location parent parent.
 	
@@ -193,7 +223,7 @@ GtIceRepositorySwitcher >> tool [
 	This offers a rudimentary GT views/actions based UI"
 
 	self iceRepository 
-		ifNil: [ self error: 'Repository not yet created, use #' ].
+		ifNil: [ self error: 'Repository not yet created, use #loadAndCreate, #cloneAndCreate or #named:' ].
 	^ GtGitRepository fromIcebergRepository: self iceRepository
 ]
 
