@@ -673,6 +673,15 @@ IceGitCliRepository >> repositoryHandle [
 	^self
 ]
 
+{ #category : #accessing }
+IceGitCliRepository >> resetCurrentBranchTo: aCommitId [
+	self runGitWithArgs: {
+		'reset'.
+		'--hard'.
+		aCommitId
+	} 
+]
+
 { #category : #'API - commits' }
 IceGitCliRepository >> revListForBranch: aBranch [
 	^ self revListForCommit: aBranch commit id
@@ -731,6 +740,16 @@ IceGitCliRepository >> runGitWithArgs: args [
 		markAsEndSignal;
 		emit.
 	^ lines
+]
+
+{ #category : #accessing }
+IceGitCliRepository >> setBranch: branchName to: aCommitId [
+	self runGitWithArgs: {
+		'branch'.
+		'-f'.
+		branchName.
+		aCommitId
+	} 
 ]
 
 { #category : #'API - accessing' }
