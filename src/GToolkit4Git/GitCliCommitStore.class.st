@@ -76,6 +76,11 @@ GitCliCommitStore >> basicSizeOf: aNode [
 	^ aNode size
 ]
 
+{ #category : #'as yet unclassified' }
+GitCliCommitStore >> binaryReadStreamOn: aGtGitFileHandle [
+	^ (repository contentsOfFile: aGtGitFileHandle entry id) asUTF8Bytes readStream
+]
+
 { #category : #'instance creation' }
 GitCliCommitStore >> commit: aCommitId [
 	id := aCommitId
@@ -147,7 +152,7 @@ GitCliCommitStore >> nodeAt: anAbsolutePath ifPresent: aBlockClosure ifAbsent: a
 
 { #category : #accessing }
 GitCliCommitStore >> readStreamOn: aGtGitFileHandle [
-	^ self gitFileReader readStreamFor: aGtGitFileHandle entry id
+	^(repository contentsOfFile: aGtGitFileHandle entry id) readStream
 ]
 
 { #category : #accessing }

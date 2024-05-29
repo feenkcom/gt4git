@@ -219,6 +219,40 @@ IceGitCliRepository >> configureUpstreamIfNecessary [
 ]
 
 { #category : #accessing }
+IceGitCliRepository >> contentsOfFile: aHash [
+	| processBuilder result output operation args |
+	args := {'cat-file'.
+				'blob'.
+				aHash}.
+	operation := thisContext sender method selector.
+	(GtGitCliSignal args: args) 
+		operation: operation; 
+		markAsStartSignal; 
+		emit.
+	processBuilder := self git args: args.
+	output := self waitForProcessAsync: processBuilder.
+	output status isSuccess 
+		ifFalse: [
+			result := output stderr lines.
+			(GtGitCliSignal args: args output: result)
+				operation: operation;
+				markAsEndSignal;
+				emit.
+			^ GtGitCliError new
+				args: args;
+				stderr: result;
+				exitCode: output status code;
+				signal ].
+	result := output stdout.
+	(GtGitCliSignal args: args output: result)
+		operation: operation;
+		markAsEndSignal;
+		emit.
+	^ result
+
+]
+
+{ #category : #accessing }
 IceGitCliRepository >> directoryNameForPackage: package [
 
 	^ (self writerClass 
