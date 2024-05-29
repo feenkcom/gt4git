@@ -222,11 +222,10 @@ IceGitCliRepository >> configureUpstreamIfNecessary [
 
 { #category : #accessing }
 IceGitCliRepository >> contentsOfFile: aHash [
-	| processBuilder result output operation args |
+	| processBuilder result output args |
 	args := { 'cat-file' . 'blob'. aHash }.
-	operation := thisContext sender method selector.
 	(GtGitCliSignal args: args) 
-		operation: operation; 
+		operation: #contentsOfFile:; 
 		markAsStartSignal; 
 		emit.
 	processBuilder := self git args: args.
@@ -235,7 +234,7 @@ IceGitCliRepository >> contentsOfFile: aHash [
 		ifFalse: [
 			result := output stderr lines.
 			(GtGitCliSignal args: args output: result)
-				operation: operation;
+				operation: #contentsOfFile:;
 				markAsEndSignal;
 				emit.
 			^ GtGitCliError new
@@ -245,7 +244,7 @@ IceGitCliRepository >> contentsOfFile: aHash [
 				signal ].
 	result := output stdoutBytes.
 	(GtGitCliSignal args: args output: { result size asString , ' bytes' } )
-		operation: operation;
+		operation: #contentsOfFile:;
 		markAsEndSignal;
 		emit.
 	^ result
