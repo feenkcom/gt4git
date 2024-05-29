@@ -35,8 +35,10 @@ IceGitCliRepository class >> gtViewGitCallsIn: composite [
 		title: 'Git calls';
 		priority: 30;
 		items: [ 
-			(#runGitWithArgs: gtReferences & #gtViewGitCallsIn: gtImplementors not) 
-				contents sort: #selector ascending ];
+			( (#runGitWithArgs: gtReferences  & #gtViewGitCallsIn: gtImplementors not) contents
+			, 
+			{ self>>#contentsOfFile: } )
+				 sort: #selector ascending ];
 		column: 'Selector' text: [ :each | each selector ];
 		column: 'Class' text: [ :each | each methodClass ]
 ]
@@ -221,9 +223,7 @@ IceGitCliRepository >> configureUpstreamIfNecessary [
 { #category : #accessing }
 IceGitCliRepository >> contentsOfFile: aHash [
 	| processBuilder result output operation args |
-	args := {'cat-file'.
-				'blob'.
-				aHash}.
+	args := { 'cat-file' . 'blob'. aHash }.
 	operation := thisContext sender method selector.
 	(GtGitCliSignal args: args) 
 		operation: operation; 
@@ -243,13 +243,12 @@ IceGitCliRepository >> contentsOfFile: aHash [
 				stderr: result;
 				exitCode: output status code;
 				signal ].
-	result := output stdout.
-	(GtGitCliSignal args: args output: result)
+	result := output stdoutBytes.
+	(GtGitCliSignal args: args output: { result size asString , ' bytes' } )
 		operation: operation;
 		markAsEndSignal;
 		emit.
 	^ result
-
 ]
 
 { #category : #accessing }
