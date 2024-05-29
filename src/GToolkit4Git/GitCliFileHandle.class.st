@@ -9,7 +9,7 @@ Class {
 
 { #category : #accessing }
 GitCliFileHandle >> binaryReadStream [
-	^ self readStream
+	^ reference fileSystem store binaryReadStreamOn: self
 ]
 
 { #category : #accessing }

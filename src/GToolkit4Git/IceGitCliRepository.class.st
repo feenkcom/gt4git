@@ -35,8 +35,10 @@ IceGitCliRepository class >> gtViewGitCallsIn: composite [
 		title: 'Git calls';
 		priority: 30;
 		items: [ 
-			(#runGitWithArgs: gtReferences & #gtViewGitCallsIn: gtImplementors not) 
-				contents sort: #selector ascending ];
+			( (#runGitWithArgs: gtReferences  & #gtViewGitCallsIn: gtImplementors not) contents
+			, 
+			{ self>>#contentsOfFile: } )
+				 sort: #selector ascending ];
 		column: 'Selector' text: [ :each | each selector ];
 		column: 'Class' text: [ :each | each methodClass ]
 ]
@@ -216,6 +218,36 @@ IceGitCliRepository >> configureUpstreamIfNecessary [
 		gitRemote: gitRemote
 		progress: IcePushTransferProgress new.
 	self branch setUpstreamIfMissing: aRemote
+]
+
+{ #category : #accessing }
+IceGitCliRepository >> contentsOfFile: aHash [
+	| processBuilder result output args |
+	args := { 'cat-file' . 'blob'. aHash }.
+	(GtGitCliSignal args: args) 
+		operation: #contentsOfFile:; 
+		markAsStartSignal; 
+		emit.
+	processBuilder := self git args: args.
+	output := self waitForProcessAsync: processBuilder.
+	output status isSuccess 
+		ifFalse: [
+			result := output stderr lines.
+			(GtGitCliSignal args: args output: result)
+				operation: #contentsOfFile:;
+				markAsEndSignal;
+				emit.
+			^ GtGitCliError new
+				args: args;
+				stderr: result;
+				exitCode: output status code;
+				signal ].
+	result := output stdoutBytes.
+	(GtGitCliSignal args: args output: { result size asString , ' bytes' } )
+		operation: #contentsOfFile:;
+		markAsEndSignal;
+		emit.
+	^ result
 ]
 
 { #category : #accessing }
