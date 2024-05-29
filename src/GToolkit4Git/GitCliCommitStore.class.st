@@ -4,8 +4,7 @@ Class {
 	#instVars : [
 		'id',
 		'repository',
-		'entries',
-		'gitFileReader'
+		'entries'
 	],
 	#classVars : [
 		'Registry'
@@ -125,15 +124,6 @@ GitCliCommitStore >> finalize [
 { #category : #printing }
 GitCliCommitStore >> forReferencePrintOn: aStream [
 	aStream nextPutAll: 'git://'
-]
-
-{ #category : #accessing }
-GitCliCommitStore >> gitFileReader [
-	^ gitFileReader
-		ifNil: [ self class register: self.
-			gitFileReader := GitCliCommitFileReader new
-					workingDirectory: repository location;
-					start ]
 ]
 
 { #category : #accessing }
