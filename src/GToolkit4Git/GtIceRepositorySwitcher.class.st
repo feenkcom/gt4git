@@ -43,6 +43,21 @@ Class {
 }
 
 { #category : #operations }
+GtIceRepositorySwitcher class >> switchAll [
+	"Script to switch all existing repositories in the image to the new Libgit-CLI implementation.
+	This script does not use me, I am a tool to manipulate repositories individually.
+	Notes: also defunct repositories are switched."
+	
+	| repositories |
+	IceRepository repositoryClass: IceGitCliRepository.
+	repositories := IceRepository registry
+		collect: [ :each | IceGitCliRepository fromLibGitRepository: each ].
+	IceRepository registry
+		removeAll;
+		addAll: repositories
+]
+
+{ #category : #operations }
 GtIceRepositorySwitcher >> cloneAndCreate [
 	"Clone a git repository using its SSH url,
 	load it and create an Iceberg repository object"
