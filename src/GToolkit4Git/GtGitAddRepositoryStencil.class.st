@@ -29,7 +29,7 @@ GtGitAddRepositoryStencil >> dropdown: aDropdown [
 
 { #category : #accessing }
 GtGitAddRepositoryStencil >> githubPage [
-	^ GtGitGithubPageForm new
+	^ GtGitRemoteRepositoryForm new
 		dropdown: dropdown;
 		onCreated: self onCreated;
 		asElement

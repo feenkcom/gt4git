@@ -84,14 +84,25 @@ GtGitCliSignal class >> memoryLogger [
 			memoryLogger ]
 ]
 
+{ #category : #logging }
+GtGitCliSignal class >> startMemoryLogger [
+	self memoryLogger reset; start
+]
+
 { #category : #'system startup & shutdown' }
 GtGitCliSignal class >> startUp [
-	self memoryLogger start
+	self startMemoryLogger
 ]
 
 { #category : #logging }
 GtGitCliSignal class >> stopLoggingToStdout [
 	^ Beacon instance unsubscribe: #git_cli_log_to_stdout
+]
+
+{ #category : #logging }
+GtGitCliSignal class >> stopMemoryLogger [
+	memoryLogger ifNil: [ ^ self ].
+	self memoryLogger stop
 ]
 
 { #category : #accessing }

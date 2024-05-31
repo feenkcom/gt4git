@@ -1,5 +1,5 @@
 Class {
-	#name : #GtGitGithubPageForm,
+	#name : #GtGitRemoteRepositoryForm,
 	#superclass : #Object,
 	#instVars : [
 		'dropdown',
@@ -10,7 +10,7 @@ Class {
 }
 
 { #category : #accessing }
-GtGitGithubPageForm >> asElement [
+GtGitRemoteRepositoryForm >> asElement [
 	^ (self asGtMagritteViewModel
 		onElementCreated: [ :aFrame | 
 			BlFocusFinder new
@@ -22,22 +22,22 @@ GtGitGithubPageForm >> asElement [
 ]
 
 { #category : #accessing }
-GtGitGithubPageForm >> dropdown [
+GtGitRemoteRepositoryForm >> dropdown [
 	^ dropdown
 ]
 
 { #category : #accessing }
-GtGitGithubPageForm >> dropdown: anObject [
+GtGitRemoteRepositoryForm >> dropdown: anObject [
 	dropdown := anObject
 ]
 
 { #category : #accessing }
-GtGitGithubPageForm >> initialize [
+GtGitRemoteRepositoryForm >> initialize [
 	url := 'https://example.com'
 ]
 
 { #category : #accessing }
-GtGitGithubPageForm >> magritteAcceptAction [
+GtGitRemoteRepositoryForm >> magritteAcceptAction [
 	<magritteActionDescription>
 	^ super magritteAcceptAction
 		onSuccessCallback: (GtMagritteCallback new
@@ -56,17 +56,17 @@ GtGitGithubPageForm >> magritteAcceptAction [
 ]
 
 { #category : #accessing }
-GtGitGithubPageForm >> onCreated [
+GtGitRemoteRepositoryForm >> onCreated [
 	^ onCreated
 ]
 
 { #category : #accessing }
-GtGitGithubPageForm >> onCreated: anObject [
+GtGitRemoteRepositoryForm >> onCreated: anObject [
 	onCreated := anObject
 ]
 
 { #category : #accessing }
-GtGitGithubPageForm >> projectLocation [
+GtGitRemoteRepositoryForm >> projectLocation [
 	| anUrl owner project |
 	anUrl := url copyReplaceAll: 'git@github.com:' with: ''.
 	anUrl := anUrl copyReplaceAll: '.git' with: ''.
@@ -76,17 +76,17 @@ GtGitGithubPageForm >> projectLocation [
 ]
 
 { #category : #accessing }
-GtGitGithubPageForm >> url [
+GtGitRemoteRepositoryForm >> url [
 	^ url
 ]
 
 { #category : #accessing }
-GtGitGithubPageForm >> url: anObject [
+GtGitRemoteRepositoryForm >> url: anObject [
 	url := anObject
 ]
 
 { #category : #accessing }
-GtGitGithubPageForm >> urlDescription [
+GtGitRemoteRepositoryForm >> urlDescription [
 	<magritteDescription>
 	^ MAStringDescription new
 		label: 'URL';
