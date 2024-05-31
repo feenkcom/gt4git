@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'id',
 		'repository',
-		'entries'
+		'entries',
+		'gitFileReader'
 	],
 	#classVars : [
 		'Registry'
@@ -77,7 +78,7 @@ GitCliCommitStore >> basicSizeOf: aNode [
 
 { #category : #'as yet unclassified' }
 GitCliCommitStore >> binaryReadStreamOn: aGtGitFileHandle [
-	^ (repository contentsOfFile: aGtGitFileHandle entry id) readStream
+	^self readStreamOn: aGtGitFileHandle
 ]
 
 { #category : #'instance creation' }
@@ -127,6 +128,14 @@ GitCliCommitStore >> forReferencePrintOn: aStream [
 ]
 
 { #category : #accessing }
+GitCliCommitStore >> gitFileReader [
+	^ gitFileReader
+		ifNil: [ self class register: self.
+			gitFileReader := GitCliCommitFileReader new
+					workingDirectory: repository location ]
+]
+
+{ #category : #accessing }
 GitCliCommitStore >> handleClass [
 	^ GitCliFileHandle
 ]
@@ -142,9 +151,7 @@ GitCliCommitStore >> nodeAt: anAbsolutePath ifPresent: aBlockClosure ifAbsent: a
 
 { #category : #accessing }
 GitCliCommitStore >> readStreamOn: aGtGitFileHandle [
-	^ ZnCharacterReadStream 
-		on: (self binaryReadStreamOn: self)
-		encoding: #utf8
+	^ self gitFileReader readStreamFor: aGtGitFileHandle entry id
 ]
 
 { #category : #accessing }

@@ -122,6 +122,7 @@ GtGitCliSignal >> asJson [
 		name: self name;
 		processId: self processId;
 		eventType: eventType;
+		operation: operation;
 		args: self args
 ]
 
