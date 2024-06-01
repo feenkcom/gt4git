@@ -68,12 +68,40 @@ GitCliCommitFileReader >> initialize [
 	lastAccess := DateAndTime now
 ]
 
+{ #category : #logging }
+GitCliCommitFileReader >> logEnded: operation args: args output: output [
+	self loggingEnabled
+		ifTrue: [ (GtGitCliSignal args: args output: output)
+				operation: operation;
+				markAsEndSignal;
+				emit ]
+]
+
+{ #category : #logging }
+GitCliCommitFileReader >> logStarted: operation args: args [
+	self loggingEnabled
+		ifTrue: [ (GtGitCliSignal args: args)
+				operation: operation;
+				markAsStartSignal;
+				emit ]
+]
+
+{ #category : #logging }
+GitCliCommitFileReader >> loggingEnabled [
+	^ true
+]
+
 { #category : #accessing }
 GitCliCommitFileReader >> readStreamFor: aString [
+	| args stream |
+	args := { 'cat-file' . '--batch' . aString }.
+	self logStarted: #readStreamFor: args: args.
 	lock
 		critical: [ self ensureExternalProcess.
 			lastAccess := DateAndTime now.
-			^ self requestReadStreamFor: aString ]
+			stream := self requestReadStreamFor: aString ].
+	self logEnded: #readStreamFor: args: args output: { stream size asString , ' bytes' }.
+	^ stream
 ]
 
 { #category : #private }

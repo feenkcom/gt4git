@@ -224,29 +224,20 @@ IceGitCliRepository >> configureUpstreamIfNecessary [
 IceGitCliRepository >> contentsOfFile: aHash [
 	| processBuilder result output args |
 	args := { 'cat-file' . 'blob'. aHash }.
-	(GtGitCliSignal args: args) 
-		operation: #contentsOfFile:; 
-		markAsStartSignal; 
-		emit.
+	self logStarted: #contentsOfFile: args: args.
 	processBuilder := self git args: args.
 	output := self waitForProcessAsync: processBuilder.
 	output status isSuccess 
 		ifFalse: [
 			result := output stderr lines.
-			(GtGitCliSignal args: args output: result)
-				operation: #contentsOfFile:;
-				markAsEndSignal;
-				emit.
+			self logEnded: #contentsOfFile: args: args output: result.
 			^ GtGitCliError new
 				args: args;
 				stderr: result;
 				exitCode: output status code;
 				signal ].
 	result := output stdoutBytes.
-	(GtGitCliSignal args: args output: { result size asString , ' bytes' } )
-		operation: #contentsOfFile:;
-		markAsEndSignal;
-		emit.
+	self logEnded: #contentsOfFile: args: args output: { result size asString , ' bytes' }.
 	^ result
 ]
 
@@ -527,6 +518,29 @@ IceGitCliRepository >> logClass [
 	^ GitCliTonelLog
 ]
 
+{ #category : #logging }
+IceGitCliRepository >> logEnded: operation args: args output: output [
+	self loggingEnabled
+		ifTrue: [ (GtGitCliSignal args: args output: output)
+				operation: operation;
+				markAsEndSignal;
+				emit ]
+]
+
+{ #category : #logging }
+IceGitCliRepository >> logStarted: operation args: args [
+	self loggingEnabled
+		ifTrue: [ (GtGitCliSignal args: args)
+				operation: operation;
+				markAsStartSignal;
+				emit ]
+]
+
+{ #category : #logging }
+IceGitCliRepository >> loggingEnabled [
+	^ true
+]
+
 { #category : #'API - commits' }
 IceGitCliRepository >> lookupCommit: commitId ifAbsent: aBlock [
 	^ [ self commitFromGitCommit: commitId ] onErrorDo: [ aBlock value ]
@@ -748,29 +762,20 @@ IceGitCliRepository >> runGitWithArgs: args [
 
 	| processBuilder lines output operation |
 	operation := thisContext sender method selector.
-	(GtGitCliSignal args: args) 
-		operation: operation; 
-		markAsStartSignal; 
-		emit.
+	self logStarted: operation args: args.
 	processBuilder := self git args: args.
 	output := self waitForProcessAsync: processBuilder.
 	output status isSuccess 
 		ifFalse: [
 			lines := output stderr lines.
-			(GtGitCliSignal args: args output: lines)
-				operation: operation;
-				markAsEndSignal;
-				emit.
+			self logEnded: operation args: args output: lines.
 			^ GtGitCliError new
 				args: args;
 				stderr: lines;
 				exitCode: output status code;
 				signal ].
 	lines := output stdout lines.
-	(GtGitCliSignal args: args output: lines)
-		operation: operation;
-		markAsEndSignal;
-		emit.
+	self logEnded: operation args: args output: lines.
 	^ lines
 ]
 
