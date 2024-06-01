@@ -22,35 +22,44 @@ Class {
 	#category : #'GToolkit4Git-Libgit-CLI'
 }
 
-{ #category : #accessing }
+{ #category : #private }
 GitCliCommitFileReader >> eatNewline [
 	self getNextByte
 ]
 
-{ #category : #accessing }
+{ #category : #private }
+GitCliCommitFileReader >> ensureExternalProcess [
+	externalProcess isNil
+		ifTrue: [ self startExternalProcess.
+			self startWatchDog ]
+]
+
+{ #category : #private }
 GitCliCommitFileReader >> getNext: anInteger [
-	^ ByteArray
+	^ ByteArray 
+		new: anInteger
 		streamContents: [ :str | anInteger timesRepeat: [ str nextPut: self getNextByte ] ]
 ]
 
-{ #category : #accessing }
+{ #category : #private }
 GitCliCommitFileReader >> getNextByte [
 	[ buffer isEmpty ] whileTrue: [ buffer addAll: stdout pollBytes ].
 	^ buffer removeFirst
 ]
 
-{ #category : #accessing }
+{ #category : #private }
 GitCliCommitFileReader >> getNextLine [
-	^ String
-		streamContents: [ :str | 
-			| ch lfCode |
-			lfCode := Character lf asciiValue.
-			[
-			ch := self getNextByte.
-			ch = lfCode ] whileFalse: [ str nextPut: (Character value: ch) ] ]
+	| bytes |
+	bytes := ByteArray
+			streamContents: [ :str | 
+				| byte linefeed |
+				linefeed := Character linefeed asciiValue.
+				[ byte := self getNextByte.
+				byte = linefeed ] whileFalse: [ str nextPut: byte ] ].
+	^ bytes decodeWith: #null
 ]
 
-{ #category : #accessing }
+{ #category : #'initialize - release' }
 GitCliCommitFileReader >> initialize [
 	super initialize.
 	lock := Mutex new.
@@ -62,32 +71,27 @@ GitCliCommitFileReader >> initialize [
 { #category : #accessing }
 GitCliCommitFileReader >> readStreamFor: aString [
 	lock
-		critical: [ externalProcess isNil
-				ifTrue: [ self startExternalProcess.
-					self startWatchDog ].
+		critical: [ self ensureExternalProcess.
 			lastAccess := DateAndTime now.
 			^ self requestReadStreamFor: aString ]
 ]
 
-{ #category : #accessing }
+{ #category : #private }
 GitCliCommitFileReader >> requestReadStreamFor: aString [
-	| line out bytes |
-	stdin
-		nextPutAll: aString;
-		lf.
+	| line byteCount bytes |
+	stdin nextPutAll: aString; lf.
 	line := self getNextLine.
-	bytes := (line splitOn: Character space) third asInteger.
-	out := self getNext: bytes.
+	byteCount := (line splitOn: Character space) third asInteger.
+	bytes := self getNext: byteCount.
 	self eatNewline.
-	^ ZnBufferedReadStream on: out readStream
+	^ bytes readStream
 ]
 
-{ #category : #accessing }
+{ #category : #private }
 GitCliCommitFileReader >> startExternalProcess [
 	externalProcess := (GtExternalProcessBuilder new: 'git')
 			workingDirectory: workingDirectory;
-			args: {'cat-file'.
-					'--batch'};
+			args: { 'cat-file' . '--batch' };
 			pipeStdin;
 			pipeStdout;
 			pipeStderr;
@@ -98,15 +102,15 @@ GitCliCommitFileReader >> startExternalProcess [
 	buffer := OrderedCollection new
 ]
 
-{ #category : #accessing }
+{ #category : #private }
 GitCliCommitFileReader >> startWatchDog [
 	watchDog := [ [ pollRate asDelay wait.
 		lock
 			critical: [ DateAndTime now - lastAccess > timeout ifTrue: [ self terminate ] ] ]
-			repeat ] fork
+			repeat ] forkNamed: 'Git CLI commit file reader watchdog'
 ]
 
-{ #category : #accessing }
+{ #category : #'initialize - release' }
 GitCliCommitFileReader >> terminate [
 	externalProcess
 		ifNotNil: [ externalProcess terminate.
@@ -123,7 +127,7 @@ GitCliCommitFileReader >> terminate [
 	watchDog ifNotNil: [ watchDog terminate ]
 ]
 
-{ #category : #accessing }
+{ #category : #'initialize - release' }
 GitCliCommitFileReader >> workingDirectory: aFileRef [
 	workingDirectory := aFileRef 
 ]

@@ -26,8 +26,3 @@ GitCliFileHandle >> entry: anObject [
 GitCliFileHandle >> open [
 	entry := self basicOpen
 ]
-
-{ #category : #accessing }
-GitCliFileHandle >> readStream [
-	^ reference fileSystem store readStreamOn: self
-]
