@@ -17,7 +17,12 @@ IceRepository >> gtLocalBranchesFor: aView [
 		title: 'Branches' translated;
 		priority: 20;
 		items: [ self localBranches ];
-		itemText: #name
+		itemText: [ :each | 
+			| text |
+			text := ((each isDirty ifTrue: [ '*' ] ifFalse: [ '' ]) , each name)
+					asRopedText.
+			each isLoaded ifTrue: [ text bold ].
+			text ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -38,7 +43,7 @@ IceRepository >> gtPullInWorkingCopy: aLepiterWorkingCopy [
 IceRepository >> gtRemoteBranchesFor: aView [
 	<gtView>
 	^ aView list
-		title: 'Remotes' translated;
+		title: 'Remote Branches' translated;
 		priority: 24;
 		items: [ self remoteTrackedBranches ];
 		itemText: #name

@@ -18,3 +18,13 @@ IceLocalBranch >> gtPullInWorkingCopy: aLepiterWorkingCopy [
 		gtPullFrom: self upstream remote 
 		inWorkingCopy: aLepiterWorkingCopy
 ]
+
+{ #category : #'*GToolkit4Git' }
+IceLocalBranch >> isDirty [
+	^ self isLoaded and: [ self repository workingCopy isModified ]
+]
+
+{ #category : #'*GToolkit4Git' }
+IceLocalBranch >> isLoaded [
+	^self repository workingCopy referenceCommit = self commit
+]
