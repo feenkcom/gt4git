@@ -35,6 +35,17 @@ GtGitRepositoryHistoryRecord class >> capture: aRepository [
 	^ record
 ]
 
+{ #category : #example }
+GtGitRepositoryHistoryRecord class >> exampleGt4Git [
+	<gtExample>
+	
+	| repository record |
+	repository := IceRepository repositoryNamed: 'gt4git'.
+	record := self capture: repository.
+	self assert: record name = 'gt4git'.
+	^ record
+]
+
 { #category : #'gt extensions' }
 GtGitRepositoryHistoryRecord >> gtViewDetailsIn: composite [
 	<gtView>
