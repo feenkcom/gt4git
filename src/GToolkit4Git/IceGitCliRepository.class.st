@@ -861,7 +861,7 @@ IceGitCliRepository >> waitForProcessAsync: processBuilder [
 { #category : #'API - commit' }
 IceGitCliRepository >> writeCommit: indexTreeId message: message parents: parentCommits updateReference: ref author: author committer: committer [
 	| lines commitId parentArgs |
-	self clearCaches.
+	self clearCaches. 
 	parentArgs := (parentCommits
 			collect: [ :each | 
 				{ '-p'. each id } ]) flatten.
@@ -880,7 +880,7 @@ IceGitCliRepository >> writeCommit: indexTreeId message: message parents: parent
 	commitId := lines first trimBoth.
 	self runGitWithArgs: {
 		'update-ref'.
-		ref.
+		'refs/heads/', ref.
 		commitId }.
 	self runGitWithArgs: {
 		'update-ref'.
