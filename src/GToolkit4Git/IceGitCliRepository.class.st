@@ -241,6 +241,17 @@ IceGitCliRepository >> contentsOfFile: aHash [
 	^ result
 ]
 
+{ #category : #'API - branches' }
+IceGitCliRepository >> createBranch: branchName inCommit: anIceGitCommit [
+	"Creates a new branch from a given commit and switch to it"
+	
+	self runGitWithArgs: { 'branch' . branchName . anIceGitCommit gitRef }.
+	
+	^ (self branchNamed: branchName)
+			switch;
+			yourself
+]
+
 { #category : #accessing }
 IceGitCliRepository >> directoryNameForPackage: package [
 
