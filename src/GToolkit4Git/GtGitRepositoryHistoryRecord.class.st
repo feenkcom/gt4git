@@ -38,9 +38,11 @@ GtGitRepositoryHistoryRecord class >> capture: aRepository [
 { #category : #example }
 GtGitRepositoryHistoryRecord class >> exampleGt4Git [
 	<gtExample>
+	<noTest>
 	
 	| repository record |
 	repository := IceRepository repositoryNamed: 'gt4git'.
+	repository ifNil: [ ^ self error: 'The gt4git repository is not defined' ].
 	record := self capture: repository.
 	self assert: record name = 'gt4git'.
 	^ record
