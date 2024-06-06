@@ -113,3 +113,12 @@ GtGitRepositoryHistoryRecord >> originUrl: aString [
 GtGitRepositoryHistoryRecord >> packages [
 	^ packages
 ]
+
+{ #category : #printing }
+GtGitRepositoryHistoryRecord >> printOn: stream [
+	super printOn: stream.
+	stream
+		nextPut: $(;
+		nextPutAll: self name;
+		nextPut: $)
+]
