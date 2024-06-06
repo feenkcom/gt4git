@@ -78,6 +78,11 @@ GtGitRepositoryHistoryRecord >> headCommitId: aHash [
 	headCommitId := aHash
 ]
 
+{ #category : #testing }
+GtGitRepositoryHistoryRecord >> includesPackageNamed: packageName [
+	^ self packages includes: packageName
+]
+
 { #category : #initialization }
 GtGitRepositoryHistoryRecord >> initialize [
 	super initialize.

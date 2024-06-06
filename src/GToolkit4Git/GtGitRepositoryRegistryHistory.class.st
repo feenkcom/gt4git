@@ -57,6 +57,13 @@ GtGitRepositoryRegistryHistory >> records [
 ]
 
 { #category : #accessing }
+GtGitRepositoryRegistryHistory >> repositoryIncludingPackage: packageName [
+	^ self records
+		detect: [ :each | each includesPackageNamed: packageName ]
+		ifNone: [ nil ] 
+]
+
+{ #category : #accessing }
 GtGitRepositoryRegistryHistory >> repositoryNamed: aRepositoryName [
 	^ self records 
 		detect: [ :each | each name = aRepositoryName ] 
