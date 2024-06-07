@@ -22,7 +22,7 @@ GtGitRepositoryRegistryHistory class >> gtActionInspectInstanceFor: anAction [
 	<gtAction>
 	<gtClassAction>
 	
-	self hasInstace ifFalse: [ ^ anAction noAction ].
+	self hasInstance ifFalse: [ ^ anAction noAction ].
 	
 	^ anAction button
 		icon: BrGlamorousVectorIcons inspect;
@@ -37,17 +37,17 @@ GtGitRepositoryRegistryHistory class >> gtViewDefaultRecordsIn: aView [
 	<gtView>
 	<gtClassView>
 	
-	self hasInstace ifFalse: [ ^ aView empty ].
+	self hasInstance ifFalse: [ ^ aView empty ].
 	
 	^ aView forward
 		title: 'Records';
 		priority: 10;
 		object: [ self instance ];
-		view:#gtViewRecordsFor: 
+		view: #gtViewRecordsFor: 
 ]
 
 { #category : #testing }
-GtGitRepositoryRegistryHistory class >> hasInstace [ 
+GtGitRepositoryRegistryHistory class >> hasInstance [ 
 	^ instance notNil
 ]
 
