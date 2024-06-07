@@ -41,7 +41,7 @@ GtGitRepositoryRegistryHistory class >> gtViewDefaultRecordsIn: aView [
 	
 	^ aView forward
 		title: 'Records';
-		priority: 20;
+		priority: 10;
 		object: [ self instance ];
 		view:#gtViewRecordsFor: 
 ]
