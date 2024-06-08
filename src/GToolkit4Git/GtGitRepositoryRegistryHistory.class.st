@@ -17,6 +17,40 @@ Class {
 	#category : #'GToolkit4Git-Tools'
 }
 
+{ #category : #'gt - extensions' }
+GtGitRepositoryRegistryHistory class >> gtActionInspectInstanceFor: anAction [
+	<gtAction>
+	<gtClassAction>
+	
+	self hasInstance ifFalse: [ ^ anAction noAction ].
+	
+	^ anAction button
+		icon: BrGlamorousVectorIcons inspect;
+		label: 'Instance';
+		tooltip: 'Inspect instance';
+		priority: 10;
+		action: [ :aButton | aButton phlow spawnObject: self instance ]
+]
+
+{ #category : #'gt - extensions' }
+GtGitRepositoryRegistryHistory class >> gtViewDefaultRecordsIn: aView [
+	<gtView>
+	<gtClassView>
+	
+	self hasInstance ifFalse: [ ^ aView empty ].
+	
+	^ aView forward
+		title: 'Records';
+		priority: 10;
+		object: [ self instance ];
+		view: #gtViewRecordsFor: 
+]
+
+{ #category : #testing }
+GtGitRepositoryRegistryHistory class >> hasInstance [ 
+	^ instance notNil
+]
+
 { #category : #accessing }
 GtGitRepositoryRegistryHistory class >> instance [
 	^ instance ifNil: [ instance := self new ]
@@ -33,10 +67,10 @@ GtGitRepositoryRegistryHistory >> capture [
 ]
 
 { #category : #'gt extensions' }
-GtGitRepositoryRegistryHistory >> gtViewRecordsIn: composite [
+GtGitRepositoryRegistryHistory >> gtViewRecordsFor: aView [
 	<gtView>
 	
-	^ composite columnedList
+	^ aView columnedList
 		title: 'Records';
 		priority: 20;
 		items: [ self records sorted: #name ascending];
