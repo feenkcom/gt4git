@@ -34,6 +34,11 @@ IceGitCliLocalBranch >> fileSystem [
 ]
 
 { #category : #accessing }
+IceGitCliLocalBranch >> gitRef [
+	^ self name
+]
+
+{ #category : #accessing }
 IceGitCliLocalBranch >> gtPullFrom: aRemote inWorkingCopy: aLepiterWorkingCopy [
 	"A copy of the #pullFrom: method to support a Lepiter-aware pull."
 
