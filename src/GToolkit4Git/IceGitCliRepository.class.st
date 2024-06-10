@@ -805,7 +805,8 @@ IceGitCliRepository >> setHead: aGtIceGitLocalBranch [
 	self runGitWithArgs: {
 		'update-ref'.
 		'HEAD'.
-		aGtIceGitLocalBranch commit id }
+		aGtIceGitLocalBranch commit id }.
+	head := nil
 ]
 
 { #category : #'API - accessing' }
