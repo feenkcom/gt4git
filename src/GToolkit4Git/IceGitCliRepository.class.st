@@ -245,7 +245,7 @@ IceGitCliRepository >> contentsOfFile: aHash [
 IceGitCliRepository >> createBranch: branchName inCommit: anIceGitCommit [
 	"Creates a new branch from a given commit and switch to it"
 	
-	self runGitWithArgs: { 'branch' . branchName . anIceGitCommit gitRef }.
+	self runGitWithArgs: { 'branch' . '--track=inherit' . branchName . anIceGitCommit gitRef }.
 	
 	^ (self branchNamed: branchName)
 			switch;
