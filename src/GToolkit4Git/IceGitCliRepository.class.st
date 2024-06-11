@@ -724,7 +724,7 @@ IceGitCliRepository >> remotes [
 						put: ((IceGitRemote name: each url: l first)
 								localRepository: self;
 								yourself) ] ].
-	^ remoteMap value
+	^ remoteMap values
 ]
 
 { #category : #'API - accessing' }
