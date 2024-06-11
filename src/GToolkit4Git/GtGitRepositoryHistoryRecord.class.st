@@ -21,7 +21,7 @@ Class {
 	#category : #'GToolkit4Git-Tools'
 }
 
-{ #category : #accessing }
+{ #category : #actions }
 GtGitRepositoryHistoryRecord class >> capture: aRepository [
 	| record |
 	record := self new.
@@ -121,4 +121,22 @@ GtGitRepositoryHistoryRecord >> printOn: stream [
 		nextPut: $(;
 		nextPutAll: self name;
 		nextPut: $)
+]
+
+{ #category : #actions }
+GtGitRepositoryHistoryRecord >> restore [
+	| switcher |
+	switcher := GtIceRepositorySwitcher new
+		sshUrl: self originUrl;
+		yourself.
+
+	switcher directory exists
+		ifTrue: [ ^ self error: switcher directory printString , ' already exists, cannot clone' ].
+
+	switcher 
+		useLibgitCLI;
+		cloneAndCreate;
+		register.
+
+	^ switcher icebergRepository head commit id = self headCommitId
 ]

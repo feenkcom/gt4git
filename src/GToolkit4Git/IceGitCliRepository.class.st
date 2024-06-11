@@ -488,6 +488,13 @@ IceGitCliRepository >> internalStoreVersion: aMCVersion [
 		on: self
 ]
 
+{ #category : #'as yet unclassified' }
+IceGitCliRepository >> isCodeMissing [
+	^ self subdirectory isEmptyOrNil 
+		ifTrue: [ self isMissing ]
+		ifFalse: [ (self repositoryDirectory / self subdirectory) exists not  ]
+]
+
 { #category : #testing }
 IceGitCliRepository >> isGitCliRepository [
 	^ true
@@ -717,7 +724,7 @@ IceGitCliRepository >> remotes [
 						put: ((IceGitRemote name: each url: l first)
 								localRepository: self;
 								yourself) ] ].
-	^ remoteMap value
+	^ remoteMap values
 ]
 
 { #category : #'API - accessing' }

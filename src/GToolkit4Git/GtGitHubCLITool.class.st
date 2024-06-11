@@ -88,6 +88,18 @@ GtGitHubCLITool >> token: aGitHubToken [
 	token := aGitHubToken
 ]
 
+{ #category : #operations }
+GtGitHubCLITool >> version [
+	"Return gh command line tool version information.
+	This needs no token, nor working directory to be set."
+	
+	<gtExample>
+	^ GtExternalProcessBuilder new
+		command: 'gh';
+		args: #('--version');
+		output
+]
+
 { #category : #accessing }
 GtGitHubCLITool >> workingDirectory [
 	^ workingDirectory
