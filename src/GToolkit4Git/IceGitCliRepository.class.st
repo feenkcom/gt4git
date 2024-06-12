@@ -204,20 +204,13 @@ IceGitCliRepository >> config [
 
 { #category : #accessing }
 IceGitCliRepository >> configureUpstreamIfNecessary [
-	| aRemote gitRemote |
+	| aRemote |
 	self branch isUnbornBranch ifTrue: [ ^ self ].
 	self branch hasUpstream ifTrue: [ ^ self ].
-	#Todo halt.
-	
+
 	aRemote := self remoteNamed: 'origin'.
-	gitRemote := (LGitRemote
-		              of: self repositoryHandle
-		              named: aRemote name) lookup.
-	self branch
-		pushBranchToRemote: aRemote
-		gitRemote: gitRemote
-		progress: IcePushTransferProgress new.
-	self branch setUpstreamIfMissing: aRemote
+
+	self pushBranch: self branch name to: aRemote name
 ]
 
 { #category : #accessing }
@@ -245,7 +238,7 @@ IceGitCliRepository >> contentsOfFile: aHash [
 IceGitCliRepository >> createBranch: branchName inCommit: anIceGitCommit [
 	"Creates a new branch from a given commit and switch to it"
 	
-	self runGitWithArgs: { 'branch' . '--track=inherit' . branchName . anIceGitCommit gitRef }.
+	self runGitWithArgs: { 'branch' . branchName . anIceGitCommit gitRef }.
 	
 	^ (self branchNamed: branchName)
 			switch;
@@ -686,6 +679,7 @@ IceGitCliRepository >> pullBranch: aString from: aRemote [
 IceGitCliRepository >> pushBranch: aString to: aRemoteName [
 	self runGitWithArgs: {
 		'push' .
+		'--set-upstream'.
 	    aRemoteName . 
 	    aString }
 ]
