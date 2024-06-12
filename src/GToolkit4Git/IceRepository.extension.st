@@ -69,11 +69,34 @@ IceRepository >> gtTagsFor: aView [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceRepository >> gtToolActionFor: composite [
+	<gtAction>
+	^ composite button
+		label: 'Tool';
+		priority: 30;
+		tooltip: 'Open tool wrapper';
+		action: [ :aButton | 
+			aButton phlow 
+				spawnObject: (GtGitRepository fromIcebergRepository: self) ]
+]
+
+{ #category : #'*GToolkit4Git' }
 IceRepository >> gtViewDiffToReferenceCommitFor: aView [
 	"<gtView>"
 	^ self workingCopy 
 		ifNil: [ aView ]
 		ifNotNil: [ self workingCopy gtViewDiffToReferenceCommitFor: aView ]
+]
+
+{ #category : #'*GToolkit4Git' }
+IceRepository class >> gtViewRegistryIn: composite [
+	<gtClassView>
+	^ composite columnedList
+		title: 'Registry';
+		priority: 40;
+		items: [ self registry sorted: #name ascending];
+		column: 'Name' text: #name;
+		column: 'Origin' text: [ :each | [ each originUrl ] on: Error do: [ '' ] ]
 ]
 
 { #category : #'*GToolkit4Git' }
