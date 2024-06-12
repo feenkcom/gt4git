@@ -91,6 +91,12 @@ IceGitCliLocalBranch >> remoteBranchFor: aRemote ifNone: aBlock [
 		ifNotNil: [ repository basicNewRemoteBranchNamed: remoteName ]
 ]
 
+{ #category : #'as yet unclassified' }
+IceGitCliLocalBranch >> setUpstreamIfMissing: aRemote [
+	self hasUpstream ifTrue: [ ^ self ].
+	self setUpstream: (aRemote remoteBranchNamed: self gitRef)
+]
+
 { #category : #accessing }
 IceGitCliLocalBranch >> upstream [
 	^ self upstreamIfNone: [ IceUpstreamNotConfigured signal ]

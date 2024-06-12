@@ -210,8 +210,7 @@ IceGitCliRepository >> configureUpstreamIfNecessary [
 
 	aRemote := self remoteNamed: 'origin'.
 
-	self pushBranch: self branch name to: aRemote name.
-	self branch setUpstreamIfMissing: aRemote
+	self pushBranch: self branch name to: aRemote name
 ]
 
 { #category : #accessing }
@@ -680,6 +679,7 @@ IceGitCliRepository >> pullBranch: aString from: aRemote [
 IceGitCliRepository >> pushBranch: aString to: aRemoteName [
 	self runGitWithArgs: {
 		'push' .
+		'--set-upstream'.
 	    aRemoteName . 
 	    aString }
 ]
