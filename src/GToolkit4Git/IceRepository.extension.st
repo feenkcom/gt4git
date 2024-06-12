@@ -69,6 +69,18 @@ IceRepository >> gtTagsFor: aView [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceRepository >> gtToolActionFor: composite [
+	<gtAction>
+	^ composite button
+		label: 'Tool';
+		priority: 30;
+		tooltip: 'Open tool wrapper';
+		action: [ :aButton | 
+			aButton phlow 
+				spawnObject: (GtGitRepository fromIcebergRepository: self) ]
+]
+
+{ #category : #'*GToolkit4Git' }
 IceRepository >> gtViewDiffToReferenceCommitFor: aView [
 	"<gtView>"
 	^ self workingCopy 
