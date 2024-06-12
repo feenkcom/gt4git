@@ -77,6 +77,17 @@ IceRepository >> gtViewDiffToReferenceCommitFor: aView [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceRepository class >> gtViewRegistryIn: composite [
+	<gtClassView>
+	^ composite columnedList
+		title: 'Registry';
+		priority: 40;
+		items: [ self registry sorted: #name ascending];
+		column: 'Name' text: #name;
+		column: 'Origin' text: [ :each | [ each originUrl ] on: Error do: [ '' ] ]
+]
+
+{ #category : #'*GToolkit4Git' }
 IceRepository >> isGitCliRepository [
 	^ false
 ]
