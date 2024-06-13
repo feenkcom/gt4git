@@ -640,7 +640,7 @@ GtGitRepository >> gtAllCommitsFor: aView [
 
 	^ aView columnedList
 		title: 'All Commits' translated;
-		priority: 2;
+		priority: 3;
 		items: [ self repository allCommits ];
 		column: 'Timestamp'
 			text: [ :aCommit | aCommit timeStamp asStringYMDHM ]
