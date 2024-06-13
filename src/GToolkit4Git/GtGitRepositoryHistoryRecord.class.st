@@ -138,5 +138,5 @@ GtGitRepositoryHistoryRecord >> restore [
 		cloneAndCreate;
 		register.
 
-	^ switcher icebergRepository head commit id = self headCommitId
+	^ switcher iceRepository head commit id = self headCommitId
 ]
