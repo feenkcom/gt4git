@@ -67,6 +67,21 @@ IceGitCliRepository >> allBranches [
 	^ self localBranches , self remoteTrackedBranches
 ]
 
+{ #category : #'API - branches' }
+IceGitCliRepository >> allCommits [
+	| lines commitLines commits |
+	lines := self
+			runGitWithArgs: {'log'.
+					'-s'.
+					'--format=format:%H%n%an%n%at%n%P%n%n%B%n@@@'.
+					'--all'.
+					'--remotes'}.
+	commitLines := lines splitOn: [ :each | each = '@@@' ].
+	commitLines removeLast.
+	commits := commitLines collect: [ :each | self iceGitCommitFromLines: each ].
+	^ commits asSortedCollection: [:a :b | a datetime > b datetime]
+]
+
 { #category : #'API - accessing' }
 IceGitCliRepository >> basicCodeDirectory [
 	^ self subdirectory isEmptyOrNil
@@ -738,6 +753,16 @@ IceGitCliRepository >> resetCurrentBranchTo: aCommitId [
 		'--hard'.
 		aCommitId
 	} 
+]
+
+{ #category : #'API - commits' }
+IceGitCliRepository >> revList [
+	| lines |
+	lines := self
+			runGitWithArgs: {'rev-list'.
+					'--all'.
+					'--remotes'}.
+	^ lines collect: #trimBoth
 ]
 
 { #category : #'API - commits' }

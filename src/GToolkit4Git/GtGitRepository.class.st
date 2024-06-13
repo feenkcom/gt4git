@@ -633,6 +633,34 @@ GtGitRepository >> gtActionRepairFor: anAction [
 ]
 
 { #category : #'gt - extensions' }
+GtGitRepository >> gtAllCommitsFor: aView [
+	<gtView>
+	<gtRepositoryView>
+	self isMissing ifTrue: [ ^ aView empty ].
+
+	^ aView columnedList
+		title: 'All Commits' translated;
+		priority: 2;
+		items: [ self repository allCommits ];
+		column: 'Timestamp'
+			text: [ :aCommit | aCommit timeStamp asStringYMDHM ]
+			width: 120;
+		column: 'Refs'
+			stencil: [ :each | 
+				BrTagger new
+					aptitude: BrGlamorousTaggerAptitude new;
+					namedTags: (each tags collect: #name) ]
+			width: 120;
+		column: 'Commit'
+			text: #shortId
+			width: 70;
+		column: 'Author'
+			text: #author
+			width: 100;
+		column: 'Description' text: #comment
+]
+
+{ #category : #'gt - extensions' }
 GtGitRepository >> gtAllLoadedExamples [
 	^ self lepiterWorkingCopy gtAllLoadedExamples
 ]
