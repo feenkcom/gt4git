@@ -57,7 +57,7 @@ GtGitHubCLITool >> forkRepository [
 		args: #('repo' 'fork' '--remote' '--clone');
 		output.
 	^ output status isSuccess
-		ifTrue: [ output stdout ]
+		ifTrue: [ true ]
 		ifFalse: [ self error: 'gh repo fork failed: ' , output stderr ]
 ]
 
@@ -68,6 +68,11 @@ GtGitHubCLITool >> ghProcessBuilder [
 		env: 'GH_TOKEN' value: token;
 		command: 'gh';
 		yourself
+]
+
+{ #category : #initialization }
+GtGitHubCLITool >> readTokenFrom: aFileReference [
+	self token: aFileReference asFileReference contents lines first
 ]
 
 { #category : #operations }
@@ -94,15 +99,15 @@ GtGitHubCLITool >> version [
 	This needs no token, nor working directory to be set."
 	
 	<gtExample>
-	^ GtExternalProcessBuilder new
+	^ (GtExternalProcessBuilder new
 		command: 'gh';
 		args: #('--version');
-		output
+		output) stdout
 ]
 
 { #category : #accessing }
 GtGitHubCLITool >> workingDirectory [
-	^ workingDirectory
+	^ workingDirectory ifNil: [ FileLocator workingDirectory ]
 ]
 
 { #category : #initialization }
