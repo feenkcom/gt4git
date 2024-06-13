@@ -57,7 +57,7 @@ GtGitHubCLITool >> forkRepository [
 		args: #('repo' 'fork' '--remote' '--clone');
 		output.
 	^ output status isSuccess
-		ifTrue: [ output stdout ]
+		ifTrue: [ true ]
 		ifFalse: [ self error: 'gh repo fork failed: ' , output stderr ]
 ]
 
