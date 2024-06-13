@@ -70,6 +70,11 @@ GtGitHubCLITool >> ghProcessBuilder [
 		yourself
 ]
 
+{ #category : #initialization }
+GtGitHubCLITool >> readTokenFrom: aFileReference [
+	self token: aFileReference asFileReference contents lines first
+]
+
 { #category : #operations }
 GtGitHubCLITool >> repositoryList [
 	"Return a list of the user's repositories, limited to 100."
@@ -94,15 +99,15 @@ GtGitHubCLITool >> version [
 	This needs no token, nor working directory to be set."
 	
 	<gtExample>
-	^ GtExternalProcessBuilder new
+	^ (GtExternalProcessBuilder new
 		command: 'gh';
 		args: #('--version');
-		output
+		output) stdout
 ]
 
 { #category : #accessing }
 GtGitHubCLITool >> workingDirectory [
-	^ workingDirectory
+	^ workingDirectory ifNil: [ FileLocator workingDirectory ]
 ]
 
 { #category : #initialization }
