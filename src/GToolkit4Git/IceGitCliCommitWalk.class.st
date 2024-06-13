@@ -17,6 +17,11 @@ IceGitCliCommitWalk >> commitsDo: aBlock [
 	(repository commitsFromIds: ids) do: [ :each | aBlock value: each ]
 ]
 
+{ #category : #accessing }
+IceGitCliCommitWalk >> ensureIds [
+	ids ifNil: [ ids := repository revList ]
+]
+
 { #category : #'walk definition' }
 IceGitCliCommitWalk >> fromBranch: branch [
 	ids := repository revListForBranch: branch
