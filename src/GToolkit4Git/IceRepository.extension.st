@@ -100,6 +100,11 @@ IceRepository class >> gtViewRegistryIn: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceRepository >> isDirty [
+	self subclassResponsibility
+]
+
+{ #category : #'*GToolkit4Git' }
 IceRepository >> isGitCliRepository [
 	^ false
 ]
