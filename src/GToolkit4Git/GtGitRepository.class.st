@@ -108,6 +108,11 @@ GtGitRepository >> addPackage: aPackageName [
 	^ aPackageName asPackage
 ]
 
+{ #category : #accessing }
+GtGitRepository >> allCommits [
+	^self repository allCommits
+]
+
 { #category : #announcer }
 GtGitRepository >> announceRepositoryModified [
 	Iceberg announcer announce:
@@ -636,21 +641,26 @@ GtGitRepository >> gtActionRepairFor: anAction [
 GtGitRepository >> gtAllCommitsFor: aView [
 	<gtView>
 	<gtRepositoryView>
+	| branches |
 	self isMissing ifTrue: [ ^ aView empty ].
-
 	^ aView columnedList
 		title: 'All Commits' translated;
 		priority: 3;
-		items: [ self repository allCommits ];
+		items: [ branches := self repository allBranches.
+			self repository allCommits ];
 		column: 'Timestamp'
 			text: [ :aCommit | aCommit timeStamp asStringYMDHM ]
 			width: 120;
 		column: 'Refs'
 			stencil: [ :each | 
+				| tags |
+				tags := (each tags collect: #name) asOrderedCollection.
+				tags
+					addAll: (branches select: [ :br | br commit id = each id ] thenCollect: #name).
 				BrTagger new
 					aptitude: BrGlamorousTaggerAptitude new;
-					namedTags: (each tags collect: #name) ]
-			width: 120;
+					namedTags: tags ]
+			width: 150;
 		column: 'Commit'
 			text: #shortId
 			width: 70;
