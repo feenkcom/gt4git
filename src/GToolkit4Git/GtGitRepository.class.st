@@ -641,13 +641,21 @@ GtGitRepository >> gtActionRepairFor: anAction [
 GtGitRepository >> gtAllCommitsFor: aView [
 	<gtView>
 	<gtRepositoryView>
-	| branches |
+	| branches ruler |
 	self isMissing ifTrue: [ ^ aView empty ].
 	^ aView columnedList
 		title: 'All Commits' translated;
 		priority: 3;
-		items: [ branches := self repository allBranches.
-			self repository allCommits ];
+		items: [ | commits |
+			branches := self repository allBranches.
+			commits := self repository allCommits.
+			ruler := HiRulerBuilder
+					newRulerValues: commits asOrderedCollection
+					linksBlock: [ :each | each ancestors ].
+			commits ];
+		column: 'Ruler'
+			stencil: [ :each | ruler gtElementForValue: each ]
+			width: 100;
 		column: 'Timestamp'
 			text: [ :aCommit | aCommit timeStamp asStringYMDHM ]
 			width: 120;
@@ -658,7 +666,7 @@ GtGitRepository >> gtAllCommitsFor: aView [
 				tags
 					addAll: (branches select: [ :br | br commit id = each id ] thenCollect: #name).
 				BrTagger new
-					aptitude: BrGlamorousTaggerAptitude new;
+					aptitude: (BrGlamorousTaggerAptitude new margin: 0);
 					namedTags: tags ]
 			width: 150;
 		column: 'Commit'
