@@ -9,23 +9,25 @@ HiRuler >> gtElementForRow: i [
 	e := BlElement new
 			height: size * 2;
 			width: 100;
+			clipChildren: false;
 			addChild: (BlElement new
 					background: Color lightGray;
 					border: (BlBorder paint: Color black width: 2);
 					geometry: BlCircleGeometry new;
 					size: size @ size;
-					relocate: (each rulerPoint x * column) @ 0).
+					relocate: (each rulerPoint x * column - (size/2)) @ (size/2)).
 	(self linksAtRow: i)
 		do: [ :link | 
 			| startX startY endX endY |
 			startX := link origin rulerPoint x * column.
 			endX := link target rulerPoint x * column.
-			startY := (link origin rulerPoint y - i + 1) * size.
-			endY := (link target rulerPoint y - i + 1) * size.
+			startY := (link origin rulerPoint y - i) * size + 3*size/2.
+			endY := (link target rulerPoint y - i) * size + size.
 			e
-				addChild: (BlManhattanLineElement new
+				addChildFirst: (BlManhattanLineElement new
 						border: (BlBorder paint: Color red width: 1);
 						cornerRadius: 5;
+						beVertical;
 						fromAnchor: (BlAbsolutePositionAnchor position: startX @ startY);
 						toAnchor: (BlAbsolutePositionAnchor position: endX @ endY)) ].
 	^ e
@@ -43,5 +45,5 @@ HiRuler >> gtViewFor: aView [
 		title: 'Graph';
 		items: [ 1 to: self numberOfRows ];
 		column: 'Nodes' stencil: [ :i | self gtElementForRow: i ];
-		send: [ :i | (self nodes at: i) theValue ]
+		send: [ :i | (self nodes at: i) "theValue" ]
 ]
