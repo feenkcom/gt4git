@@ -17,11 +17,38 @@ Class {
 }
 
 { #category : #operations }
-GtGitHubAPITool >> createPullRequestRepositoryOwner: owner name: repositoryName branch: branchName title: title body: body [
+GtGitHubAPITool >> createPullRequestBy: forkOwner forRepositoryOwner: sourceOwner name: repositoryName branch: branchName description: description [
+	"Create a pull request from the repository forkOwner/repositoryName:branchName
+	to the parent/source from which it was forked, targetting main, sourceOwner/repositoryName:main.
+	Use description for the title and body."
+
+	^ self restClient
+		url: 'https://api.github.com/repos';
+		addPathSegment: sourceOwner;
+		addPathSegment: repositoryName;
+		addPathSegment: 'pulls';
+		contents: {
+			#title -> description lines first.
+			#body -> description.
+			#head_repo -> forkOwner.
+			#head -> (forkOwner , ':' , branchName).
+			#base -> 'main' } asDictionary;
+		post
 ]
 
 { #category : #operations }
 GtGitHubAPITool >> forkRepositoryOwner: owner name: repositoryName [
+	"Create a fork of the repository owner/repositoryName in the user's account"
+
+	^ self restClient
+		url: 'https://api.github.com/repos';
+		addPathSegment: owner;
+		addPathSegment: repositoryName;
+		addPathSegment: 'forks';
+		contents: {
+			#name -> repositoryName.
+			#'default_branch_only' -> true } asDictionary;
+		post
 ]
 
 { #category : #initialization }
