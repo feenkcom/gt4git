@@ -503,6 +503,11 @@ IceGitCliRepository >> isCodeMissing [
 		ifFalse: [ (self repositoryDirectory / self subdirectory) exists not  ]
 ]
 
+{ #category : #actions }
+IceGitCliRepository >> isDirty [
+	^ self getStatusByFile notEmpty
+]
+
 { #category : #testing }
 IceGitCliRepository >> isGitCliRepository [
 	^ true

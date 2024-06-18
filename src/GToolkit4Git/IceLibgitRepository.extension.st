@@ -18,6 +18,19 @@ IceLibgitRepository >> configureUpstreamIfNecessary [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceLibgitRepository class >> fromGitCliRepository: aRepo [
+	| repo |
+	repo := self new
+			location: aRepo location;
+			name: aRepo name.
+	aRepo isMissing ifTrue: [ ^ repo ].
+	repo workingCopy
+		referenceCommit: (repo commitFromGitCommit: aRepo workingCopy referenceCommit id).
+	repo workingCopy initializePackagesFromRepository.
+	^ repo
+]
+
+{ #category : #'*GToolkit4Git' }
 IceLibgitRepository >> getDeltasForFullDiff [
 	"Return the deltas including untracked files.
 	This makes it possible to create a full diff of what changed."

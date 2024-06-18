@@ -76,6 +76,23 @@ GtGitHubCLITool >> readTokenFrom: aFileReference [
 ]
 
 { #category : #operations }
+GtGitHubCLITool >> repository [
+	"Return the repository pointed to by the working directory,
+	assuming it follows the owner/repo naming convention"
+	
+	| output uri |
+	uri := 'https://api.github.com/repos/{1}/{2}' format: { 
+		self workingDirectory path segments allButLast last . 
+		self workingDirectory path segments last }. 
+	output := self ghProcessBuilder
+		args: { 'api' . uri };
+		output.
+	^ output status isSuccess
+		ifTrue: [ NeoJSONObject fromString: output stdout ]
+		ifFalse: [ self error: 'gh api ' , uri , ' failed: ' , output stderr ]
+]
+
+{ #category : #operations }
 GtGitHubCLITool >> repositoryList [
 	"Return a list of the user's repositories, limited to 100."
 
@@ -91,6 +108,19 @@ GtGitHubCLITool >> repositoryList [
 { #category : #initialization }
 GtGitHubCLITool >> token: aGitHubToken [
 	token := aGitHubToken
+]
+
+{ #category : #operations }
+GtGitHubCLITool >> user [
+	"Return the authenticated user"
+
+	| output |
+	output := self ghProcessBuilder
+		args: #('api' 'https://api.github.com/user');
+		output.
+	^ output status isSuccess
+		ifTrue: [ NeoJSONObject fromString: output stdout ]
+		ifFalse: [ self error: 'gh api https://api.github.com/user failed: ' , output stderr ]
 ]
 
 { #category : #operations }
