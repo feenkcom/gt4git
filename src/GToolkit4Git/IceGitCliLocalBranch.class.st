@@ -98,6 +98,16 @@ IceGitCliLocalBranch >> setUpstreamIfMissing: aRemote [
 ]
 
 { #category : #accessing }
+IceGitCliLocalBranch >> trackedBranch [
+	^ self upstream
+]
+
+{ #category : #'API - remotes' }
+IceGitCliLocalBranch >> tracksRemoteBranch [
+	^ self hasUpstream
+]
+
+{ #category : #accessing }
 IceGitCliLocalBranch >> upstream [
 	^ self upstreamIfNone: [ IceUpstreamNotConfigured signal ]
 ]

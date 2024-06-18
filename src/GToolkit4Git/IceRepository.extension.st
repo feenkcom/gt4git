@@ -1,6 +1,11 @@
 Extension { #name : #IceRepository }
 
 { #category : #'*GToolkit4Git' }
+IceRepository >> configureUpstreamIfNecessary [
+	self subclassResponsibility
+]
+
+{ #category : #'*GToolkit4Git' }
 IceRepository >> gtLepiterAwareCheckoutBranch: branchName withWorkingCopy: aLepiterWorkingCopy [
 	"Convenience method to checkout all packages from a branch given a branch name"
 
@@ -22,7 +27,33 @@ IceRepository >> gtLocalBranchesFor: aView [
 			text := ((each isDirty ifTrue: [ '*' ] ifFalse: [ '' ]) , each name)
 					asRopedText.
 			each isLoaded ifTrue: [ text bold ].
-			text ]
+			text ];
+		actionStencil: [ :aTab | | aptitude |
+			aptitude := BrGlamorousWithDropdownAptitude
+				handle: [
+					BrButton new
+						aptitude: BrGlamorousButtonWithIconAptitude;
+						icon: BrGlamorousVectorIcons add;
+						label: 'Create new branch' ]
+				content: [ | branchCreationPane |
+					branchCreationPane := GtGitBranchCreationPane new.
+					branchCreationPane
+						acceptAction: [ :aModel :aButton | | branchName |
+							branchName := branchCreationPane branchName.
+							self 
+								createBranch: branchName; 
+								configureUpstreamIfNecessary.
+							aButton enqueueTask: (BlTaskAction new 
+								action: [ aTab viewContentElement phlow update.
+									aButton fireEvent: BrDropdownHideWish new]) ];
+						cancelAction: [ :aModel :aButton |
+							aButton enqueueTask: (BlTaskAction new 
+								action: [ aButton fireEvent: BrDropdownHideWish new ]) ].
+					branchCreationPane asElement ].			
+			BrButton new
+				aptitude: BrGlamorousButtonWithIconAptitude + aptitude;
+				icon: BrGlamorousVectorIcons add;
+				label: 'Create new branch' ]
 ]
 
 { #category : #'*GToolkit4Git' }
