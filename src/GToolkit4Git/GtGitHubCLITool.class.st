@@ -49,7 +49,7 @@ GtGitHubCLITool >> createPullRequest [
 ]
 
 { #category : #operations }
-GtGitHubCLITool >> forkRepository [
+GtGitHubCLITool >> fork [
 	"Fork the repository in the working directory"
 
 	| output |

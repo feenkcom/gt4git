@@ -305,6 +305,44 @@ GtGitRepository >> contextMenuOptionsFor: anIceNode [
 	^ options
 ]
 
+{ #category : #'gt - extensions' }
+GtGitRepository >> createPullRequest [
+	| login switcher repository upstreamOwner branchName description |
+	self 
+		assert: GhTokenHolder hasToken 
+		description: 'Please set your GitHub Personal Access Token in GhTokenHolder'.
+
+	login := GtGitHubAPITool new user login.
+
+	switcher := GtIceRepositorySwitcher new
+		sshUrl: self repository originUrl;
+		yourself.
+
+	repository := GtGitHubAPITool new
+		repositoryOwner: switcher owner name: switcher projectName.
+
+	(self repository isDirty or: [ self repository hasOutgoingCommits ])
+		ifTrue: [ ^ self error: 'Repository is dirty, please commit and push' ].
+
+	repository fork 
+		ifFalse: [ ^ self error: 'This repository is not a fork, please fork' ].
+
+	upstreamOwner := repository parent owner login.
+
+	branchName := self repository branch name.
+	branchName = 'main'
+		ifTrue: [ ^ self error: 'Repository should be on a feature branch, please create a feature branch' ].
+		
+	description := self repository branch commits first comment.
+
+	^ GtGitHubAPITool new 
+		createPullRequestBy: login 
+			forRepositoryOwner: upstreamOwner
+			name: switcher projectName 
+			branch: branchName 
+			description: description
+]
+
 { #category : #accessing }
 GtGitRepository >> databases [
 	^ self lepiterWorkingCopy databases
@@ -479,6 +517,45 @@ GtGitRepository >> forgetLepiterDatabases [
 	self databases do: [ :database | registry removeDB: database ]
 ]
 
+{ #category : #'api - actions' }
+GtGitRepository >> fork [
+	| login switcher clone repository |
+	self 
+		assert: GhTokenHolder hasToken 
+		description: 'Please set your GitHub Personal Access Token in GhTokenHolder'.
+
+	login := GtGitHubAPITool new user login.
+	
+	switcher := GtIceRepositorySwitcher new
+		sshUrl: self repository originUrl;
+		yourself.
+	
+	repository := GtGitHubAPITool new
+		repositoryOwner: switcher owner name: switcher projectName.
+	
+	repository fork 
+		ifTrue: [ ^ self error: 'This repository is already a fork' ].
+
+	clone := GtGitHubAPITool new 
+		forkRepositoryOwner: switcher owner name: switcher projectName.
+
+	repository := GtGitHubAPITool new
+		repositoryOwner: login name: switcher projectName.
+
+	self assert: repository fork description: 'Fork failed'.
+
+	switcher sshUrl: (repository at: #ssh_url).
+
+	switcher deleteDirectory.
+
+	switcher 
+		useLibgitCLI;
+		cloneAndCreate;
+		register.
+
+	^ repository
+]
+
 { #category : #'api - repository' }
 GtGitRepository >> getDeltasForFullDiff [
 	^ self icebergRepository getDeltasForFullDiff
@@ -499,6 +576,12 @@ GtGitRepository >> gtActionExtraMenuFor: anAction [
 						e fireEvent: BrDropdownHideWish new ]).
 					('Inspect iceberg working copy' -> [ :e | 
 						e phlow spawnObject: self icebergWorkingCopy.
+						e fireEvent: BrDropdownHideWish new ]).
+					('Fork repository' -> [ :e | 
+						e phlow spawnObject: self fork.
+						e fireEvent: BrDropdownHideWish new ]).
+					('Create pull request' -> [ :e | 
+						e phlow spawnObject: self createPullRequest.
 						e fireEvent: BrDropdownHideWish new ]).
 					('Recalculate dirty packages' -> [ :e | 
 						self workingCopy forceCalculateDirtyPackages. 
@@ -653,9 +736,6 @@ GtGitRepository >> gtAllCommitsFor: aView [
 					newRulerValues: commits asOrderedCollection
 					linksBlock: [ :each | each ancestors ].
 			commits ];
-		column: 'Ruler'
-			stencil: [ :each | ruler gtElementForValue: each ]
-			width: 100;
 		column: 'Timestamp'
 			text: [ :aCommit | aCommit timeStamp asStringYMDHM ]
 			width: 120;
@@ -666,7 +746,7 @@ GtGitRepository >> gtAllCommitsFor: aView [
 				tags
 					addAll: (branches select: [ :br | br commit id = each id ] thenCollect: #name).
 				BrTagger new
-					aptitude: (BrGlamorousTaggerAptitude new margin: 0);
+					aptitude: (BrGlamorousTaggerAptitude new margin: BlInsets empty);
 					namedTags: tags ]
 			width: 150;
 		column: 'Commit'
@@ -675,7 +755,9 @@ GtGitRepository >> gtAllCommitsFor: aView [
 		column: 'Author'
 			text: #author
 			width: 100;
-		column: 'Description' text: #comment
+		column: 'Description' text: #comment	"column: 'Ruler'
+			stencil: [ :each | ruler gtElementForValue: each ]
+			width: 100;"
 ]
 
 { #category : #'gt - extensions' }

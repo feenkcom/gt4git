@@ -53,7 +53,7 @@ GtGitRepositoryHistoryRecord >> fork [
 	"Restore the repository that I describe by first forking it from its upstream URL
 	into the user's account, then cloning, creating and registering that fork"
 
-	| login switcher clone repository |
+	| login switcher fork repository |
 	self 
 		assert: GhTokenHolder hasToken 
 		description: 'Please set your GitHub Personal Access Token in GhTokenHolder'.
@@ -64,7 +64,7 @@ GtGitRepositoryHistoryRecord >> fork [
 		sshUrl: self originUrl;
 		yourself.
 
-	clone := GtGitHubAPITool new 
+	fork := GtGitHubAPITool new 
 		forkRepositoryOwner: switcher owner name: switcher projectName.
 
 	repository := GtGitHubAPITool new
@@ -92,7 +92,7 @@ GtGitRepositoryHistoryRecord >> gtForkActionFor: anAction [
 		label: 'Fork';
 		tooltip: 'Fork from upstream, then clone, create and register';
 		priority: 40;
-		action: [ self restore ]
+		action: [ self fork ]
 ]
 
 { #category : #'gt extensions' }
