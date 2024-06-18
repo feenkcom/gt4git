@@ -23,6 +23,7 @@ Class {
 { #category : #example }
 GhTokenHolder class >> exampleFromFile [
 	<gtExample>
+	<noTest>
 	
 	| filePath |
 	
