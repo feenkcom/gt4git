@@ -653,9 +653,6 @@ GtGitRepository >> gtAllCommitsFor: aView [
 					newRulerValues: commits asOrderedCollection
 					linksBlock: [ :each | each ancestors ].
 			commits ];
-		column: 'Ruler'
-			stencil: [ :each | ruler gtElementForValue: each ]
-			width: 100;
 		column: 'Timestamp'
 			text: [ :aCommit | aCommit timeStamp asStringYMDHM ]
 			width: 120;
@@ -666,7 +663,7 @@ GtGitRepository >> gtAllCommitsFor: aView [
 				tags
 					addAll: (branches select: [ :br | br commit id = each id ] thenCollect: #name).
 				BrTagger new
-					aptitude: (BrGlamorousTaggerAptitude new margin: 0);
+					aptitude: (BrGlamorousTaggerAptitude new margin: BlInsets empty);
 					namedTags: tags ]
 			width: 150;
 		column: 'Commit'
@@ -675,7 +672,9 @@ GtGitRepository >> gtAllCommitsFor: aView [
 		column: 'Author'
 			text: #author
 			width: 100;
-		column: 'Description' text: #comment
+		column: 'Description' text: #comment	"column: 'Ruler'
+			stencil: [ :each | ruler gtElementForValue: each ]
+			width: 100;"
 ]
 
 { #category : #'gt - extensions' }
