@@ -6,6 +6,10 @@ https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/m
 https://github.com/settings/tokens
 
 Tokens have scopes, read:org and repo should be included.
+
+Usage
+
+GhTokenHolder readTokenFrom: FileLocator home / '.secrets' / 'gh_token.txt'
 "
 Class {
 	#name : #GhTokenHolder,
@@ -16,12 +20,27 @@ Class {
 	#category : #'GToolkit4Git-Tools'
 }
 
-{ #category : #accessing }
+{ #category : #example }
+GhTokenHolder class >> exampleFromFile [
+	<gtExample>
+	
+	| filePath |
+	
+	filePath := FileLocator home / '.secrets' / 'gh_token.txt'.
+
+	self readTokenFrom: filePath.
+	
+	self assert: self hasToken.
+	
+	^ self token
+]
+
+{ #category : #testing }
 GhTokenHolder class >> hasToken [
 	^ self token notNil
 ]
 
-{ #category : #accessing }
+{ #category : #initialization }
 GhTokenHolder class >> readTokenFrom: aFileReference [
 	self token: aFileReference asFileReference contents lines first.
 	^ self token
@@ -32,7 +51,7 @@ GhTokenHolder class >> token [
 	^ token
 ]
 
-{ #category : #accessing }
+{ #category : #initialization }
 GhTokenHolder class >> token: aString [
 	token := aString trimBoth
 ]
