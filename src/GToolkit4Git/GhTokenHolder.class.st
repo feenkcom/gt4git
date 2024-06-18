@@ -17,6 +17,11 @@ Class {
 }
 
 { #category : #accessing }
+GhTokenHolder class >> hasToken [
+	^ self token notNil
+]
+
+{ #category : #accessing }
 GhTokenHolder class >> readTokenFrom: aFileReference [
 	self token: aFileReference asFileReference contents lines first.
 	^ self token
