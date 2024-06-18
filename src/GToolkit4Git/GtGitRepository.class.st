@@ -331,7 +331,7 @@ GtGitRepository >> createPullRequest [
 	branchName = 'main'
 		ifTrue: [ ^ self error: 'Repository should be on a feature branch, please create a feature branch' ].
 		
-	description := repository branch commits first comment.
+	description := self repository branch commits first comment.
 
 	^ GtGitHubAPITool new 
 		createPullRequestBy: login 
