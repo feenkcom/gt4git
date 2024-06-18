@@ -307,26 +307,28 @@ GtGitRepository >> contextMenuOptionsFor: anIceNode [
 
 { #category : #'gt - extensions' }
 GtGitRepository >> createPullRequest [
-	| login switcher repository branchName description |
+	| login switcher repository upstreamOwner branchName description |
 	self 
 		assert: GhTokenHolder hasToken 
 		description: 'Please set your GitHub Personal Access Token in GhTokenHolder'.
 
 	login := GtGitHubAPITool new user login.
-	
+
 	switcher := GtIceRepositorySwitcher new
 		sshUrl: self repository originUrl;
 		yourself.
-	
+
 	repository := GtGitHubAPITool new
 		repositoryOwner: switcher owner name: switcher projectName.
-		
+
 	(self repository isDirty or: [ self repository hasOutgoingCommits ])
 		ifTrue: [ ^ self error: 'Repository is dirty, please commit and push' ].
-	
+
 	repository fork 
 		ifFalse: [ ^ self error: 'This repository is not a fork, please fork' ].
-	
+
+	upstreamOwner := repository parent owner login.
+
 	branchName := self repository branch name.
 	branchName = 'main'
 		ifTrue: [ ^ self error: 'Repository should be on a feature branch, please create a feature branch' ].
@@ -335,7 +337,7 @@ GtGitRepository >> createPullRequest [
 
 	^ GtGitHubAPITool new 
 		createPullRequestBy: login 
-			forRepositoryOwner: switcher owner 
+			forRepositoryOwner: upstreamOwner
 			name: switcher projectName 
 			branch: branchName 
 			description: description
