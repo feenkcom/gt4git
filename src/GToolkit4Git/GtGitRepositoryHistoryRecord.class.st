@@ -92,7 +92,7 @@ GtGitRepositoryHistoryRecord >> gtForkActionFor: anAction [
 		label: 'Fork';
 		tooltip: 'Fork from upstream, then clone, create and register';
 		priority: 40;
-		action: [ self restore ]
+		action: [ self fork ]
 ]
 
 { #category : #'gt extensions' }
