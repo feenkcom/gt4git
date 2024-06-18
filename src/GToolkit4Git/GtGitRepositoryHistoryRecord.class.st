@@ -86,6 +86,26 @@ GtGitRepositoryHistoryRecord >> fork [
 ]
 
 { #category : #'gt extensions' }
+GtGitRepositoryHistoryRecord >> gtForkActionFor: anAction [
+	<gtAction>
+	^ anAction button
+		label: 'Fork';
+		tooltip: 'Fork from upstream, then clone, create and register';
+		priority: 40;
+		action: [ self restore ]
+]
+
+{ #category : #'gt extensions' }
+GtGitRepositoryHistoryRecord >> gtRestoreActionFor: anAction [
+	<gtAction>
+	^ anAction button
+		label: 'Restore';
+		tooltip: 'Clone, create and register from upstream';
+		priority: 30;
+		action: [ self restore ]
+]
+
+{ #category : #'gt extensions' }
 GtGitRepositoryHistoryRecord >> gtViewDetailsIn: composite [
 	<gtView>
 	
