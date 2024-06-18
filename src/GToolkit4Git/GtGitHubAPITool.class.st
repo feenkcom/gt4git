@@ -81,12 +81,17 @@ GtGitHubAPITool >> repositoryOwner: owner name: repositoryName [
 GtGitHubAPITool >> restClient [
 	^ ZnClient new
 		forJsonREST;
-		setBearerAuthentication: token
+		setBearerAuthentication: self token
+]
+
+{ #category : #accessing }
+GtGitHubAPITool >> token [
+	^ token ifNil: [ GhTokenHolder token ]
 ]
 
 { #category : #initialization }
 GtGitHubAPITool >> token: aGitHubToken [
-	token := aGitHubToken
+	token := aGitHubToken trimBoth
 ]
 
 { #category : #operations }

@@ -49,7 +49,7 @@ GtGitHubCLITool >> createPullRequest [
 ]
 
 { #category : #operations }
-GtGitHubCLITool >> forkRepository [
+GtGitHubCLITool >> fork [
 	"Fork the repository in the working directory"
 
 	| output |
@@ -65,7 +65,7 @@ GtGitHubCLITool >> forkRepository [
 GtGitHubCLITool >> ghProcessBuilder [
 	^ GtExternalProcessBuilder new
 		workingDirectory: self workingDirectory;
-		env: 'GH_TOKEN' value: token;
+		env: 'GH_TOKEN' value: self token;
 		command: 'gh';
 		yourself
 ]
@@ -105,9 +105,14 @@ GtGitHubCLITool >> repositoryList [
 		ifFalse: [ self error: 'gh repo ls failed: ' , output stderr ]
 ]
 
+{ #category : #accessing }
+GtGitHubCLITool >> token [
+	^ token ifNil: [ GhTokenHolder token ]
+]
+
 { #category : #initialization }
 GtGitHubCLITool >> token: aGitHubToken [
-	token := aGitHubToken
+	token := aGitHubToken trimBoth
 ]
 
 { #category : #operations }

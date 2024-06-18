@@ -20,6 +20,16 @@ IceLocalBranch >> gtPullInWorkingCopy: aLepiterWorkingCopy [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceLocalBranch >> gtSwitchActionFor: anAction [
+	<gtAction>
+	^ anAction button
+		label: 'Switch';
+		tooltip: 'Switch to this branch (do not load)';
+		priority: 30;
+		action: [ self switch ]
+]
+
+{ #category : #'*GToolkit4Git' }
 IceLocalBranch >> isDirty [
 	^ self isLoaded and: [ self repository workingCopy isModified ]
 ]
