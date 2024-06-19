@@ -41,6 +41,47 @@ HiRuler >> gtElementForValue: anObject [
 ]
 
 { #category : #'*GToolkit4Git' }
+HiRuler >> gtView2For: aView [
+	<gtView>
+	| color |
+	color := HiWheelColorStrategy new.
+	color ruler: self.
+	^ aView explicit
+		title: 'Graph2';
+		stencil: [ | list |
+			list := BrColumnedList new .
+			"list column
+				title: 'Nodes';
+				cellStencil: [ :i | self gtElementForRow: i value withColorStrategy: color ];
+				width: 100."
+			list column
+				title: 'Row';
+				cellStencil: [ BrLabel new
+						aptitude: BrGlamorousLabelAptitude new;
+						hFitContent;
+						vFitContent ];
+				dataBinder: [ :e :i | e text: i printString ];
+				width: 50.
+			list column
+				title: 'Links';
+				cellStencil: [ BrLabel new
+						aptitude: BrGlamorousLabelAptitude new;
+						hFitContent;
+						vFitContent ];
+				dataBinder: [ :e :i | 
+					e
+						text: (String
+								streamContents: [ :s | 
+									(self linksAtRow: i)
+										do: [ :each | s nextPutAll: each pointString ]
+										separatedBy: [ s space ] ]) ].	
+			"list send: [ :i | self nodes at: i theValue ]."
+			list addAptitude: BrColumnedListHeaderAptitude.
+			list items: ( 1 to: self numberOfRows ).
+			list ]
+]
+
+{ #category : #'*GToolkit4Git' }
 HiRuler >> gtViewFor: aView [
 	<gtView>
 	| color |
@@ -62,5 +103,5 @@ HiRuler >> gtViewFor: aView [
 						(self linksAtRow: i)
 							do: [ :each | s nextPutAll: each pointString ]
 							separatedBy: [ s space ] ] ];
-		send: [ :i | self nodes at: i	"theValue" ]
+		send: [ :i | (self nodes at: i)	theValue ]
 ]
