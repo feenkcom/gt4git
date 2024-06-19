@@ -9,7 +9,6 @@ HiRuler >> gtElementForRow: i withColorStrategy: aColorStrategy [
 	e := BlElement new
 			height: size * 2;
 			width: 100;
-			border: (BlBorder paint: Color green width: 1);
 			addChild: (BlElement new
 					background: (aColorStrategy colorForNode: each);
 					border: (BlBorder paint: (aColorStrategy colorForNode: each) width: 2);
@@ -28,6 +27,7 @@ HiRuler >> gtElementForRow: i withColorStrategy: aColorStrategy [
 						border: (BlBorder paint: (aColorStrategy colorForLink: link) width: 2);
 						cornerRadius: 5;
 						beVertical;
+						proportion: 0;
 						fromAnchor: (BlAbsolutePositionAnchor position: startX @ startY);
 						toAnchor: (BlAbsolutePositionAnchor position: endX @ endY)) ].
 	^ e
@@ -41,19 +41,20 @@ HiRuler >> gtElementForValue: anObject [
 ]
 
 { #category : #'*GToolkit4Git' }
-HiRuler >> gtView2For: aView [
+HiRuler >> gtViewFor: aView [
 	<gtView>
 	| color |
 	color := HiWheelColorStrategy new.
 	color ruler: self.
 	^ aView explicit
-		title: 'Graph2';
+		title: 'Graph';
 		stencil: [ | list |
 			list := BrColumnedList new .
-			"list column
+			list rowStencil: BrGlamorousColumnedListSelectableRowElementStencilBuilder new.
+			list column
 				title: 'Nodes';
-				cellStencil: [ :i | self gtElementForRow: i value withColorStrategy: color ];
-				width: 100."
+				stencil: [ :_ :i | self gtElementForRow: i value withColorStrategy: color ];
+				width: 100.
 			list column
 				title: 'Row';
 				cellStencil: [ BrLabel new
@@ -62,6 +63,14 @@ HiRuler >> gtView2For: aView [
 						vFitContent ];
 				dataBinder: [ :e :i | e text: i printString ];
 				width: 50.
+			list column
+				title: 'Value';
+				cellStencil: [  BrLabel new
+						aptitude: BrGlamorousLabelAptitude new;
+						hFitContent;
+						vFitContent];
+				dataBinder: [:e :i | e text: (self nodeAtRow: i) theValue printString];
+				width: 150.
 			list column
 				title: 'Links';
 				cellStencil: [ BrLabel new
@@ -79,29 +88,4 @@ HiRuler >> gtView2For: aView [
 			list addAptitude: BrColumnedListHeaderAptitude.
 			list items: ( 1 to: self numberOfRows ).
 			list ]
-]
-
-{ #category : #'*GToolkit4Git' }
-HiRuler >> gtViewFor: aView [
-	<gtView>
-	| color |
-	color := HiWheelColorStrategy new.
-	color ruler: self.
-	^ aView columnedList
-		title: 'Graph';
-		items: [ 1 to: self numberOfRows ];
-		column: 'Nodes'
-			stencil: [ :i | self gtElementForRow: i withColorStrategy: color ]
-			width: 100;
-		column: 'Row'
-			text: [ :i | i ]
-			width: 50;
-		column: 'Links'
-			text: [ :i | 
-				String
-					streamContents: [ :s | 
-						(self linksAtRow: i)
-							do: [ :each | s nextPutAll: each pointString ]
-							separatedBy: [ s space ] ] ];
-		send: [ :i | (self nodes at: i)	theValue ]
 ]
