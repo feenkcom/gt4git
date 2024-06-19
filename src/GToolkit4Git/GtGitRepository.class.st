@@ -721,6 +721,82 @@ GtGitRepository >> gtActionRepairFor: anAction [
 ]
 
 { #category : #'gt - extensions' }
+GtGitRepository >> gtAllCommits2For: aView [
+	<gtView>
+	<gtRepositoryView>
+	^aView explicit
+		title: 'All Commits2' translated;
+		priority: 4;
+		stencil: [ | list color branches commits ruler |
+			branches := self repository allBranches.
+			commits := self repository allCommits.
+			ruler := HiRulerBuilder
+					newRulerValues: commits asOrderedCollection
+					linksBlock: [ :each | each ancestors ].
+			color := HiWheelColorStrategy new.
+			color ruler: ruler.
+			list := BrColumnedList new.
+			list
+				rowStencil: BrGlamorousColumnedListSelectableRowElementStencilBuilder new.
+			list column
+				title: 'Graph';
+				stencil: [ :_ :i | ruler gtElementForRow: i value withColorStrategy: color ];
+				width: 100.
+			list column
+				title: 'Timestamp';
+				cellStencil: [ BrLabel new
+						aptitude: BrGlamorousLabelAptitude new;
+						hFitContent;
+						vFitContent ];
+				dataBinder: [ :e :i | e text: (commits at: i) timeStamp asStringYMDHM ];
+				width: 120.
+			list column
+				title: 'Refs';
+				stencil: [ :_ :i | 
+					| tags each |
+					each := commits at: i.
+					tags := (each tags collect: #name) asOrderedCollection.
+					tags
+						addAll: (branches select: [ :br | br commit id = each id ] thenCollect: #name).
+					BrTagger new
+						aptitude: (BrGlamorousTaggerAptitude new
+								tagLabel: ([ :aTag | 
+									BrEditor new
+										beReadOnlyWithoutSelection;
+										aptitude: BrGlamorousEditableLabelAptitude new glamorousCodeTinySize;
+										fitContent;
+										text: aTag name ] asStencilBuilder: BrTaggerTagStencilBuilder));
+						namedTags: tags ];
+				width: 200.
+			list column
+				title: 'Commit';
+				cellStencil: [ BrLabel new
+						aptitude: BrGlamorousLabelAptitude new;
+						hFitContent;
+						vFitContent ];
+				dataBinder: [ :e :i | e text: (commits at: i) shortId ];
+				width: 70.
+			list column
+				title: 'Author';
+				cellStencil: [ BrLabel new
+						aptitude: BrGlamorousLabelAptitude new;
+						hFitContent;
+						vFitContent ];
+				dataBinder: [ :e :i | e text: (commits at: i) author ];
+				width: 100.
+			list column
+				title: 'Message';
+				cellStencil: [ BrLabel new
+						aptitude: BrGlamorousLabelAptitude new;
+						hFitContent;
+						vFitContent ];
+				dataBinder: [ :e :i | e text: (commits at: i) comment ].
+			list addAptitude: BrColumnedListHeaderAptitude.
+			list items: (1 to: ruler numberOfRows).
+			list ]
+]
+
+{ #category : #'gt - extensions' }
 GtGitRepository >> gtAllCommitsFor: aView [
 	<gtView>
 	<gtRepositoryView>

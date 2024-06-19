@@ -2,26 +2,27 @@ Extension { #name : #HiRuler }
 
 { #category : #'*GToolkit4Git' }
 HiRuler >> gtElementForRow: i withColorStrategy: aColorStrategy [
-	| column e each size |
+	| column e each size height|
 	each := self nodes at: i.
 	size := 10.
 	column := 20.
+	height := 30.
 	e := BlElement new
-			height: size * 2;
+			height: height;
 			width: 100;
 			addChild: (BlElement new
 					background: (aColorStrategy colorForNode: each);
 					border: (BlBorder paint: (aColorStrategy colorForNode: each) width: 2);
 					geometry: BlCircleGeometry new;
 					size: size @ size;
-					relocate: (each rulerPoint x * column - (size/2)) @ (size/2)).
+					relocate: (each rulerPoint x * column - (size/2)) @ (height/2-(size/2))).
 	(self linksAtRow: i)
 		do: [ :link | 
 			| startX startY endX endY |
 			startX := link origin rulerPoint x * column.
 			endX := link target rulerPoint x * column.
-			startY := (link origin rulerPoint y - i) * 2 * size + size.
-			endY := (link target rulerPoint y - i) * 2 * size + size.
+			startY := (link origin rulerPoint y - i) * 2 * size + (height/2).
+			endY := (link target rulerPoint y - i) * 2 * size + (height/2).
 			e
 				addChildFirst: (BlManhattanLineElement new
 						border: (BlBorder paint: (aColorStrategy colorForLink: link) width: 2);
