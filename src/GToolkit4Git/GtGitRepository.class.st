@@ -721,11 +721,11 @@ GtGitRepository >> gtActionRepairFor: anAction [
 ]
 
 { #category : #'gt - extensions' }
-GtGitRepository >> gtAllCommits2For: aView [
+GtGitRepository >> gtAllCommitsFor: aView [
 	<gtView>
 	<gtRepositoryView>
-	^aView explicit
-		title: 'All Commits2' translated;
+	^ aView explicit
+		title: 'All Commits' translated;
 		priority: 4;
 		stencil: [ | list color branches commits ruler |
 			branches := self repository allBranches.
@@ -791,49 +791,14 @@ GtGitRepository >> gtAllCommits2For: aView [
 						hFitContent;
 						vFitContent ];
 				dataBinder: [ :e :i | e text: (commits at: i) comment ].
+			list
+				when: BrSelectionDoubleClicked
+				do: [ :anEvent | 
+					anEvent selection
+						ifNotEmpty: [ :theIndices | anEvent currentTarget phlow spawnObject: (commits at: theIndices first) ] ].
 			list addAptitude: BrColumnedListHeaderAptitude.
 			list items: (1 to: ruler numberOfRows).
 			list ]
-]
-
-{ #category : #'gt - extensions' }
-GtGitRepository >> gtAllCommitsFor: aView [
-	<gtView>
-	<gtRepositoryView>
-	| branches ruler |
-	self isMissing ifTrue: [ ^ aView empty ].
-	^ aView columnedList
-		title: 'All Commits' translated;
-		priority: 3;
-		items: [ | commits |
-			branches := self repository allBranches.
-			commits := self repository allCommits.
-			ruler := HiRulerBuilder
-					newRulerValues: commits asOrderedCollection
-					linksBlock: [ :each | each ancestors ].
-			commits ];
-		column: 'Timestamp'
-			text: [ :aCommit | aCommit timeStamp asStringYMDHM ]
-			width: 120;
-		column: 'Refs'
-			stencil: [ :each | 
-				| tags |
-				tags := (each tags collect: #name) asOrderedCollection.
-				tags
-					addAll: (branches select: [ :br | br commit id = each id ] thenCollect: #name).
-				BrTagger new
-					aptitude: (BrGlamorousTaggerAptitude new margin: BlInsets empty);
-					namedTags: tags ]
-			width: 150;
-		column: 'Commit'
-			text: #shortId
-			width: 70;
-		column: 'Author'
-			text: #author
-			width: 100;
-		column: 'Description' text: #comment	"column: 'Ruler'
-			stencil: [ :each | ruler gtElementForValue: each ]
-			width: 100;"
 ]
 
 { #category : #'gt - extensions' }
