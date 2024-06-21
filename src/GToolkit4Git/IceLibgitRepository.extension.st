@@ -18,6 +18,11 @@ IceLibgitRepository >> configureUpstreamIfNecessary [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceLibgitRepository class >> creatorClass [
+	^ IceRepositoryCreator
+]
+
+{ #category : #'*GToolkit4Git' }
 IceLibgitRepository class >> fromGitCliRepository: aRepo [
 	| repo |
 	repo := self new

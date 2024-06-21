@@ -14,6 +14,11 @@ Class {
 	#category : #'GToolkit4Git-Libgit-CLI'
 }
 
+{ #category : #accessing }
+IceGitCliRepository class >> creatorClass [
+	^ GtIceRepositoryCreator
+]
+
 { #category : #'instance creation' }
 IceGitCliRepository class >> fromLibGitRepository: aRepo [
 	| repo |
@@ -636,6 +641,11 @@ IceGitCliRepository >> mergeBaseBetween: id1 and: id2 [
 ]
 
 { #category : #'API - accessing' }
+IceGitCliRepository >> name [
+	^ name ifNil: [ name := self obtainRepositoryName ]
+]
+
+{ #category : #'API - accessing' }
 IceGitCliRepository >> newCommitWalk [
 	^ IceGitCliCommitWalk forRepository: self
 ]
@@ -648,6 +658,11 @@ IceGitCliRepository >> newIndex [
 { #category : #'API - commits' }
 IceGitCliRepository >> newNoCommit [
 	^ IceNoCommit repository: self
+]
+
+{ #category : #private }
+IceGitCliRepository >> obtainRepositoryName [
+	^ self location basename
 ]
 
 { #category : #'API - remotes' }
