@@ -59,8 +59,9 @@ GtIceRepositoryCreator >> addLocalRepository [
 
 { #category : #accessing }
 GtIceRepositoryCreator >> cloneRepository [
+	location := self locationToUse.
 	self executeGitClone.
-	repository location: self locationToUse.
+	repository location: location.
 
 	branchName ifNotNil: [ repository switchToCommitishNamed: branchName ].
 	repository pluginManager repositoryWillBeCreated: repository.
@@ -193,7 +194,7 @@ GtIceRepositoryCreator >> remote: aString [
 { #category : #'private - accessing' }
 GtIceRepositoryCreator >> remoteToUse [
 	self remote ifNotNil: [ ^ self remote ].
-	self url ifNotNil: [ ^ self halt "IceGitRemote url: self url" ].
+	self url ifNotNil: [ ^ IceGitRemote url: self url ].
 	^ nil
 ]
 
@@ -210,6 +211,11 @@ GtIceRepositoryCreator >> subdirectory: aString [
 { #category : #accessing }
 GtIceRepositoryCreator >> url [
 	^url
+]
+
+{ #category : #accessing }
+GtIceRepositoryCreator >> url: anObject [
+	url := anObject
 ]
 
 { #category : #private }
