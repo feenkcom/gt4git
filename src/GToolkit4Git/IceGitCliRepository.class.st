@@ -528,7 +528,7 @@ IceGitCliRepository >> isCodeMissing [
 		ifFalse: [ (self repositoryDirectory / self subdirectory) exists not  ]
 ]
 
-{ #category : #actions }
+{ #category : #testing }
 IceGitCliRepository >> isDirty [
 	^ self getStatusByFile notEmpty
 ]
@@ -542,6 +542,11 @@ IceGitCliRepository >> isGitCliRepository [
 IceGitCliRepository >> isMissing [
 	^ self repositoryDirectory isNil 
 		or: [ self repositoryDirectory exists not ]
+]
+
+{ #category : #testing }
+IceGitCliRepository >> isValid [
+	^ self isMissing not
 ]
 
 { #category : #'API - branches' }
