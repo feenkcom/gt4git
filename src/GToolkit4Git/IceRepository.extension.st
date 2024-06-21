@@ -6,6 +6,11 @@ IceRepository >> configureUpstreamIfNecessary [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceRepository class >> creatorClass [
+	self subclassResponsibility
+]
+
+{ #category : #'*GToolkit4Git' }
 IceRepository >> gtLepiterAwareCheckoutBranch: branchName withWorkingCopy: aLepiterWorkingCopy [
 	"Convenience method to checkout all packages from a branch given a branch name"
 

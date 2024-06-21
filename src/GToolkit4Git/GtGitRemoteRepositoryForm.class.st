@@ -43,9 +43,9 @@ GtGitRemoteRepositoryForm >> magritteAcceptAction [
 		onSuccessCallback: (GtMagritteCallback new
 			action: [ :aModel :aButton :aMemento :aDescription | 
 				[ | creator repo |
-				creator := IceRepositoryCreator new
-						remote: (IceGitRemote url: self url);
-						location: self projectLocation.
+				creator := IceRepository repositoryClass creatorClass new
+								remote: (IceGitRemote url: self url);
+								location: self projectLocation.
 				repo := creator createRepository.
 				repo register.
 				dropdown ifNotNil: [ :aDropdown |

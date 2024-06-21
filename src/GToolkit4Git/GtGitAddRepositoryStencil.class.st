@@ -78,10 +78,10 @@ GtGitAddRepositoryStencil >> initializePage [
 		okAction: [ :filePath | 
 			| repo |
 			filePath hasChildren ifFalse: [ filePath ensureDelete ].
-			repo := IceRepositoryCreator new
-					location: filePath;
-					subdirectory: 'src';
-					createNewRepositoryNamed: filePath basenameWithoutExtension.
+			repo := IceRepository repositoryClass creatorClass new
+						location: filePath;
+						subdirectory: 'src';
+						createNewRepositoryNamed: filePath basenameWithoutExtension.
 			repo register.
 			Iceberg announcer announce: (IceRepositoryAnnouncement for: repo).
 			self onCreated value: repo.
@@ -108,7 +108,7 @@ GtGitAddRepositoryStencil >> localPage [
 	fileBrowser buttonLabel: 'Import'.
 	fileBrowser okAction: [ :filePath | 
 		| repo |
-		repo := IceRepositoryCreator new
+		repo := IceRepository repositoryClass creatorClass new
 			        location: filePath;
 			        createRepository.
 		repo register.

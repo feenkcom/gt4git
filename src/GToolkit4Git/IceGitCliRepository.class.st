@@ -14,6 +14,11 @@ Class {
 	#category : #'GToolkit4Git-Libgit-CLI'
 }
 
+{ #category : #accessing }
+IceGitCliRepository class >> creatorClass [
+	^ GtIceRepositoryCreator
+]
+
 { #category : #'instance creation' }
 IceGitCliRepository class >> fromLibGitRepository: aRepo [
 	| repo |
