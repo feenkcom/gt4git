@@ -42,12 +42,12 @@ IceGitCliLocalBranch >> gitRef [
 IceGitCliLocalBranch >> gtPullFrom: aRemote inWorkingCopy: aLepiterWorkingCopy [
 	"A copy of the #pullFrom: method to support a Lepiter-aware pull."
 
-	| remoteBranchCommitId |
+	| remoteBranchCommitId remoteCommit|
 	repository fetchBranch: self fromRemote: aRemote.
 	remoteBranchCommitId := repository
 			lookupRemoteBranch: aRemote name , '/' , self name.
-	commit := repository commitFromGitCommit: remoteBranchCommitId.
-	aLepiterWorkingCopy mergeCommit: commit
+	remoteCommit := repository commitFromGitCommit: remoteBranchCommitId.
+	aLepiterWorkingCopy mergeCommit: remoteCommit
 ]
 
 { #category : #accessing }
