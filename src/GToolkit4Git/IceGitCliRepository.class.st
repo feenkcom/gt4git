@@ -84,6 +84,7 @@ IceGitCliRepository >> allCommits [
 	commitLines := lines splitOn: [ :each | each = '@@@' ].
 	commitLines removeLast.
 	commits := commitLines collect: [ :each | self iceGitCommitFromLines: each ].
+	commits do: [:each | commitMap at: each id put: each].
 	^ commits asSortedCollection: [:a :b | a datetime > b datetime]
 ]
 
@@ -158,6 +159,12 @@ and the original repository''s url is {3}.'
 { #category : #accessing }
 IceGitCliRepository >> clearCaches [
 	head := nil.
+]
+
+{ #category : #accessing }
+IceGitCliRepository >> clearCommitMap [
+	"Mainly for profiling. Should not normally need to be cleared"
+	commitMap := Dictionary new.
 ]
 
 { #category : #actions }
