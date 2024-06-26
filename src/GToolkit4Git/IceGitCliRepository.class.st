@@ -655,7 +655,7 @@ IceGitCliRepository >> makeSafe [
 IceGitCliRepository >> mcVersionFor: iceVersion [
 	[ | commit |
 	commit := iceVersion commit cliGitCommit.
-	^ (iceVersion commit readerClass on: commit iceVersion: iceVersion) version ]
+	^ (IceGitCliFileReader on: commit iceVersion: iceVersion) version ]
 		on: Error
 		do: [ IceVersionDoesNotExist new
 				version: iceVersion;
