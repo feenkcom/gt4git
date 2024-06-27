@@ -67,6 +67,15 @@ IceGitCliRepository >> addFilesToIndex: aCollection [
 	self runGitWithArgs: args
 ]
 
+{ #category : #accessing }
+IceGitCliRepository >> addRemote: remoteName url: url [
+	self
+		runGitWithArgs: {'remote'.
+				'add'.
+				remoteName.
+				url}
+]
+
 { #category : #'API - branches' }
 IceGitCliRepository >> allBranches [
 	^ self localBranches , self remoteTrackedBranches
@@ -755,6 +764,11 @@ IceGitCliRepository >> pushBranch: aString to: aRemoteName [
 		'--set-upstream'.
 	    aRemoteName . 
 	    aString }
+]
+
+{ #category : #accessing }
+IceGitCliRepository >> remoteAt: aString put: aRemote [
+	self addRemote: aRemote name url: aRemote url
 ]
 
 { #category : #'API - remotes' }
