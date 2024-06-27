@@ -7,6 +7,12 @@ Class {
 }
 
 { #category : #accessing }
+IceGitCliFileWriter class >> description [
+
+	^ 'Tonel'
+]
+
+{ #category : #accessing }
 IceGitCliFileWriter class >> directoryNameFor: aPackage [
 	^ aPackage name, '.package'
 ]
