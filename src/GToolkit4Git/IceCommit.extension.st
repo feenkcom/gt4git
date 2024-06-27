@@ -71,7 +71,7 @@ IceCommit >> gtDetailsFor: aView [
 			'Author'  -> self author.
 			'Date'    -> self timeStamp asStringYMDHM.
 			'Tags'    -> self tagNames asCommaString.
-			'Comment' -> self comment.
+			'Comment' -> self comment firstLineWithEllipsis.
 			'Status'  -> self status.
 			'URL' -> ((ZnUrl new scheme: #https; host: self repository origin host) / self repository origin projectPath / #commit / self id) } ];
 		column: 'Property' text: #key width: 150;
