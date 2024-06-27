@@ -271,7 +271,7 @@ IceGitCliRepository >> contentsOfFile: aHash [
 		ifFalse: [
 			result := output stderr lines.
 			self logEnded: #contentsOfFile: args: args output: result.
-			^ GtGitCliError new
+			^ GtGitCliCommandError new
 				args: args;
 				stderr: result;
 				exitCode: output status code;
@@ -357,6 +357,12 @@ IceGitCliRepository >> getStatusByFile [
 
 { #category : #actions }
 IceGitCliRepository >> git [
+
+	(location isNil or: [ location exists not ]) ifTrue:
+		[ GtGitRepositoryLocationDoesntExist new
+			fileReference: location;
+			repository: self;
+			signal ].
 	^ GtExternalProcessBuilder new
 		command: 'git';
 		workingDirectory: location
@@ -771,7 +777,7 @@ IceGitCliRepository >> remoteTrackedBranches [
 { #category : #'API - remotes' }
 IceGitCliRepository >> remotes [
 	| lines |
-	remoteMap isEmpty
+	(remoteMap isEmpty and: [ location isNotNil and: [ location exists ] ])
 		ifTrue: [ lines := self runGitWithArgs: {'remote'}.
 			lines
 				do: [ :each | 
@@ -858,7 +864,7 @@ IceGitCliRepository >> runGitWithArgs: args [
 		ifFalse: [
 			lines := output stderr lines.
 			self logEnded: operation args: args output: lines.
-			^ GtGitCliError new
+			^ GtGitCliCommandError new
 				args: args;
 				stderr: lines;
 				exitCode: output status code;

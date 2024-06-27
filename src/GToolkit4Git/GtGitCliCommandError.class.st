@@ -1,6 +1,6 @@
 Class {
-	#name : #GtGitCliError,
-	#superclass : #Error,
+	#name : #GtGitCliCommandError,
+	#superclass : #GtGitError,
 	#instVars : [
 		'stderr',
 		'args',
@@ -10,37 +10,37 @@ Class {
 }
 
 { #category : #accessing }
-GtGitCliError >> args [
+GtGitCliCommandError >> args [
 	^ args ifNil: [ #() ]
 ]
 
 { #category : #accessing }
-GtGitCliError >> args: anObject [
+GtGitCliCommandError >> args: anObject [
 	args := anObject
 ]
 
 { #category : #accessing }
-GtGitCliError >> commandLine [
+GtGitCliCommandError >> commandLine [
 	^ Character space join: ({ 'git' } , self args)
 ]
 
 { #category : #accessing }
-GtGitCliError >> errorLine [
+GtGitCliCommandError >> errorLine [
 	^ self stderr detect: [ :line | line beginsWith: 'ERROR' ] ifNone: [ nil ]
 ]
 
 { #category : #accessing }
-GtGitCliError >> exitCode [
+GtGitCliCommandError >> exitCode [
 	^ exitCode
 ]
 
 { #category : #accessing }
-GtGitCliError >> exitCode: anObject [
+GtGitCliCommandError >> exitCode: anObject [
 	exitCode := anObject
 ]
 
 { #category : #'gt extensions' }
-GtGitCliError >> gtGitExitCodeFor: aView [
+GtGitCliCommandError >> gtGitExitCodeFor: aView [
 	<gtView>
 	^ aView textEditor
 		title: 'Exitcode';
@@ -49,7 +49,7 @@ GtGitCliError >> gtGitExitCodeFor: aView [
 ]
 
 { #category : #accessing }
-GtGitCliError >> gtGitInvocationFor: aView [
+GtGitCliCommandError >> gtGitInvocationFor: aView [
 	<gtView>
 	^ aView list
 		title: 'Args';
@@ -58,7 +58,7 @@ GtGitCliError >> gtGitInvocationFor: aView [
 ]
 
 { #category : #accessing }
-GtGitCliError >> gtGitOutputFor: aView [
+GtGitCliCommandError >> gtGitOutputFor: aView [
 	<gtView>
 	^ aView list
 		title: 'Stderr';
@@ -67,7 +67,7 @@ GtGitCliError >> gtGitOutputFor: aView [
 ]
 
 { #category : #'gt extensions' }
-GtGitCliError >> gtGitSummaryFor: aView [
+GtGitCliCommandError >> gtGitSummaryFor: aView [
 	<gtExceptionView>
 	^ aView textEditor
 		title: 'Git CLI failed';
@@ -85,7 +85,7 @@ GtGitCliError >> gtGitSummaryFor: aView [
 ]
 
 { #category : #accessing }
-GtGitCliError >> messageText [
+GtGitCliCommandError >> messageText [
 	^ messageText ifNil: [ 
 		messageText := String streamContents: [ :out |
 			out 
@@ -98,11 +98,11 @@ GtGitCliError >> messageText [
 ]
 
 { #category : #accessing }
-GtGitCliError >> stderr [
+GtGitCliCommandError >> stderr [
 	^ stderr ifNil: [ #() ]
 ]
 
 { #category : #accessing }
-GtGitCliError >> stderr: anObject [
+GtGitCliCommandError >> stderr: anObject [
 	stderr := anObject
 ]
