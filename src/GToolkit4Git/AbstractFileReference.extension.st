@@ -4,3 +4,8 @@ Extension { #name : #AbstractFileReference }
 AbstractFileReference >> filename [
 	^self basename
 ]
+
+{ #category : #'*GToolkit4Git' }
+AbstractFileReference >> name [
+	^self basename
+]

@@ -790,7 +790,7 @@ GtGitRepository >> gtAllCommitsFor: aView [
 						aptitude: BrGlamorousLabelAptitude new;
 						hFitContent;
 						vFitContent ];
-				dataBinder: [ :e :i | e text: (commits at: i) comment ].
+				dataBinder: [ :e :i | e text: (commits at: i) comment trimBoth firstLineWithEllipsis ].
 			list
 				when: BrSelectionDoubleClicked
 				do: [ :anEvent | 
@@ -1006,7 +1006,7 @@ GtGitRepository >> gtCommitsFor: aView [
 		column: 'Author'
 			text: #author
 			width: 100;
-		column: 'Description' text: #comment;
+		column: 'Description' text: [ :each | each comment trimBoth firstLineWithEllipsis ];
 		column: 'Actions'
 			do: [ :aColumn | 
 				aColumn

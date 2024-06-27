@@ -67,6 +67,15 @@ IceGitCliRepository >> addFilesToIndex: aCollection [
 	self runGitWithArgs: args
 ]
 
+{ #category : #accessing }
+IceGitCliRepository >> addRemote: remoteName url: url [
+	self
+		runGitWithArgs: {'remote'.
+				'add'.
+				remoteName.
+				url}
+]
+
 { #category : #'API - branches' }
 IceGitCliRepository >> allBranches [
 	^ self localBranches , self remoteTrackedBranches
@@ -206,14 +215,13 @@ IceGitCliRepository >> commitishNamed: aName [
 
 	^ self
 		branchNamed: aName
-		ifAbsent: [ "If there is a single remote, we can look for the branch in this single remote."
-			self remotes size = 1
+		ifAbsent: [  "If there is a single remote, we can look for the branch in this single remote."self
+				remotes size = 1
 				ifTrue: [ self remotes anyOne
 						remoteBranchNamed: aName
 						ifPresent: [ :found | ^ found ]
-						ifAbsent: [ "Continue with the revparse" ] ].
-			self flag: #todo; subclassResponsibility
-			"self revparse: aName" ]
+						ifAbsent: [  "Continue with the revparse" ] ].
+			self revparse: aName ]
 ]
 
 { #category : #'private - commits' }
@@ -271,7 +279,7 @@ IceGitCliRepository >> contentsOfFile: aHash [
 		ifFalse: [
 			result := output stderr lines.
 			self logEnded: #contentsOfFile: args: args output: result.
-			^ GtGitCliError new
+			^ GtGitCliCommandError new
 				args: args;
 				stderr: result;
 				exitCode: output status code;
@@ -357,6 +365,12 @@ IceGitCliRepository >> getStatusByFile [
 
 { #category : #actions }
 IceGitCliRepository >> git [
+
+	(location isNil or: [ location exists not ]) ifTrue:
+		[ GtGitRepositoryLocationDoesntExist new
+			fileReference: location;
+			repository: self;
+			signal ].
 	^ GtExternalProcessBuilder new
 		command: 'git';
 		workingDirectory: location
@@ -655,7 +669,7 @@ IceGitCliRepository >> makeSafe [
 IceGitCliRepository >> mcVersionFor: iceVersion [
 	[ | commit |
 	commit := iceVersion commit cliGitCommit.
-	^ (iceVersion commit readerClass on: commit iceVersion: iceVersion) version ]
+	^ (IceGitCliFileReader on: commit iceVersion: iceVersion) version ]
 		on: Error
 		do: [ IceVersionDoesNotExist new
 				version: iceVersion;
@@ -751,6 +765,11 @@ IceGitCliRepository >> pushBranch: aString to: aRemoteName [
 	    aString }
 ]
 
+{ #category : #accessing }
+IceGitCliRepository >> remoteAt: aString put: aRemote [
+	self addRemote: aRemote name url: aRemote url
+]
+
 { #category : #'API - remotes' }
 IceGitCliRepository >> remoteNamed: aName ifAbsent: aBlockClosure [
 	self remotes.	"Compute cache if empty"
@@ -771,7 +790,7 @@ IceGitCliRepository >> remoteTrackedBranches [
 { #category : #'API - remotes' }
 IceGitCliRepository >> remotes [
 	| lines |
-	remoteMap isEmpty
+	(remoteMap isEmpty and: [ location isNotNil and: [ location exists ] ])
 		ifTrue: [ lines := self runGitWithArgs: {'remote'}.
 			lines
 				do: [ :each | 
@@ -844,6 +863,15 @@ IceGitCliRepository >> revListForCommit: aCommit andPath: aPath [
 	^ lines collect: #trimBoth
 ]
 
+{ #category : #'API - accessing' }
+IceGitCliRepository >> revparse: aName [
+	| id |
+	id := self
+			runGitWithArgs: {'rev-parse'.
+					aName} first.
+	^self commitFromGitCommit: id.
+]
+
 { #category : #private }
 IceGitCliRepository >> runGitWithArgs: args [
 	"Run CLI git with the passed arguments and return the lines from standard output.
@@ -858,7 +886,7 @@ IceGitCliRepository >> runGitWithArgs: args [
 		ifFalse: [
 			lines := output stderr lines.
 			self logEnded: operation args: args output: lines.
-			^ GtGitCliError new
+			^ GtGitCliCommandError new
 				args: args;
 				stderr: lines;
 				exitCode: output status code;
