@@ -215,14 +215,13 @@ IceGitCliRepository >> commitishNamed: aName [
 
 	^ self
 		branchNamed: aName
-		ifAbsent: [ "If there is a single remote, we can look for the branch in this single remote."
-			self remotes size = 1
+		ifAbsent: [  "If there is a single remote, we can look for the branch in this single remote."self
+				remotes size = 1
 				ifTrue: [ self remotes anyOne
 						remoteBranchNamed: aName
 						ifPresent: [ :found | ^ found ]
-						ifAbsent: [ "Continue with the revparse" ] ].
-			self flag: #todo; subclassResponsibility
-			"self revparse: aName" ]
+						ifAbsent: [  "Continue with the revparse" ] ].
+			self revparse: aName ]
 ]
 
 { #category : #'private - commits' }
@@ -862,6 +861,15 @@ IceGitCliRepository >> revListForCommit: aCommit andPath: aPath [
 		'--'.
 		aPath }.
 	^ lines collect: #trimBoth
+]
+
+{ #category : #'API - accessing' }
+IceGitCliRepository >> revparse: aName [
+	| id |
+	id := self
+			runGitWithArgs: {'rev-parse'.
+					aName} first.
+	^self commitFromGitCommit: id.
 ]
 
 { #category : #private }
