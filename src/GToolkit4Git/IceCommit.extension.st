@@ -66,15 +66,26 @@ IceCommit >> gtDetailsFor: aView [
 		priority: 9;
 		title: 'Details' translated;
 		items: [ {
-			'Commit'  -> ('[' , self shortId , '] ' , self commit id).
-			'Parents' -> (self ancestors collect: #shortId) asCommaString.
-			'Author'  -> self author.
-			'Date'    -> self timeStamp asStringYMDHM.
-			'Tags'    -> self tagNames asCommaString.
-			'Comment' -> self comment firstLineWithEllipsis.
-			'Status'  -> self status.
-			'URL' -> ((ZnUrl new scheme: #https; host: self repository origin host) / self repository origin projectPath / #commit / self id) } ];
-		column: 'Property' text: #key width: 150;
-		column: 'Value' text: #value;
-		send: #value
+			{ 'Commit' 
+				. '[' , self shortId , '] ' , self id
+				. self id }.
+			{ 'Parents' 
+				. (self ancestors collect: #shortId) asCommaString
+				. self ancestors }.
+			{ 'Author' . self author }.
+			{ 'Date' 
+				. self timeStamp asStringYMDHM
+				. self timeStamp }.
+			{ 'Tags'
+				. self tagNames asCommaString
+				. self tagNames }.
+			{ 'Comment' 
+				. self comment firstLineWithEllipsis
+				. self comment }.
+			{ 'Status' . self status }.
+			{ 'URL' . ((ZnUrl new scheme: #https; host: self repository origin host) 
+							/ self repository origin projectPath / #commit / self id) } } ];
+		column: 'Property' text: #first width: 150;
+		column: 'Value' text: #second;
+		send: #last
 ]
