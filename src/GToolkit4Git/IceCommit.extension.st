@@ -80,7 +80,7 @@ IceCommit >> gtDetailsFor: aView [
 				. self tagNames asCommaString
 				. self tagNames }.
 			{ 'Comment' 
-				. self comment firstLineWithEllipsis
+				. self comment trimBoth firstLineWithEllipsis
 				. self comment }.
 			{ 'Status' . self status }.
 			{ 'URL' . ((ZnUrl new scheme: #https; host: self repository origin host) 
