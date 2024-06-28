@@ -724,7 +724,7 @@ GtGitRepository >> gtActionRepairFor: anAction [
 GtGitRepository >> gtAllCommitsFor: aView [
 	<gtView>
 	<gtRepositoryView>
-	IceRepository repositoryClass == IceGitCliRepository ifFalse: [^aView empty].
+	self repository isGitCliRepository ifFalse: [^aView empty].
 	^ aView explicit
 		title: 'All Commits' translated;
 		priority: 4;
