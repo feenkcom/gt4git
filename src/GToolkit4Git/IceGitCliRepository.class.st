@@ -597,7 +597,9 @@ IceGitCliRepository >> log [
 
 { #category : #accessing }
 IceGitCliRepository >> logClass [
-	^ GitCliTonelLog
+	^ (self properties at: #format) == #filetree
+		ifTrue: [ IceLibgitFiletreeLog ]
+		ifFalse: [ GitCliTonelLog ]
 ]
 
 { #category : #logging }
@@ -669,7 +671,7 @@ IceGitCliRepository >> makeSafe [
 IceGitCliRepository >> mcVersionFor: iceVersion [
 	[ | commit |
 	commit := iceVersion commit cliGitCommit.
-	^ (IceGitCliFileReader on: commit iceVersion: iceVersion) version ]
+	^ (self readerClass on: commit iceVersion: iceVersion) version ]
 		on: Error
 		do: [ IceVersionDoesNotExist new
 				version: iceVersion;
@@ -763,6 +765,13 @@ IceGitCliRepository >> pushBranch: aString to: aRemoteName [
 		'--set-upstream'.
 	    aRemoteName . 
 	    aString }
+]
+
+{ #category : #accessing }
+IceGitCliRepository >> readerClass [
+	^ (self properties at: #format) == #filetree
+		ifTrue: [ IceGitCliFiletreeReader ]
+		ifFalse: [ IceGitCliFileReader ]
 ]
 
 { #category : #accessing }

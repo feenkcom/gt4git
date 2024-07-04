@@ -6,7 +6,7 @@ Class {
 	#instVars : [
 		'iceVersion'
 	],
-	#category : #GToolkit4Git
+	#category : #'GToolkit4Git-Libgit-CLI'
 }
 
 { #category : #accessing }

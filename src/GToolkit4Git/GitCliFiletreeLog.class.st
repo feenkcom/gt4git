@@ -1,18 +1,18 @@
 Class {
-	#name : #GitCliTonelLog,
-	#superclass : #IceLibgitTonelLog,
+	#name : #GitCliFiletreeLog,
+	#superclass : #IceLibgitFiletreeLog,
 	#category : #'GToolkit4Git-Libgit-CLI'
 }
 
 { #category : #private }
-GitCliTonelLog >> collectCommitsFor: aMethod path: aPath [
+GitCliFiletreeLog >> collectCommitsFor: aMethod path: aPath [
 	| commits |
 	commits := repository revListForCommit: repository headCommit id andPath: aPath.
 	^ commits collect: [ :each | repository commitFromGitCommit: each ]
 ]
 
 { #category : #private }
-GitCliTonelLog >> collectVersionsFrom: aCollection method: aMethod path: aPath [
+GitCliFiletreeLog >> collectVersionsFrom: aCollection method: aMethod path: aPath [
 	| lastDefinition basepath history |
 		
 	basepath := self basepathOf: aPath.
