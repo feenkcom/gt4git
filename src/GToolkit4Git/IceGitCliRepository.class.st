@@ -779,6 +779,15 @@ IceGitCliRepository >> remoteAt: aString put: aRemote [
 	self addRemote: aRemote name url: aRemote url
 ]
 
+{ #category : #'API - branches' }
+IceGitCliRepository >> remoteBranchNamed: aString ifPresent: presentBlock ifAbsent: absentBlock [
+	| found |
+	found := self lookupRemoteBranch: aString ifAbsent: [ nil ].
+	^ found
+		ifNil: absentBlock
+		ifNotNil: [ presentBlock value: (self basicNewRemoteBranchNamed: aString) ]
+]
+
 { #category : #'API - remotes' }
 IceGitCliRepository >> remoteNamed: aName ifAbsent: aBlockClosure [
 	self remotes.	"Compute cache if empty"

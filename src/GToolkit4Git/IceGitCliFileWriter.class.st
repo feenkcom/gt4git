@@ -16,3 +16,8 @@ IceGitCliFileWriter class >> description [
 IceGitCliFileWriter class >> directoryNameFor: aPackage [
 	^ aPackage name, '.package'
 ]
+
+{ #category : #accessing }
+IceGitCliFileWriter class >> id [
+	^ #filetreecli
+]
