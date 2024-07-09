@@ -363,17 +363,21 @@ IceGitCliRepository >> getStatusByFile [
 	^ res
 ]
 
-{ #category : #actions }
+{ #category : #private }
 IceGitCliRepository >> git [
-
 	(location isNil or: [ location exists not ]) ifTrue:
 		[ GtGitRepositoryLocationDoesntExist new
 			fileReference: location;
 			repository: self;
 			signal ].
 	^ GtExternalProcessBuilder new
-		command: 'git';
+		command: IceGitCliPlatform current gitExecutable;
 		workingDirectory: location
+]
+
+{ #category : #accessing }
+IceGitCliRepository >> gitVersion [
+	^ (self runGitWithArgs: #('--version')) first
 ]
 
 { #category : #'gt extensions' }
@@ -605,7 +609,7 @@ IceGitCliRepository >> logClass [
 { #category : #logging }
 IceGitCliRepository >> logEnded: operation args: args output: output [
 	self loggingEnabled
-		ifTrue: [ (GtGitCliSignal args: args output: output)
+		ifTrue: [ (IceGitCliPlatform current signalClass args: args output: output)
 				operation: operation;
 				markAsEndSignal;
 				emit ]
@@ -614,7 +618,7 @@ IceGitCliRepository >> logEnded: operation args: args output: output [
 { #category : #logging }
 IceGitCliRepository >> logStarted: operation args: args [
 	self loggingEnabled
-		ifTrue: [ (GtGitCliSignal args: args)
+		ifTrue: [ (IceGitCliPlatform current signalClass args: args)
 				operation: operation;
 				markAsStartSignal;
 				emit ]
@@ -622,7 +626,7 @@ IceGitCliRepository >> logStarted: operation args: args [
 
 { #category : #logging }
 IceGitCliRepository >> loggingEnabled [
-	^ true
+	^ IceGitCliPlatform current signalClass notNil
 ]
 
 { #category : #'API - commits' }
