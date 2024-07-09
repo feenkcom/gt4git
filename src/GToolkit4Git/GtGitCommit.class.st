@@ -12,7 +12,7 @@ Class {
 { #category : #accessing }
 GtGitCommit >> fileSystem [
 	fileSystem ifNotNil: [ ^ fileSystem ].
-	^ fileSystem := (repository isKindOf: IceGitCliRepository)
+	^ fileSystem := repository isGitCliRepository
 			ifTrue: [ (repository commitFromGitCommit: id) fileSystem ]
 			ifFalse: [ super fileSystem ]
 ]

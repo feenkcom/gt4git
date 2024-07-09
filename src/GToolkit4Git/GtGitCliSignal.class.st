@@ -11,7 +11,7 @@ Class {
 	#classVars : [
 		'memoryLogger'
 	],
-	#category : #'GToolkit4Git-Libgit-CLI'
+	#category : #'GToolkit4Git-Libgit-CLI-GT'
 }
 
 { #category : #'instance creation' }
@@ -65,6 +65,11 @@ GtGitCliSignal class >> initialize [
 	self startUp
 ]
 
+{ #category : #'system startup & shutdown' }
+GtGitCliSignal class >> install [
+	IceGitCliPlatform current signalClass: self
+]
+
 { #category : #logging }
 GtGitCliSignal class >> logToStdout [
 	self stopLoggingToStdout.
@@ -91,6 +96,7 @@ GtGitCliSignal class >> startMemoryLogger [
 
 { #category : #'system startup & shutdown' }
 GtGitCliSignal class >> startUp [
+	self install.
 	self startMemoryLogger
 ]
 

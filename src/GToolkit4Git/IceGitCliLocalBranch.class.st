@@ -50,13 +50,13 @@ IceGitCliLocalBranch >> gtPullFrom: aRemote inWorkingCopy: aLepiterWorkingCopy [
 	aLepiterWorkingCopy mergeCommit: remoteCommit
 ]
 
-{ #category : #accessing }
+{ #category : #'API - remotes' }
 IceGitCliLocalBranch >> hasUpstream [
 	self upstreamIfNone: [ ^ false ].
 	^ true
 ]
 
-{ #category : #accessing }
+{ #category : #'API - remotes' }
 IceGitCliLocalBranch >> incomingCommitsFrom: aRemote [
 	| remoteBranch |
 	remoteBranch := self remoteBranchFor: aRemote ifNone: [ ^ #() ].
@@ -65,7 +65,7 @@ IceGitCliLocalBranch >> incomingCommitsFrom: aRemote [
 		commits
 ]
 
-{ #category : #accessing }
+{ #category : #'API - remotes' }
 IceGitCliLocalBranch >> outgoingCommitsTo: aRemote [
 	| remoteBranch walk |
 	remoteBranch := self
@@ -91,7 +91,7 @@ IceGitCliLocalBranch >> remoteBranchFor: aRemote ifNone: aBlock [
 		ifNotNil: [ repository basicNewRemoteBranchNamed: remoteName ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 IceGitCliLocalBranch >> setUpstreamIfMissing: aRemote [
 	self hasUpstream ifTrue: [ ^ self ].
 	self setUpstream: (aRemote remoteBranchNamed: self gitRef)

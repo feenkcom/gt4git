@@ -39,7 +39,7 @@ Class {
 		'iceRepository',
 		'creator'
 	],
-	#category : #'GToolkit4Git-Libgit-CLI'
+	#category : #'GToolkit4Git-Libgit-CLI-Support'
 }
 
 { #category : #operations }

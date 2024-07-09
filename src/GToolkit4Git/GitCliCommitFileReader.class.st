@@ -71,7 +71,7 @@ GitCliCommitFileReader >> initialize [
 { #category : #logging }
 GitCliCommitFileReader >> logEnded: operation args: args output: output [
 	self loggingEnabled
-		ifTrue: [ (GtGitCliSignal args: args output: output)
+		ifTrue: [ (IceGitCliPlatform current signalClass args: args output: output)
 				operation: operation;
 				markAsEndSignal;
 				emit ]
@@ -80,7 +80,7 @@ GitCliCommitFileReader >> logEnded: operation args: args output: output [
 { #category : #logging }
 GitCliCommitFileReader >> logStarted: operation args: args [
 	self loggingEnabled
-		ifTrue: [ (GtGitCliSignal args: args)
+		ifTrue: [ (IceGitCliPlatform current signalClass args: args)
 				operation: operation;
 				markAsStartSignal;
 				emit ]
@@ -88,7 +88,7 @@ GitCliCommitFileReader >> logStarted: operation args: args [
 
 { #category : #logging }
 GitCliCommitFileReader >> loggingEnabled [
-	^ true
+	^ IceGitCliPlatform current signalClass notNil
 ]
 
 { #category : #accessing }
@@ -117,7 +117,7 @@ GitCliCommitFileReader >> requestReadStreamFor: aString [
 
 { #category : #private }
 GitCliCommitFileReader >> startExternalProcess [
-	externalProcess := (GtExternalProcessBuilder new: 'git')
+	externalProcess := (GtExternalProcessBuilder new: IceGitCliPlatform current gitExecutable)
 			workingDirectory: workingDirectory;
 			args: { 'cat-file' . '--batch' };
 			pipeStdin;

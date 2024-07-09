@@ -1,7 +1,7 @@
 Class {
 	#name : #GtGitCliEvent,
 	#superclass : #GtBeaconLogEvent,
-	#category : #'GToolkit4Git-Libgit-CLI'
+	#category : #'GToolkit4Git-Libgit-CLI-GT'
 }
 
 { #category : #accessing }
