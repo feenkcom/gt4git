@@ -1,7 +1,7 @@
 Class {
 	#name : #GtGitCliEventsGrouper,
 	#superclass : #GtBeaconEventsGrouper,
-	#category : #'GToolkit4Git-Libgit-CLI'
+	#category : #'GToolkit4Git-Libgit-CLI-GT'
 }
 
 { #category : #accessing }

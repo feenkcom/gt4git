@@ -11,7 +11,7 @@ Class {
 	#classVars : [
 		'memoryLogger'
 	],
-	#category : #'GToolkit4Git-Libgit-CLI'
+	#category : #'GToolkit4Git-Libgit-CLI-GT'
 }
 
 { #category : #'instance creation' }

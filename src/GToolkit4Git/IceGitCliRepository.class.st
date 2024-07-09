@@ -542,7 +542,7 @@ IceGitCliRepository >> internalStoreVersion: aMCVersion [
 		on: self
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #testing }
 IceGitCliRepository >> isCodeMissing [
 	^ self subdirectory isEmptyOrNil 
 		ifTrue: [ self isMissing ]
