@@ -9,11 +9,13 @@ BaselineOfGToolkit4Git >> baseline: spec [
 	<baseline>
 	spec for: #'common' do: [
 		spec
-			baseline: 'Brick'
-			with: [ spec repository: 'github://feenkcom/Brick:main/src' ].
+			baseline: 'Brick' with: [
+				spec repository: 'github://feenkcom/Brick:v0.8.1250/src' ].
 		spec
-			baseline: 'IcebergGitCli'
-			with: [ spec repository: 'github://feenkcom/iceberg-git-cli:main/src' ].
-		spec package: 'GToolkit4Git' with: [ 
-			spec requires: #( 'Brick' 'IcebergGitCli') ]. ]
+			baseline: 'IcebergGitCli' with: [
+				spec repository: 'github://feenkcom/iceberg-git-cli:v0.6.0/src' ].
+
+		spec package: 'GToolkit4Git' with: [
+			spec requires: #('Brick' 'IcebergGitCli') ].
+	]
 ]
