@@ -1,13 +1,4 @@
-Class {
-	#name : #GtGitCliCommandError,
-	#superclass : #GtGitError,
-	#instVars : [
-		'stderr',
-		'args',
-		'exitCode'
-	],
-	#category : #'GToolkit4Git-Libgit-CLI-Support'
-}
+Extension { #name : #GtGitCliCommandError }
 
 { #category : #'*GToolkit4Git' }
 GtGitCliCommandError >> gtGitExitCodeFor: aView [
