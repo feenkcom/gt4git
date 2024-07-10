@@ -12,6 +12,9 @@ BaselineOfGToolkit4Git >> baseline: spec [
 		spec
 			baseline: 'Brick'
 			with: [ spec repository: 'github://feenkcom/Brick:main/src' ].
+		spec
+			baseline: 'Iceberg-Git-CLI'
+			with: [ spec repository: 'github://feenkcom/IcebergGitCli:main/src' ].
 		spec package: 'GToolkit4Git' with: [ 
-			spec requires: #( 'Brick' ) ]. ]
+			spec requires: #( 'Brick' 'Iceberg-Git-CLI') ]. ]
 ]
