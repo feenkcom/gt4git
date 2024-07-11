@@ -4,6 +4,8 @@ Extension { #name : #IceGitRemote }
 IceGitRemote >> gtBranchesFor: aView [
 	<gtView>
 	
+	self localRepository ifNil: [ ^ aView empty ].
+	
 	^ aView list
 		title: 'Branches';
 		items: [  self branches ]
