@@ -787,6 +787,7 @@ GtGitRepository >> gtAllCommitsFor: aView [
 				width: 100.
 			list column
 				title: 'Message';
+				weight: 1;
 				cellStencil: [ BrLabel new
 						aptitude: BrGlamorousLabelAptitude new;
 						hFitContent;
