@@ -31,10 +31,11 @@ IceGitCommit >> gtActionCheckoutFor: anAction [
 { #category : #'*GToolkit4Git' }
 IceGitCommit >> gtChangesFor: aView [
 	<gtView>
+	
 	^ aView forward
 		title: 'Changes';
 		priority: 15;
-		object: [ IceDiff from: self to:self parent ];
+		object: [ IceDiff from: self to: (self ancestorIds ifEmpty: [ self ] ifNotEmpty: [ self parent ]) ];
 		view: #gtViewInspectorDiffFor:
 ]
 
