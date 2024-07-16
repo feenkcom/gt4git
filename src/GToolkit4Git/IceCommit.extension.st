@@ -83,8 +83,10 @@ IceCommit >> gtDetailsFor: aView [
 				. self comment trimBoth firstLineWithEllipsis
 				. self comment }.
 			{ 'Status' . self status }.
-			{ 'URL' . ((ZnUrl new scheme: #https; host: self repository origin host) 
-							/ self repository origin projectPath / #commit / self id) } } ];
+			{ 'URL' 
+				. [ ((ZnUrl new scheme: #https; host: self repository origin host) 
+						/ self repository origin projectPath / #commit / self id) ]
+					on: Error do: [ '' ] } } ];
 		column: 'Property' text: #first width: 150;
 		column: 'Value' text: #second;
 		send: #last
