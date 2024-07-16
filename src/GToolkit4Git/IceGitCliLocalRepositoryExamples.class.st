@@ -15,6 +15,7 @@ IceGitCliLocalRepositoryExamples >> baseDirectory [
 { #category : #accessing }
 IceGitCliLocalRepositoryExamples >> cloneRepositoryAIntoRepositoryB [
 	<gtExample>
+	<noTest>
 	
 	| repositoryB repositoryA repositoryAUrl |
 	
