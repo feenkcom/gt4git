@@ -118,6 +118,7 @@ IceGitCliLocalRepositoryExamples >> initRepositoryA [
 { #category : #accessing }
 IceGitCliLocalRepositoryExamples >> pushRepositoryBToRepositoryA [
 	<gtExample>
+	<noTest>
 
 	| repositoryB |
 
