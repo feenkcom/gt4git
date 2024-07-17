@@ -1,14 +1,15 @@
 Class {
 	#name : #IceGitCliLocalRepositoryExamples,
 	#superclass : #Object,
+	#instVars : [
+		'repositoryA',
+		'repositoryB'
+	],
 	#category : #'GToolkit4Git-Examples'
 }
 
 { #category : #accessing }
 IceGitCliLocalRepositoryExamples >> baseDirectory [
-	<gtExample>
-	<noTest>
-
 	^ (FileLocator temp / self class name) ensureCreateDirectory
 ]
 
@@ -17,11 +18,13 @@ IceGitCliLocalRepositoryExamples >> cloneRepositoryAIntoRepositoryB [
 	<gtExample>
 	<noTest>
 	
-	| repositoryB repositoryA repositoryAUrl |
+	| repositoryAUrl numberFile |
 	
-	self repositoryBLocation exists ifTrue: [ self deleteRepositoryB ].
+	self repositoryBLocation exists 
+		ifTrue: [ self repositoryBLocation deleteAll ].
 
 	repositoryA := self firstCommitInRepositoryA.
+
 	repositoryAUrl := repositoryA location resolve asUrl.
 	
 	repositoryB := GtIceRepositoryCreator new
@@ -29,39 +32,15 @@ IceGitCliLocalRepositoryExamples >> cloneRepositoryAIntoRepositoryB [
 		url: repositoryAUrl asString;
 		cloneRepository.
 
-	self assert: (repositoryB location / 'number.txt') exists.
+	repositoryB name: self repositoryBName.
+
+	numberFile := repositoryB location / 'number.txt'.
+	
+	self assert: numberFile exists.
+	self assert: numberFile contents trimBoth = '1. first'.
+	self assert: repositoryA head commits first comment trimBoth = 'First commit'.
 
 	^ repositoryB
-]
-
-{ #category : #accessing }
-IceGitCliLocalRepositoryExamples >> createBranchXInRepositoryA [
-	<gtExample>
-	<noTest>
-
-	| repositoryA branchX |
-
-	repositoryA := self repositoryA.
-
-	branchX := repositoryA 
-		branchNamed: 'branch-x'
-		ifAbsent: [ repositoryA createBranch: 'branch-x' ].
-	
-	branchX switch.
-
-	self assert: repositoryA head name = 'branch-x'.
-	
-	^ repositoryA
-]
-
-{ #category : #accessing }
-IceGitCliLocalRepositoryExamples >> deleteRepositoryA [
-	self repositoryALocation deleteAll
-]
-
-{ #category : #accessing }
-IceGitCliLocalRepositoryExamples >> deleteRepositoryB [
-	self repositoryBLocation deleteAll
 ]
 
 { #category : #accessing }
@@ -69,19 +48,19 @@ IceGitCliLocalRepositoryExamples >> firstCommitInRepositoryA [
 	<gtExample>
 	<noTest>
 
-	| repositoryA numberFile workingCopy |
+	| numberFile workingCopy |
 
-	repositoryA := self repositoryA.
+	repositoryA := self initRepositoryA.
 
 	numberFile := repositoryA location / 'number.txt'.
-	(numberFile exists and: [ numberFile contents trimBoth = '1. first' ])
-		ifTrue: [ ^ repositoryA ].
+
 	numberFile writeStreamDo: [ :out | 
-		out << '1. first' << OSPlatform current lineEnding ].
+		(ZnNewLineWriterStream on: out) << '1. first'; cr ].
 
 	repositoryA addFileToIndex: numberFile basename.
 
 	workingCopy := repositoryA workingCopy.
+
 	workingCopy
 		commitChanges: workingCopy diffToReferenceCommit 
 		withMessage: 'First commit' 
@@ -95,13 +74,20 @@ IceGitCliLocalRepositoryExamples >> firstCommitInRepositoryA [
 ]
 
 { #category : #accessing }
+IceGitCliLocalRepositoryExamples >> gitVersion [
+	<gtExample>
+	<noTest>
+	
+	^ IceGitCliPlatform current gitVersion
+]
+
+{ #category : #accessing }
 IceGitCliLocalRepositoryExamples >> initRepositoryA [
 	<gtExample>
 	<noTest>
 
-	| repositoryA |
-
-	self repositoryALocation exists ifTrue: [ self deleteRepositoryA ].
+	self repositoryALocation exists 
+		ifTrue: [ self repositoryALocation deleteAll ].
 
 	repositoryA := GtIceRepositoryCreator new
 		location: self repositoryALocation;
@@ -121,39 +107,32 @@ IceGitCliLocalRepositoryExamples >> pushRepositoryBToRepositoryA [
 	<gtExample>
 	<noTest>
 
-	| repositoryB |
+	| numberFile |
 
 	repositoryB := self secondCommitInRepositoryB.
 
 	self assert: repositoryB outgoingCommits isEmpty not.
-	
-	self createBranchXInRepositoryA. "git won't push into local remote when branch is the same"
+
+	"git won't push into local remote when branch is the same"
+
+	repositoryA createBranch: 'branch-temporary'.
 
 	repositoryB push.
-	
+
 	self assert: repositoryB outgoingCommits isEmpty.
 
-	^ repositoryB
-]
+	repositoryA switchToBranchNamed: 'main'.
 
-{ #category : #accessing }
-IceGitCliLocalRepositoryExamples >> repositoryA [
-	<gtExample>
-	<noTest>
-	
-	^ self repositoryALocation exists
-		ifTrue: [ 
-			(IceGitCliRepository on: self repositoryALocation) 
-				name: self repositoryAName; 
-				yourself ]
-		ifFalse: [ self initRepositoryA ]
+	numberFile := repositoryA location / 'number.txt'.
+
+	self assert: numberFile contents trimBoth = '2. second'.
+	self assert: repositoryA branch commit comment trimBoth = 'Second commit'.
+
+	^ self
 ]
 
 { #category : #accessing }
 IceGitCliLocalRepositoryExamples >> repositoryALocation [
-	<gtExample>
-	<noTest>
-
 	^ self baseDirectory / self repositoryAName
 ]
 
@@ -163,23 +142,7 @@ IceGitCliLocalRepositoryExamples >> repositoryAName [
 ]
 
 { #category : #accessing }
-IceGitCliLocalRepositoryExamples >> repositoryB [
-	<gtExample>
-	<noTest>
-	
-	^ self repositoryBLocation exists
-		ifTrue: [ 
-			(IceGitCliRepository on: self repositoryBLocation) 
-				name: self repositoryBName; 
-				yourself ]
-		ifFalse: [ self cloneRepositoryAIntoRepositoryB ]
-]
-
-{ #category : #accessing }
 IceGitCliLocalRepositoryExamples >> repositoryBLocation [
-	<gtExample>
-	<noTest>
-
 	^ self baseDirectory / self repositoryBName
 ]
 
@@ -193,20 +156,20 @@ IceGitCliLocalRepositoryExamples >> secondCommitInRepositoryB [
 	<gtExample>
 	<noTest>
 
-	| repositoryB numberFile workingCopy |
+	| numberFile workingCopy |
 
-	repositoryB := self repositoryB.
+	repositoryB := self cloneRepositoryAIntoRepositoryB.
 
 	numberFile := repositoryB location / 'number.txt'.
-	(numberFile exists and: [ numberFile contents trimBoth = '2. second' ])
-		ifTrue: [ ^ repositoryB ].
+
 	numberFile writeStreamDo: [ :out |
 		out truncate.
-		out << '2. second' << OSPlatform current lineEnding ].
+		(ZnNewLineWriterStream on: out) << '2. second'; cr ].
 
 	repositoryB addFileToIndex: numberFile basename.
-	
+
 	workingCopy := repositoryB workingCopy.
+
 	workingCopy
 		commitChanges: workingCopy diffToReferenceCommit 
 		withMessage: 'Second commit' 
@@ -217,20 +180,4 @@ IceGitCliLocalRepositoryExamples >> secondCommitInRepositoryB [
 	self assert: repositoryB head commits first comment trimBoth = 'Second commit'.
 
 	^ repositoryB
-]
-
-{ #category : #accessing }
-IceGitCliLocalRepositoryExamples >> switchToMainInRepositoryA [
-	<gtExample>
-	<noTest>
-
-	| repositoryA |
-
-	repositoryA := self firstCommitInRepositoryA.
-
-	(repositoryA branchNamed: 'main') switch.
-
-	self assert: repositoryA head name = 'main'.
-	
-	^ repositoryA
 ]
