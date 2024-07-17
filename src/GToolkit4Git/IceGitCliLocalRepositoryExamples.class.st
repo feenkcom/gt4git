@@ -103,6 +103,27 @@ IceGitCliLocalRepositoryExamples >> initRepositoryA [
 ]
 
 { #category : #accessing }
+IceGitCliLocalRepositoryExamples >> pullRepositoryAToRepositoryB [
+	<gtExample>
+	<noTest>
+
+	| numberFile |
+
+	self thirdCommitInRepositoryA.
+	
+	repositoryB pull.
+	
+	numberFile := repositoryB location / 'number.txt'.
+
+	self assert: numberFile contents trimBoth = '3. third'.
+	self assert: repositoryB headCommit comment trimBoth = 'Third commit'.
+
+	self assert: repositoryA headCommit id = repositoryB headCommit id. 
+
+	^ repositoryB
+]
+
+{ #category : #accessing }
 IceGitCliLocalRepositoryExamples >> pushRepositoryBToRepositoryA [
 	<gtExample>
 	<noTest>
@@ -127,6 +148,8 @@ IceGitCliLocalRepositoryExamples >> pushRepositoryBToRepositoryA [
 
 	self assert: numberFile contents trimBoth = '2. second'.
 	self assert: repositoryA branch commit comment trimBoth = 'Second commit'.
+
+	self assert: repositoryA headCommit id = repositoryB headCommit id.
 
 	^ self
 ]
@@ -180,4 +203,33 @@ IceGitCliLocalRepositoryExamples >> secondCommitInRepositoryB [
 	self assert: repositoryB head commits first comment trimBoth = 'Second commit'.
 
 	^ repositoryB
+]
+
+{ #category : #accessing }
+IceGitCliLocalRepositoryExamples >> thirdCommitInRepositoryA [
+	<gtExample>
+	<noTest>
+
+	| numberFile workingCopy |
+
+	self pushRepositoryBToRepositoryA.
+
+	numberFile := repositoryA location / 'number.txt'.
+
+	numberFile writeStreamDo: [ :out |
+		out truncate.
+		(ZnNewLineWriterStream on: out) << '3. third'; cr ].
+
+	repositoryA addFileToIndex: numberFile basename.
+
+	workingCopy := repositoryA workingCopy.
+
+	workingCopy
+		commitChanges: workingCopy diffToReferenceCommit 
+		withMessage: 'Third commit' 
+		force: true.
+
+	self assert: repositoryA headCommit comment trimBoth = 'Third commit'.
+
+	^ "repositoryA" self
 ]
