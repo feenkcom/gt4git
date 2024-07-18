@@ -78,7 +78,16 @@ IceGitCliLocalRepositoryExamples >> gitVersion [
 	<gtExample>
 	<noTest>
 	
-	^ IceGitCliPlatform current gitVersion
+	| versionString gitVersion major minor |
+
+	versionString := IceGitCliPlatform current gitVersion.
+	gitVersion := (Character space split: versionString) third.
+	major := ($. split: gitVersion) first asInteger.
+	minor := ($. split: gitVersion) second asInteger.
+	self assert: major >= 2.
+	self assert: minor >= 26.
+
+	^ versionString
 ]
 
 { #category : #accessing }
@@ -111,7 +120,9 @@ IceGitCliLocalRepositoryExamples >> pullRepositoryAToRepositoryB [
 
 	self thirdCommitInRepositoryA.
 	
-	repositoryB pull.
+	"repositoryB pull."
+	
+	(GtGitRepository fromIcebergRepository: repositoryB) gtLepiterAwarePull.
 	
 	numberFile := repositoryB location / 'number.txt'.
 
@@ -231,5 +242,5 @@ IceGitCliLocalRepositoryExamples >> thirdCommitInRepositoryA [
 
 	self assert: repositoryA headCommit comment trimBoth = 'Third commit'.
 
-	^ "repositoryA" self
+	^ repositoryA
 ]
