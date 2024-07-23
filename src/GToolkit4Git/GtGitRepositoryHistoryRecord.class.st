@@ -92,7 +92,7 @@ GtGitRepositoryHistoryRecord >> gtForkActionFor: anAction [
 		label: 'Fork';
 		tooltip: 'Fork from upstream, then clone, create and register';
 		priority: 40;
-		action: [ self fork ]
+		action: [ :aButton | aButton phlow spawnObject: self fork ]
 ]
 
 { #category : #'gt extensions' }
@@ -102,7 +102,7 @@ GtGitRepositoryHistoryRecord >> gtRestoreActionFor: anAction [
 		label: 'Restore';
 		tooltip: 'Clone, create and register from upstream';
 		priority: 30;
-		action: [ self restore ]
+		action: [ :aButton | aButton phlow spawnObject: self restore ]
 ]
 
 { #category : #'gt extensions' }
