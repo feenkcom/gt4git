@@ -44,6 +44,16 @@ IceGitCliLocalRepositoryExamples >> cloneRepositoryAIntoRepositoryB [
 ]
 
 { #category : #accessing }
+IceGitCliLocalRepositoryExamples >> defaultBranchName [
+	<gtExample>
+	<noTest>
+	
+	^ IceGitCliPlatform current config
+		at: 'init.defaultbranch'
+		ifAbsent: [ 'master' ]
+]
+
+{ #category : #accessing }
 IceGitCliLocalRepositoryExamples >> firstCommitInRepositoryA [
 	<gtExample>
 	<noTest>
@@ -66,8 +76,8 @@ IceGitCliLocalRepositoryExamples >> firstCommitInRepositoryA [
 		withMessage: 'First commit' 
 		force: true.
 
-	self assert: repositoryA head name = 'main'.
-	self assert: repositoryA localBranches first name = 'main'.
+	self assert: repositoryA head name = self defaultBranchName.
+	self assert: repositoryA localBranches first name = self defaultBranchName.
 	self assert: repositoryA head commits first comment trimBoth = 'First commit'.
 
 	^ repositoryA
@@ -153,7 +163,7 @@ IceGitCliLocalRepositoryExamples >> pushRepositoryBToRepositoryA [
 
 	self assert: repositoryB outgoingCommits isEmpty.
 
-	repositoryA switchToBranchNamed: 'main'.
+	repositoryA switchToBranchNamed: self defaultBranchName.
 
 	numberFile := repositoryA location / 'number.txt'.
 
@@ -209,8 +219,8 @@ IceGitCliLocalRepositoryExamples >> secondCommitInRepositoryB [
 		withMessage: 'Second commit' 
 		force: true.
 
-	self assert: repositoryB head name = 'main'.
-	self assert: repositoryB localBranches first name = 'main'.
+	self assert: repositoryB head name = self defaultBranchName.
+	self assert: repositoryB localBranches first name = self defaultBranchName.
 	self assert: repositoryB head commits first comment trimBoth = 'Second commit'.
 
 	^ repositoryB
