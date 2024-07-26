@@ -122,6 +122,55 @@ IceGitCliLocalRepositoryExamples >> initRepositoryA [
 ]
 
 { #category : #accessing }
+IceGitCliLocalRepositoryExamples >> mergeRepositoryAIntoRepositoryBAndPush [
+	<gtExample>
+	<noTest>
+
+	| datefile workingCopy |
+
+	self thirdCommitInRepositoryA.
+	
+	"A is now one commit ahead of B, we do not pull but make a fourth commit in B"
+
+	datefile := repositoryB location / 'date.txt'.
+
+	datefile writeStreamDo: [ :out | 
+		(ZnNewLineWriterStream on: out) << DateAndTime now asString; cr ].
+
+	repositoryB addFileToIndex: datefile basename.
+
+	workingCopy := repositoryB workingCopy.
+
+	workingCopy
+		commitChanges: workingCopy diffToReferenceCommit 
+		withMessage: 'Fourth commit' 
+		force: true.
+		
+	"A and B are now on different commits and we cannot push"
+	
+	(repositoryA branchNamed: 'branch-temporary') switch.
+
+	self assert: ([ repositoryB push. #succeeded ] on: Error do: [ #failed ]) = #failed.
+
+	"First we have to do a pull to merge"
+	
+	"repositoryB pull." (GtGitRepository fromIcebergRepository: repositoryB) gtLepiterAwarePull.
+
+	self assert: (repositoryB headCommit comment includesSubstring: 'Merge').
+	self assert: repositoryB headCommit ancestorIds size > 1.
+
+	"Now we can push our outgoing commits (the fourth and merged commit)"
+	
+	self assert: repositoryB outgoingCommits size > 1.
+
+	repositoryB push.
+
+	repositoryA switchToBranchNamed: self defaultBranchName.
+
+	^ self
+]
+
+{ #category : #accessing }
 IceGitCliLocalRepositoryExamples >> pullRepositoryAToRepositoryB [
 	<gtExample>
 	<noTest>
@@ -130,9 +179,7 @@ IceGitCliLocalRepositoryExamples >> pullRepositoryAToRepositoryB [
 
 	self thirdCommitInRepositoryA.
 	
-	"repositoryB pull."
-	
-	(GtGitRepository fromIcebergRepository: repositoryB) gtLepiterAwarePull.
+	"repositoryB pull." (GtGitRepository fromIcebergRepository: repositoryB) gtLepiterAwarePull.
 	
 	numberFile := repositoryB location / 'number.txt'.
 
@@ -155,9 +202,7 @@ IceGitCliLocalRepositoryExamples >> pushRepositoryBToRepositoryA [
 
 	self assert: repositoryB outgoingCommits isEmpty not.
 
-	"git won't push into local remote when branch is the same"
-
-	repositoryA createBranch: 'branch-temporary'.
+	repositoryA createBranch: 'branch-temporary'. "git won't push into local remote when branch is the same"
 
 	repositoryB push.
 
