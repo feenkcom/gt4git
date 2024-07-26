@@ -94,8 +94,9 @@ IceGitCliLocalRepositoryExamples >> gitVersion [
 	gitVersion := (Character space split: versionString) third.
 	major := ($. split: gitVersion) first asInteger.
 	minor := ($. split: gitVersion) second asInteger.
-	self assert: major >= 2.
-	self assert: minor >= 26.
+	self
+		assert: (major > 2 or: [ major = 2 and: [ minor >= 26 ] ])
+		description: 'git version should be >= 2.26'.
 
 	^ versionString
 ]
