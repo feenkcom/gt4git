@@ -185,12 +185,17 @@ GtGitRepositoryHistoryRecord >> restore [
 	"Restore the repository that I describe by cloning it from its upstream URL, creating and registering it"
 
 	| switcher |
+	self originUrl ifNil: [ ^ nil ].
+	
 	switcher := GtIceRepositorySwitcher new
 		sshUrl: self originUrl;
 		yourself.
 
 	switcher directory exists
-		ifTrue: [ ^ self error: switcher directory printString , ' already exists, cannot clone' ].
+		ifTrue: [ 
+			switcher directory hasChildren
+				ifTrue: [ ^ self error: switcher directory printString , ' already exists, cannot clone' ]
+				ifFalse: [ switcher directory delete ] ].
 
 	switcher 
 		useLibgitCLI;
