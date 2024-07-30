@@ -96,6 +96,11 @@ GtGitRepositoryRegistryHistory >> initialize [
 	records := OrderedCollection new
 ]
 
+{ #category : #testing }
+GtGitRepositoryRegistryHistory >> isEmpty [
+	^ self records isEmpty
+]
+
 { #category : #accessing }
 GtGitRepositoryRegistryHistory >> records [
 	^ records
