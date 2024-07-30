@@ -10,7 +10,7 @@ IceGitCliPlatform >> gtDetailsFor: aView [
 			{ 'git executable' . self gitExecutable }.
 			{ 'git version' . [ self gitVersion ] on: Error do: [ '' ] }.
 			{ 'valid git' . [ self validateGit ] on: Error do: [ false ] }.
-			{ 'valid get setup' . [ self validateGitSetup ] on: Error do: [ false ] }.
+			{ 'valid git setup' . [ self validateGitSetup ] on: Error do: [ false ] }.
 			{ 'installed' . self isInstalled }.
 			{ 'signal class' . self signalClass }.
 			{ 'sign commits' . self signCommits } } ];
