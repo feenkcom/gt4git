@@ -125,10 +125,24 @@ IceRepository >> gtViewDiffToReferenceCommitFor: aView [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceRepository class >> gtViewHistoryIn: composite [
+	<gtClassView>
+	GtGitRepositoryRegistryHistory instance isEmpty
+		ifTrue: [ ^ composite empty ].
+	^ composite forward
+		title: 'History';
+		tooltip: 'Show historical repository records';
+		priority: 50;
+		object: [ GtGitRepositoryRegistryHistory instance];
+		view: #gtViewRecordsFor:
+]
+
+{ #category : #'*GToolkit4Git' }
 IceRepository class >> gtViewRegistryIn: composite [
 	<gtClassView>
 	^ composite columnedList
 		title: 'Registry';
+		tooltip: 'Show registered repositories';
 		priority: 40;
 		items: [ self registry sorted: #name ascending];
 		column: 'Name' text: #name;
