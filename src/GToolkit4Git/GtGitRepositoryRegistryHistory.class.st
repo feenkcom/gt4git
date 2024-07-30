@@ -66,6 +66,17 @@ GtGitRepositoryRegistryHistory >> capture [
 			add: (GtGitRepositoryHistoryRecord capture: each) ]
 ]
 
+{ #category : #accessing }
+GtGitRepositoryRegistryHistory >> gtActionFor: aView [
+	<gtAction>
+	
+	^ aView button
+		label: 'Restore all';
+		tooltip: 'Attempt to clone all repositories';
+		priority: 20;
+		action: [ :element | element phlow spawnObject: self restoreAll ]
+]
+
 { #category : #'gt extensions' }
 GtGitRepositoryRegistryHistory >> gtViewRecordsFor: aView [
 	<gtView>
@@ -108,4 +119,10 @@ GtGitRepositoryRegistryHistory >> repositoryNamed: aRepositoryName [
 	^ self records 
 		detect: [ :each | each name = aRepositoryName ] 
 		ifNone: [ nil ]
+]
+
+{ #category : #operations }
+GtGitRepositoryRegistryHistory >> restoreAll [
+	^ self records collect: [ :each | 
+		[ each restore ] on: Error do: [ :exception | exception ] ]
 ]
