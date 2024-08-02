@@ -323,7 +323,7 @@ GtIceLepiterExamples >> createBasicIcebergRepositoryWithName: repositoryName [
 				not
 		description: 'Repository should not be registered'.
 
-	iceRepository := IceRepositoryCreator new
+	iceRepository := IceRepository repositoryClass creatorClass new
 			location: repositoryFolder;
 			subdirectory: 'src';
 			ensureProjectFile;

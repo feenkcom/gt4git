@@ -577,6 +577,9 @@ GtGitRepository >> gtActionExtraMenuFor: anAction [
 					('Inspect iceberg working copy' -> [ :e | 
 						e phlow spawnObject: self icebergWorkingCopy.
 						e fireEvent: BrDropdownHideWish new ]).
+					('Inspect lepiter working copy' -> [ :e | 
+						e phlow spawnObject: self lepiterWorkingCopy.
+						e fireEvent: BrDropdownHideWish new ]).
 					('Fork repository' -> [ :e | 
 						e phlow spawnObject: self fork.
 						e fireEvent: BrDropdownHideWish new ]).
@@ -1176,6 +1179,7 @@ GtGitRepository >> gtViewDetailsIn: composite [
 			{ 'Setup done' . self isSetupDone }.
 			{ 'Uninitialized' . self isUninitialized }.
 			{ 'Modified' . [ self isModified ] on: Error do: [ '' ] }.
+			{ 'Dirty' . [ self repository isDirty ] on: Error do: [ '' ] }.
 			{ 'Committable' . self isCommittable }.
 			{ 'Has repository' . self hasRepository }.
 			{ 'Has package' . self hasPackage }.

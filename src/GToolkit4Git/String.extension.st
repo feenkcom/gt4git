@@ -9,7 +9,7 @@ String >> gtCloneGithubRepository [
 	owner := (url findTokens: '/') first.
 	project := (url findTokens: '/') last.
 
-	^ GtGitRepository fromIcebergRepository: (IceRepositoryCreator new
+	^ GtGitRepository fromIcebergRepository: (IceRepository repositoryClass creatorClass new
 			   remote: (IceGitRemote url: self);
 			   location:
 				   IceLibgitRepository repositoriesLocation / owner / project;
