@@ -577,6 +577,9 @@ GtGitRepository >> gtActionExtraMenuFor: anAction [
 					('Inspect iceberg working copy' -> [ :e | 
 						e phlow spawnObject: self icebergWorkingCopy.
 						e fireEvent: BrDropdownHideWish new ]).
+					('Inspect lepiter working copy' -> [ :e | 
+						e phlow spawnObject: self lepiterWorkingCopy.
+						e fireEvent: BrDropdownHideWish new ]).
 					('Fork repository' -> [ :e | 
 						e phlow spawnObject: self fork.
 						e fireEvent: BrDropdownHideWish new ]).
