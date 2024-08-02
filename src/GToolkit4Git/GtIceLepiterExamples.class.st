@@ -1274,7 +1274,13 @@ GtIceLepiterExamples >> loadDatabaseInIcebergRepository: iceRepository [
 
 { #category : #'accessing - names' }
 GtIceLepiterExamples >> mainBranchName [
-	^ 'main'
+	^ 'master'
+]
+
+{ #category : #'accessing - names' }
+GtIceLepiterExamples >> mainBranchNames [
+	^ {'master'.
+		'main'}
 ]
 
 { #category : #'creation repositories' }
