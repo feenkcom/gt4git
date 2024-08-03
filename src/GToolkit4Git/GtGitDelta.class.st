@@ -21,6 +21,19 @@ GtGitDelta class >> from: aDiffDelta in: aRepository [
 		status: aDiffDelta status copy
 ]
 
+{ #category : #'instance creation' }
+GtGitDelta class >> fromStatusLine: line in: aRepository [
+	| file status |
+	file := line copyFrom: 4 to: line size.
+	status := (line copyUpTo: 3) trimBoth.
+	^ self new
+		oldFileRelative: file;
+		oldFile: aRepository location resolve / file;
+		newFileRelative: file copy;
+		newFile: aRepository location resolve / file;
+		status: status
+]
+
 { #category : #accessing }
 GtGitDelta >> icon [
 
