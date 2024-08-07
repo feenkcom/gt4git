@@ -28,14 +28,6 @@ GtGitAddRepositoryStencil >> dropdown: aDropdown [
 ]
 
 { #category : #accessing }
-GtGitAddRepositoryStencil >> githubPage [
-	^ GtGitRemoteRepositoryForm new
-		dropdown: dropdown;
-		onCreated: self onCreated;
-		asElement
-]
-
-{ #category : #accessing }
 GtGitAddRepositoryStencil >> initialPage [
 	^ BrVerticalPane new fitContent
 		addChild: (BrSimpleList new
@@ -54,7 +46,7 @@ GtGitAddRepositoryStencil >> initialPage [
 				padding: (BlInsets all: 3);
 				items: {{'Clone a remote repository'.
 							#'git-remote'.
-							[ self openGithubPage ]}.
+							[ self openRemotePage ]}.
 						{'Load a local repository'.
 							#'git-local'.
 							[ self openLocalPage ]}.
@@ -137,13 +129,6 @@ GtGitAddRepositoryStencil >> onCreated: aBlock [
 ]
 
 { #category : #accessing }
-GtGitAddRepositoryStencil >> openGithubPage [
-
-	container removeChildren.
-	container addChild: self githubPage as: #'git-github-page'
-]
-
-{ #category : #accessing }
 GtGitAddRepositoryStencil >> openInitialize [
 
 	container removeChildren.
@@ -155,4 +140,19 @@ GtGitAddRepositoryStencil >> openLocalPage [
 
 	container removeChildren.
 	container addChild: self localPage as: #'git-local-page'
+]
+
+{ #category : #accessing }
+GtGitAddRepositoryStencil >> openRemotePage [
+
+	container removeChildren.
+	container addChild: self remotePage as: #'git-remote-page'
+]
+
+{ #category : #accessing }
+GtGitAddRepositoryStencil >> remotePage [
+	^ GtGitRemoteRepositoryForm new
+		dropdown: dropdown;
+		onCreated: self onCreated;
+		asElement
 ]
