@@ -32,8 +32,16 @@ GtGitRemoteRepositoryForm >> dropdown: anObject [
 ]
 
 { #category : #accessing }
+GtGitRemoteRepositoryForm >> exampleText [
+	^ 'https://example.com or git@githost.com:remotePath.git'
+]
+
+{ #category : #accessing }
 GtGitRemoteRepositoryForm >> initialize [
-	url := 'https://example.com'
+	url := '' asRopedText
+			attribute: (BrGhostTextAttribute
+					for: (self exampleText asRopedText glamorousFormEditorCodeFontAndSize
+							foreground: Color lightGray))
 ]
 
 { #category : #accessing }
