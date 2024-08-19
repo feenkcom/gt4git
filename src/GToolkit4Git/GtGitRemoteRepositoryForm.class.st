@@ -48,19 +48,18 @@ GtGitRemoteRepositoryForm >> initialize [
 GtGitRemoteRepositoryForm >> magritteAcceptAction [
 	<magritteActionDescription>
 	^ super magritteAcceptAction
-		onSuccessCallback: (GtMagritteCallback new
-			action: [ :aModel :aButton :aMemento :aDescription | 
-				[ | creator repo |
-				creator := IceRepository repositoryClass creatorClass new
-								remote: (IceGitRemote url: self url);
-								location: self projectLocation.
-				repo := creator createRepository.
-				repo register.
-				dropdown ifNotNil: [ :aDropdown |
-					aDropdown enqueueTask: (BlTaskAction new action: [
-						aDropdown dispatchEvent: BrDropdownHideWish new ]) ].
-				self onCreated value: repo ] on: Error do: #debug ]);
-		beEnabledOnValidOverallStatus.
+		onSuccessCallback: [ [ | creator repo |
+			creator := IceRepository repositoryClass creatorClass new
+					remote: (IceGitRemote url: self url);
+					location: self projectLocation.
+			repo := creator createRepository.
+			repo register.
+			dropdown
+				ifNotNil: [ :aDropdown | 
+					aDropdown
+						enqueueTask: (BlTaskAction new action: [ aDropdown dispatchEvent: BrDropdownHideWish new ]) ].
+			self onCreated value: repo ] on: Error do: #debug ];
+		beEnabledOnValidOverallStatus
 ]
 
 { #category : #accessing }

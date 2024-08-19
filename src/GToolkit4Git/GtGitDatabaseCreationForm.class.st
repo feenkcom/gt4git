@@ -141,15 +141,14 @@ GtGitDatabaseCreationForm >> initialize [
 GtGitDatabaseCreationForm >> magritteAcceptAction [
 	<magritteActionDescription>
 	^ super magritteAcceptAction
-		onSuccessCallback: (GtMagritteCallback new
-			action: [ :aModel :aButton :aMemento :aDescription | 
-				[ self directory ensureCreateDirectory.
-				self repositoryModel addNewDatabaseInDirectory: self directory.
-				self addToBaseline: (self directory relativeTo: self repositoryModel repository repositoryDirectory)
-							pathString.
-				button dispatchEvent: BrDropdownHideWish new.
-				button phlow fireToolUpdateWish ] on: Error do: #debug ]);
-		beEnabledOnValidOverallStatus.
+		onSuccessCallback: [ [ self directory ensureCreateDirectory.
+			self repositoryModel addNewDatabaseInDirectory: self directory.
+			self
+				addToBaseline: (self directory relativeTo: self repositoryModel repository repositoryDirectory)
+						pathString.
+			button dispatchEvent: BrDropdownHideWish new.
+			button phlow fireToolUpdateWish ] on: Error do: #debug ];
+		beEnabledOnValidOverallStatus
 ]
 
 { #category : #accessing }

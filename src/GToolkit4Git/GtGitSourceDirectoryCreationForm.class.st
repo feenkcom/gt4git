@@ -60,23 +60,19 @@ GtGitSourceDirectoryCreationForm >> directoryDescription [
 GtGitSourceDirectoryCreationForm >> magritteAcceptAction [
 	<magritteActionDescription>
 	^ super magritteAcceptAction
-		onSuccessCallback: (GtMagritteCallback new
-			action: [ :aModel :aButton :aMemento :aDescription | 
-				[ | model |
-				model := IceBasicProject onRepository: self repositoryModel repository.
-				model
-					sourceDirectory: (self directory relativeTo: self repositoryModel repository repositoryDirectory)
-							pathString.
-				model fileFormat: IceLibgitTonelWriter.
-				self assert: model repositoryProperties fileFormat = IceLibgitTonelWriter.	
-				
-				"Set the project in the repository"
-				self repositoryModel workingCopy project: model.
-				self repositoryModel announceRepositoryModified.
-				
-				button dispatchEvent: BrDropdownHideWish new.
-				button phlow fireToolUpdateWish ] on: Error do: #debug ]);
-		beEnabledOnValidOverallStatus.
+		onSuccessCallback: [ [ | model |
+			model := IceBasicProject onRepository: self repositoryModel repository.
+			model
+				sourceDirectory: (self directory relativeTo: self repositoryModel repository repositoryDirectory)
+						pathString.
+			model fileFormat: IceLibgitTonelWriter.
+			self assert: model repositoryProperties fileFormat = IceLibgitTonelWriter.	"Set the project in the repository"
+			self repositoryModel workingCopy project: model.
+			self repositoryModel announceRepositoryModified.
+
+			button dispatchEvent: BrDropdownHideWish new.
+			button phlow fireToolUpdateWish ] on: Error do: #debug ];
+		beEnabledOnValidOverallStatus
 ]
 
 { #category : #accessing }
