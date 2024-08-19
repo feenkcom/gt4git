@@ -3,7 +3,7 @@ Class {
 	#superclass : #IceMetadatalessFileTreeWriter,
 	#traits : 'TIceRepositoryWriter',
 	#classTraits : 'TIceRepositoryWriter classTrait',
-	#category : #GToolkit4Git
+	#category : #'GToolkit4Git-Writer'
 }
 
 { #category : #accessing }
