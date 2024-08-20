@@ -11,16 +11,6 @@ IceRepository class >> creatorClass [
 ]
 
 { #category : #'*GToolkit4Git' }
-IceRepository >> defaultBranchName [
-	"Return the default branch name used when initializing a new repository.
-	Traditionally and when not otherwise configured or specified this is currently 'master'
-	though this might change in the future, so this is what we return here.
-	Subclasses should override this and consult the init.defaultbranch git config option."
-
-	^ 'master'
-]
-
-{ #category : #'*GToolkit4Git' }
 IceRepository >> gtLepiterAwareCheckoutBranch: branchName withWorkingCopy: aLepiterWorkingCopy [
 	"Convenience method to checkout all packages from a branch given a branch name"
 
@@ -157,6 +147,16 @@ IceRepository class >> gtViewRegistryIn: composite [
 		items: [ self registry sorted: #name ascending];
 		column: 'Name' text: #name;
 		column: 'Origin' text: [ :each | [ each originUrl ] on: Error do: [ '' ] ]
+]
+
+{ #category : #'*GToolkit4Git' }
+IceRepository >> initialDefaultBranchName [
+	"Return the default branch name used when initializing a new repository.
+	Traditionally and when not otherwise configured or specified this is currently 'master'
+	though this might change in the future, so this is what we return here.
+	Subclasses should override this and consult the init.defaultbranch git config option."
+
+	^ 'master'
 ]
 
 { #category : #'*GToolkit4Git' }

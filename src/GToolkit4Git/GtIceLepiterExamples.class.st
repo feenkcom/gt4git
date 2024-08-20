@@ -509,7 +509,7 @@ GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMai
 	self assert: beforeBranches size equals: 2.
 	
 	gtIceRepository 
-		gtLepiterAwareCheckoutBranch: gtIceRepository repository defaultBranchName.
+		gtLepiterAwareCheckoutBranch: gtIceRepository repository initialDefaultBranchName.
 	self assertNoChangesInRepository:  gtIceRepository.
 	
 	afterBranches :=  gtIceRepository repository allBranches copy.
@@ -684,7 +684,7 @@ GtIceLepiterExamples >> gitRepositoryACommitNewPageInSecondBranch_checkoutMainBr
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 	
 	gtIceRepository 
-		gtLepiterAwareCheckoutBranch: gtIceRepository repository defaultBranchName.
+		gtLepiterAwareCheckoutBranch: gtIceRepository repository initialDefaultBranchName.
 	self assertNoChangesInRepository:  gtIceRepository.
 	
 	self assert: targetDatabase pageCount equals: 1.
@@ -776,7 +776,7 @@ GtIceLepiterExamples >> gitRepositoryACommitRemovedPageInSecondBranch_checkoutMa
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 	
 	gtIceRepository 
-		gtLepiterAwareCheckoutBranch: gtIceRepository repository defaultBranchName.
+		gtLepiterAwareCheckoutBranch: gtIceRepository repository initialDefaultBranchName.
 	self assertNoChangesInRepository:  gtIceRepository.
 	
 	self assert: targetDatabase pageCount equals: 1.
@@ -1184,7 +1184,7 @@ GtIceLepiterExamples >> gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch
 	gtIceRepository := self gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch_commitDatabase.
 	
 	gtIceRepository 
-		gtLepiterAwareCheckoutBranch: gtIceRepository repository defaultBranchName.
+		gtLepiterAwareCheckoutBranch: gtIceRepository repository initialDefaultBranchName.
 		
 	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
 	self assertNoChangesInRepository:  gtIceRepository.

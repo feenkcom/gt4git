@@ -23,16 +23,6 @@ IceLibgitRepository class >> creatorClass [
 ]
 
 { #category : #'*GToolkit4Git' }
-IceLibgitRepository >> defaultBranchName [
-	"Return the default branch name used when initializing a new repository.
-	Consult the init.defaultbranch git config option and fall back to our superclass' implementation."
-
-	^ self repositoryHandle config
-		getString: 'init.defaultbranch'
-		ifAbsent: [ super defaultBranchName ]
-]
-
-{ #category : #'*GToolkit4Git' }
 IceLibgitRepository class >> fromGitCliRepository: aRepo [
 	| repo |
 	repo := self new
@@ -194,6 +184,16 @@ IceLibgitRepository >> gtTagsFor: aView [
 	<gtView>
 	self isMissing ifTrue: [ ^ aView empty ].
 	^ super gtTagsFor: aView
+]
+
+{ #category : #'*GToolkit4Git' }
+IceLibgitRepository >> initialDefaultBranchName [
+	"Return the default branch name used when initializing a new repository.
+	Consult the init.defaultbranch git config option and fall back to our superclass' implementation."
+
+	^ self repositoryHandle config
+		getString: 'init.defaultbranch'
+		ifAbsent: [ super initialDefaultBranchName ]
 ]
 
 { #category : #'*GToolkit4Git' }

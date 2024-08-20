@@ -1,14 +1,6 @@
 Extension { #name : #IceGitCliRepository }
 
 { #category : #'*GToolkit4Git' }
-IceGitCliRepository >> defaultBranchName [
-	"Return the default branch name used when initializing a new repository.
-	Consult the init.defaultbranch git config option and fall back to our superclass' implementation."
-
-	^ self config at: 'init.defaultbranch' ifAbsent: [ super defaultBranchName ]
-]
-
-{ #category : #'*GToolkit4Git' }
 IceGitCliRepository >> gtConfigFor: composite [
 	<gtView>
 	^ composite forward
@@ -116,6 +108,14 @@ IceGitCliRepository class >> gtViewGitCallsIn: composite [
 				 sort: #selector ascending ];
 		column: 'Selector' text: [ :each | each selector ];
 		column: 'Class' text: [ :each | each methodClass ]
+]
+
+{ #category : #'*GToolkit4Git' }
+IceGitCliRepository >> initialDefaultBranchName [
+	"Return the default branch name used when initializing a new repository.
+	Consult the init.defaultbranch git config option and fall back to our superclass' implementation."
+
+	^ self config at: 'init.defaultbranch' ifAbsent: [ super initialDefaultBranchName ]
 ]
 
 { #category : #'*GToolkit4Git' }
