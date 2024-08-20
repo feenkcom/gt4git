@@ -44,16 +44,6 @@ IceGitCliLocalRepositoryExamples >> cloneRepositoryAIntoRepositoryB [
 ]
 
 { #category : #accessing }
-IceGitCliLocalRepositoryExamples >> defaultBranchName [
-	<gtExample>
-	<noTest>
-	
-	^ IceGitCliPlatform current config
-		at: 'init.defaultbranch'
-		ifAbsent: [ 'master' ]
-]
-
-{ #category : #accessing }
 IceGitCliLocalRepositoryExamples >> firstCommitInRepositoryA [
 	<gtExample>
 	<noTest>
@@ -76,8 +66,8 @@ IceGitCliLocalRepositoryExamples >> firstCommitInRepositoryA [
 		withMessage: 'First commit' 
 		force: true.
 
-	self assert: repositoryA head name = self defaultBranchName.
-	self assert: repositoryA localBranches first name = self defaultBranchName.
+	self assert: repositoryA head name = repositoryA initialDefaultBranchName.
+	self assert: repositoryA localBranches first name = repositoryA initialDefaultBranchName.
 	self assert: repositoryA head commits first comment trimBoth = 'First commit'.
 
 	^ repositoryA
@@ -166,7 +156,7 @@ IceGitCliLocalRepositoryExamples >> mergeRepositoryAIntoRepositoryBAndPush [
 
 	repositoryB push.
 
-	repositoryA switchToBranchNamed: self defaultBranchName.
+	repositoryA switchToBranchNamed: repositoryA initialDefaultBranchName.
 
 	^ self
 ]
@@ -209,7 +199,7 @@ IceGitCliLocalRepositoryExamples >> pushRepositoryBToRepositoryA [
 
 	self assert: repositoryB outgoingCommits isEmpty.
 
-	repositoryA switchToBranchNamed: self defaultBranchName.
+	repositoryA switchToBranchNamed: repositoryA initialDefaultBranchName.
 
 	numberFile := repositoryA location / 'number.txt'.
 
@@ -265,8 +255,8 @@ IceGitCliLocalRepositoryExamples >> secondCommitInRepositoryB [
 		withMessage: 'Second commit' 
 		force: true.
 
-	self assert: repositoryB head name = self defaultBranchName.
-	self assert: repositoryB localBranches first name = self defaultBranchName.
+	self assert: repositoryB head name = repositoryB initialDefaultBranchName.
+	self assert: repositoryB localBranches first name = repositoryB initialDefaultBranchName.
 	self assert: repositoryB head commits first comment trimBoth = 'Second commit'.
 
 	^ repositoryB

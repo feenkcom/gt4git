@@ -111,6 +111,14 @@ IceGitCliRepository class >> gtViewGitCallsIn: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceGitCliRepository >> initialDefaultBranchName [
+	"Return the default branch name used when initializing a new repository.
+	Consult the init.defaultbranch git config option and fall back to our superclass' implementation."
+
+	^ self config at: 'init.defaultbranch' ifAbsent: [ super initialDefaultBranchName ]
+]
+
+{ #category : #'*GToolkit4Git' }
 IceGitCliRepository >> isDirty [
 	^ self getStatusByFile notEmpty
 ]

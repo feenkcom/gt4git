@@ -150,6 +150,16 @@ IceRepository class >> gtViewRegistryIn: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceRepository >> initialDefaultBranchName [
+	"Return the default branch name used when initializing a new repository.
+	Traditionally and when not otherwise configured or specified this is currently 'master'
+	though this might change in the future, so this is what we return here.
+	Subclasses should override this and consult the init.defaultbranch git config option."
+
+	^ 'master'
+]
+
+{ #category : #'*GToolkit4Git' }
 IceRepository >> isDirty [
 	self subclassResponsibility
 ]

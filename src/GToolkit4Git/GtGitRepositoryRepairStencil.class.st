@@ -19,7 +19,7 @@ GtGitRepositoryRepairStencil >> create [
 GtGitRepositoryRepairStencil >> createMainContainer [
 
 	container ifNil: [ 
-		container := BrHorizontalPane new
+		container := BrVerticalPane new
 			             addAptitude: BrGlamorousWithHorizontalResizerAptitude;
 			             addAptitude: BrGlamorousWithVerticalResizerAptitude;
 			             fitContent;

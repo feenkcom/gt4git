@@ -187,6 +187,16 @@ IceLibgitRepository >> gtTagsFor: aView [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceLibgitRepository >> initialDefaultBranchName [
+	"Return the default branch name used when initializing a new repository.
+	Consult the init.defaultbranch git config option and fall back to our superclass' implementation."
+
+	^ self repositoryHandle config
+		getString: 'init.defaultbranch'
+		ifAbsent: [ super initialDefaultBranchName ]
+]
+
+{ #category : #'*GToolkit4Git' }
 IceLibgitRepository >> isDirty [
 
 	^ handle ifNil: [ false ] ifNotNil: [ handle isDirty ]

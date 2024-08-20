@@ -205,19 +205,16 @@ GtGitPackageAndBaselineCreationForm >> initialize [
 { #category : #accessing }
 GtGitPackageAndBaselineCreationForm >> magritteAcceptAction [
 	<magritteActionDescription>
-
 	^ super magritteAcceptAction
-		onSuccessCallback: (GtMagritteCallback new
-			action: [ :aModel :aButton :aMemento :aDescription | 
-				[ | aPackage newBaseline |
-				aPackage := self addPackage.
-				newBaseline := self addPackageToBaseline: aPackage.
-				newBaseline ifTrue: [ self addInstallationInstructions ].
-				button enqueueTask: (BlTaskAction new action: [
-					button dispatchEvent: BrDropdownHideWish new.
-					button phlow fireToolUpdateWish
-				]) ] on: Error do: #debug ]);
-		beEnabledOnValidOverallStatus.
+		onSuccessCallback: [ [ | aPackage newBaseline |
+			aPackage := self addPackage.
+			newBaseline := self addPackageToBaseline: aPackage.
+			newBaseline ifTrue: [ self addInstallationInstructions ].
+			button
+				enqueueTask: (BlTaskAction new
+						action: [ button dispatchEvent: BrDropdownHideWish new.
+							button phlow fireToolUpdateWish ]) ] on: Error do: #debug ];
+		beEnabledOnValidOverallStatus
 ]
 
 { #category : #accessing }

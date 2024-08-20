@@ -327,7 +327,6 @@ GtIceLepiterExamples >> createBasicIcebergRepositoryWithName: repositoryName [
 			location: repositoryFolder;
 			subdirectory: 'src';
 			ensureProjectFile;
-			commitishName: self mainBranchName;
 			createNewRepositoryNamed: repositoryName.
 
 	iceRepository workingCopy commitWithMessage: 'Add properties and project files'.	"Ideally do not register the repository with Iceberg.
@@ -510,7 +509,7 @@ GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMai
 	self assert: beforeBranches size equals: 2.
 	
 	gtIceRepository 
-		gtLepiterAwareCheckoutBranch: self mainBranchName.
+		gtLepiterAwareCheckoutBranch: gtIceRepository repository initialDefaultBranchName.
 	self assertNoChangesInRepository:  gtIceRepository.
 	
 	afterBranches :=  gtIceRepository repository allBranches copy.
@@ -685,7 +684,7 @@ GtIceLepiterExamples >> gitRepositoryACommitNewPageInSecondBranch_checkoutMainBr
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 	
 	gtIceRepository 
-		gtLepiterAwareCheckoutBranch: self mainBranchName.
+		gtLepiterAwareCheckoutBranch: gtIceRepository repository initialDefaultBranchName.
 	self assertNoChangesInRepository:  gtIceRepository.
 	
 	self assert: targetDatabase pageCount equals: 1.
@@ -777,7 +776,7 @@ GtIceLepiterExamples >> gitRepositoryACommitRemovedPageInSecondBranch_checkoutMa
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 	
 	gtIceRepository 
-		gtLepiterAwareCheckoutBranch: self mainBranchName.
+		gtLepiterAwareCheckoutBranch: gtIceRepository repository initialDefaultBranchName.
 	self assertNoChangesInRepository:  gtIceRepository.
 	
 	self assert: targetDatabase pageCount equals: 1.
@@ -1185,7 +1184,7 @@ GtIceLepiterExamples >> gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch
 	gtIceRepository := self gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch_commitDatabase.
 	
 	gtIceRepository 
-		gtLepiterAwareCheckoutBranch: self mainBranchName.
+		gtLepiterAwareCheckoutBranch: gtIceRepository repository initialDefaultBranchName.
 		
 	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
 	self assertNoChangesInRepository:  gtIceRepository.
@@ -1270,17 +1269,6 @@ GtIceLepiterExamples >> loadDatabaseInIcebergRepository: iceRepository [
 		loadAndMonitorFrom: (self databaseLocationForRepository: iceRepository)
 		saveDelay: 0 seconds.
 
-]
-
-{ #category : #'accessing - names' }
-GtIceLepiterExamples >> mainBranchName [
-	^ 'master'
-]
-
-{ #category : #'accessing - names' }
-GtIceLepiterExamples >> mainBranchNames [
-	^ {'master'.
-		'main'}
 ]
 
 { #category : #'creation repositories' }

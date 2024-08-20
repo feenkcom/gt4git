@@ -1,6 +1,16 @@
 Extension { #name : #IceGitCliPlatform }
 
 { #category : #'*GToolkit4Git' }
+IceGitCliPlatform >> gtConfigFor: composite [
+	<gtView>
+	^ composite forward
+		title: 'Config';
+		priority: 40;
+		object: [ self config ];
+		view: #gtItemsFor:
+]
+
+{ #category : #'*GToolkit4Git' }
 IceGitCliPlatform >> gtDetailsFor: aView [
 	<gtView>
 	^ aView columnedList

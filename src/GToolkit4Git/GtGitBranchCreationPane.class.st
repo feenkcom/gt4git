@@ -12,7 +12,7 @@ Class {
 { #category : #accessing }
 GtGitBranchCreationPane >> acceptAction [
 	^ acceptAction ifNil: [ 
-		[ :aModel :aButton :aMemento :aDescription |
+		[ :_aModel :aButton  |
 			aButton phlow spawnObject: self ] ]
 ]
 
@@ -48,8 +48,7 @@ GtGitBranchCreationPane >> branchNameDescription [
 
 { #category : #accessing }
 GtGitBranchCreationPane >> cancelAction [
-	^ cancelAction ifNil: [ 
-		[ :aModel :aButton :aMemento :aDescription | ] ]
+	^ cancelAction ifNil: [  ]
 ]
 
 { #category : #accessing }
@@ -62,12 +61,11 @@ GtGitBranchCreationPane >> magritteAcceptAction [
 	<magritteActionDescription>
 	^ super magritteAcceptAction
 		label: 'Create new branch';
-		onSuccessCallback: (GtMagritteCallback new action: self acceptAction)
+		onSuccessCallback: self acceptAction
 ]
 
 { #category : #magritte }
 GtGitBranchCreationPane >> magritteCancelAction [
 	<magritteActionDescription>
-	^ super magritteCancelAction
-		onSuccessCallback: (GtMagritteCallback new action: self cancelAction)
+	^ super magritteCancelAction onSuccessCallback: self cancelAction
 ]
