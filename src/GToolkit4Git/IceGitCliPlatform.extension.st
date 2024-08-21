@@ -5,9 +5,11 @@ IceGitCliPlatform >> gtConfigFor: composite [
 	<gtView>
 	^ composite forward
 		title: 'Config';
+		tooltip: 'Show git config options';
 		priority: 40;
 		object: [ self config ];
-		view: #gtItemsFor:
+		view: #gtItemsFor: ;
+		actionUpdateButton
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -26,7 +28,30 @@ IceGitCliPlatform >> gtDetailsFor: aView [
 			{ 'sign commits' . self signCommits } } ];
 		column: 'Key' text: #first weight: 0.5;
 		column: 'Value' text: #second;
-		send: #last
+		send: #last;
+		actionUpdateButton
+]
+
+{ #category : #'*GToolkit4Git' }
+IceGitCliPlatform >> gtInstallActionFor: aComposite [
+	<gtAction>
+	
+	^ aComposite button
+		label: 'Install';
+		tooltip: 'Make Libgit-CLI the default Iceberg implementation';
+		priority: 20;
+		action: [ :element | self install ]
+]
+
+{ #category : #'*GToolkit4Git' }
+IceGitCliPlatform >> gtUninstallActionFor: aComposite [
+	<gtAction>
+	
+	^ aComposite button
+		label: 'Uninstall';
+		tooltip: 'Reset the Iceberg implementation to its Libgit2 FFI implementation';
+		priority: 30;
+		action: [ :element | self uninstall ]
 ]
 
 { #category : #'*GToolkit4Git' }
