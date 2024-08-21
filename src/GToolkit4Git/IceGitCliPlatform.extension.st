@@ -5,6 +5,7 @@ IceGitCliPlatform >> gtConfigFor: composite [
 	<gtView>
 	^ composite forward
 		title: 'Config';
+		tooltip: 'Show git config options';
 		priority: 40;
 		object: [ self config ];
 		view: #gtItemsFor: ;
