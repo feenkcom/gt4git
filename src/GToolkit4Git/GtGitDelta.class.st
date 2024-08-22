@@ -24,14 +24,14 @@ GtGitDelta class >> from: aDiffDelta in: aRepository [
 { #category : #'instance creation' }
 GtGitDelta class >> fromStatusLine: line in: aRepository [
 	| file statusChar |
+	statusChar := line trimLeft first.
 	file := line copyFrom: 4 to: line size.
-	statusChar := (line copyUpTo: 3) trimBoth.
 	^ self new
 		oldFileRelative: file;
 		oldFile: aRepository location resolve / file;
 		newFileRelative: file copy;
 		newFile: aRepository location resolve / file;
-		status: (aRepository statusEnumFrom: statusChar)
+		status: (aRepository deltaTypeEnumFrom: statusChar)
 ]
 
 { #category : #accessing }
