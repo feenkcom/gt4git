@@ -820,10 +820,7 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 	chosen := Set new.
 	viewMap := Dictionary new. "item -> checkbox"
 
-	 (self isMissing  
-		or: [ self workingCopy isDetached not
-			and: [ self icebergRepository head isDetached not
-				and: [ self workingCopy project isUnborn ] ] ]) ifTrue: [ ^ aView empty ].
+	self isMissing ifTrue: [ ^ aView empty ].
 
 	aViewModel := self viewModel.
 
