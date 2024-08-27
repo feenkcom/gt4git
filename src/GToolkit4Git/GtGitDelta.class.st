@@ -28,9 +28,9 @@ GtGitDelta class >> fromStatusLine: line in: aRepository [
 	file := line copyFrom: 4 to: line size.
 	^ self new
 		oldFileRelative: file;
-		oldFile: aRepository location resolve / file;
-		newFileRelative: file copy;
-		newFile: aRepository location resolve / file;
+		oldFile: aRepository location / file;
+		newFileRelative: file;
+		newFile: aRepository location / file;
 		status: (aRepository deltaTypeEnumFrom: statusChar)
 ]
 
