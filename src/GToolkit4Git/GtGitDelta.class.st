@@ -14,11 +14,11 @@ Class {
 { #category : #'instance creation' }
 GtGitDelta class >> from: aDiffDelta in: aRepository [
 	^ self new
-		oldFileRelative: aDiffDelta oldFile path copy;
-		oldFile: aRepository location resolve / aDiffDelta oldFile path copy;
-		newFileRelative: aDiffDelta newFile path copy;
-		newFile: aRepository location resolve / aDiffDelta newFile path copy;
-		status: aDiffDelta status copy
+		oldFileRelative: aDiffDelta oldFile path;
+		oldFile: aRepository location / aDiffDelta oldFile path;
+		newFileRelative: aDiffDelta newFile path;
+		newFile: aRepository location / aDiffDelta newFile path;
+		status: aDiffDelta status
 ]
 
 { #category : #'instance creation' }
