@@ -5,12 +5,12 @@ PureGitCommit >> gtDetailsFor: composite [
 	<gtView>
 	^ composite columnedList
 		title: 'Details';
-		priority: 30;
+		priority: 20;
 		items: [ {
 			{ 'Commit' . self id  }.
 			{ 'Parents'
-				. self ancestorIds asCommaString
-				. self ancestorIds collect: [ :each | self repository resolveCommit: each ] }.
+				. self parentIds asCommaString
+				. self parentIds collect: [ :each | self repository resolveCommit: each ] }.
 			{ 'Author' . self author }.
 			{ 'Timestamp' . self timestamp }.
 			{ 'Comment' . self comment }

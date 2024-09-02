@@ -1,55 +1,31 @@
 Extension { #name : #PureGitRepository }
 
 { #category : #'*GToolkit4Git' }
-PureGitRepository >> exampleGToolkit [
-	<gtExample>
-	<noTest>
+PureGitRepository >> gtBranchesFor: composite [
+	<gtView>
 	
-	self location: (IceRepository repositoryNamed: 'gtoolkit') location.
-	
-	self assert: self exists.
-	
-	^ self
-]
-
-{ #category : #'*GToolkit4Git' }
-PureGitRepository >> exampleGt4Git [
-	<gtExample>
-	<noTest>
-
-	self location: (IceRepository repositoryNamed: 'gt4git') location.
-
-	self assert: self exists.
-
-	^ self
-]
-
-{ #category : #'*GToolkit4Git' }
-PureGitRepository >> exampleGt4GitRootCommit [
-	<gtExample>
-	<noTest>
-	
-	| rootCommit |
-
-	self exampleGt4Git.
-
-	rootCommit := self resolveCommit: '9cfbcd6a921f237abc14446d565cc440a60793e8'. 
-
-	self assert: rootCommit isRoot.
-	self assert: rootCommit id = '9cfbcd6a921f237abc14446d565cc440a60793e8'.
-	self assert: rootCommit commitId = '9cfbcd6a921f237abc14446d565cc440a60793e8'.
-	self assert: rootCommit author = 'George Ganea'.
-	self assert: (rootCommit comment includesSubstring: 'created a new repo').
-
-	^ rootCommit
+	^ composite columnedList
+		title: 'Branches';
+		priority: 35;
+		items: [ self allBranches ];
+		column: 'Name' text: [ :branch | branch name ];
+		column: 'Type' text: [ :branch | branch branchType ];
+		column: 'Commit' text: [ :branch | branch commitId ]
 ]
 
 { #category : #'*GToolkit4Git' }
 PureGitRepository >> gtDetails [
-	^ {
+	| details |
+	details := {
 		{ 'location' . self location ifNil: [ 'not set' ] . self location }.
 		{ 'exists' . self exists }
-	}
+	}.
+	self exists
+		ifTrue: [
+			details := details , {
+				{ 'HEAD' . self head commitId . self head }
+			} ].
+	^ details
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -88,4 +64,19 @@ PureGitRepository >> gtTagsFor: composite [
 		items: [ self tags ];
 		column: 'Name' text: [ :tag | tag name ];
 		column: 'Commit' text: [ :tag | tag commitId ]
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitRepository class >> gtViewGitCallsIn: composite [
+	<gtClassView>
+	
+	^ composite columnedList
+		title: 'Git calls';
+		priority: 30;
+		items: [ 
+			( (#runGitWithArgs: gtReferences & #gtViewGitCallsIn: gtImplementors not)
+					& 'PureGitRepository' gtClassMatches) contents
+				 sort: #selector ascending ];
+		column: 'Selector' text: [ :each | each selector ];
+		column: 'Class' text: [ :each | each methodClass ]
 ]

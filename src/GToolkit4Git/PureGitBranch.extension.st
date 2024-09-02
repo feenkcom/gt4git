@@ -1,7 +1,7 @@
-Extension { #name : #PureGitTag }
+Extension { #name : #PureGitBranch }
 
 { #category : #'*GToolkit4Git' }
-PureGitTag >> gtDetailsFor: composite [
+PureGitBranch >> gtDetailsFor: composite [
 	<gtView>
 	^ composite columnedList
 		title: 'Details';
