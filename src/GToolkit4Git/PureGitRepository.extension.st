@@ -65,3 +65,18 @@ PureGitRepository >> gtTagsFor: composite [
 		column: 'Name' text: [ :tag | tag name ];
 		column: 'Commit' text: [ :tag | tag commitId ]
 ]
+
+{ #category : #'*GToolkit4Git' }
+PureGitRepository class >> gtViewGitCallsIn: composite [
+	<gtClassView>
+	
+	^ composite columnedList
+		title: 'Git calls';
+		priority: 30;
+		items: [ 
+			( (#runGitWithArgs: gtReferences & #gtViewGitCallsIn: gtImplementors not)
+					& 'PureGitRepository' gtClassMatches) contents
+				 sort: #selector ascending ];
+		column: 'Selector' text: [ :each | each selector ];
+		column: 'Class' text: [ :each | each methodClass ]
+]
