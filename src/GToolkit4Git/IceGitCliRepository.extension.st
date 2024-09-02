@@ -102,9 +102,10 @@ IceGitCliRepository class >> gtViewGitCallsIn: composite [
 		title: 'Git calls';
 		priority: 30;
 		items: [ 
-			( (#runGitWithArgs: gtReferences  & #gtViewGitCallsIn: gtImplementors not) contents
+			( ( (#runGitWithArgs: gtReferences & #gtViewGitCallsIn: gtImplementors not)
+					& ('IceGitCliRepository' gtClassMatches | 'GitCliCommitStore' gtClassMatches)) contents
 			, 
-			{ self>>#contentsOfFile: } )
+			{ self >> #contentsOfFile: } )
 				 sort: #selector ascending ];
 		column: 'Selector' text: [ :each | each selector ];
 		column: 'Class' text: [ :each | each methodClass ]
