@@ -9,8 +9,8 @@ PureGitCommit >> gtDetailsFor: composite [
 		items: [ {
 			{ 'Commit' . self id  }.
 			{ 'Parents'
-				. self ancestorIds asCommaString
-				. self ancestorIds collect: [ :each | self repository resolveCommit: each ] }.
+				. self parentIds asCommaString
+				. self parentIds collect: [ :each | self repository resolveCommit: each ] }.
 			{ 'Author' . self author }.
 			{ 'Timestamp' . self timestamp }.
 			{ 'Comment' . self comment }
