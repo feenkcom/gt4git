@@ -51,7 +51,6 @@ GtLepiterWorkingCopy >> changesTo: aCommitish [
 	lepiterAndFileChanges := self lepiterAndFileChangesTo: aCommitish.
 	codeChanges := self codeChangesTo: aCommitish.
 	^ lepiterAndFileChanges asArray , codeChanges asArray
-	  , { (IceGitChange on: 'README.md') }
 ]
 
 { #category : #changes }
