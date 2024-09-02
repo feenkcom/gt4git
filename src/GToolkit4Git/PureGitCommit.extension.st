@@ -5,7 +5,7 @@ PureGitCommit >> gtDetailsFor: composite [
 	<gtView>
 	^ composite columnedList
 		title: 'Details';
-		priority: 30;
+		priority: 20;
 		items: [ {
 			{ 'Commit' . self id  }.
 			{ 'Parents'

@@ -5,7 +5,7 @@ PureGitBranch >> gtDetailsFor: composite [
 	<gtView>
 	^ composite columnedList
 		title: 'Details';
-		priority: 30;
+		priority: 20;
 		items: [ {
 			{ 'Name' . self name ifNil: [ '' ] . self name }.
 			{ 'Commit' . self commitId . self commit }
