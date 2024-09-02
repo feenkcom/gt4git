@@ -3,7 +3,7 @@ Extension { #name : #PureGitCommitish }
 { #category : #'*GToolkit4Git' }
 PureGitCommitish >> gtLogFor: composite [
 	<gtView>
-	
+
 	^ composite columnedList
 		title: 'Log';
 		priority: 30;
