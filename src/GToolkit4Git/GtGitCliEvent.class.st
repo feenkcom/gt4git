@@ -15,6 +15,15 @@ GtGitCliEvent >> args [
 ]
 
 { #category : #'gt extensions' }
+GtGitCliEvent >> gtGitHelpFor: aView [
+	<gtView>
+	^ aView textEditor
+		title: 'Git help';
+		priority: 7;
+		text: [ IceGitCliPlatform current executor gitHelpFor: self eventStartedSignal args first ]
+]
+
+{ #category : #'gt extensions' }
 GtGitCliEvent >> gtGitInvocationFor: aView [
 	<gtView>
 	^ aView list
