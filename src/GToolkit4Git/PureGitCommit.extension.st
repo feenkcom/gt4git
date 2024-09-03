@@ -1,22 +1,17 @@
 Extension { #name : #PureGitCommit }
 
 { #category : #'*GToolkit4Git' }
-PureGitCommit >> gtDetailsFor: composite [
-	<gtView>
-	^ composite columnedList
-		title: 'Details';
-		priority: 20;
-		items: [ {
-			{ 'Commit' . self id  }.
-			{ 'Tree' . self treeId }.
-			{ 'Parents'
-				. self parentIds asCommaString
-				. self parentIds collect: [ :each | self repository resolveCommit: each ] }.
-			{ 'Author' . self author }.
-			{ 'Timestamp' . self timestamp }.
-			{ 'Comment' . self comment }
-		} ];
-		column: 'key' text: #first;
-		column: 'value' text: #second weight: 3;
-		send: #last
+PureGitCommit >> gtDetails [
+	^ super gtDetails , {
+		{ 'commit' . self id  }.
+		{ 'tree' 
+			. self treeId
+			. self tree }.
+		{ 'parents'
+			. self parentIds asCommaString
+			. self parents }.
+		{ 'author' . self author }.
+		{ 'timestamp' . self timestamp }.
+		{ 'comment' . self comment }
+	}
 ]
