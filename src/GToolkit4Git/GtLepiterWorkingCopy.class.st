@@ -47,11 +47,10 @@ GtLepiterWorkingCopy >> changesFromCommit: anIceCommit [
 { #category : #'API - changes' }
 GtLepiterWorkingCopy >> changesTo: aCommitish [
 
-	| lepiterChanges codeChanges |
-	lepiterChanges := self lepiterChangesTo: aCommitish.
+	| lepiterAndFileChanges codeChanges |
+	lepiterAndFileChanges := self lepiterAndFileChangesTo: aCommitish.
 	codeChanges := self codeChangesTo: aCommitish.
-	^ lepiterChanges asArray , codeChanges asArray
-	  , { (IceGitChange on: 'README.md') }
+	^ lepiterAndFileChanges asArray , codeChanges asArray
 ]
 
 { #category : #changes }
@@ -164,6 +163,11 @@ GtLepiterWorkingCopy >> initialize [
 	self lepiterChangesStragegy: GtLepiterWorkingCopyChangesUseIndexStrategy new.
 ]
 
+{ #category : #'API - changes' }
+GtLepiterWorkingCopy >> lepiterAndFileChangesTo: aCommitish [
+	^ self lepiterChangesStragegy changesTo: aCommitish
+]
+
 { #category : #accessing }
 GtLepiterWorkingCopy >> lepiterChangesStragegy [
 	^ lepiterChangesStragegy
@@ -173,11 +177,6 @@ GtLepiterWorkingCopy >> lepiterChangesStragegy [
 GtLepiterWorkingCopy >> lepiterChangesStragegy: aStragegy [
 	lepiterChangesStragegy := aStragegy.
 	aStragegy workingCopy: self.
-]
-
-{ #category : #'API - changes' }
-GtLepiterWorkingCopy >> lepiterChangesTo: aCommitish [
-	^ self lepiterChangesStragegy changesTo: aCommitish
 ]
 
 { #category : #changes }

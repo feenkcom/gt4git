@@ -1151,8 +1151,18 @@ GtIceLepiterExamples >> gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch
 		
 	"There should be deltas because the database files were written to disk"
 	self assert: gtIceRepository getDeltasForFullDiff isNotEmpty.
-	"The diff with the working copy is empty as the database is not yet added to the repository"
-	self assert: gtIceRepository workingCopyDiff isEmpty.
+	"The diff with the working copy is also not empty, buy contains just file definitions as the database is not yet added to the repository"
+	self assert: gtIceRepository workingCopyDiff isEmpty not.
+	self assert: (gtIceRepository workingCopyDiff treeToShow allChildren
+			collect: [ :each | each definition class])  asArray
+		equals: {
+			IceDirectoryDefinition. 
+			IceFileDefinition}.
+	self assert: (gtIceRepository workingCopyDiff treeToShow allChildren
+			collect: [ :each | each definition path])  asArray
+		equals: {
+			Path * 'lepiter' . 
+			Path * 'lepiter' / 'lepiter.properties'}.
 		
 	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
 	lepiterWorkingCopy addDatabase: targetDatabase.
