@@ -148,7 +148,6 @@ PureGitRepository >> gtTagsFor: composite [
 { #category : #'*GToolkit4Git' }
 PureGitRepository class >> gtViewGitCallsIn: composite [
 	<gtClassView>
-	
 	^ composite columnedList
 		title: 'Git calls';
 		priority: 30;
