@@ -153,9 +153,11 @@ PureGitRepository class >> gtViewGitCallsIn: composite [
 		title: 'Git calls';
 		priority: 30;
 		items: [ 
-			( (#runGitWithArgs: gtReferences & #gtViewGitCallsIn: gtImplementors not)
+			( ( (#runGitWithArgs: gtReferences & #gtViewGitCallsIn: gtImplementors not)
 					& 'PureGitRepository' gtClassMatches) contents
-				 sort: #selector ascending ];
+				, 
+				{ self >> #contentsOfBlob: } )
+					 sort: #selector ascending ];
 		column: 'Selector' text: [ :each | each selector ];
 		column: 'Class' text: [ :each | each methodClass ]
 ]

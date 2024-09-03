@@ -8,6 +8,7 @@ PureGitCommit >> gtDetailsFor: composite [
 		priority: 20;
 		items: [ {
 			{ 'Commit' . self id  }.
+			{ 'Tree' . self treeId }.
 			{ 'Parents'
 				. self parentIds asCommaString
 				. self parentIds collect: [ :each | self repository resolveCommit: each ] }.
