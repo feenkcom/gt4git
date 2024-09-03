@@ -21,6 +21,12 @@ GtGitLepiterChangesFromDeltasBuilder >> changesForDeltasByDatabase: deltasByData
 ]
 
 { #category : #api }
+GtGitLepiterChangesFromDeltasBuilder >> changesForFileDeltas: normalFileDeltas [ 
+	^ normalFileDeltas collect: [ :aFileDelta |
+		IceGitChange on: aFileDelta newFileRelative ]
+]
+
+{ #category : #api }
 GtGitLepiterChangesFromDeltasBuilder >> changesFromDeltas: aDeltasCollection [
 	| deltasByDatabase normalFileDeltas |
 	
@@ -43,10 +49,8 @@ GtGitLepiterChangesFromDeltasBuilder >> changesFromDeltas: aDeltasCollection [
 			ifNone: [ normalFileDeltas ].
 		targetGroup add: aDelta ].
 	
-	^ self changesForDeltasByDatabase: deltasByDatabase
-	"self changesForFileDeltas: normalFileDeltas"
-		
-	
+	^ (self changesForDeltasByDatabase: deltasByDatabase), 
+	(self changesForFileDeltas: normalFileDeltas)
 ]
 
 { #category : #accessing }
