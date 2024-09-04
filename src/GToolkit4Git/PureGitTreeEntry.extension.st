@@ -5,7 +5,9 @@ PureGitTreeEntry >> gtDetails [
 	^ super gtDetails , {
 		{ 'name' . self name }.
 		{ 'type' . self type }.
-		{ 'mode' . self mode }.
+		{ 'mode'
+			. '{1} [{2}]' format: { self mode . self modeDescription } 
+			. self mode }.
 		{ 'id' . self id }
 	}
 ]
