@@ -6,6 +6,7 @@ PureGitExamples >> exampleGToolkit [
 	<noTest>
 
 	| repository |
+
 	repository := PureGitRepository on: (IceRepository repositoryNamed: 'gtoolkit') location.
 
 	self assert: repository exists.
@@ -19,11 +20,32 @@ PureGitExamples >> exampleGt4Git [
 	<noTest>
 
 	| repository |
+
 	repository := PureGitRepository on: (IceRepository repositoryNamed: 'gt4git') location.
 
 	self assert: repository exists.
 
 	^ repository
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleGt4GitLogHead [
+	<gtExample>
+	<noTest>
+
+	| repository commit events |
+
+	IceGitCliPlatform current signalClass: GtGitCliSignal.
+	GtGitCliSignal memoryLogger reset.
+	
+	repository := self exampleGt4Git.
+	
+	commit := repository head.
+
+	self assert: GtGitCliSignal memoryLogger recordings isNotEmpty.
+	events := GtGitCliSignal groupedEvents.
+
+	^ events
 ]
 
 { #category : #'*GToolkit4Git' }
