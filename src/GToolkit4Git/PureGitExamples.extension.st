@@ -36,6 +36,7 @@ PureGitExamples >> exampleGt4GitLogHead [
 	| repository commit events |
 
 	IceGitCliPlatform current signalClass: GtGitCliSignal.
+
 	GtGitCliSignal memoryLogger reset.
 	
 	repository := self exampleGt4Git.
@@ -43,6 +44,7 @@ PureGitExamples >> exampleGt4GitLogHead [
 	commit := repository head.
 
 	self assert: GtGitCliSignal memoryLogger recordings isNotEmpty.
+
 	events := GtGitCliSignal groupedEvents.
 
 	^ events
