@@ -46,15 +46,11 @@ PureGitRepository >> gtHistoryFor: composite [
 		title: 'History';
 		tooltip: 'Don''s all commits view';
 		priority: 31;
-		stencil: [ | list color branches tags commits commitsMap ruler |
-			branches := self allBranches.
-			tags := self tags.
-			commits := self allCommits.
-			commitsMap := Dictionary new.
-			commits do: [ :each | commitsMap at: each id put: each ].
+		stencil: [ | list color commits ruler |
+			commits := self allAnnotatedCommits.
 			ruler := HiRulerBuilder
-					newRulerValues: commits asOrderedCollection
-					linksBlock: [ :commit | commit parentIds collect: [ :id | commitsMap at: id ] ].
+					newRulerValues: commits
+					linksBlock: [ :commit | commit parents ].
 			color := HiWheelColorStrategy new.
 			color ruler: ruler.
 			list := BrColumnedList new.
@@ -73,10 +69,7 @@ PureGitRepository >> gtHistoryFor: composite [
 				width: 120.
 			list column
 				title: 'Refs';
-				stencil: [ :_ :i | | labels each |
-					each := commits at: i.
-					labels := (tags select: [ :tag | tag commitId = each id ] thenCollect: #name) asOrderedCollection.
-					labels addAll: (branches select: [ :branch | branch commitId = each id ] thenCollect: #name).
+				stencil: [ :_ :i | 
 					BrTagger new
 						aptitude: (BrGlamorousTaggerAptitude new
 								tagLabel: ([ :aTag | 
@@ -85,7 +78,7 @@ PureGitRepository >> gtHistoryFor: composite [
 										aptitude: BrGlamorousEditableLabelAptitude new glamorousCodeTinySize;
 										fitContent;
 										text: aTag name ] asStencilBuilder: BrTaggerTagStencilBuilder));
-						namedTags: labels ];
+						namedTags: (commits at: i) labels ];
 				width: 200.
 			list column
 				title: 'Commit';
@@ -93,7 +86,7 @@ PureGitRepository >> gtHistoryFor: composite [
 						aptitude: BrGlamorousLabelAptitude new;
 						hFitContent;
 						vFitContent ];
-				dataBinder: [ :e :i | e text: (commits at: i) shortCommitId ];
+				dataBinder: [ :e :i | e text: (commits at: i) shortId ];
 				width: 70.
 			list column
 				title: 'Author';
@@ -110,7 +103,7 @@ PureGitRepository >> gtHistoryFor: composite [
 						aptitude: BrGlamorousLabelAptitude new;
 						hFitContent;
 						vFitContent ];
-				dataBinder: [ :e :i | e text: (commits at: i) comment trimBoth firstLineWithEllipsis ].
+				dataBinder: [ :e :i | e text: (commits at: i) comment firstLineWithEllipsis ].
 			list
 				when: BrSelectionDoubleClicked
 				do: [ :anEvent | 
