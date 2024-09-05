@@ -69,3 +69,46 @@ PureGitExamples >> exampleGt4GitRootCommit [
 
 	^ rootCommit
 ]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleSvcDemo [
+	<gtExample>
+	<noTest>
+
+	| repository |
+
+	repository := PureGitRepository on: FileLocator temp / 'svc-demo'.
+
+	repository location exists
+		ifTrue: [ repository location deleteAll ].
+
+	repository clone: 'git@github.com:svenvc/svc-demo.git'.
+
+	self assert: repository exists.
+
+	^ repository
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleSvcDemoEmptyFileCommit [
+	<gtExample>
+	<noTest>
+
+	| repository commit tree docTree emptyEntry emptyBlob |
+
+	repository := self exampleSvcDemo.
+
+	commit := repository log detect: [ :each | each timestamp asBeginOfDay = '2024-09-05' asZTimestamp ].
+
+	self assert: commit comment = 'Added an empty file'.
+
+	tree := commit tree.
+	docTree := (tree entries detect: [ :each | each name = 'doc' ]) resolve.
+	emptyEntry := docTree entries detect: [ :each | each name = 'empty' ].
+	emptyBlob := emptyEntry resolve.
+
+	self assert: emptyEntry id = (PureGitBlob hashText: String empty) hex.
+	self assert: emptyBlob contents utf8Decoded = String empty.
+
+	^ commit
+]
