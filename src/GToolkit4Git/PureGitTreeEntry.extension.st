@@ -11,3 +11,13 @@ PureGitTreeEntry >> gtDetails [
 		{ 'id' . self id }
 	}
 ]
+
+{ #category : #'*GToolkit4Git' }
+PureGitTreeEntry >> gtResolveActionFor: composite [
+	<gtAction>
+	^ composite button
+		label: 'Resolve';
+		priority: 20;
+		action: [ :element |
+			element phlow spawnObject: self resolve ]
+]
