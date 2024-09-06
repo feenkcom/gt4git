@@ -19,7 +19,7 @@ PureGitBlob >> gtImageFor: composite [
 PureGitBlob >> gtTextFor: composite [
 	<gtView>
 	| text |
-	[ text := self contents utf8Decoded ] 
+	[ text := self text ] 
 		on: ZnCharacterEncodingError 
 		do: [ ^ composite empty ].
 	^ composite textEditor

@@ -26,6 +26,6 @@ PureGitTree >> gtViewEntriesFor: composite [
 			action: [ :element :item | 
 				BlTaskAction
 					enqueueElement: element
-					action: [ element phlow spawnObject: item ] ];
+					action: [ element phlow spawnObject: item value ] ];
 		send: #resolve
 ]

@@ -98,17 +98,82 @@ PureGitExamples >> exampleSvcDemoEmptyFileCommit [
 
 	repository := self exampleSvcDemo.
 
-	commit := repository log detect: [ :each | each timestamp asBeginOfDay = '2024-09-05' asZTimestamp ].
+	commit := repository log 
+			detect: [ :each | each timestamp asBeginOfDay = '2024-09-05' asZTimestamp ].
 
 	self assert: commit comment = 'Added an empty file'.
 
 	tree := commit tree.
-	docTree := (tree entries detect: [ :each | each name = 'doc' ]) resolve.
-	emptyEntry := docTree entries detect: [ :each | each name = 'empty' ].
+	docTree := (tree entryNamed: 'doc') resolve.
+	emptyEntry := docTree entryNamed: 'empty'.
 	emptyBlob := emptyEntry resolve.
 
 	self assert: emptyEntry id = (PureGitBlob hashText: String empty) hex.
-	self assert: emptyBlob contents utf8Decoded = String empty.
+	self assert: emptyBlob text = String empty.
+
+	^ commit
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleSvcDemoTestCommit [
+	<gtExample>
+	<noTest>
+
+	| repository commit parentCommit tree parentTree entry parentEntry docTree parentDocTree diff |
+
+	repository := self exampleSvcDemo.
+
+	commit := repository log
+		detect: [ :each | each timestamp asBeginOfDay = '2024-09-06' asZTimestamp ].
+
+	self assert: commit comment lines first = 'test commit'.
+
+	parentCommit := commit parent.
+
+	tree := commit tree.
+	parentTree := parentCommit tree.
+
+	"only the 4th entry, doc, changed"
+	#(1 2 3 5) do: [ :index |
+		entry := tree entries at: index.
+		parentEntry := parentTree entries at: index.
+		self assert: entry name = parentEntry name.
+		self assert: entry id = parentEntry id ].
+	entry := tree entries fourth.
+	parentEntry := parentTree entries fourth.
+	self assert: entry name = 'doc'.
+	self assert: entry name = parentEntry name.
+	self assert: entry id ~= parentEntry id.
+
+	docTree := entry resolve.
+	parentDocTree := parentEntry resolve.
+
+	"glider.jpg is unchanged & identical"
+	self assert: (docTree entryNamed: 'glider.jpg') id = (parentDocTree entryNamed: 'glider.jpg') id.
+	"empty was deleted"
+	self assert: (docTree hasEntryNamed: 'empty') not.
+	self assert: (parentDocTree hasEntryNamed: 'empty').
+	"test.txt was added"
+	self assert: (docTree hasEntryNamed: 'test.txt').
+	self assert: (parentDocTree hasEntryNamed: 'test.txt') not.
+	"NOTES.md was changed"
+	self assert: (docTree entryNamed: 'NOTES.md') id ~= (parentDocTree entryNamed: 'NOTES.md') id.
+
+	entry := docTree entryNamed: 'test.txt'.
+	self assert: entry id = (PureGitBlob hashText: 'what is up, doc?') hex.
+	self assert: entry resolve text = 'what is up, doc?'.
+
+	entry := docTree entryNamed: 'NOTES.md'.
+	parentEntry := parentDocTree entryNamed: 'NOTES.md'.
+
+	diff := GtDiffBuilder
+		computeDifferencesFrom: entry resolve text 
+		to: parentEntry resolve text
+		using: GtLineDiffSplitter ignoringEOLChars.
+
+	self assert: diff changes size = 2.
+	self assert: diff changes first isReplacement.
+	self assert: diff changes second isDeletion.
 
 	^ commit
 ]
