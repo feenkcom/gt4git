@@ -98,7 +98,8 @@ PureGitExamples >> exampleSvcDemoEmptyFileCommit [
 
 	repository := self exampleSvcDemo.
 
-	commit := repository log detect: [ :each | each timestamp asBeginOfDay = '2024-09-05' asZTimestamp ].
+	commit := repository log 
+			detect: [ :each | each timestamp asBeginOfDay = '2024-09-05' asZTimestamp ].
 
 	self assert: commit comment = 'Added an empty file'.
 
