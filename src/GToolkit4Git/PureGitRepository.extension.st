@@ -42,6 +42,8 @@ PureGitRepository >> gtDetailsFor: composite [
 { #category : #'*GToolkit4Git' }
 PureGitRepository >> gtHistoryFor: composite [
 	<gtView>
+	| timestampFormat |
+	timestampFormat := ZTimestampFormat fromString: '2001-02-03 16:05'.
 	^ composite explicit
 		title: 'History';
 		tooltip: 'Don''s all commits view';
@@ -58,15 +60,15 @@ PureGitRepository >> gtHistoryFor: composite [
 			list column
 				title: 'Graph';
 				stencil: [ :_ :i | ruler gtElementForRow: i value withColorStrategy: color ];
-				width: 100.
+				weight: 0.5.
 			list column
 				title: 'Timestamp';
 				cellStencil: [ BrLabel new
 						aptitude: BrGlamorousLabelAptitude new;
 						hFitContent;
 						vFitContent ];
-				dataBinder: [ :e :i | e text: (commits at: i) timestamp ];
-				width: 120.
+				dataBinder: [ :e :i | e text: (timestampFormat format: (commits at: i) timestamp) ];
+				weight: 0.5.
 			list column
 				title: 'Refs';
 				stencil: [ :_ :i | 
@@ -79,7 +81,7 @@ PureGitRepository >> gtHistoryFor: composite [
 										fitContent;
 										text: aTag name ] asStencilBuilder: BrTaggerTagStencilBuilder));
 						namedTags: (commits at: i) labels ];
-				width: 200.
+				weight: 1.
 			list column
 				title: 'Commit';
 				cellStencil: [ BrLabel new
@@ -87,7 +89,7 @@ PureGitRepository >> gtHistoryFor: composite [
 						hFitContent;
 						vFitContent ];
 				dataBinder: [ :e :i | e text: (commits at: i) shortId ];
-				width: 70.
+				weight: 0.5.
 			list column
 				title: 'Author';
 				cellStencil: [ BrLabel new
@@ -95,15 +97,15 @@ PureGitRepository >> gtHistoryFor: composite [
 						hFitContent;
 						vFitContent ];
 				dataBinder: [ :e :i | e text: (commits at: i) author ];
-				width: 100.
+				weight: 1.
 			list column
-				title: 'Message';
-				weight: 1;
+				title: 'Comment';
 				cellStencil: [ BrLabel new
 						aptitude: BrGlamorousLabelAptitude new;
 						hFitContent;
 						vFitContent ];
-				dataBinder: [ :e :i | e text: (commits at: i) comment firstLineWithEllipsis ].
+				dataBinder: [ :e :i | e text: (commits at: i) comment firstLineWithEllipsis ];
+				weight: 2.
 			list
 				when: BrSelectionDoubleClicked
 				do: [ :anEvent | 
@@ -117,14 +119,16 @@ PureGitRepository >> gtHistoryFor: composite [
 { #category : #'*GToolkit4Git' }
 PureGitRepository >> gtLogFor: composite [
 	<gtView>
+	| timestampFormat |
+	timestampFormat := ZTimestampFormat fromString: '2001-02-03 16:05'.
 	^ composite columnedList
 		title: 'Log';
 		priority: 30;
 		items: [ self log ];
-		column: 'Commit' text: [ :commit | commit id ];
-		column: 'Timestamp' text: [ :commit | commit timestamp ];
+		column: 'Commit' text: [ :commit | commit shortCommitId ] weight: 0.5;
+		column: 'Timestamp' text: [ :commit | timestampFormat format: commit timestamp ] weight: 0.5;
 		column: 'Author' text: [ :commit | commit author ];
-		column: 'Comment' text: [ :commit | commit comment firstLineWithEllipsis ]
+		column: 'Comment' text: [ :commit | commit comment firstLineWithEllipsis ] weight: 2
 ]
 
 { #category : #'*GToolkit4Git' }

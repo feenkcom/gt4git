@@ -158,6 +158,24 @@ PureGitExamples >> exampleSvcDemoTestCommit [
 	self assert: (parentDocTree hasEntryNamed: 'test.txt') not.
 	"NOTES.md was changed"
 	self assert: (docTree entryNamed: 'NOTES.md') id ~= (parentDocTree entryNamed: 'NOTES.md') id.
+	
+	diff := GtDiffBuilder
+		computeDifferencesFrom: (String cr join: parentTree flatPaths)
+		to: (String cr join: tree flatPaths)
+		using: GtLineDiffSplitter ignoringEOLChars.
+
+	self assert: diff changes size = 2.
+	self assert: diff changes first isReplacement.
+	self assert: diff changes second isInsertion.
+
+	diff := GtDiffBuilder
+		computeDifferencesFrom: parentTree flatPaths
+		to: tree flatPaths
+		using: GtNullDiffSplitter new.
+
+	self assert: diff changes size = 2.
+	self assert: diff changes first isReplacement.
+	self assert: diff changes second isInsertion.
 
 	entry := docTree entryNamed: 'test.txt'.
 	self assert: entry id = (PureGitBlob hashText: 'what is up, doc?') hex.
