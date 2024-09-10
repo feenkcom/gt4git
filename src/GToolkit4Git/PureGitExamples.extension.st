@@ -71,6 +71,41 @@ PureGitExamples >> exampleGt4GitRootCommit [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleInitializedRepository [
+	<gtExample>
+	<noTest>
+	
+	| repository |
+	
+	repository := self exampleNonExistingRepository.
+
+	repository init.
+
+	self assert: repository exists.
+	self assert: repository hasHead not.
+
+	^ repository
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleNonExistingRepository [
+	<gtExample>
+	<noTest>
+	
+	| randomName location repository |
+	
+	randomName := 'repo-' , 999 atRandom asString.
+
+	location := FileLocator temp / randomName.
+	
+	repository := PureGitRepository on: location.
+
+	self assert: repository exists not.
+
+	^ repository
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitExamples >> exampleSvcDemo [
 	<gtExample>
 	<noTest>
@@ -85,6 +120,7 @@ PureGitExamples >> exampleSvcDemo [
 	repository clone: 'git@github.com:svenvc/svc-demo.git'.
 
 	self assert: repository exists.
+	self assert: repository hasHead.
 
 	^ repository
 ]
