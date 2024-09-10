@@ -20,7 +20,9 @@ IceGitCliPlatform >> gtDetailsFor: aView [
 		priority: 10;
 		items: [ {
 			{ 'git executable' . self gitExecutable }.
+			{ 'git path resolved' . [ self resolveGitPath ] on: Error do: [ '' ] }. 
 			{ 'git version' . [ self gitVersion ] on: Error do: [ '' ] }.
+			{ 'git exec path' . [ self gitExecPath ] on: Error do: [ '' ] }. 
 			{ 'valid git' . [ self validateGit ] on: Error do: [ false ] }.
 			{ 'valid git setup' . [ self validateGitSetup ] on: Error do: [ false ] }.
 			{ 'installed' . self isInstalled }.
