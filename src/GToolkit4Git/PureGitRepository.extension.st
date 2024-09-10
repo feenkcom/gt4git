@@ -132,6 +132,17 @@ PureGitRepository >> gtLogFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitRepository >> gtStatusFor: composite [
+	<gtView>
+	^ composite columnedList
+		title: 'Status';
+		priority: 25;
+		items: [ self status ];
+		column: 'Status' text: #status;
+		column: 'Path' text: #path weight: 3
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitRepository >> gtTagsFor: composite [
 	<gtView>
 	^ composite columnedList
