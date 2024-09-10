@@ -82,6 +82,7 @@ PureGitExamples >> exampleInitializedRepository [
 	repository init.
 
 	self assert: repository exists.
+	self assert: repository hasHead not.
 
 	^ repository
 ]
@@ -119,6 +120,7 @@ PureGitExamples >> exampleSvcDemo [
 	repository clone: 'git@github.com:svenvc/svc-demo.git'.
 
 	self assert: repository exists.
+	self assert: repository hasHead.
 
 	^ repository
 ]
