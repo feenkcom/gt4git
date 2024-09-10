@@ -71,6 +71,40 @@ PureGitExamples >> exampleGt4GitRootCommit [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleInitializedRepository [
+	<gtExample>
+	<noTest>
+	
+	| repository |
+	
+	repository := self exampleNonExistingRepository.
+
+	repository init.
+
+	self assert: repository exists.
+
+	^ repository
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleNonExistingRepository [
+	<gtExample>
+	<noTest>
+	
+	| randomName location repository |
+	
+	randomName := 'repo-' , 999 atRandom asString.
+
+	location := FileLocator temp / randomName.
+	
+	repository := PureGitRepository on: location.
+
+	self assert: repository exists not.
+
+	^ repository
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitExamples >> exampleSvcDemo [
 	<gtExample>
 	<noTest>

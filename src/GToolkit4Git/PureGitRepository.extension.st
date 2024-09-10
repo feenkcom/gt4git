@@ -19,7 +19,7 @@ PureGitRepository >> gtDetails [
 		{ 'location' . self location ifNil: [ 'not set' ] . self location }.
 		{ 'exists' . self exists }
 	}.
-	self exists
+	self hasHead
 		ifTrue: [
 			details := details , {
 				{ 'HEAD' . self head commitId . self head }
@@ -134,12 +134,30 @@ PureGitRepository >> gtLogFor: composite [
 { #category : #'*GToolkit4Git' }
 PureGitRepository >> gtStatusFor: composite [
 	<gtView>
+	| fileStatuses |
+	self exists ifFalse: [ ^ composite text
+				title: 'Status';
+				priority: 25;
+				text: 'git repository does not exist' ].
+	fileStatuses := self status.
+	fileStatuses
+		ifEmpty: [ ^ composite text
+				title: 'Status';
+				priority: 25;
+				text: 'nothing to commit, working tree clean' ].
 	^ composite columnedList
 		title: 'Status';
 		priority: 25;
-		items: [ self status ];
-		column: 'Status' text: #status;
-		column: 'Path' text: #path weight: 3
+		items: [ fileStatuses ];
+		column: 'Status in index'
+			text: #statusInIndex
+			weight: 0.5;
+		column: 'Status in work tree'
+			text: #statusInWorkTree
+			weight: 0.5;
+		column: 'Path'
+			text: #path
+			weight: 3
 ]
 
 { #category : #'*GToolkit4Git' }
