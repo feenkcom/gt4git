@@ -9,7 +9,8 @@ PureGitRepository >> gtBranchesFor: composite [
 		items: [ self allBranches ];
 		column: 'Name' text: [ :branch | branch name ];
 		column: 'Type' text: [ :branch | branch branchType ];
-		column: 'Commit' text: [ :branch | branch commitId ]
+		column: 'Commit' text: [ :branch | branch commitId ];
+		actionUpdateButton
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -36,7 +37,8 @@ PureGitRepository >> gtDetailsFor: composite [
 		items: [ self gtDetails ];
 		column: 'key' text: #first;
 		column: 'value' text: #second weight: 3;
-		send: #last
+		send: #last;
+		actionUpdateButton
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -113,7 +115,8 @@ PureGitRepository >> gtHistoryFor: composite [
 						ifNotEmpty: [ :theIndices | anEvent currentTarget phlow spawnObject: (commits at: theIndices first) ] ].
 			list addAptitude: BrColumnedListHeaderAptitude.
 			list items: (1 to: ruler numberOfRows).
-			list ]
+			list ];
+		actionUpdateButton
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -128,14 +131,16 @@ PureGitRepository >> gtLogFor: composite [
 		column: 'Commit' text: [ :commit | commit shortCommitId ] weight: 0.5;
 		column: 'Timestamp' text: [ :commit | timestampFormat format: commit timestamp ] weight: 0.5;
 		column: 'Author' text: [ :commit | commit author ];
-		column: 'Comment' text: [ :commit | commit comment firstLineWithEllipsis ] weight: 2
+		column: 'Comment' text: [ :commit | commit comment firstLineWithEllipsis ] weight: 2;
+		actionUpdateButton
 ]
 
 { #category : #'*GToolkit4Git' }
 PureGitRepository >> gtStatusFor: composite [
 	<gtView>
 	| fileStatuses |
-	self exists ifFalse: [ ^ composite text
+	self exists 
+		ifFalse: [ ^ composite text
 				title: 'Status';
 				priority: 25;
 				text: 'git repository does not exist' ].
@@ -157,7 +162,8 @@ PureGitRepository >> gtStatusFor: composite [
 			weight: 0.5;
 		column: 'Path'
 			text: #path
-			weight: 3
+			weight: 3;
+		actionUpdateButton
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -168,7 +174,8 @@ PureGitRepository >> gtTagsFor: composite [
 		priority: 40;
 		items: [ self tags ];
 		column: 'Name' text: [ :tag | tag name ];
-		column: 'Commit' text: [ :tag | tag commitId ]
+		column: 'Commit' text: [ :tag | tag commitId ];
+		actionUpdateButton
 ]
 
 { #category : #'*GToolkit4Git' }
