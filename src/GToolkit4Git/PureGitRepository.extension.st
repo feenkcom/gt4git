@@ -120,6 +120,16 @@ PureGitRepository >> gtHistoryFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitRepository >> gtInternalsFor: composite [
+	<gtView>
+	^ composite forward
+		title: 'Internals';
+		priority: 50;
+		object: [ self internals ];
+		view: #gtItemsFor:
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitRepository >> gtLogFor: composite [
 	<gtView>
 	| timestampFormat |
