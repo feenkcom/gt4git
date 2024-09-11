@@ -10,6 +10,7 @@ PureGitRepository >> gtBranchesFor: composite [
 		column: 'Name' text: #name;
 		column: 'Type' text: #branchType;
 		column: 'Commit' text: #shortCommitId;
+		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton
 ]
 
@@ -38,6 +39,7 @@ PureGitRepository >> gtDetailsFor: composite [
 		column: 'key' text: #first;
 		column: 'value' text: #second weight: 3;
 		send: #last;
+		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton
 ]
 
@@ -116,6 +118,7 @@ PureGitRepository >> gtHistoryFor: composite [
 			list addAptitude: BrColumnedListHeaderAptitude.
 			list items: (1 to: ruler numberOfRows).
 			list ];
+		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton
 ]
 
@@ -126,6 +129,7 @@ PureGitRepository >> gtInternalsFor: composite [
 		title: 'Internals';
 		priority: 50;
 		object: [ self internals ];
+		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		view: #gtItemsFor:
 ]
 
@@ -142,6 +146,7 @@ PureGitRepository >> gtLogFor: composite [
 		column: 'Timestamp' text: [ :commit | timestampFormat format: commit timestamp ] weight: 0.5;
 		column: 'Author' text: [ :commit | commit author ];
 		column: 'Comment' text: [ :commit | commit comment firstLineWithEllipsis ] weight: 2;
+		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton
 ]
 
@@ -153,13 +158,17 @@ PureGitRepository >> gtStatusFor: composite [
 		ifFalse: [ ^ composite text
 				title: 'Status';
 				priority: 25;
-				text: 'git repository does not exist' ].
+				text: 'git repository does not exist';
+				updateWhen: PureGitRepositoryModified in: [ self announcer ];
+				actionUpdateButton ].
 	fileStatuses := self status.
 	fileStatuses
 		ifEmpty: [ ^ composite text
 				title: 'Status';
 				priority: 25;
-				text: 'nothing to commit, working tree clean' ].
+				text: 'nothing to commit, working tree clean';
+				updateWhen: PureGitRepositoryModified in: [ self announcer ];
+				actionUpdateButton ].
 	^ composite columnedList
 		title: 'Status';
 		priority: 25;
@@ -173,6 +182,7 @@ PureGitRepository >> gtStatusFor: composite [
 		column: 'Path'
 			text: #path
 			weight: 3;
+		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton
 ]
 
@@ -185,6 +195,7 @@ PureGitRepository >> gtTagsFor: composite [
 		items: [ self tags ];
 		column: 'Name' text: #name ;
 		column: 'Commit' text: #shortCommitId;
+		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton
 ]
 
