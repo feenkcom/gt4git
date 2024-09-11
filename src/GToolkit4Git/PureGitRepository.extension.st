@@ -16,15 +16,16 @@ PureGitRepository >> gtBranchesFor: composite [
 
 { #category : #'*GToolkit4Git' }
 PureGitRepository >> gtDetails [
-	| details |
+	| details head |
 	details := {
 		{ 'location' . self location ifNil: [ 'not set' ] . self location }.
 		{ 'exists' . self exists }
 	}.
 	self hasHead
 		ifTrue: [
+			head := self head.
 			details := details , {
-				{ 'HEAD' . self head shortCommitId . self head }
+				{ 'HEAD' . head shortCommitId . head }
 			} ].
 	^ details
 ]
@@ -153,35 +154,23 @@ PureGitRepository >> gtLogFor: composite [
 { #category : #'*GToolkit4Git' }
 PureGitRepository >> gtStatusFor: composite [
 	<gtView>
-	| fileStatuses |
-	self exists 
-		ifFalse: [ ^ composite text
-				title: 'Status';
-				priority: 25;
-				text: 'git repository does not exist';
-				updateWhen: PureGitRepositoryModified in: [ self announcer ];
-				actionUpdateButton ].
-	fileStatuses := self status.
-	fileStatuses
-		ifEmpty: [ ^ composite text
-				title: 'Status';
-				priority: 25;
-				text: 'nothing to commit, working tree clean';
-				updateWhen: PureGitRepositoryModified in: [ self announcer ];
-				actionUpdateButton ].
-	^ composite columnedList
+	^ composite explicit
 		title: 'Status';
 		priority: 25;
-		items: [ fileStatuses ];
-		column: 'Status in index'
-			text: #statusInIndex
-			weight: 0.5;
-		column: 'Status in work tree'
-			text: #statusInWorkTree
-			weight: 0.5;
-		column: 'Path'
-			text: #path
-			weight: 3;
+		stencil: [
+			self exists
+				ifTrue: [ | fileStatuses |
+					(fileStatuses := self status)
+						ifNotEmpty: [
+							composite columnedList
+								items: [ fileStatuses ];
+								column: 'Status in index' text: #statusInIndex weight: 0.5;
+								column: 'Status in work tree' text: #statusInWorkTree weight: 0.5;
+								column: 'Path' text: #path weight: 3]
+						ifEmpty: [
+							composite text text: 'nothing to commit, working tree clean' ]]
+				ifFalse: [
+					composite text text: 'git repository does not exist' ] ];
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton
 ]
