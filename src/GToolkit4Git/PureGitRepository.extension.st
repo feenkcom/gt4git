@@ -7,9 +7,9 @@ PureGitRepository >> gtBranchesFor: composite [
 		title: 'Branches';
 		priority: 35;
 		items: [ self allBranches ];
-		column: 'Name' text: [ :branch | branch name ];
-		column: 'Type' text: [ :branch | branch branchType ];
-		column: 'Commit' text: [ :branch | branch commitId ];
+		column: 'Name' text: #name;
+		column: 'Type' text: #branchType;
+		column: 'Commit' text: #shortCommitId;
 		actionUpdateButton
 ]
 
@@ -23,7 +23,7 @@ PureGitRepository >> gtDetails [
 	self hasHead
 		ifTrue: [
 			details := details , {
-				{ 'HEAD' . self head commitId . self head }
+				{ 'HEAD' . self head shortCommitId . self head }
 			} ].
 	^ details
 ]
@@ -183,8 +183,8 @@ PureGitRepository >> gtTagsFor: composite [
 		title: 'Tags';
 		priority: 40;
 		items: [ self tags ];
-		column: 'Name' text: [ :tag | tag name ];
-		column: 'Commit' text: [ :tag | tag commitId ];
+		column: 'Name' text: #name ;
+		column: 'Commit' text: #shortCommitId;
 		actionUpdateButton
 ]
 

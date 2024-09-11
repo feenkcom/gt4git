@@ -3,7 +3,9 @@ Extension { #name : #PureGitTree }
 { #category : #'*GToolkit4Git' }
 PureGitTree >> gtDetails [
 	^ super gtDetails , {
-		{ 'tree' . self id }.
+		{ 'tree'
+			. self shortId 
+			. self id }.
 		{ 'entries'
 			. self entries size
 			. self entries }
@@ -21,7 +23,7 @@ PureGitTree >> gtViewEntriesFor: composite [
 		column: 'name' text: #name;
 		column: 'type' text: #type;
 		column: 'mode' text: #mode;
-		column: 'id' text: #id;
+		column: 'id' text: #shortId;
 		contextItemLabel: 'Inspect entry'
 			action: [ :element :item | 
 				BlTaskAction

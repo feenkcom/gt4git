@@ -13,12 +13,14 @@ PureGitCommit >> gtCommentFor: composite [
 { #category : #'*GToolkit4Git' }
 PureGitCommit >> gtDetails [
 	^ super gtDetails , {
-		{ 'commit' . self id  }.
+		{ 'commit'
+			. self shortCommitId 
+			. self id  }.
 		{ 'tree' 
-			. self treeId
+			. self shortTreeId
 			. self tree }.
 		{ 'parents'
-			. self parentIds asCommaString
+			. self shortParentIds asCommaString
 			. self parents }.
 		{ 'author' . self author }.
 		{ 'timestamp' . self timestamp }.
