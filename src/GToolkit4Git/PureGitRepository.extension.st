@@ -7,23 +7,25 @@ PureGitRepository >> gtBranchesFor: composite [
 		title: 'Branches';
 		priority: 35;
 		items: [ self allBranches ];
-		column: 'Name' text: [ :branch | branch name ];
-		column: 'Type' text: [ :branch | branch branchType ];
-		column: 'Commit' text: [ :branch | branch commitId ];
+		column: 'Name' text: #name;
+		column: 'Type' text: #branchType;
+		column: 'Commit' text: #shortCommitId;
+		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton
 ]
 
 { #category : #'*GToolkit4Git' }
 PureGitRepository >> gtDetails [
-	| details |
+	| details head |
 	details := {
 		{ 'location' . self location ifNil: [ 'not set' ] . self location }.
 		{ 'exists' . self exists }
 	}.
 	self hasHead
 		ifTrue: [
+			head := self head.
 			details := details , {
-				{ 'HEAD' . self head commitId . self head }
+				{ 'HEAD' . head shortCommitId . head }
 			} ].
 	^ details
 ]
@@ -38,6 +40,7 @@ PureGitRepository >> gtDetailsFor: composite [
 		column: 'key' text: #first;
 		column: 'value' text: #second weight: 3;
 		send: #last;
+		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton
 ]
 
@@ -116,6 +119,7 @@ PureGitRepository >> gtHistoryFor: composite [
 			list addAptitude: BrColumnedListHeaderAptitude.
 			list items: (1 to: ruler numberOfRows).
 			list ];
+		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton
 ]
 
@@ -126,6 +130,7 @@ PureGitRepository >> gtInternalsFor: composite [
 		title: 'Internals';
 		priority: 50;
 		object: [ self internals ];
+		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		view: #gtItemsFor:
 ]
 
@@ -142,37 +147,31 @@ PureGitRepository >> gtLogFor: composite [
 		column: 'Timestamp' text: [ :commit | timestampFormat format: commit timestamp ] weight: 0.5;
 		column: 'Author' text: [ :commit | commit author ];
 		column: 'Comment' text: [ :commit | commit comment firstLineWithEllipsis ] weight: 2;
+		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton
 ]
 
 { #category : #'*GToolkit4Git' }
 PureGitRepository >> gtStatusFor: composite [
 	<gtView>
-	| fileStatuses |
-	self exists 
-		ifFalse: [ ^ composite text
-				title: 'Status';
-				priority: 25;
-				text: 'git repository does not exist' ].
-	fileStatuses := self status.
-	fileStatuses
-		ifEmpty: [ ^ composite text
-				title: 'Status';
-				priority: 25;
-				text: 'nothing to commit, working tree clean' ].
-	^ composite columnedList
+	^ composite explicit
 		title: 'Status';
 		priority: 25;
-		items: [ fileStatuses ];
-		column: 'Status in index'
-			text: #statusInIndex
-			weight: 0.5;
-		column: 'Status in work tree'
-			text: #statusInWorkTree
-			weight: 0.5;
-		column: 'Path'
-			text: #path
-			weight: 3;
+		stencil: [
+			self exists
+				ifTrue: [ | fileStatuses |
+					(fileStatuses := self status)
+						ifNotEmpty: [
+							composite columnedList
+								items: [ fileStatuses ];
+								column: 'Status in index' text: #statusInIndex weight: 0.5;
+								column: 'Status in work tree' text: #statusInWorkTree weight: 0.5;
+								column: 'Path' text: #path weight: 3]
+						ifEmpty: [
+							composite text text: 'nothing to commit, working tree clean' ]]
+				ifFalse: [
+					composite text text: 'git repository does not exist' ] ];
+		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton
 ]
 
@@ -183,8 +182,9 @@ PureGitRepository >> gtTagsFor: composite [
 		title: 'Tags';
 		priority: 40;
 		items: [ self tags ];
-		column: 'Name' text: [ :tag | tag name ];
-		column: 'Commit' text: [ :tag | tag commitId ];
+		column: 'Name' text: #name ;
+		column: 'Commit' text: #shortCommitId;
+		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton
 ]
 

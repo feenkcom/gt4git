@@ -8,7 +8,9 @@ PureGitTreeEntry >> gtDetails [
 		{ 'mode'
 			. '{1} [{2}]' format: { self mode . self modeDescription } 
 			. self mode }.
-		{ 'id' . self id }
+		{ 'id'
+			. self shortId 
+			. self id }
 	}
 ]
 

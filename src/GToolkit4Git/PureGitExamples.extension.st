@@ -1,6 +1,48 @@
 Extension { #name : #PureGitExamples }
 
 { #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleFileContents [
+	^ 'Sic mundus creatus est.'
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleFilename [
+	^ 'file-1.txt'
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleFirstCommitComment [
+	^ 'First commit'
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleFirstCommitInRepository [
+	<gtExample>
+	<noTest>
+	
+	| repository head entry |
+	
+	repository := self exampleNewStagedFileInRepository.
+
+	repository commit: self exampleFirstCommitComment.
+
+	self assert: repository status isEmpty.
+
+	head := repository head.
+
+	self assert: head comment = self exampleFirstCommitComment.
+	self assert: head numberOfParents = 0.
+	self assert: head hasParents not.
+
+	entry := head tree entries first.
+	
+	self assert: entry name = self exampleFilename.
+	self assert: entry resolve text lines first = self exampleFileContents.
+
+	^ repository
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitExamples >> exampleGToolkit [
 	<gtExample>
 	<noTest>
@@ -88,16 +130,60 @@ PureGitExamples >> exampleInitializedRepository [
 ]
 
 { #category : #'*GToolkit4Git' }
-PureGitExamples >> exampleNonExistingRepository [
+PureGitExamples >> exampleNewStagedFileInRepository [
 	<gtExample>
 	<noTest>
 	
-	| randomName location repository |
+	| repository fileStatuses |
 	
+	repository := self exampleNewUntrackedFileInRepository.
+
+	fileStatuses := repository status.
+
+	repository stage: fileStatuses first path.
+
+	fileStatuses := repository status.
+
+	self assert: fileStatuses size = 1.
+	self assert: fileStatuses first path = self exampleFilename.
+	self assert: fileStatuses first statusInWorkTree = #unmodified.
+	self assert: fileStatuses first statusInIndex = #added.
+
+	^ repository
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleNewUntrackedFileInRepository [
+	<gtExample>
+	<noTest>
+
+	| repository fileStatuses |
+
+	repository := self exampleInitializedRepository.
+
+	(repository location / self exampleFilename) writeStreamDo: [ :out |
+		(ZnNewLineWriterStream on: out) << self exampleFileContents; cr ].
+
+	fileStatuses := repository status.
+	self assert: fileStatuses size = 1.
+	self assert: fileStatuses first path = self exampleFilename.
+	self assert: fileStatuses first statusInWorkTree = #unknown.
+	self assert: fileStatuses first statusInIndex = #unknown.
+
+	^ repository
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleNonExistingRepository [
+	<gtExample>
+	<noTest>
+
+	| randomName location repository |
+
 	randomName := 'repo-' , 999 atRandom asString.
 
 	location := FileLocator temp / randomName.
-	
+
 	repository := PureGitRepository on: location.
 
 	self assert: repository exists not.
@@ -230,4 +316,40 @@ PureGitExamples >> exampleSvcDemoTestCommit [
 	self assert: diff changes second isDeletion.
 
 	^ commit
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleUnstageFileInRepository [
+	<gtExample>
+	<noTest>
+
+	| repository fileStatuses |
+
+	repository := self exampleFirstCommitInRepository.
+
+	(repository location / 'extra.txt') writeStreamDo: [ :out | out print: 42 ].
+
+	repository stage: 'extra.txt'.
+
+	fileStatuses := repository status.
+
+	self assert: fileStatuses isEmpty not.
+	self assert: fileStatuses first path = 'extra.txt'.
+	self assert:  fileStatuses first statusInIndex = #added.
+
+	repository unstage: 'extra.txt'.
+
+	fileStatuses := repository status.
+
+	self assert: fileStatuses isEmpty not.
+	self assert: fileStatuses first path = 'extra.txt'.
+	self assert:  fileStatuses first statusInIndex = #unknown.
+
+	(repository location / 'extra.txt') delete.
+
+	fileStatuses := repository status.
+
+	self assert: fileStatuses isEmpty.
+
+	^ repository
 ]

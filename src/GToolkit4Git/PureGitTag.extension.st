@@ -4,6 +4,6 @@ Extension { #name : #PureGitTag }
 PureGitTag >> gtDetails [
 	^ super gtDetails , {
 		{ 'tag name' . self name ifNil: [ '' ] . self name }.
-		{ 'commit' . self commitId . self commit }
+		{ 'commit' . self shortCommitId . self commit }
 	}
 ]
