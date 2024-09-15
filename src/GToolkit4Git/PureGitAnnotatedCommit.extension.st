@@ -7,8 +7,8 @@ PureGitAnnotatedCommit >> gtDetailsFor: composite [
 		title: 'Details';
 		priority: 20;
 		items: [ {
-			{ 'Commit' . self commit id . self commit }.
-			{ 'Parents' . ', ' join: (self parents collect: #id) . self parents }.
+			{ 'Commit' . self commit shortCommitId . self commit }.
+			{ 'Parents' . ', ' join: (self parents collect: #shortId) . self parents }.
 			{ 'Labels' . ', ' join: self labels. self labels }
 		} ];
 		column: 'key' text: #first;
