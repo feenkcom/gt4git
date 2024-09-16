@@ -1,13 +1,10 @@
 Extension { #name : #PureGitCommit }
 
 { #category : #'*GToolkit4Git' }
-PureGitCommit >> changesRendered [
-	| textStream |
-	textStream := BlTextStream new.
-	textStream glamorousCodeFont.
-	self changes do: [ :line |
-		self renderDiff: line on: textStream next ].
-	^ textStream contents
+PureGitCommit >> changesToParentAsRopedText [
+	^ self repository diffTool
+		diffArgs: { self id , '^' . self id };
+		asRopedText
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -16,7 +13,7 @@ PureGitCommit >> gtChangesFor: composite [
 	^ composite textEditor
 		title: 'Changes';
 		priority: 24;
-		text: [ self changesRendered ]
+		text: [ self changesToParentAsRopedText ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -48,33 +45,4 @@ PureGitCommit >> gtDetails [
 			. self comment firstLineWithEllipsis
 			. self comment }
 	}
-]
-
-{ #category : #'*GToolkit4Git' }
-PureGitCommit >> renderDiff: line on: textStream [
-	| lineOut firstNonSeparator |
-	lineOut := line.
-	(line beginsWith: 'diff --git')
-		ifTrue: [ | elements |
-			textStream highlight: BrGlamorousColors defaultHeaderBackgroundColor.
-			elements := $ split: line.
-			textStream cr.
-			elements third = elements fourth
-				ifTrue: [ textStream putAll: ($ join: elements allButLast) ]
-				ifFalse: [ textStream putAll: line ].
-			^ textStream cr ].
-	(#('---' '+++' 'index') anySatisfy: [ :prefix | line beginsWith: prefix ])
-		ifTrue: [ ^ self ].
-	(line beginsWith: 'new file')
-		ifTrue: [ ^ textStream putAll: 'new file'; cr ]. 
-	(line beginsWith: 'deleted file')
-		ifTrue: [ ^ textStream putAll: 'deleted file'; cr ].
-	firstNonSeparator := line detect: [ :char | char isSeparator not ] ifNone: [ nil ].
-	firstNonSeparator = $@
-		ifTrue: [ textStream highlight: BrGlamorousColors selectedListItemColor ].
-	firstNonSeparator = $+
-		ifTrue: [ textStream highlight: BrGlamorousColors insertLineColor ].
-	firstNonSeparator = $-
-		ifTrue: [ textStream highlight: BrGlamorousColors removeLineColor ].
-	textStream putAll: line; cr
 ]
