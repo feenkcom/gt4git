@@ -128,7 +128,7 @@ PureGitRepository >> gtInternalsFor: composite [
 	<gtView>
 	^ composite forward
 		title: 'Internals';
-		priority: 50;
+		priority: 80;
 		object: [ self internals ];
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		view: #gtItemsFor:
@@ -149,6 +149,16 @@ PureGitRepository >> gtLogFor: composite [
 		column: 'Comment' text: [ :commit | commit comment firstLineWithEllipsis ] weight: 2;
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitRepository >> gtStagedChangesFor: composite [
+	<gtView>
+	^ composite textEditor
+		title: 'Staged';
+		priority: 50;
+		tooltip: 'Changes added to index for next commit';
+		text: [ self stagedChangesAsRopedText ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -189,6 +199,16 @@ PureGitRepository >> gtTagsFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitRepository >> gtUnstagedChangesFor: composite [
+	<gtView>
+	^ composite textEditor
+		title: 'Unstaged';
+		priority: 55;
+		tooltip: 'Changes made after files were added to index';
+		text: [ self unstagedChangesAsRopedText ]
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitRepository class >> gtViewGitCallsIn: composite [
 	<gtClassView>
 	^ composite columnedList
@@ -202,4 +222,18 @@ PureGitRepository class >> gtViewGitCallsIn: composite [
 					 sort: #selector ascending ];
 		column: 'Selector' text: [ :each | each selector ];
 		column: 'Class' text: [ :each | each methodClass ]
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitRepository >> stagedChangesAsRopedText [
+	^ self diffTool
+		diffArgs: { '--staged' };
+		asRopedText
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitRepository >> unstagedChangesAsRopedText [
+	^ self diffTool
+		diffArgs: { };
+		asRopedText
 ]
