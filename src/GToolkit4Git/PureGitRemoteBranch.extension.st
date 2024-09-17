@@ -6,3 +6,15 @@ PureGitRemoteBranch >> gtDetails [
 		{ 'remote' . self remoteName . self remote }
 	}
 ]
+
+{ #category : #'*GToolkit4Git' }
+PureGitRemoteBranch >> gtTrackersFor: composite [
+	<gtView>
+	^ composite columnedList
+		title: 'Branches';
+		priority: 40;
+		items: [ self trackers ];
+		column: 'Name' text: #name;
+		column: 'Type' text: #branchType;
+		column: 'Commit' text: #shortCommitId
+]
