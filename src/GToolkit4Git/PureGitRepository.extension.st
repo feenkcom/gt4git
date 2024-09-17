@@ -3,6 +3,10 @@ Extension { #name : #PureGitRepository }
 { #category : #'*GToolkit4Git' }
 PureGitRepository >> gtBranchesFor: composite [
 	<gtView>
+	| currentBranchName currentBranchNameThunk |
+	currentBranchName := nil.
+	currentBranchNameThunk := [ currentBranchName ifNil: [
+		currentBranchName := self currentBranchName ] ].
 	^ composite columnedList
 		title: 'Branches';
 		priority: 35;
@@ -10,6 +14,12 @@ PureGitRepository >> gtBranchesFor: composite [
 		column: 'Name' text: #name;
 		column: 'Type' text: #branchType;
 		column: 'Commit' text: #shortCommitId;
+		column: 'Current' 
+			icon: [ :branch | 
+				branch name = currentBranchNameThunk value 
+					ifTrue: [ BrGlamorousIcons greencircle ]
+					ifFalse: [ BrGlamorousIcons empty ] ]
+			width: 75;
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton
 ]
