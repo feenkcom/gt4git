@@ -3,6 +3,10 @@ Extension { #name : #PureGitRepository }
 { #category : #'*GToolkit4Git' }
 PureGitRepository >> gtBranchesFor: composite [
 	<gtView>
+	| currentBranchName currentBranchNameThunk |
+	currentBranchName := nil.
+	currentBranchNameThunk := [ currentBranchName ifNil: [
+		currentBranchName := self currentBranchName ] ].
 	^ composite columnedList
 		title: 'Branches';
 		priority: 35;
@@ -10,6 +14,12 @@ PureGitRepository >> gtBranchesFor: composite [
 		column: 'Name' text: #name;
 		column: 'Type' text: #branchType;
 		column: 'Commit' text: #shortCommitId;
+		column: 'Current' 
+			icon: [ :branch | 
+				branch name = currentBranchNameThunk value 
+					ifTrue: [ BrGlamorousIcons greencircle ]
+					ifFalse: [ BrGlamorousIcons empty ] ]
+			width: 75;
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton
 ]
@@ -42,6 +52,32 @@ PureGitRepository >> gtDetailsFor: composite [
 		send: #last;
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitRepository >> gtFilesFor: composite [
+	<gtView>
+	| fileStatuses fileStatusesThunk |
+	self exists ifFalse: [ ^ composite empty ].
+	fileStatuses := nil.
+	fileStatusesThunk := [ fileStatuses ifNil: [
+		fileStatuses := Dictionary new.
+		self status do: [ :each | fileStatuses at: each path put: each ].
+		fileStatuses ] ].
+	^ (self location gtTreeFor: composite)
+		  title: 'Files';
+		  priority: 45;
+		  column: 'Tracked'
+		  	icon: [ :each | | relative |
+		  		relative := (each relativeTo: self location) pathString.
+		  		(fileStatusesThunk value includesKey: relative)
+		  			ifTrue: [ (fileStatusesThunk value at: relative) statusInIndex = #unknown
+						  ifTrue: [ BrGlamorousIcons close ]
+						  ifFalse: [ BrGlamorousIcons accept ] ]
+		  			ifFalse: [ each isDirectory
+						  ifTrue: [ BrGlamorousIcons empty ]
+						  ifFalse: [ BrGlamorousIcons accept ] ] ]
+		  	width: 100
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -154,6 +190,7 @@ PureGitRepository >> gtLogFor: composite [
 { #category : #'*GToolkit4Git' }
 PureGitRepository >> gtStagedChangesFor: composite [
 	<gtView>
+	self exists ifFalse: [ ^ composite empty ].
 	^ composite textEditor
 		title: 'Staged';
 		priority: 50;
@@ -201,6 +238,7 @@ PureGitRepository >> gtTagsFor: composite [
 { #category : #'*GToolkit4Git' }
 PureGitRepository >> gtUnstagedChangesFor: composite [
 	<gtView>
+	self exists ifFalse: [ ^ composite empty ].
 	^ composite textEditor
 		title: 'Unstaged';
 		priority: 55;
