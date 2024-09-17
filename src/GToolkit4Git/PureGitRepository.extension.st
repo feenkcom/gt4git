@@ -58,6 +58,7 @@ PureGitRepository >> gtDetailsFor: composite [
 PureGitRepository >> gtFilesFor: composite [
 	<gtView>
 	| fileStatuses fileStatusesThunk |
+	self exists ifFalse: [ ^ composite empty ].
 	fileStatuses := nil.
 	fileStatusesThunk := [ fileStatuses ifNil: [
 		fileStatuses := Dictionary new.
@@ -189,6 +190,7 @@ PureGitRepository >> gtLogFor: composite [
 { #category : #'*GToolkit4Git' }
 PureGitRepository >> gtStagedChangesFor: composite [
 	<gtView>
+	self exists ifFalse: [ ^ composite empty ].
 	^ composite textEditor
 		title: 'Staged';
 		priority: 50;
@@ -236,6 +238,7 @@ PureGitRepository >> gtTagsFor: composite [
 { #category : #'*GToolkit4Git' }
 PureGitRepository >> gtUnstagedChangesFor: composite [
 	<gtView>
+	self exists ifFalse: [ ^ composite empty ].
 	^ composite textEditor
 		title: 'Unstaged';
 		priority: 55;
