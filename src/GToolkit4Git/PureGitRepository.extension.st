@@ -188,6 +188,17 @@ PureGitRepository >> gtLogFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitRepository >> gtRemotesFor: composite [
+	<gtView>
+	^ composite columnedList
+		title: 'Remotes';
+		priority: 37;
+		items: [ self remotes ];
+		column: 'name' text: #name;
+		column: 'url' text: #url
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitRepository >> gtStagedChangesFor: composite [
 	<gtView>
 	self exists ifFalse: [ ^ composite empty ].
