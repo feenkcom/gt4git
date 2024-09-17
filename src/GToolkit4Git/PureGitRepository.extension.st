@@ -45,6 +45,31 @@ PureGitRepository >> gtDetailsFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitRepository >> gtFilesFor: composite [
+	<gtView>
+	| fileStatuses fileStatusesThunk |
+	fileStatuses := nil.
+	fileStatusesThunk := [ fileStatuses ifNil: [
+		fileStatuses := Dictionary new.
+		self status do: [ :each | fileStatuses at: each path put: each ].
+		fileStatuses ] ].
+	^ (self location gtTreeFor: composite)
+		  title: 'Files';
+		  priority: 45;
+		  column: 'Tracked'
+		  	icon: [ :each | | relative |
+		  		relative := (each relativeTo: self location) pathString.
+		  		(fileStatusesThunk value includesKey: relative)
+		  			ifTrue: [ (fileStatusesThunk value at: relative) statusInIndex = #unknown
+						  ifTrue: [ BrGlamorousIcons close ]
+						  ifFalse: [ BrGlamorousIcons accept ] ]
+		  			ifFalse: [ each isDirectory
+						  ifTrue: [ BrGlamorousIcons empty ]
+						  ifFalse: [ BrGlamorousIcons accept ] ] ]
+		  	width: 100
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitRepository >> gtHistoryFor: composite [
 	<gtView>
 	| timestampFormat |
