@@ -11,8 +11,9 @@ PureGitRemoteBranch >> gtDetails [
 PureGitRemoteBranch >> gtTrackersFor: composite [
 	<gtView>
 	^ composite columnedList
-		title: 'Branches';
+		title: 'Trackers';
 		priority: 40;
+		tooltip: 'Local branches for which I am the upstream';
 		items: [ self trackers ];
 		column: 'Name' text: #name;
 		column: 'Type' text: #branchType;

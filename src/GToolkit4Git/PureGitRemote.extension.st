@@ -6,6 +6,7 @@ PureGitRemote >> gtBranchesFor: composite [
 	^ composite columnedList
 		title: 'Branches';
 		priority: 40;
+		tooltip: 'Remote branches from this remote';
 		items: [ self branches ];
 		column: 'Name' text: #name;
 		column: 'Type' text: #branchType;
