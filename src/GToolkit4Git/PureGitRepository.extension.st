@@ -16,7 +16,9 @@ PureGitRepository >> gtBranchesFor: composite [
 		column: 'Commit' text: #shortCommitId;
 		column: 'Current' 
 			icon: [ :branch | 
-				branch name = currentBranchNameThunk value 
+				(branch name = currentBranchNameThunk value 
+					or: [ currentBranchNameThunk value isEmpty
+						and: [ branch name includesSubstring: 'HEAD detached' ] ])
 					ifTrue: [ BrGlamorousIcons greencircle ]
 					ifFalse: [ BrGlamorousIcons empty ] ]
 			width: 75;
@@ -26,7 +28,7 @@ PureGitRepository >> gtBranchesFor: composite [
 
 { #category : #'*GToolkit4Git' }
 PureGitRepository >> gtDetails [
-	| details head |
+	| details head branch |
 	details := {
 		{ 'location' . self location ifNil: [ 'not set' ] . self location }.
 		{ 'exists' . self exists }
@@ -34,8 +36,12 @@ PureGitRepository >> gtDetails [
 	self hasHead
 		ifTrue: [
 			head := self head.
+			branch := self branch.
 			details := details , {
-				{ 'HEAD' . head shortCommitId . head }
+				{ 'HEAD' . head shortCommitId . head }.
+				{ 'branch' 
+					. branch ifNil: [ 'HEAD detached' ] ifNotNil: [ branch name ]
+					. branch }
 			} ].
 	^ details
 ]
@@ -206,7 +212,9 @@ PureGitRepository >> gtStagedChangesFor: composite [
 		title: 'Staged';
 		priority: 50;
 		tooltip: 'Changes added to index for next commit';
-		text: [ self stagedChangesAsRopedText ]
+		text: [ self stagedChangesAsRopedText ];
+		updateWhen: PureGitRepositoryModified in: [ self announcer ];
+		actionUpdateButton
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -254,7 +262,9 @@ PureGitRepository >> gtUnstagedChangesFor: composite [
 		title: 'Unstaged';
 		priority: 55;
 		tooltip: 'Changes made after files were added to index';
-		text: [ self unstagedChangesAsRopedText ]
+		text: [ self unstagedChangesAsRopedText ];
+		updateWhen: PureGitRepositoryModified in: [ self announcer ];
+		actionUpdateButton
 ]
 
 { #category : #'*GToolkit4Git' }
