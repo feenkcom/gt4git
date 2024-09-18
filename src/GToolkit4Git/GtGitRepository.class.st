@@ -589,6 +589,9 @@ GtGitRepository >> gtActionExtraMenuFor: anAction [
 					('Recalculate dirty packages' -> [ :e | 
 						self workingCopy forceCalculateDirtyPackages. 
 						e fireEvent: BrDropdownHideWish new]).
+					('Open pure git repository' -> [ :e | 
+						e phlow spawnObject: (PureGitRepository on: self icebergRepository location).
+						e fireEvent: BrDropdownHideWish new ]).
 					('Logged signals' -> [ :e | 
 						e phlow spawnObject: GtGitCliSignal memoryLogger.
 						e fireEvent: BrDropdownHideWish new ]).
