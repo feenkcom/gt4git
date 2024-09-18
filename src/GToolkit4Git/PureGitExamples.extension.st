@@ -220,8 +220,8 @@ PureGitExamples >> exampleSvcDemoEmptyFileCommit [
 
 	repository := self exampleSvcDemo.
 
-	commit := repository log 
-			detect: [ :each | each timestamp asBeginOfDay = '2024-09-05' asZTimestamp ].
+	commit := (repository log 
+			select: [ :each | each timestamp asBeginOfDay = '2024-09-05' asZTimestamp ]) next wait value.
 
 	self assert: commit comment = 'Added an empty file'.
 
@@ -245,8 +245,8 @@ PureGitExamples >> exampleSvcDemoTestCommit [
 
 	repository := self exampleSvcDemo.
 
-	commit := repository log
-		detect: [ :each | each timestamp asBeginOfDay = '2024-09-06' asZTimestamp ].
+	commit := (repository log
+		select: [ :each | each timestamp asBeginOfDay = '2024-09-06' asZTimestamp ]) next wait value.
 
 	self assert: commit comment lines first = 'test commit'.
 
