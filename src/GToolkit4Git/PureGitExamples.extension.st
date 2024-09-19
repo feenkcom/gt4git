@@ -1,8 +1,91 @@
 Extension { #name : #PureGitExamples }
 
 { #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleChangedStagedTrackedFileInRepository [
+	<gtExample>
+	<noTest>
+
+	| repository fileStatuses |
+
+	repository := self exampleChangedTrackedFileInRepository.
+
+	repository stage: self exampleFilename.
+
+	fileStatuses := repository status.
+	self assert: fileStatuses size = 1.
+	self assert: fileStatuses first path = self exampleFilename.
+	self assert: fileStatuses first statusInWorkTree = #unmodified.
+	self assert: fileStatuses first statusInIndex = #modified.
+
+	^ repository
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleChangedTrackedFileInRepository [
+	<gtExample>
+	<noTest>
+
+	| repository fileStatuses |
+
+	repository := self exampleFirstCommitInRepository.
+
+	(repository location / self exampleFilename) writeStreamDo: [ :out |
+		out nextPutAll: self exampleFileContentsChanged ].
+
+	fileStatuses := repository status.
+	self assert: fileStatuses size = 1.
+	self assert: fileStatuses first path = self exampleFilename.
+	self assert: fileStatuses first statusInWorkTree = #modified.
+	self assert: fileStatuses first statusInIndex = #unmodified.
+
+	^ repository
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleDetachedHead [
+	<gtExample>
+	<noTest>
+
+	| repository head branch parent |
+
+	repository := self exampleSecondCommitInRepository.
+
+	head := repository head.
+	branch := repository branch.
+
+	self assert: repository hasDetachedHead not.
+	self assert: head = branch commit.
+	self assert: (repository location / self exampleFilename) contents = self exampleFileContentsChanged.
+
+	parent := head parent.
+
+	parent checkout.
+
+	self assert: repository hasDetachedHead.
+	self assert: repository head = parent.
+	self assert: repository branch isNil.
+	self assert: (repository location / self exampleFilename) contents = self exampleFileContents.
+
+	^ repository
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitExamples >> exampleFileContents [
-	^ 'Sic mundus creatus est.'
+	<gtExample>
+
+	^ String streamContents: [ :out |
+		(ZnNewLineWriterStream on: out) 
+			<< 'Sic mundus creatus est.'; cr ]
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleFileContentsChanged [
+	<gtExample>
+
+	^ String streamContents: [ :out |
+		(ZnNewLineWriterStream on: out) 
+			<< 'Sic mundus creatus est.'; cr;
+			<< 'Anno MMXXIV'; cr ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -37,7 +120,31 @@ PureGitExamples >> exampleFirstCommitInRepository [
 	entry := head tree entries first.
 	
 	self assert: entry name = self exampleFilename.
-	self assert: entry resolve text lines first = self exampleFileContents.
+	self assert: entry resolve text = self exampleFileContents.
+	self assert: entry id = (PureGitBlob hashText: self exampleFileContents).
+
+	^ repository
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleFixDetachedHead [
+	<gtExample>
+	<noTest>
+
+	| repository initialDefaultBranchName branch |
+
+	repository := self exampleDetachedHead.
+
+	initialDefaultBranchName := repository initialDefaultBranchName.
+
+	branch := repository localBranches detect: [ :each | each name = initialDefaultBranchName ].
+
+	branch checkout.
+
+	self assert: repository hasDetachedHead not.
+	self assert: repository head = branch commit.
+	self assert: repository branch = branch.
+	self assert: (repository location / self exampleFilename) contents = self exampleFileContentsChanged.
 
 	^ repository
 ]
@@ -162,7 +269,7 @@ PureGitExamples >> exampleNewUntrackedFileInRepository [
 	repository := self exampleInitializedRepository.
 
 	(repository location / self exampleFilename) writeStreamDo: [ :out |
-		(ZnNewLineWriterStream on: out) << self exampleFileContents; cr ].
+		out nextPutAll: self exampleFileContents ].
 
 	fileStatuses := repository status.
 	self assert: fileStatuses size = 1.
@@ -187,6 +294,40 @@ PureGitExamples >> exampleNonExistingRepository [
 	repository := PureGitRepository on: location.
 
 	self assert: repository exists not.
+
+	^ repository
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleSecondCommitComment [
+	^ 'Second commit'
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleSecondCommitInRepository [
+	<gtExample>
+	<noTest>
+	
+	| repository head entry |
+	
+	repository := self exampleChangedStagedTrackedFileInRepository.
+
+	repository commit: self exampleSecondCommitComment.
+
+	self assert: repository status isEmpty.
+
+	head := repository head.
+
+	self assert: head comment = self exampleSecondCommitComment.
+	self assert: head numberOfParents = 1.
+	self assert: head hasParents.
+	self assert: head parent comment = self exampleFirstCommitComment.
+
+	entry := head tree entries first.
+	
+	self assert: entry name = self exampleFilename.
+	self assert: entry resolve text = self exampleFileContentsChanged.
+	self assert: entry id = (PureGitBlob hashText: self exampleFileContentsChanged).
 
 	^ repository
 ]
@@ -230,7 +371,7 @@ PureGitExamples >> exampleSvcDemoEmptyFileCommit [
 	emptyEntry := docTree entryNamed: 'empty'.
 	emptyBlob := emptyEntry resolve.
 
-	self assert: emptyEntry id = (PureGitBlob hashText: String empty) hex.
+	self assert: emptyEntry id = (PureGitBlob hashText: String empty).
 	self assert: emptyBlob text = String empty.
 
 	^ commit
@@ -300,7 +441,7 @@ PureGitExamples >> exampleSvcDemoTestCommit [
 	self assert: diff changes second isInsertion.
 
 	entry := docTree entryNamed: 'test.txt'.
-	self assert: entry id = (PureGitBlob hashText: 'what is up, doc?') hex.
+	self assert: entry id = (PureGitBlob hashText: 'what is up, doc?').
 	self assert: entry resolve text = 'what is up, doc?'.
 
 	entry := docTree entryNamed: 'NOTES.md'.
