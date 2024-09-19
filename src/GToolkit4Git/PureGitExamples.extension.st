@@ -66,13 +66,6 @@ PureGitExamples >> exampleDetachedHead [
 	self assert: repository branch isNil.
 	self assert: (repository location / self exampleFilename) contents = self exampleFileContents.
 
-	branch checkout.
-
-	self assert: repository hasDetachedHead not.
-	self assert: repository head = branch commit.
-	self assert: repository branch = branch.
-	self assert: (repository location / self exampleFilename) contents = self exampleFileContentsChanged.
-
 	^ repository
 ]
 
@@ -129,6 +122,29 @@ PureGitExamples >> exampleFirstCommitInRepository [
 	self assert: entry name = self exampleFilename.
 	self assert: entry resolve text = self exampleFileContents.
 	self assert: entry id = (PureGitBlob hashText: self exampleFileContents).
+
+	^ repository
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleFixDetachedHead [
+	<gtExample>
+	<noTest>
+
+	| repository initialDefaultBranchName branch |
+
+	repository := self exampleDetachedHead.
+
+	initialDefaultBranchName := repository initialDefaultBranchName.
+
+	branch := repository localBranches detect: [ :each | each name = initialDefaultBranchName ].
+
+	branch checkout.
+
+	self assert: repository hasDetachedHead not.
+	self assert: repository head = branch commit.
+	self assert: repository branch = branch.
+	self assert: (repository location / self exampleFilename) contents = self exampleFileContentsChanged.
 
 	^ repository
 ]
