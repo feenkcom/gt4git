@@ -3,7 +3,7 @@ Extension { #name : #PureGitCommit }
 { #category : #'*GToolkit4Git' }
 PureGitCommit >> changesToParentAsRopedText [
 	^ self repository diffTool
-		diffArgs: { self id , '^' . self id };
+		diffArgs: self changesToParentDiffArgs;
 		asRopedText
 ]
 
