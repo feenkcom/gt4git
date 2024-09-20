@@ -96,7 +96,7 @@ GtGitCliSignal class >> startMemoryLogger [
 
 { #category : #'system startup & shutdown' }
 GtGitCliSignal class >> startUp [
-	self install.
+	"Actual logging is controlled by IceGitCliPlatform>>#isLoggingEnabled"
 	self startMemoryLogger
 ]
 
