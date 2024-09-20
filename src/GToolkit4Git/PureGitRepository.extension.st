@@ -66,24 +66,42 @@ PureGitRepository >> gtFilesFor: composite [
 	| fileStatuses fileStatusesThunk |
 	self exists ifFalse: [ ^ composite empty ].
 	fileStatuses := nil.
-	fileStatusesThunk := [ fileStatuses ifNil: [
-		fileStatuses := Dictionary new.
-		self status do: [ :each | fileStatuses at: each path put: each ].
-		fileStatuses ] ].
+	fileStatusesThunk := [ fileStatuses
+			ifNil: [ fileStatuses := Dictionary new.
+				self status do: [ :each | fileStatuses at: each path put: each ].
+				fileStatuses ] ].
 	^ (self location gtTreeFor: composite)
-		  title: 'Files';
-		  priority: 45;
-		  column: 'Tracked'
-		  	icon: [ :each | | relative |
-		  		relative := (each relativeTo: self location) pathString.
-		  		(fileStatusesThunk value includesKey: relative)
-		  			ifTrue: [ (fileStatusesThunk value at: relative) statusInIndex = #unknown
-						  ifTrue: [ BrGlamorousIcons close ]
-						  ifFalse: [ BrGlamorousIcons accept ] ]
-		  			ifFalse: [ each isDirectory
-						  ifTrue: [ BrGlamorousIcons empty ]
-						  ifFalse: [ BrGlamorousIcons accept ] ] ]
-		  	width: 100
+		title: 'Files';
+		priority: 45;
+		column: 'Tracked'
+			icon: [ :each | 
+				| relative |
+				relative := (each relativeTo: self location) pathString.
+				(fileStatusesThunk value includesKey: relative)
+					ifTrue: [ (fileStatusesThunk value at: relative) statusInIndex = #unknown
+							ifTrue: [ BrGlamorousIcons close ]
+							ifFalse: [ BrGlamorousIcons accept ] ]
+					ifFalse: [ each isDirectory
+							ifTrue: [ BrGlamorousIcons empty ]
+							ifFalse: [ BrGlamorousIcons accept ] ] ]
+			width: 100;
+		contextItemLabel: 'Inspect file in repository'
+			action: [ :element :item | 
+				BlTaskAction
+					enqueueElement: element
+					action: [ element phlow
+							spawnObject: ((PureGitFile inRepository: self)
+									path: (item value relativeTo: self location) pathString;
+									yourself) ] ];
+		contextItemLabel: 'Inspect file reference'
+			action: [ :element :item | 
+				BlTaskAction
+					enqueueElement: element
+					action: [ element phlow spawnObject: item value ] ];
+		send: [ :each | 
+			(PureGitFile inRepository: self)
+				path: (each value relativeTo: self location) pathString;
+				yourself ]
 ]
 
 { #category : #'*GToolkit4Git' }

@@ -24,6 +24,11 @@ PureGitTree >> gtViewEntriesFor: composite [
 		column: 'type' text: #type;
 		column: 'mode' text: #mode;
 		column: 'id' text: #shortId;
+		contextItemLabel: 'Resolve entry'
+			action: [ :element :item | 
+				BlTaskAction
+					enqueueElement: element
+					action: [ element phlow spawnObject: item value resolve ] ];
 		contextItemLabel: 'Inspect entry'
 			action: [ :element :item | 
 				BlTaskAction
