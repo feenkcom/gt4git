@@ -27,6 +27,7 @@ IceGitCliPlatform >> gtDetailsFor: aView [
 			{ 'valid git setup' . [ self validateGitSetup ] on: Error do: [ false ] }.
 			{ 'installed' . self isInstalled }.
 			{ 'signal class' . self signalClass }.
+			{ 'logging enabled' . self isLoggingEnabled }.
 			{ 'sign commits' . self signCommits } } ];
 		column: 'Key' text: #first weight: 0.5;
 		column: 'Value' text: #second;

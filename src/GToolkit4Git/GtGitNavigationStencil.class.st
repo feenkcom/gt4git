@@ -55,7 +55,7 @@ GtGitNavigationStencil >> createListFor: aView [
 				s ];
 		actionButtonIcon: BrGlamorousVectorIcons down
 			tooltip: 'Fetch All'
-			action: [ [ self repositories collect: [ :r | r fetch ] ] fork ];
+			action: [ self fetchAll ];
 		items: [ self repositories ];
 		send: [ :repo | self announce: (GtGitRepositorySelected new repository: repo) ];
 		actionStencil: [ :anElement | 
@@ -69,15 +69,36 @@ GtGitNavigationStencil >> createListFor: aView [
 						anElement phlow fireToolUpdateWish ] ]
 			tooltip: 'Search Repositories';
 		actionUpdateButtonTooltip: 'Refresh List of Repositories';
-		rowDataBinder: [ :aRowElement :aRepository |
-				aRepository = navigationModel repository
-					ifTrue: [ aRowElement states addState: BlElementSelectedState uniqueInstance ]
-					ifFalse: [ aRowElement ] ];
-			column: 'Repository' translated
+		rowDataBinder: [ :aRowElement :aRepository | 
+			aRepository = navigationModel repository
+				ifTrue: [ aRowElement states addState: BlElementSelectedState uniqueInstance ]
+				ifFalse: [ aRowElement ] ];
+		column: 'Repository' translated
 			text: [ :each | self viewModel nameFor: each ];
 		column: 'Status' translated
 			stencil: [ :each | self viewModel statusElementFor: each ]
 			width: 100
+]
+
+{ #category : #accessing }
+GtGitNavigationStencil >> fetchAll [
+	| j notification |
+	j := (GtJob
+			block: [ :job | 
+				| totalCount current |
+				job label: 'Fetching repositories...'.
+				totalCount := self repositories size.
+				job max: totalCount.
+				current := 0.
+				self repositories
+					collect: [ :r | 
+						current := current + 1.
+						job currentValue: current.
+						r fetch ] ]) announcer: Announcer new.
+	notification := GtFetchingNotificationJob new.
+	notification job: j.
+	notification registerNotifications.
+	[ j run ] asAsyncPromise
 ]
 
 { #category : #accessing }
