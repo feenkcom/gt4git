@@ -1,6 +1,14 @@
 Extension { #name : #UnifiedDiffChangeChunk }
 
 { #category : #'*GToolkit4Git' }
+UnifiedDiffChangeChunk >> gtDiff [
+	^ GtDiffBuilder
+		computeDifferencesFrom: self oldContents
+		to: self newContents
+		using: GtLineDiffSplitter ignoringEOLChars
+]
+
+{ #category : #'*GToolkit4Git' }
 UnifiedDiffChangeChunk >> gtViewDiffLinesFor: composite [
 	<gtView>
 	diffLines ifNil: [ ^ composite empty ].
@@ -23,6 +31,16 @@ UnifiedDiffChangeChunk >> gtViewDiffLinesFor: composite [
 					ifTrue: [ text highlight: BrGlamorousColors insertLineColor ].
 				text ]
 			weight: 3
+]
+
+{ #category : #'*GToolkit4Git' }
+UnifiedDiffChangeChunk >> gtViewGtDiffFor: composite [
+	<gtView>
+	^ composite forward
+		title: 'GtDiff';
+		priority: 50;
+		object: [ self gtDiff ];
+		view: #gtTextView:
 ]
 
 { #category : #'*GToolkit4Git' }
