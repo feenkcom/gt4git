@@ -90,18 +90,13 @@ PureGitRepository >> gtFilesFor: composite [
 				BlTaskAction
 					enqueueElement: element
 					action: [ element phlow
-							spawnObject: ((PureGitFile inRepository: self)
-									path: (item value relativeTo: self location) pathString;
-									yourself) ] ];
+						spawnObject: (self resolveFileReference: item value) ] ];
 		contextItemLabel: 'Inspect file reference'
 			action: [ :element :item | 
 				BlTaskAction
 					enqueueElement: element
 					action: [ element phlow spawnObject: item value ] ];
-		send: [ :each | 
-			(PureGitFile inRepository: self)
-				path: (each value relativeTo: self location) pathString;
-				yourself ]
+		send: [ :each | self resolveFileReference: each value ]
 ]
 
 { #category : #'*GToolkit4Git' }
