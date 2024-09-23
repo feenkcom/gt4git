@@ -17,7 +17,10 @@ PureGitFileStatus >> gtStagedChangesFor: composite [
 		title: 'Staged';
 		priority: 30;
 		tooltip: 'Changes added to index for next commit';
-		text: [ self stagedChangesAsRopedText ]
+		text: [ self stagedChangesAsRopedText ];
+		actionButtonIcon: BrGlamorousVectorIcons changes
+			tooltip: 'Unified diff' 
+			action: [ :aButton | aButton phlow spawnObject: self stagedChanges ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -27,7 +30,10 @@ PureGitFileStatus >> gtUnstagedChangesFor: composite [
 		title: 'Unstaged';
 		priority: 35;
 		tooltip: 'Changes made after file was added to index';
-		text: [ self unstagedChangesAsRopedText ]
+		text: [ self unstagedChangesAsRopedText ];
+		actionButtonIcon: BrGlamorousVectorIcons changes
+			tooltip: 'Unified diff' 
+			action: [ :aButton | aButton phlow spawnObject: self unstagedChanges ]
 ]
 
 { #category : #'*GToolkit4Git' }

@@ -13,7 +13,10 @@ PureGitCommit >> gtChangesFor: composite [
 	^ composite textEditor
 		title: 'Changes';
 		priority: 24;
-		text: [ self changesToParentAsRopedText ]
+		text: [ self changesToParentAsRopedText ];
+		actionButtonIcon: BrGlamorousVectorIcons changes
+			tooltip: 'Unified diff' 
+			action: [ :aButton | aButton phlow spawnObject: self changesToParent ]
 ]
 
 { #category : #'*GToolkit4Git' }
