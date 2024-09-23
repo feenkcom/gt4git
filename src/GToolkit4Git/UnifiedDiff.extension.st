@@ -4,9 +4,11 @@ Extension { #name : #UnifiedDiff }
 UnifiedDiff >> gtViewChangeChunksFor: composite [
 	<gtView>
 	changeChunks ifNil: [ ^ composite empty ].
-	^ composite list
+	^ composite columnedList
 		title: 'Changes';
 		priority: 20;
 		items: [ changeChunks ];
-		itemText: [ :item | item range ]
+		column: 'range' text: #range;
+		column: '# lines added' text: #numberOfLinesAdded;
+		column: '# lines removed' text: #numberOfLinesRemoved
 ]

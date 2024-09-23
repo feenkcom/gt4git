@@ -49,7 +49,7 @@ UnifiedDiffChangeChunk >> gtViewNewContentsFor: composite [
 	diffLines ifNil: [ ^ composite empty ].
 	^ composite columnedList
 		title: 'NewContents';
-		priority:  35;
+		priority:  55;
 		items: [ self newContentsLines ];
 		column: 'old #' 
 			text: [ :item :position | newStart + position - 1 ]
@@ -71,7 +71,7 @@ UnifiedDiffChangeChunk >> gtViewOldContentsFor: composite [
 	diffLines ifNil: [ ^ composite empty ].
 	^ composite columnedList
 		title: 'OldContents';
-		priority:  30;
+		priority:  50;
 		items: [ self oldContentsLines ];
 		column: 'old #' 
 			text: [ :item :position | oldStart + position - 1 ]
