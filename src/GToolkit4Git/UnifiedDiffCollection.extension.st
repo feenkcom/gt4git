@@ -10,5 +10,6 @@ UnifiedDiffCollection >> gtViewDiffsFor: composite [
 		column: 'header' text: #header;
 		column: '# change chunks' text: #numberOfChanges;
 		column: '# lines added' text: #numberOfLinesAdded;
-		column: '# lines removed' text: #numberOfLinesRemoved
+		column: '# lines removed' text: #numberOfLinesRemoved;
+		column: '# lines modified' text: #numberOfLinesModified
 ]

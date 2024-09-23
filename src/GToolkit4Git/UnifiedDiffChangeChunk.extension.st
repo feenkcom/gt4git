@@ -14,7 +14,7 @@ UnifiedDiffChangeChunk >> gtViewDiffLinesFor: composite [
 	diffLines ifNil: [ ^ composite empty ].
 	^ composite columnedList
 		title: 'DiffLines';
-		priority:  25;
+		priority:  30;
 		items: [ self diffLinesWithPositions ];
 		column: 'old #' 
 			text: [ :item | item first ifNil: [ '' ] ]
@@ -94,4 +94,22 @@ UnifiedDiffChangeChunk >> gtViewRangeFor: composite [
 		title: 'Range';
 		priority:  20;
 		text: [ self range ]
+]
+
+{ #category : #'*GToolkit4Git' }
+UnifiedDiffChangeChunk >> gtViewStatsFor: composite [
+	<gtView>
+	^ composite columnedList
+		title: 'Stats';
+		priority: 25;
+		items: [ {
+			{ '# lines added' . self numberOfLinesAdded }.
+			{ '# lines removed' . self numberOfLinesRemoved }.
+			{ '# lines added (no modifications)' . self numberOfLinesAdded - self numberOfLinesModified}.
+			{ '# lines removed (no modifications)' . self numberOfLinesRemoved - self numberOfLinesModified }.
+			{ '# lines modified' . self numberOfLinesModified }.
+		} ];
+		column: 'key' text: #first weight: 0.5;
+		column: 'value' text: #second;
+		send: #last
 ]
