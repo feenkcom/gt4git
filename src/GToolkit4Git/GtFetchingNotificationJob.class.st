@@ -5,11 +5,6 @@ Class {
 }
 
 { #category : #accessing }
-GtFetchingNotificationJob >> registerNotifications [
-	GtWorld allInstancesDo: [ :world | world showNotification: self ]
-]
-
-{ #category : #accessing }
 GtFetchingNotificationJob >> summaryClass [
 	^ GtFetchingNotificationSummary
 ]
