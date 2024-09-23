@@ -5,7 +5,7 @@ PureGitDiffTool >> asRopedText [
 	| textStream |
 	textStream := BlTextStream new.
 	textStream glamorousCodeFont.
-	({ self diffSummary } , self diff)  do: [ :line |
+	({ self diffSummary } , self diffLines)  do: [ :line |
 		self renderDiff: line on: textStream next ].
 	^ textStream contents
 ]

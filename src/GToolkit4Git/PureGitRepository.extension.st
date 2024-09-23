@@ -232,6 +232,9 @@ PureGitRepository >> gtStagedChangesFor: composite [
 		tooltip: 'Changes added to index for next commit';
 		text: [ self stagedChangesAsRopedText ];
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
+		actionButtonIcon: BrGlamorousVectorIcons changes
+			tooltip: 'Unified diff' 
+			action: [ :aButton | aButton phlow spawnObject: self stagedChanges ];
 		actionUpdateButton
 ]
 
@@ -282,6 +285,9 @@ PureGitRepository >> gtUnstagedChangesFor: composite [
 		tooltip: 'Changes made after files were added to index';
 		text: [ self unstagedChangesAsRopedText ];
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
+		actionButtonIcon: BrGlamorousVectorIcons changes
+			tooltip: 'Unified diff' 
+			action: [ :aButton | aButton phlow spawnObject: self stagedChanges ];
 		actionUpdateButton
 ]
 
