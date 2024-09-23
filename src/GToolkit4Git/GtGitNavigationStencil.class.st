@@ -92,13 +92,15 @@ GtGitNavigationStencil >> fetchAll [
 				current := 0.
 				self repositories
 					collect: [ :r | 
-						job label: 'Fetching ', r name. 
+						job label: 'Fetching ' , r name.
 						current := current + 1.
 						job currentValue: current.
 						r fetch ] ]) announcer: Announcer new.
-	notification := GtFetchingNotificationJob new.
-	notification job: j.
-	notification registerNotifications.
+	notification := GtNotificationJob new
+			summaryClass: GtFetchingNotificationSummary;
+			job: j;
+			registerNotifications;
+			yourself.
 	[ j run ] asAsyncPromise
 ]
 
