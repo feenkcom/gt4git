@@ -29,7 +29,7 @@ GtFetchingNotificationSummary >> initialize [
 					margin: (BlInsets all: 3);
 					layout: BlLinearLayout horizontal alignCenter;
 					geometry: (BlRoundedRectangleGeometry cornerRadius: 4);
-					text: 'Compiling 0%')
+					text: 'Fetching 0/0')
 ]
 
 { #category : #accessing }
@@ -49,12 +49,11 @@ GtFetchingNotificationSummary >> unsubscribeFromNotifications [
 
 { #category : #accessing }
 GtFetchingNotificationSummary >> updateSummaryContent [
-	| compiled total |
-	compiled := total := 0.
+	| fetched total |
+	fetched := total := 0.
 	self notifications
 		do: [ :each | 
-			compiled := compiled + each job currentValue.
+			fetched := fetched + each job currentValue.
 			total := total + each job max ].
-	executedLabel
-		text: 'Fetching ' , (compiled * 100 / total printShowingDecimalPlaces: 0) , '%'
+	executedLabel text: 'Fetching ' , fetched printString , '/' , total printString
 ]
