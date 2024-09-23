@@ -92,6 +92,7 @@ GtGitNavigationStencil >> fetchAll [
 				current := 0.
 				self repositories
 					collect: [ :r | 
+						job label: 'Fetching ', r name. 
 						current := current + 1.
 						job currentValue: current.
 						r fetch ] ]) announcer: Announcer new.
