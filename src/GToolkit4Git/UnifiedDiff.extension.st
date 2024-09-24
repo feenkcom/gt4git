@@ -9,6 +9,7 @@ UnifiedDiff >> gtViewChangeChunksFor: composite [
 		priority: 20;
 		items: [ changeChunks ];
 		column: 'range' text: #range;
+		column: '# lines changed' text: #numberOfLinesChanged;
 		column: '# lines added' text: #numberOfLinesAdded;
 		column: '# lines removed' text: #numberOfLinesRemoved;
 		column: '# lines modified' text: #numberOfLinesModified
