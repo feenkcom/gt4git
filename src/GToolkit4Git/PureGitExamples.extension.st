@@ -42,6 +42,41 @@ PureGitExamples >> exampleChangedTrackedFileInRepository [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleContentAddressableObjectStore [
+	<gtExample>
+
+	| repository id blob idChanged blobChanged |
+
+	repository := self exampleSecondCommitInRepository.
+
+	id := PureGitBlob hashText: self exampleFileContents.
+
+	self assert: id isString.
+	self assert: id size equals: 40.
+	self assert: (id allSatisfy: [ :each | '0123456789abcdef' includes: each ]).
+
+	blob := repository resolveBlob: id.
+
+	self assert: blob id equals: id.
+	self assert: blob text equals: self exampleFileContents.
+
+	idChanged := PureGitBlob hashText: self exampleFileContentsChanged.
+	blobChanged := repository resolveBlob: idChanged.
+
+	self assert: blobChanged id equals: idChanged.
+	self assert: blobChanged text equals: self exampleFileContentsChanged.
+
+	self assert: id ~= idChanged.
+	self assert: blob contents ~= blobChanged contents.
+
+	self
+		assert: (repository location / self exampleFilename) contents
+		equals: self exampleFileContentsChanged.
+
+	^ Array with: blob with: blobChanged
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitExamples >> exampleDetachedHead [
 	<gtExample>
 	<noTest>
