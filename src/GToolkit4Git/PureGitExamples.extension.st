@@ -1,6 +1,53 @@
 Extension { #name : #PureGitExamples }
 
 { #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleAnatomyOfACommit [
+	<gtExample>
+	
+	| repository commit tree entry blob parent parentBlob changes |
+
+	repository := self exampleSecondCommitInRepository.
+
+	self
+		assert: (repository location / self exampleFilename) contents
+		equals: self exampleFileContentsChanged.
+
+	commit := repository head.
+	tree := commit tree.
+	entry := tree entryNamed: self exampleFilename.
+	blob := entry resolve.
+
+	self assert: commit comment equals: self exampleSecondCommitComment.
+	self assert: blob text equals: self exampleFileContentsChanged.
+	self 
+		assert: blob id
+		equals: (PureGitBlob hashText: self exampleFileContentsChanged).
+	
+	self assert: commit hasSingleParent.
+
+	parent := commit parent.
+	parentBlob := (parent tree entryNamed: self exampleFilename) resolve.
+
+	self assert: commit id ~= parent id.
+	self assert: blob id ~= parentBlob id.
+	self assert: parentBlob text equals: self exampleFileContents.
+
+	changes := commit changesToParent.
+
+	self assert: changes diffs size equals: 1.
+	self assert: changes firstDiff numberOfLinesAdded equals: 1.
+	self assert: changes firstDiff numberOfLinesRemoved equals: 0.
+	self
+		assert: changes firstDiff changeChunks first oldContents lines
+		equals: self exampleFileContents lines.
+	self
+		assert: changes firstDiff changeChunks first newContents lines
+		equals: self exampleFileContentsChanged lines.
+
+	^ commit
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitExamples >> exampleChangedStagedTrackedFileInRepository [
 	<gtExample>
 	<noTest>
