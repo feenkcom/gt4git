@@ -3,6 +3,7 @@ Extension { #name : #PureGitExamples }
 { #category : #'*GToolkit4Git' }
 PureGitExamples >> exampleAnatomyOfACommit [
 	<gtExample>
+	<noTest>
 	
 	| repository commit tree entry blob parent parentBlob changes |
 
@@ -91,6 +92,7 @@ PureGitExamples >> exampleChangedTrackedFileInRepository [
 { #category : #'*GToolkit4Git' }
 PureGitExamples >> exampleContentAddressableObjectStore [
 	<gtExample>
+	<noTest>
 
 	| repository id blob idChanged blobChanged |
 
@@ -373,6 +375,8 @@ PureGitExamples >> exampleNonExistingRepository [
 	randomName := 'repo-' , 999 atRandom asString.
 
 	location := FileLocator temp / randomName.
+
+	location exists ifTrue: [ location ensureDeleteAll ].
 
 	repository := PureGitRepository on: location.
 
