@@ -1,6 +1,54 @@
 Extension { #name : #PureGitExamples }
 
 { #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleAnatomyOfACommit [
+	<gtExample>
+	<noTest>
+	
+	| repository commit tree entry blob parent parentBlob changes |
+
+	repository := self exampleSecondCommitInRepository.
+
+	self
+		assert: (repository location / self exampleFilename) contents
+		equals: self exampleFileContentsChanged.
+
+	commit := repository head.
+	tree := commit tree.
+	entry := tree entryNamed: self exampleFilename.
+	blob := entry resolve.
+
+	self assert: commit comment equals: self exampleSecondCommitComment.
+	self assert: blob text equals: self exampleFileContentsChanged.
+	self 
+		assert: blob id
+		equals: (PureGitBlob hashText: self exampleFileContentsChanged).
+	
+	self assert: commit hasSingleParent.
+
+	parent := commit parent.
+	parentBlob := (parent tree entryNamed: self exampleFilename) resolve.
+
+	self assert: commit id ~= parent id.
+	self assert: blob id ~= parentBlob id.
+	self assert: parentBlob text equals: self exampleFileContents.
+
+	changes := commit changesToParent.
+
+	self assert: changes diffs size equals: 1.
+	self assert: changes firstDiff numberOfLinesAdded equals: 1.
+	self assert: changes firstDiff numberOfLinesRemoved equals: 0.
+	self
+		assert: changes firstDiff changeChunks first oldContents lines
+		equals: self exampleFileContents lines.
+	self
+		assert: changes firstDiff changeChunks first newContents lines
+		equals: self exampleFileContentsChanged lines.
+
+	^ commit
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitExamples >> exampleChangedStagedTrackedFileInRepository [
 	<gtExample>
 	<noTest>
@@ -39,6 +87,42 @@ PureGitExamples >> exampleChangedTrackedFileInRepository [
 	self assert: fileStatuses first statusInIndex = #unmodified.
 
 	^ repository
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleContentAddressableObjectStore [
+	<gtExample>
+	<noTest>
+
+	| repository id blob idChanged blobChanged |
+
+	repository := self exampleSecondCommitInRepository.
+
+	id := PureGitBlob hashText: self exampleFileContents.
+
+	self assert: id isString.
+	self assert: id size equals: 40.
+	self assert: (id allSatisfy: [ :each | '0123456789abcdef' includes: each ]).
+
+	blob := repository resolveBlob: id.
+
+	self assert: blob id equals: id.
+	self assert: blob text equals: self exampleFileContents.
+
+	idChanged := PureGitBlob hashText: self exampleFileContentsChanged.
+	blobChanged := repository resolveBlob: idChanged.
+
+	self assert: blobChanged id equals: idChanged.
+	self assert: blobChanged text equals: self exampleFileContentsChanged.
+
+	self assert: id ~= idChanged.
+	self assert: blob contents ~= blobChanged contents.
+
+	self
+		assert: (repository location / self exampleFilename) contents
+		equals: self exampleFileContentsChanged.
+
+	^ Array with: blob with: blobChanged
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -113,15 +197,16 @@ PureGitExamples >> exampleFirstCommitInRepository [
 
 	head := repository head.
 
-	self assert: head comment = self exampleFirstCommitComment.
-	self assert: head numberOfParents = 0.
+	self assert: head comment equals: self exampleFirstCommitComment.
+	self assert: head numberOfParents equals: 0.
 	self assert: head hasParents not.
+	self assert: head isRoot.
 
 	entry := head tree entries first.
 	
-	self assert: entry name = self exampleFilename.
-	self assert: entry resolve text = self exampleFileContents.
-	self assert: entry id = (PureGitBlob hashText: self exampleFileContents).
+	self assert: entry name equals: self exampleFilename.
+	self assert: entry resolve text equals: self exampleFileContents.
+	self assert: entry id equals: (PureGitBlob hashText: self exampleFileContents).
 
 	^ repository
 ]
@@ -291,6 +376,8 @@ PureGitExamples >> exampleNonExistingRepository [
 
 	location := FileLocator temp / randomName.
 
+	location exists ifTrue: [ location ensureDeleteAll ].
+
 	repository := PureGitRepository on: location.
 
 	self assert: repository exists not.
@@ -318,16 +405,16 @@ PureGitExamples >> exampleSecondCommitInRepository [
 
 	head := repository head.
 
-	self assert: head comment = self exampleSecondCommitComment.
-	self assert: head numberOfParents = 1.
+	self assert: head comment equals: self exampleSecondCommitComment.
+	self assert: head hasSingleParent.
 	self assert: head hasParents.
-	self assert: head parent comment = self exampleFirstCommitComment.
+	self assert: head parent comment equals: self exampleFirstCommitComment.
 
 	entry := head tree entries first.
 	
-	self assert: entry name = self exampleFilename.
-	self assert: entry resolve text = self exampleFileContentsChanged.
-	self assert: entry id = (PureGitBlob hashText: self exampleFileContentsChanged).
+	self assert: entry name equals: self exampleFilename.
+	self assert: entry resolve text equals: self exampleFileContentsChanged.
+	self assert: entry id equals: (PureGitBlob hashText: self exampleFileContentsChanged).
 
 	^ repository
 ]
