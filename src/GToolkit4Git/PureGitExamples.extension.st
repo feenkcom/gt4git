@@ -195,15 +195,16 @@ PureGitExamples >> exampleFirstCommitInRepository [
 
 	head := repository head.
 
-	self assert: head comment = self exampleFirstCommitComment.
-	self assert: head numberOfParents = 0.
+	self assert: head comment equals: self exampleFirstCommitComment.
+	self assert: head numberOfParents equals: 0.
 	self assert: head hasParents not.
+	self assert: head isRoot.
 
 	entry := head tree entries first.
 	
-	self assert: entry name = self exampleFilename.
-	self assert: entry resolve text = self exampleFileContents.
-	self assert: entry id = (PureGitBlob hashText: self exampleFileContents).
+	self assert: entry name equals: self exampleFilename.
+	self assert: entry resolve text equals: self exampleFileContents.
+	self assert: entry id equals: (PureGitBlob hashText: self exampleFileContents).
 
 	^ repository
 ]
@@ -400,16 +401,16 @@ PureGitExamples >> exampleSecondCommitInRepository [
 
 	head := repository head.
 
-	self assert: head comment = self exampleSecondCommitComment.
-	self assert: head numberOfParents = 1.
+	self assert: head comment equals: self exampleSecondCommitComment.
+	self assert: head hasSingleParent.
 	self assert: head hasParents.
-	self assert: head parent comment = self exampleFirstCommitComment.
+	self assert: head parent comment equals: self exampleFirstCommitComment.
 
 	entry := head tree entries first.
 	
-	self assert: entry name = self exampleFilename.
-	self assert: entry resolve text = self exampleFileContentsChanged.
-	self assert: entry id = (PureGitBlob hashText: self exampleFileContentsChanged).
+	self assert: entry name equals: self exampleFilename.
+	self assert: entry resolve text equals: self exampleFileContentsChanged.
+	self assert: entry id equals: (PureGitBlob hashText: self exampleFileContentsChanged).
 
 	^ repository
 ]
