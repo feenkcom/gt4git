@@ -7,8 +7,9 @@ UnifiedDiffCollection >> gtViewDiffsFor: composite [
 		title: 'Diffs';
 		priority: 30;
 		items: [ diffs ];
-		column: 'header' text: #header;
+		column: 'header' text: #header weight: 2;
 		column: '# change chunks' text: #numberOfChanges;
+		column: '# lines changed' text: #numberOfLinesChanged;
 		column: '# lines added' text: #numberOfLinesAdded;
 		column: '# lines removed' text: #numberOfLinesRemoved;
 		column: '# lines modified' text: #numberOfLinesModified

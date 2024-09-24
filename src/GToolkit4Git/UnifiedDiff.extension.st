@@ -22,6 +22,7 @@ UnifiedDiff >> gtViewStatsFor: composite [
 		priority: 25;
 		items: [ {
 			{ '# change chunks' . self numberOfChanges }.
+			{ '# lines changed' . self numberOfLinesChanged }.
 			{ '# lines added' . self numberOfLinesAdded }.
 			{ '# lines removed' . self numberOfLinesRemoved }.
 			{ '# lines added (no modifications)' . self numberOfLinesAdded - self numberOfLinesModified}.
