@@ -1,6 +1,16 @@
 Extension { #name : #PureGitFile }
 
 { #category : #'*GToolkit4Git' }
+PureGitFile >> gtAnalyzeActionFor: composite [
+	<gtAction>
+	^ composite button
+		label: 'Analyze';
+		priority: 20;
+		tooltip: 'Analyze history over time';
+		action: [ :aButton | aButton phlow spawnObject: self analyze ]
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitFile >> gtContentsFor: composite [
 	<gtView>
 	| text |
