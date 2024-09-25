@@ -18,7 +18,7 @@ GtGitSetupExamples >> cleanUpRepositoriesAndDatabases [
 GtGitSetupExamples >> simpleSetupView [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
-	| repository view setupItems |
+	| repository view setupItems executedItems|
 	lepiterExamples := GtIceLepiterExamples new.
 	repository := lepiterExamples gitRepositoryAWithNoLepiterDatabase.
 
@@ -26,9 +26,10 @@ GtGitSetupExamples >> simpleSetupView [
 		asElementDo: [ :anElement | view := anElement ].
 
 	setupItems := view children second items.
-
-	self assert: (setupItems select: #isExecuted) size = 1.
-	self assert: (setupItems reject: #isExecuted) size = 2.
+	executedItems := setupItems select: #isExecuted.
+	self assert: executedItems size equals: 1.
+	self assert: executedItems first class name = #GtGitRepositorySourceSetupItem.
+	self assert: (setupItems reject: #isExecuted) size equals: 2.
 
 	^ view
 ]
