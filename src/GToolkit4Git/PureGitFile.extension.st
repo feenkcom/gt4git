@@ -21,3 +21,19 @@ PureGitFile >> gtDetails [
 		{ 'path' . self path . self fileReference }.
 	}
 ]
+
+{ #category : #'*GToolkit4Git' }
+PureGitFile >> gtLogFor: composite [
+	<gtView>
+	| timestampFormat |
+	timestampFormat := ZTimestampFormat fromString: '2001-02-03 16:05'.
+	^ composite columnedList
+		title: 'History';
+		priority: 40;
+		tooltip: 'Commit log restricted to ' , self path;
+		items: [ self log ];
+		column: 'Commit' text: [ :commit | commit shortCommitId ] weight: 0.5;
+		column: 'Timestamp' text: [ :commit | timestampFormat format: commit timestamp ] weight: 0.5;
+		column: 'Author' text: [ :commit | commit author ];
+		column: 'Comment' text: [ :commit | commit comment firstLineWithEllipsis ] weight: 2
+]
