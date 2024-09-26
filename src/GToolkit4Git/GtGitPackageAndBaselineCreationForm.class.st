@@ -17,20 +17,17 @@ GtGitPackageAndBaselineCreationForm >> addInstallationInstructions [
 	self addToReadme ifFalse: [ ^ self ].
 
 	readme := self repositoryModel repository repositoryDirectory / 'README.md'.
-	readme
-		writeStreamDo: [ :s | 
-			s setToEnd
-				nextPutAll: '## Installation
+	readme writeStreamDo: [ :stream | 
+		stream setToEnd.
+		(ZnNewLineWriterStream on: stream) nextPutAll: '
+## Installation
 
 ```st
 Metacello new
-	repository: ''' , self guessRepository
-						, ''';
-	baseline: ''' , (self baseline removePrefix: 'BaselineOf')
-						, ''';
+	repository: ''' , self guessRepository , ''';
+	baseline: ''' , (self baseline removePrefix: 'BaselineOf') , ''';
 	load
 ```
-
 ' ].
 	self repositoryModel repository addFileToIndex: 'README.md'.
 	self repositoryModel announceRepositoryModified

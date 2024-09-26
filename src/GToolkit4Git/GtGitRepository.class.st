@@ -1086,15 +1086,15 @@ GtGitRepository >> gtPackagesFor: aView context: aContext [
 
 { #category : #'gt - extensions' }
 GtGitRepository >> gtReadmeFor: aView context: aContext [
-
 	<gtView>
 	<gtRepositoryView>
+
 	| readme |
-	(self hasWorkingCopy not or: [ self icebergRepository isMissing ]) ifTrue: [ 
-		^ aView empty ].
+
+	(self hasWorkingCopy not or: [ self icebergRepository isMissing ])
+		ifTrue: [ ^ aView empty ].
 
 	readme := self repository repositoryDirectory / 'README.md'.
-	
 
 	^ aView explicit
 		  title: 'README';
@@ -1111,22 +1111,23 @@ GtGitRepository >> gtReadmeFor: aView context: aContext [
 			  snippetViewModel coderViewModel addShortcut: (BlShortcutWithAction new
 						   combination: BlKeyCombination primaryS;
 						   action: [ :anEvent | 
-							   readme writeStreamDo: [ :s | 
-									   s truncate.
-									   s nextPutAll: anEvent currentTarget text asString ].
+							   readme writeStreamDo: [ :stream | 
+									   stream truncate.
+									   (ZnNewLineWriterStream on: stream) 
+									   	nextPutAll: anEvent currentTarget text asString ].
 							   self repository addFileToIndex: 'README.md'.
-							   self announceRepositoryModified. ]).
+							   self announceRepositoryModified ]).
 			  ((snippetViewModel snippetView needsEmbellishments: false)
 				   asElement snippetViewModel: snippetViewModel) vMatchParent ];
 		  actionButtonIcon: BrGlamorousVectorIcons accept
-		  tooltip: 'Save README'
-		  action: [ :aToggle :aTab | 
-			  readme writeStreamDo: [ :s | 
-				  s truncate.
-				  s nextPutAll:
-					  aTab viewContentElement children first text asString ].
-			  self repository addFileToIndex: 'README.md'.
-			  self announceRepositoryModified. ]
+		  	tooltip: 'Save README'
+		  	action: [ :aToggle :aTab | 
+			  	readme writeStreamDo: [ :stream | 
+				  	stream truncate.
+				  	(ZnNewLineWriterStream on: stream) nextPutAll:
+					  	aTab viewContentElement children first text asString ].
+			  	self repository addFileToIndex: 'README.md'.
+			  	self announceRepositoryModified ]
 ]
 
 { #category : #'gt - extensions' }

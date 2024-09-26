@@ -43,18 +43,16 @@ GtGitDatabaseCreationForm >> addToBaseline: aDatabaseFolder [
 GtGitDatabaseCreationForm >> addToReadme [
 	| readme |
 	readme := self repositoryModel repository repositoryDirectory / 'README.md'.
-	readme
-		writeStreamDo: [ :s | 
-			s setToEnd
-				nextPutAll: '## Load Lepiter
-				
+	readme writeStreamDo: [ :stream | 
+		stream setToEnd.
+		(ZnNewLineWriterStream on: stream) nextPutAll: '
+## Load Lepiter
+
 After installing with Metacello, you will be able to execute
 
 ```
-#' , self baseline
-						, ' asClass loadLepiter
+#' , self baseline , ' asClass loadLepiter
 ```
-
 ' ].
 	self repositoryModel repository addFileToIndex: 'README.md'.
 	self repositoryModel announceRepositoryModified
