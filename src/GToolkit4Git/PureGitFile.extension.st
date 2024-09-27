@@ -1,13 +1,20 @@
 Extension { #name : #PureGitFile }
 
 { #category : #'*GToolkit4Git' }
-PureGitFile >> gtAnalyzeActionFor: composite [
+PureGitFile >> gtActionOperationsFor: composite [
 	<gtAction>
-	^ composite button
-		label: 'Analyze';
-		priority: 20;
-		tooltip: 'Analyze history over time';
-		action: [ :aButton | aButton phlow spawnObject: self analyze ]
+	^ composite dropdown
+		tooltip: 'File operations';
+		icon: BrGlamorousVectorIcons hamburger;
+		content: [ :aButton | 
+			BrGlamorousSimpleContextMenuContent new
+				items: (Array streamContents: [ :actions |
+					actions nextPut: 'Analyze history over time' -> [ :e | 
+						e phlow spawnObject: self analyze.
+						e fireEvent: BrDropdownHideWish new ].
+					actions nextPut: 'Delete file' -> [ :e | 
+						self delete.
+						e fireEvent: BrDropdownHideWish new ] ]) ]
 ]
 
 { #category : #'*GToolkit4Git' }
