@@ -293,8 +293,10 @@ PureGitRepository class >> gtViewGitCallsIn: composite [
 		title: 'Git calls';
 		priority: 30;
 		items: [ 
-			( ( (#runGitWithArgs: gtReferences & #gtViewGitCallsIn: gtImplementors not)
-					& 'PureGitRepository' gtClassMatches) contents
+			( ( ((#runGitWithArgs: gtReferences
+						| #runGitWithArgsAsync: gtReferences) 
+					& #gtViewGitCallsIn: gtImplementors not)
+						& 'PureGitRepository' gtClassMatches) contents
 				, 
 				{ self >> #contentsOfBlob: } )
 					 sort: #selector ascending ];
