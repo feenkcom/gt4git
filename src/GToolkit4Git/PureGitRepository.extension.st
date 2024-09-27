@@ -116,7 +116,32 @@ PureGitRepository >> gtFilesFor: composite [
 				BlTaskAction
 					enqueueElement: element
 					action: [ element phlow spawnObject: item value ] ];
-		send: [ :each | self resolveFileReference: each value ]
+		send: [ :each | self resolveFileReference: each value ];
+		actionStencil: [ :aTab | | aptitude |
+			aptitude := BrGlamorousWithDropdownAptitude
+				handle: [
+					BrButton new
+						aptitude: BrGlamorousButtonWithIconAptitude;
+						icon: BrGlamorousVectorIcons add;
+						label: 'Create new file' ]
+				content: [ | fileCreationPane |
+					fileCreationPane := GtGitFileCreationPane new.
+					fileCreationPane
+						acceptAction: [ :aModel :aButton | | filename |
+							filename := fileCreationPane filename.
+							(self location / filename) ensureCreateFile.
+							self announceRepositoryModified.
+							aButton enqueueTask: (BlTaskAction new 
+								action: [ aTab viewContentElement phlow update.
+									aButton fireEvent: BrDropdownHideWish new]) ];
+						cancelAction: [ :aModel :aButton |
+							aButton enqueueTask: (BlTaskAction new 
+								action: [ aButton fireEvent: BrDropdownHideWish new ]) ].
+					fileCreationPane asElement ].			
+			BrButton new
+				aptitude: BrGlamorousButtonWithIconAptitude + aptitude;
+				icon: BrGlamorousVectorIcons add;
+				label: 'Create new file' ]
 ]
 
 { #category : #'*GToolkit4Git' }
