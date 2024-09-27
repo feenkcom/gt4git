@@ -1,6 +1,26 @@
 Extension { #name : #PureGitRepository }
 
 { #category : #'*GToolkit4Git' }
+PureGitRepository >> gtActionOperationsFor: composite [
+	<gtAction>
+	^ composite dropdown
+		tooltip: 'Repository operations';
+		icon: BrGlamorousVectorIcons hamburger;
+		content: [ :aButton | 
+			BrGlamorousSimpleContextMenuContent new
+				items: (Array streamContents: [ :actions |
+					self exists
+						ifTrue: [
+							actions nextPut: 'Delete' -> [ :e | 
+								self delete.
+								e fireEvent: BrDropdownHideWish new ] ] 
+						ifFalse: [
+							actions nextPut: 'Init' -> [ :e | 
+								self init.
+								e fireEvent: BrDropdownHideWish new ] ] ]) ]
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitRepository >> gtBranchesFor: composite [
 	<gtView>
 	| currentBranchName currentBranchNameThunk |
