@@ -1,24 +1,7 @@
-Extension { #name : #PureGitFile }
+Extension { #name : #PureGitDirectory }
 
 { #category : #'*GToolkit4Git' }
-PureGitFile >> gtActionOperationsFor: composite [
-	<gtAction>
-	^ composite dropdown
-		tooltip: 'File operations';
-		icon: BrGlamorousVectorIcons hamburger;
-		content: [ :aButton | 
-			BrGlamorousSimpleContextMenuContent new
-				items: (Array streamContents: [ :actions |
-					actions nextPut: 'Analyze history over time' -> [ :e | 
-						e phlow spawnObject: self analyze.
-						e fireEvent: BrDropdownHideWish new ].
-					actions nextPut: 'Delete file' -> [ :e | 
-						self delete.
-						e fireEvent: BrDropdownHideWish new ] ]) ]
-]
-
-{ #category : #'*GToolkit4Git' }
-PureGitFile >> gtContentsFor: composite [
+PureGitDirectory >> gtContentsFor: composite [
 	<gtView>
 	| text |
 	[ text := self fileReference contents ] 
@@ -33,7 +16,7 @@ PureGitFile >> gtContentsFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
-PureGitFile >> gtDetails [
+PureGitDirectory >> gtDetails [
 	^ super gtDetails , {
 		{ 'path' . self path . self fileReference }.
 		{ 'basename' . self basename }.
@@ -42,7 +25,7 @@ PureGitFile >> gtDetails [
 ]
 
 { #category : #'*GToolkit4Git' }
-PureGitFile >> gtLogFor: composite [
+PureGitDirectory >> gtLogFor: composite [
 	<gtView>
 	| timestampFormat |
 	timestampFormat := ZTimestampFormat fromString: '2001-02-03 16:05'.

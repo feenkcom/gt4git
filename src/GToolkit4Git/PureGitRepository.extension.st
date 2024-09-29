@@ -145,6 +145,39 @@ PureGitRepository >> gtFilesFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitRepository >> gtFilesTreeFor: composite [
+	<gtView>
+	self exists ifFalse: [ ^ composite empty ].
+	^ composite columnedTree
+		title: 'Filetree';
+		priority: 46;
+		items: [ Array with: self resolveDirectory ];
+		children: #children;
+		column: 'Path'
+			text: [ :each | each basename ifEmpty: [ self location ] ]
+			weight: 3.0;
+		column: 'Size'
+			text: [ :each | 
+				[ each isDirectory
+					ifFalse: [  each fileReference humanReadableSize ]
+					ifTrue: [ '' ] ]
+						on: FileException, FileSystemError
+						do: [ :anException | anException return: '' ] ]
+			weight: 0.5;
+		column: 'Created'
+			text: [  :each | | fileReference |
+				fileReference := each fileReference.
+				[ String streamContents: [ :s | 
+					fileReference creationTime printYMDOn: s.
+					s nextPut: Character space.
+					fileReference creationTime printHMSOn: s ] ]
+						on: FileException, FileSystemError
+						do: [ :anException | anException return: '' ] ]
+			weight: 0.5;
+		expandOneLevel
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitRepository >> gtHistoryFor: composite [
 	<gtView>
 	| timestampFormat |
