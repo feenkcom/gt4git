@@ -49,7 +49,23 @@ PureGitFile >> gtDetails [
 		{ 'status' . self status statusSummary . self status }.
 		{ 'tracked' . self isTracked }.
 		{ 'staged' . self isStaged }.
+		{ 'modified in worktree' . self isModifiedInWorkTree }.
 	}
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitFile >> gtEditorFor: composite [
+	<gtView>
+	| text |
+	[ text := self fileReference contents ] 
+		on: ZnCharacterEncodingError 
+		do: [ ^ composite empty ].
+	^ composite forward
+		title: 'Editor';
+		priority: 35;
+		tooltip: 'Edit current contents in work tree on file system';
+		object: [ self fileReference ];
+		view: #gtContentsFor:
 ]
 
 { #category : #'*GToolkit4Git' }

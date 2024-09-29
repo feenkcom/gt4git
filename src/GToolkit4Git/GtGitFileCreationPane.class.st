@@ -29,5 +29,8 @@ GtGitFileCreationPane >> filenameDescription [
 		priority: 3;
 		label: 'File name';
 		accessor: #filename;
-		default: ''
+		default: '';
+		beRequired;
+		addCondition: [ :aValue | aValue trimBoth isNotEmpty ]
+			labelled: 'Filename must be non empty'
 ]
