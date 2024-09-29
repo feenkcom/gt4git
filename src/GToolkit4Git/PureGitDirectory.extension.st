@@ -1,21 +1,6 @@
 Extension { #name : #PureGitDirectory }
 
 { #category : #'*GToolkit4Git' }
-PureGitDirectory >> gtContentsFor: composite [
-	<gtView>
-	| text |
-	[ text := self fileReference contents ] 
-		on: ZnCharacterEncodingError 
-		do: [ ^ composite empty ].
-	^ composite textEditor
-		title: 'Contents';
-		priority: 30;
-		tooltip: 'Current contents in work tree on file system';
-		glamorousCodeFontAndSize;
-		text: [ text ]
-]
-
-{ #category : #'*GToolkit4Git' }
 PureGitDirectory >> gtDetails [
 	^ super gtDetails , {
 		{ 'path' . self path . self fileReference }.

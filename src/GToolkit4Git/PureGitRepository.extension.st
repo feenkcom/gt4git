@@ -286,6 +286,30 @@ PureGitRepository >> gtStagedChangesFor: composite [
 		tooltip: 'Changes added to index for next commit';
 		text: [ self stagedChangesAsRopedText ];
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
+		actionStencil: [ :aTab | | aptitude |
+			aptitude := BrGlamorousWithDropdownAptitude
+				handle: [
+					BrButton new
+						aptitude: BrGlamorousButtonWithIconAptitude;
+						icon: BrGlamorousVectorIcons play;
+						label: 'Commit staged changes' ]
+				content: [ | commentCreationPane |
+					commentCreationPane := GtGitCommentCreationPane new.
+					commentCreationPane
+						acceptAction: [ :aModel :aButton |
+							self stagedChanges isEmpty
+								ifFalse: [ self commit: commentCreationPane comment ].
+							aButton enqueueTask: (BlTaskAction new 
+								action: [ aTab viewContentElement phlow update.
+									aButton fireEvent: BrDropdownHideWish new]) ];
+						cancelAction: [ :aModel :aButton |
+							aButton enqueueTask: (BlTaskAction new 
+								action: [ aButton fireEvent: BrDropdownHideWish new ]) ].
+					commentCreationPane asElement ].			
+			BrButton new
+				aptitude: BrGlamorousButtonWithIconAptitude + aptitude;
+				icon: BrGlamorousVectorIcons play;
+				label: 'Commit staged changes' ];
 		actionButtonIcon: BrGlamorousVectorIcons changes
 			tooltip: 'Unified diff' 
 			action: [ :aButton | aButton phlow spawnObject: self stagedChanges ];
