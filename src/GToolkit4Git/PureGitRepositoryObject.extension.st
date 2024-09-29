@@ -16,5 +16,7 @@ PureGitRepositoryObject >> gtDetailsFor: composite [
 		items: [ self gtDetails ];
 		column: 'key' text: #first;
 		column: 'value' text: #second weight: 3;
+		actionUpdateButton;
+		updateWhen: PureGitRepositoryModified in: [ self repository announcer ];
 		send: #last
 ]
