@@ -9,10 +9,18 @@ PureGitFile >> gtActionOperationsFor: composite [
 		content: [ :aButton | 
 			BrGlamorousSimpleContextMenuContent new
 				items: (Array streamContents: [ :actions |
+					(self isTracked not or: [ self isModifiedInWorkTree ]) ifTrue: [
+						actions nextPut: 'Stage' -> [ :e |
+							self stage.
+							e fireEvent: BrDropdownHideWish new ] ].
+					self isStaged ifTrue: [
+						actions nextPut: 'Unstage' -> [ :e |
+							self unstage.
+							e fireEvent: BrDropdownHideWish new ] ].
 					actions nextPut: 'Analyze history over time' -> [ :e | 
 						e phlow spawnObject: self analyze.
 						e fireEvent: BrDropdownHideWish new ].
-					actions nextPut: 'Delete file' -> [ :e | 
+					actions nextPut: 'Delete' -> [ :e | 
 						self delete.
 						e fireEvent: BrDropdownHideWish new ] ]) ]
 ]
@@ -36,6 +44,11 @@ PureGitFile >> gtContentsFor: composite [
 PureGitFile >> gtDetails [
 	^ super gtDetails , {
 		{ 'path' . self path . self fileReference }.
+		{ 'basename' . self basename }.
+		{ 'parent' . self parent path . self parent }.
+		{ 'status' . self status statusSummary . self status }.
+		{ 'tracked' . self isTracked }.
+		{ 'staged' . self isStaged }.
 	}
 ]
 

@@ -83,40 +83,53 @@ PureGitRepository >> gtDetailsFor: composite [
 { #category : #'*GToolkit4Git' }
 PureGitRepository >> gtFilesFor: composite [
 	<gtView>
-	| fileStatuses fileStatusesThunk |
 	self exists ifFalse: [ ^ composite empty ].
-	fileStatuses := nil.
-	fileStatusesThunk := [ fileStatuses
-			ifNil: [ fileStatuses := Dictionary new.
-				self status do: [ :each | fileStatuses at: each path put: each ].
-				fileStatuses ] ].
-	^ (self location gtTreeFor: composite)
+	^ composite columnedTree
 		title: 'Files';
 		priority: 45;
+		items: [ Array with: self resolveDirectory ];
+		children: #children;
+		column: 'Path'
+			text: [ :each | each basename ifEmpty: [ self location ] ]
+			weight: 2.0;
+		column: 'Size'
+			text: [ :each | 
+				[ each isDirectory
+					ifFalse: [  each fileReference humanReadableSize ]
+					ifTrue: [ '' ] ]
+						on: FileException, FileSystemError
+						do: [ :anException | anException return: '' ] ]
+			weight: 0.25;
+		column: 'Created'
+			text: [  :each | | fileReference |
+				fileReference := each fileReference.
+				[ String streamContents: [ :s | 
+					fileReference creationTime printYMDOn: s.
+					s nextPut: Character space.
+					fileReference creationTime printHMSOn: s ] ]
+						on: FileException, FileSystemError
+						do: [ :anException | anException return: '' ] ]
+			weight: 0.5;
 		column: 'Tracked'
 			icon: [ :each | 
-				| relative |
-				relative := (each relativeTo: self location) pathString.
-				(fileStatusesThunk value includesKey: relative)
-					ifTrue: [ (fileStatusesThunk value at: relative) statusInIndex = #unknown
-							ifTrue: [ BrGlamorousIcons close ]
-							ifFalse: [ BrGlamorousIcons accept ] ]
-					ifFalse: [ each isDirectory
-							ifTrue: [ BrGlamorousIcons empty ]
-							ifFalse: [ BrGlamorousIcons accept ] ] ]
-			width: 100;
-		contextItemLabel: 'Inspect file in repository'
-			action: [ :element :item | 
-				BlTaskAction
-					enqueueElement: element
-					action: [ element phlow
-						spawnObject: (self resolveFileReference: item value) ] ];
-		contextItemLabel: 'Inspect file reference'
-			action: [ :element :item | 
-				BlTaskAction
-					enqueueElement: element
-					action: [ element phlow spawnObject: item value ] ];
-		send: [ :each | self resolveFileReference: each value ];
+				each isDirectory
+					ifTrue: [ BrGlamorousIcons empty ]
+					ifFalse: [ each isTracked
+						ifTrue: [ BrGlamorousIcons accept ]
+						ifFalse: [ BrGlamorousIcons close ] ] ]
+			weight: 0.25;
+		column: 'Status index'
+			text: [ :each | each isDirectory 
+				ifTrue: [ '' ]
+				ifFalse: [ each status statusInIndex = #unmodified ifTrue: [ '' ] ifFalse: [ each status statusInIndex ] ] ]
+			weight: 0.5;
+		column: 'Status worktree'
+			text: [ :each | each isDirectory 
+				ifTrue: [ '' ] 
+				ifFalse: [ each status statusInWorkTree = #unmodified ifTrue: [ '' ] ifFalse: [ each status statusInWorkTree ] ] ]
+			weight: 0.5;
+		updateWhen: PureGitRepositoryModified in: [ self announcer ];
+		actionUpdateButton;
 		actionStencil: [ :aTab | | aptitude |
 			aptitude := BrGlamorousWithDropdownAptitude
 				handle: [
@@ -141,7 +154,8 @@ PureGitRepository >> gtFilesFor: composite [
 			BrButton new
 				aptitude: BrGlamorousButtonWithIconAptitude + aptitude;
 				icon: BrGlamorousVectorIcons add;
-				label: 'Create new file' ]
+				label: 'Create new file' ];
+		expandOneLevel
 ]
 
 { #category : #'*GToolkit4Git' }
