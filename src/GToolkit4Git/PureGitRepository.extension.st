@@ -12,11 +12,11 @@ PureGitRepository >> gtActionOperationsFor: composite [
 					self exists
 						ifTrue: [
 							actions nextPut: 'Delete' -> [ :e | 
-								self delete.
+								self operations delete.
 								e fireEvent: BrDropdownHideWish new ] ] 
 						ifFalse: [
 							actions nextPut: 'Init' -> [ :e | 
-								self init.
+								self operations init.
 								e fireEvent: BrDropdownHideWish new ] ] ]) ]
 ]
 
@@ -26,13 +26,13 @@ PureGitRepository >> gtBranchesFor: composite [
 	^ composite columnedList
 		title: 'Branches';
 		priority: 35;
-		items: [ self allBranches ];
+		items: [ self queries allBranches ];
 		column: 'Name' text: #name;
 		column: 'Type' text: #branchType;
 		column: 'Commit' text: #shortCommitId;
 		column: 'Current' 
 			icon: [ :branch | | currentBranchName |
-				currentBranchName := self currentBranchName.
+				currentBranchName := self queries currentBranchName.
 				(branch name = currentBranchName
 					or: [ currentBranchName isEmpty
 						and: [ branch name includesSubstring: 'HEAD detached' ] ])
@@ -54,7 +54,7 @@ PureGitRepository >> gtBranchesFor: composite [
 						acceptAction: [ :aModel :aButton | | branchName |
 							branchName := branchCreationPane branchName.
 							self 
-								createBranch: branchName"; 
+								operations createBranch: branchName"; 
 								configureUpstreamIfNecessary".
 							aButton enqueueTask: (BlTaskAction new 
 								action: [ aTab viewContentElement phlow update.
@@ -78,8 +78,8 @@ PureGitRepository >> gtDetails [
 	}.
 	self hasHead
 		ifTrue: [
-			head := self head.
-			branch := self branch.
+			head := self queries head.
+			branch := self queries branch.
 			details := details , {
 				{ 'HEAD' . head shortCommitId . head }.
 				{ 'branch' 
@@ -188,7 +188,7 @@ PureGitRepository >> gtHistoryFor: composite [
 		tooltip: 'Don''s all commits view';
 		priority: 31;
 		stencil: [ | list color commits ruler |
-			commits := self allAnnotatedCommits.
+			commits := self queries allAnnotatedCommits.
 			ruler := HiRulerBuilder
 					newRulerValues: commits
 					linksBlock: [ :commit | commit parents ].
@@ -263,7 +263,7 @@ PureGitRepository >> gtInternalsFor: composite [
 	^ composite forward
 		title: 'Internals';
 		priority: 80;
-		object: [ self internals ];
+		object: [ self queries internals ];
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		view: #gtItemsFor:
 ]
@@ -276,7 +276,7 @@ PureGitRepository >> gtLogFor: composite [
 	^ composite columnedList
 		title: 'Log';
 		priority: 30;
-		items: [ self log ];
+		items: [ self queries log ];
 		column: 'Commit' text: [ :commit | commit shortCommitId ] weight: 0.5;
 		column: 'Timestamp' text: [ :commit | timestampFormat format: commit timestamp ] weight: 0.5;
 		column: 'Author' text: [ :commit | commit author ];
@@ -291,7 +291,7 @@ PureGitRepository >> gtRemotesFor: composite [
 	^ composite columnedList
 		title: 'Remotes';
 		priority: 37;
-		items: [ self remotes ];
+		items: [ self queries remotes ];
 		column: 'name' text: #name;
 		column: 'url' text: #url
 ]
@@ -318,7 +318,7 @@ PureGitRepository >> gtStagedChangesFor: composite [
 					commentCreationPane
 						acceptAction: [ :aModel :aButton |
 							self stagedChanges isEmpty
-								ifFalse: [ self commit: commentCreationPane comment ].
+								ifFalse: [ self operations commit: commentCreationPane comment ].
 							aButton enqueueTask: (BlTaskAction new 
 								action: [ aTab viewContentElement phlow update.
 									aButton fireEvent: BrDropdownHideWish new]) ];
@@ -332,7 +332,7 @@ PureGitRepository >> gtStagedChangesFor: composite [
 				label: 'Commit staged changes' ];
 		actionButtonIcon: BrGlamorousVectorIcons changes
 			tooltip: 'Unified diff' 
-			action: [ :aButton | aButton phlow spawnObject: self stagedChanges ];
+			action: [ :aButton | aButton phlow spawnObject: self queries stagedChanges ];
 		actionUpdateButton
 ]
 
@@ -345,7 +345,7 @@ PureGitRepository >> gtStatusFor: composite [
 		stencil: [
 			self exists
 				ifTrue: [ | fileStatuses |
-					(fileStatuses := self status)
+					(fileStatuses := self queries status)
 						ifNotEmpty: [
 							composite columnedList
 								items: [ fileStatuses ];
@@ -366,7 +366,7 @@ PureGitRepository >> gtTagsFor: composite [
 	^ composite columnedList
 		title: 'Tags';
 		priority: 40;
-		items: [ self tags ];
+		items: [ self queries tags ];
 		column: 'Name' text: #name ;
 		column: 'Commit' text: #shortCommitId;
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
@@ -385,26 +385,8 @@ PureGitRepository >> gtUnstagedChangesFor: composite [
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionButtonIcon: BrGlamorousVectorIcons changes
 			tooltip: 'Unified diff' 
-			action: [ :aButton | aButton phlow spawnObject: self stagedChanges ];
+			action: [ :aButton | aButton phlow spawnObject: self queries unstagedChanges ];
 		actionUpdateButton
-]
-
-{ #category : #'*GToolkit4Git' }
-PureGitRepository class >> gtViewGitCallsIn: composite [
-	<gtClassView>
-	^ composite columnedList
-		title: 'Git calls';
-		priority: 30;
-		items: [ 
-			( ( ((#runGitWithArgs: gtReferences
-						| #runGitWithArgsAsync: gtReferences) 
-					& #gtViewGitCallsIn: gtImplementors not)
-						& 'PureGitRepository' gtClassMatches) contents
-				, 
-				{ self >> #contentsOfBlob: } )
-					 sort: #selector ascending ];
-		column: 'Selector' text: [ :each | each selector ];
-		column: 'Class' text: [ :each | each methodClass ]
 ]
 
 { #category : #'*GToolkit4Git' }

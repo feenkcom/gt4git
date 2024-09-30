@@ -57,7 +57,7 @@ PureGitExamples >> exampleChangedStagedTrackedFileInRepository [
 
 	repository := self exampleChangedTrackedFileInRepository.
 
-	repository stage: self exampleFilename.
+	repository operations stage: self exampleFilename.
 
 	fileStatuses := repository status.
 	self assert: fileStatuses size = 1.
@@ -191,7 +191,7 @@ PureGitExamples >> exampleFirstCommitInRepository [
 	
 	repository := self exampleNewStagedFileInRepository.
 
-	repository commit: self exampleFirstCommitComment.
+	repository operations commit: self exampleFirstCommitComment.
 
 	self assert: repository status isEmpty.
 
@@ -220,9 +220,9 @@ PureGitExamples >> exampleFixDetachedHead [
 
 	repository := self exampleDetachedHead.
 
-	initialDefaultBranchName := repository initialDefaultBranchName.
+	initialDefaultBranchName := repository queries initialDefaultBranchName.
 
-	branch := repository localBranches detect: [ :each | each name = initialDefaultBranchName ].
+	branch := repository queries localBranches detect: [ :each | each name = initialDefaultBranchName ].
 
 	branch checkout.
 
@@ -293,7 +293,7 @@ PureGitExamples >> exampleGt4GitRootCommit [
 
 	repository := self exampleGt4Git.
 
-	rootCommit := repository resolveCommit: '9cfbcd6a921f237abc14446d565cc440a60793e8'. 
+	rootCommit := repository queries resolveCommit: '9cfbcd6a921f237abc14446d565cc440a60793e8'. 
 
 	self assert: rootCommit isRoot.
 	self assert: rootCommit id = '9cfbcd6a921f237abc14446d565cc440a60793e8'.
@@ -313,7 +313,7 @@ PureGitExamples >> exampleInitializedRepository [
 	
 	repository := self exampleNonExistingRepository.
 
-	repository init.
+	repository operations init.
 
 	self assert: repository exists.
 	self assert: repository hasHead not.
@@ -332,7 +332,7 @@ PureGitExamples >> exampleNewStagedFileInRepository [
 
 	fileStatuses := repository status.
 
-	repository stage: fileStatuses first path.
+	repository operations stage: fileStatuses first path.
 
 	fileStatuses := repository status.
 
@@ -399,7 +399,7 @@ PureGitExamples >> exampleSecondCommitInRepository [
 	
 	repository := self exampleChangedStagedTrackedFileInRepository.
 
-	repository commit: self exampleSecondCommitComment.
+	repository operations commit: self exampleSecondCommitComment.
 
 	self assert: repository status isEmpty.
 
@@ -431,7 +431,7 @@ PureGitExamples >> exampleSvcDemo [
 	repository location exists
 		ifTrue: [ repository location deleteAll ].
 
-	repository clone: 'git@github.com:svenvc/svc-demo.git'.
+	repository operations clone: 'git@github.com:svenvc/svc-demo.git'.
 
 	self assert: repository exists.
 	self assert: repository hasHead.
@@ -557,7 +557,7 @@ PureGitExamples >> exampleUnstageFileInRepository [
 
 	(repository location / 'extra.txt') writeStreamDo: [ :out | out print: 42 ].
 
-	repository stage: 'extra.txt'.
+	repository operations stage: 'extra.txt'.
 
 	fileStatuses := repository status.
 
@@ -565,7 +565,7 @@ PureGitExamples >> exampleUnstageFileInRepository [
 	self assert: fileStatuses first path = 'extra.txt'.
 	self assert:  fileStatuses first statusInIndex = #added.
 
-	repository unstage: 'extra.txt'.
+	repository operations unstage: 'extra.txt'.
 
 	fileStatuses := repository status.
 
