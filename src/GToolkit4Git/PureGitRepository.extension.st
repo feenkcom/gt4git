@@ -23,10 +23,6 @@ PureGitRepository >> gtActionOperationsFor: composite [
 { #category : #'*GToolkit4Git' }
 PureGitRepository >> gtBranchesFor: composite [
 	<gtView>
-	| currentBranchName currentBranchNameThunk |
-	currentBranchName := nil.
-	currentBranchNameThunk := [ currentBranchName ifNil: [
-		currentBranchName := self currentBranchName ] ].
 	^ composite columnedList
 		title: 'Branches';
 		priority: 35;
@@ -35,15 +31,42 @@ PureGitRepository >> gtBranchesFor: composite [
 		column: 'Type' text: #branchType;
 		column: 'Commit' text: #shortCommitId;
 		column: 'Current' 
-			icon: [ :branch | 
-				(branch name = currentBranchNameThunk value 
-					or: [ currentBranchNameThunk value isEmpty
+			icon: [ :branch | | currentBranchName |
+				currentBranchName := self currentBranchName.
+				(branch name = currentBranchName
+					or: [ currentBranchName isEmpty
 						and: [ branch name includesSubstring: 'HEAD detached' ] ])
 					ifTrue: [ BrGlamorousIcons greencircle ]
 					ifFalse: [ BrGlamorousIcons empty ] ]
 			width: 75;
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
-		actionUpdateButton
+		actionUpdateButton;
+		actionStencil: [ :aTab | | aptitude |
+			aptitude := BrGlamorousWithDropdownAptitude
+				handle: [
+					BrButton new
+						aptitude: BrGlamorousButtonWithIconAptitude;
+						icon: BrGlamorousVectorIcons add;
+						label: 'Create new branch' ]
+				content: [ | branchCreationPane |
+					branchCreationPane := GtGitBranchCreationPane new.
+					branchCreationPane
+						acceptAction: [ :aModel :aButton | | branchName |
+							branchName := branchCreationPane branchName.
+							self 
+								createBranch: branchName"; 
+								configureUpstreamIfNecessary".
+							aButton enqueueTask: (BlTaskAction new 
+								action: [ aTab viewContentElement phlow update.
+									aButton fireEvent: BrDropdownHideWish new]) ];
+						cancelAction: [ :aModel :aButton |
+							aButton enqueueTask: (BlTaskAction new 
+								action: [ aButton fireEvent: BrDropdownHideWish new ]) ].
+					branchCreationPane asElement ].			
+			BrButton new
+				aptitude: BrGlamorousButtonWithIconAptitude + aptitude;
+				icon: BrGlamorousVectorIcons add;
+				label: 'Create new branch' ]
 ]
 
 { #category : #'*GToolkit4Git' }
