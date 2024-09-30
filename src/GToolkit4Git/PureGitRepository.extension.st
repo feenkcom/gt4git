@@ -23,10 +23,6 @@ PureGitRepository >> gtActionOperationsFor: composite [
 { #category : #'*GToolkit4Git' }
 PureGitRepository >> gtBranchesFor: composite [
 	<gtView>
-	| currentBranchName currentBranchNameThunk |
-	currentBranchName := nil.
-	currentBranchNameThunk := [ currentBranchName ifNil: [
-		currentBranchName := self currentBranchName ] ].
 	^ composite columnedList
 		title: 'Branches';
 		priority: 35;
@@ -35,15 +31,42 @@ PureGitRepository >> gtBranchesFor: composite [
 		column: 'Type' text: #branchType;
 		column: 'Commit' text: #shortCommitId;
 		column: 'Current' 
-			icon: [ :branch | 
-				(branch name = currentBranchNameThunk value 
-					or: [ currentBranchNameThunk value isEmpty
+			icon: [ :branch | | currentBranchName |
+				currentBranchName := self currentBranchName.
+				(branch name = currentBranchName
+					or: [ currentBranchName isEmpty
 						and: [ branch name includesSubstring: 'HEAD detached' ] ])
 					ifTrue: [ BrGlamorousIcons greencircle ]
 					ifFalse: [ BrGlamorousIcons empty ] ]
 			width: 75;
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
-		actionUpdateButton
+		actionUpdateButton;
+		actionStencil: [ :aTab | | aptitude |
+			aptitude := BrGlamorousWithDropdownAptitude
+				handle: [
+					BrButton new
+						aptitude: BrGlamorousButtonWithIconAptitude;
+						icon: BrGlamorousVectorIcons add;
+						label: 'Create new branch' ]
+				content: [ | branchCreationPane |
+					branchCreationPane := GtGitBranchCreationPane new.
+					branchCreationPane
+						acceptAction: [ :aModel :aButton | | branchName |
+							branchName := branchCreationPane branchName.
+							self 
+								createBranch: branchName"; 
+								configureUpstreamIfNecessary".
+							aButton enqueueTask: (BlTaskAction new 
+								action: [ aTab viewContentElement phlow update.
+									aButton fireEvent: BrDropdownHideWish new]) ];
+						cancelAction: [ :aModel :aButton |
+							aButton enqueueTask: (BlTaskAction new 
+								action: [ aButton fireEvent: BrDropdownHideWish new ]) ].
+					branchCreationPane asElement ].			
+			BrButton new
+				aptitude: BrGlamorousButtonWithIconAptitude + aptitude;
+				icon: BrGlamorousVectorIcons add;
+				label: 'Create new branch' ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -93,22 +116,19 @@ PureGitRepository >> gtFilesFor: composite [
 			text: [ :each | each basename ifEmpty: [ self location ] ]
 			weight: 2.0;
 		column: 'Size'
-			text: [ :each | 
-				[ each isDirectory
-					ifFalse: [  each fileReference humanReadableSize ]
-					ifTrue: [ '' ] ]
-						on: FileException, FileSystemError
-						do: [ :anException | anException return: '' ] ]
+			text: [ :each |
+				each isDirectory
+					ifTrue: [ '' ]
+					ifFalse: [ 
+						[ each size humanReadableSISizeString ]
+							on: FileException, FileSystemError
+							do: [ :anException | anException return: '' ] ] ]
 			weight: 0.25;
 		column: 'Created'
-			text: [  :each | | fileReference |
-				fileReference := each fileReference.
-				[ String streamContents: [ :s | 
-					fileReference creationTime printYMDOn: s.
-					s nextPut: Character space.
-					fileReference creationTime printHMSOn: s ] ]
-						on: FileException, FileSystemError
-						do: [ :anException | anException return: '' ] ]
+			text: [  :each |
+				[ each creationTime printToSeconds ]
+					on: FileException, FileSystemError
+					do: [ :anException | anException return: '' ] ]
 			weight: 0.5;
 		column: 'Tracked'
 			icon: [ :each | 
