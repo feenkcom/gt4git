@@ -1,6 +1,16 @@
 Extension { #name : #PureGitFileStatus }
 
 { #category : #'*GToolkit4Git' }
+PureGitFileStatus >> gtActionGitFileFor: composite [
+	<gtAction>
+	^ composite button
+		icon: BrGlamorousIcons file;
+		tooltip: 'Open as git file';
+		priority: 20;
+		action: [ :element | element phlow spawnObject: self gitFile ]
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitFileStatus >> gtDetails [
 	^ super gtDetails , {
 		{ 'path' . self path . self fileReference }.
