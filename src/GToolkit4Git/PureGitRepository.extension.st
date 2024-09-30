@@ -93,22 +93,19 @@ PureGitRepository >> gtFilesFor: composite [
 			text: [ :each | each basename ifEmpty: [ self location ] ]
 			weight: 2.0;
 		column: 'Size'
-			text: [ :each | 
-				[ each isDirectory
-					ifFalse: [  each fileReference humanReadableSize ]
-					ifTrue: [ '' ] ]
-						on: FileException, FileSystemError
-						do: [ :anException | anException return: '' ] ]
+			text: [ :each |
+				each isDirectory
+					ifTrue: [ '' ]
+					ifFalse: [ 
+						[ each size humanReadableSISizeString ]
+							on: FileException, FileSystemError
+							do: [ :anException | anException return: '' ] ] ]
 			weight: 0.25;
 		column: 'Created'
-			text: [  :each | | fileReference |
-				fileReference := each fileReference.
-				[ String streamContents: [ :s | 
-					fileReference creationTime printYMDOn: s.
-					s nextPut: Character space.
-					fileReference creationTime printHMSOn: s ] ]
-						on: FileException, FileSystemError
-						do: [ :anException | anException return: '' ] ]
+			text: [  :each |
+				[ each creationTime printToSeconds ]
+					on: FileException, FileSystemError
+					do: [ :anException | anException return: '' ] ]
 			weight: 0.5;
 		column: 'Tracked'
 			icon: [ :each | 
