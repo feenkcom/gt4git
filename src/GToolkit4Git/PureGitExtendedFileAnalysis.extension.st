@@ -3,29 +3,38 @@ Extension { #name : #PureGitExtendedFileAnalysis }
 { #category : #'*GToolkit4Git' }
 PureGitExtendedFileAnalysis >> gtViewGraphFor: composite [
 	<gtView>
-	| min max scale colors |
+	| min max scale colors height maxChanged |
 	min := self commits min: [ :each | each numberOfLines ].
 	max := self commits max: [ :each | each numberOfLines ].
+	maxChanged := self commits max: [ :each | each numberOfLinesChanged abs ].
 	scale := max reciprocal * 800.
 	colors := BrIdentityNormalizer new.
-	^ composite list
+	height := 4.
+	^ composite columnedList
 		title: 'Graph';
 		priority: 40;
 		items: [ self commits ];
-		itemStencil: [
-			BlElement new
-				layout: BlLinearLayout horizontal;
-				constraintsDo: [ :c | 
-					c horizontal fitContent.
-					c vertical fitContent ] ];
-		itemDataBinder: [ :anElement :anItem :anIndex | | width |
-			width := 200 + (anItem numberOfLines * scale).
-			anElement removeChildren.
-			anItem sortedAuthors doWithIndex: [ :ownership :index |
-				anElement addChild: (BlElement new
-					background: (colors value: ownership key);
-					size: ((width * ownership value) rounded @ 10)) ].
-			anElement ]
+		column: 'Commit'
+			stencil: [ :item | | width |
+				width := (item numberOfLinesChanged abs / maxChanged * 50) max: 10.
+				BlElement new
+					background: (colors value: item author);
+					size: width @ height ]
+			width: 60;
+		column: 'Ownership' 
+			stencil: [ :item | | element width |
+				element := BlElement new
+					layout: BlLinearLayout horizontal;
+					constraintsDo: [ :c | 
+						c horizontal fitContent.
+						c vertical fitContent ].
+				width := 200 + (item numberOfLines * scale).
+				item sortedAuthors doWithIndex: [ :ownership :index |
+					element addChild: (BlElement new
+						background: (colors value: ownership key);
+						size: ((width * ownership value) rounded @ height)) ].
+				element ]
+			width: 1000
 ]
 
 { #category : #'*GToolkit4Git' }
