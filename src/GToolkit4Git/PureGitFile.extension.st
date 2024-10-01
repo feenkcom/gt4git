@@ -26,6 +26,33 @@ PureGitFile >> gtActionOperationsFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitFile >> gtBlameFor: composite [
+	<gtView>
+	| timestampFormat colors |
+	timestampFormat := ZTimestampFormat fromString: '2001-02-03 16:05'.
+	colors := BrIdentityNormalizer new.
+	^ composite columnedList
+		title: 'Blame';
+		priority: 50;
+		tooltip: 'Show last commit for each line of ' , self path;
+		items: [ self blame ];
+		column: '#' 
+			text: #lineNumber 
+			weight: 0.125;
+		column: 'Commit' 
+			text: [ :blameLine | blameLine shortId ] 
+			weight: 0.125;
+		column: 'Timestamp' 
+			text: [ :blameLine | timestampFormat format: blameLine timestamp ] 
+			weight: 0.25;
+		column: 'Author' 
+			text: [ :blameLine | blameLine author asRopedText highlight: (colors value: blameLine author) ] 
+			weight: 0.5;
+		column: 'Line' 
+			text: [ :blameLine | blameLine line asRopedText glamorousCodeFont ]
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitFile >> gtContentsFor: composite [
 	<gtView>
 	| text |
