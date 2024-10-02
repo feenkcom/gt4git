@@ -41,12 +41,22 @@ PureGitFile >> gtBlameFor: composite [
 			weight: 0.125;
 		column: 'Commit' 
 			text: [ :blameLine | blameLine shortId ] 
-			weight: 0.125;
+			weight: 0.165;
 		column: 'Timestamp' 
 			text: [ :blameLine | timestampFormat format: blameLine timestamp ] 
 			weight: 0.33;
 		column: 'Author' 
-			text: [ :blameLine | blameLine author asRopedText highlight: (colors value: blameLine author) ] 
+			stencil: [ :blameLine | | color |
+				color := colors value: blameLine author.
+				BrLabel new
+					layout: BlLinearLayout horizontal;
+					constraintsDo: [ :c | 
+						c horizontal matchParent.
+						c vertical fitContent ];
+					aptitude: (BrGlamorousLabelAptitude new 
+									foreground: color gtContrastingColor) ;
+					text: blameLine author;
+					background: color ]
 			weight: 0.5;
 		column: 'Line' 
 			stencil: [ :blameLine |
