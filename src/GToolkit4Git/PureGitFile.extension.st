@@ -30,7 +30,9 @@ PureGitFile >> gtBlameFor: composite [
 	<gtView>
 	| timestampFormat colors |
 	timestampFormat := ZTimestampFormat fromString: '2001-02-03 16:05'.
-	colors := BrIdentityNormalizer new.
+	colors := BrExplicitIdentityNormalizer new
+		colors: BrGlamorousColors distinctTenLightColors;
+		defaultColor: Color veryLightGray.
 	^ composite columnedList
 		title: 'Blame';
 		priority: 50;
