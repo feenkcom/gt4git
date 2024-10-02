@@ -1,6 +1,26 @@
 Extension { #name : #PureGitRemote }
 
 { #category : #'*GToolkit4Git' }
+PureGitRemote >> gtActionOperationsFor: composite [
+	<gtAction>
+	^ composite dropdown
+		tooltip: 'Repository operations';
+		icon: BrGlamorousVectorIcons hamburger;
+		content: [ :aButton | 
+			BrGlamorousSimpleContextMenuContent new
+				items: (Array streamContents: [ :actions |
+					actions nextPut: 'Pull' -> [ :e |
+						self pull.
+						e fireEvent: BrDropdownHideWish new ].
+					actions nextPut: 'Push' -> [ :e |
+						self push.
+						e fireEvent: BrDropdownHideWish new ].
+					actions nextPut: 'Fetch' -> [ :e |
+						self fetch.
+						e fireEvent: BrDropdownHideWish new ] ]) ]
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitRemote >> gtBranchesFor: composite [
 	<gtView>
 	^ composite columnedList

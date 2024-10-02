@@ -9,6 +9,18 @@ PureGitRepository >> gtActionOperationsFor: composite [
 		content: [ :aButton | 
 			BrGlamorousSimpleContextMenuContent new
 				items: (Array streamContents: [ :actions |
+					actions nextPut: 'Pull' -> [ :e |
+						self operations pull: #().
+						e fireEvent: BrDropdownHideWish new ].
+					actions nextPut: 'Push' -> [ :e |
+						self operations push: #().
+						e fireEvent: BrDropdownHideWish new ].
+					actions nextPut: 'Fetch' -> [ :e |
+						self operations fetch: #().
+						e fireEvent: BrDropdownHideWish new ].
+					actions nextPut: 'Merge' -> [ :e |
+						self operations merge: #().
+						e fireEvent: BrDropdownHideWish new ].
 					self exists
 						ifTrue: [
 							actions nextPut: 'Delete' -> [ :e | 
