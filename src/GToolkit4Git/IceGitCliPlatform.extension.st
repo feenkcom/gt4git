@@ -1,6 +1,16 @@
 Extension { #name : #IceGitCliPlatform }
 
 { #category : #'*GToolkit4Git' }
+IceGitCliPlatform class >> gtConfigFor: composite [
+	<gtClassView>
+	^ composite forward
+		title: 'Config';
+		priority: 55;
+		object: [ self current ];
+		view: #gtConfigFor:
+]
+
+{ #category : #'*GToolkit4Git' }
 IceGitCliPlatform >> gtConfigFor: composite [
 	<gtView>
 	^ composite forward
@@ -33,6 +43,16 @@ IceGitCliPlatform >> gtDetailsFor: aView [
 		column: 'Value' text: #second;
 		send: #last;
 		actionUpdateButton
+]
+
+{ #category : #'*GToolkit4Git' }
+IceGitCliPlatform class >> gtDetailsFor: composite [
+	<gtClassView>
+	^ composite forward
+		title: 'Details';
+		priority: 50;
+		object: [ self current ];
+		view: #gtDetailsFor:
 ]
 
 { #category : #'*GToolkit4Git' }
