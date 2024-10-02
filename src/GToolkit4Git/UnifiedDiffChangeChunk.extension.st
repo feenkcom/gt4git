@@ -38,7 +38,7 @@ UnifiedDiffChangeChunk >> gtViewGtDiffFor: composite [
 	<gtView>
 	^ composite forward
 		title: 'GtDiff';
-		priority: 50;
+		priority: 40;
 		object: [ self gtDiff ];
 		view: #gtTextView:
 ]
