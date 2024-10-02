@@ -260,12 +260,11 @@ PureGitRepository >> gtHistoryFor: composite [
 { #category : #'*GToolkit4Git' }
 PureGitRepository >> gtInternalsFor: composite [
 	<gtView>
-	^ composite forward
+	^ (self queries internals gtItemsFor: composite)
 		title: 'Internals';
 		priority: 80;
-		object: [ self queries internals ];
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
-		view: #gtItemsFor:
+		expandAll
 ]
 
 { #category : #'*GToolkit4Git' }
