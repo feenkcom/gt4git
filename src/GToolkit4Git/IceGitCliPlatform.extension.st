@@ -23,6 +23,16 @@ IceGitCliPlatform >> gtConfigFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceGitCliPlatform class >> gtDetailsFor: composite [
+	<gtClassView>
+	^ composite forward
+		title: 'Details';
+		priority: 50;
+		object: [ self current ];
+		view: #gtDetailsFor:
+]
+
+{ #category : #'*GToolkit4Git' }
 IceGitCliPlatform >> gtDetailsFor: aView [
 	<gtView>
 	^ aView columnedList
@@ -46,16 +56,6 @@ IceGitCliPlatform >> gtDetailsFor: aView [
 ]
 
 { #category : #'*GToolkit4Git' }
-IceGitCliPlatform class >> gtDetailsFor: composite [
-	<gtClassView>
-	^ composite forward
-		title: 'Details';
-		priority: 50;
-		object: [ self current ];
-		view: #gtDetailsFor:
-]
-
-{ #category : #'*GToolkit4Git' }
 IceGitCliPlatform >> gtInstallActionFor: aComposite [
 	<gtAction>
 	
@@ -64,6 +64,28 @@ IceGitCliPlatform >> gtInstallActionFor: aComposite [
 		tooltip: 'Make Libgit-CLI the default Iceberg implementation';
 		priority: 20;
 		action: [ :element | self install ]
+]
+
+{ #category : #'*GToolkit4Git' }
+IceGitCliPlatform class >> gtInstallActionFor: aComposite [
+	<gtClassAction>
+	
+	^ aComposite button
+		label: 'Install';
+		tooltip: 'Make Libgit-CLI the default Iceberg implementation';
+		priority: 20;
+		action: [ :element | self current install ]
+]
+
+{ #category : #'*GToolkit4Git' }
+IceGitCliPlatform class >> gtUninstallActionFor: aComposite [
+	<gtClassAction>
+	
+	^ aComposite button
+		label: 'Uninstall';
+		tooltip: 'Reset the Iceberg implementation to its Libgit2 FFI implementation';
+		priority: 30;
+		action: [ :element | self current uninstall ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -86,4 +108,15 @@ IceGitCliPlatform >> gtValidateActionFor: aComposite [
 		tooltip: 'Validate and throw errors';
 		priority: 10;
 		action: [ :element | element phlow spawnObject: self validate ]
+]
+
+{ #category : #'*GToolkit4Git' }
+IceGitCliPlatform class >> gtValidateActionFor: aComposite [
+	<gtClassAction>
+	
+	^ aComposite button
+		label: 'Validate';
+		tooltip: 'Validate and throw errors';
+		priority: 10;
+		action: [ :element | element phlow spawnObject: self current validate ]
 ]
