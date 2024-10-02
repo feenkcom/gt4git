@@ -44,12 +44,16 @@ PureGitFile >> gtBlameFor: composite [
 			weight: 0.125;
 		column: 'Timestamp' 
 			text: [ :blameLine | timestampFormat format: blameLine timestamp ] 
-			weight: 0.25;
+			weight: 0.33;
 		column: 'Author' 
 			text: [ :blameLine | blameLine author asRopedText highlight: (colors value: blameLine author) ] 
 			weight: 0.5;
 		column: 'Line' 
-			text: [ :blameLine | blameLine line asRopedText glamorousCodeFont ]
+			stencil: [ :blameLine |
+				BrLabel new
+					aptitude: BrGlamorousLabelAptitude new editorMeasurement;
+					text: blameLine line ]
+			weight: 2.0
 ]
 
 { #category : #'*GToolkit4Git' }
