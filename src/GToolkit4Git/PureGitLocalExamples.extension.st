@@ -28,8 +28,11 @@ PureGitLocalExamples >> cloneRepositoryAIntoRepositoryB [
 	numberFile := repositoryB location / 'number.txt'.
 
 	self assert: numberFile exists.
-	self assert: numberFile contents lines first = '1. first'.
-	self assert: repositoryA head comment = 'First commit'.
+	self assert: numberFile contents lines first equals: '1. first'.
+	self assert: repositoryB head comment equals: 'First commit'.
+
+	self assert: repositoryA head equals: repositoryB head.
+	self assert: repositoryA branch equals: repositoryB branch.
 
 	^ repositoryB
 ]
@@ -54,8 +57,9 @@ PureGitLocalExamples >> firstCommitInRepositoryA [
 
 	repositoryA operations commit: 'First commit'.
 
-	self assert: repositoryA branch name = repositoryA queries initialDefaultBranchName.
-	self assert: repositoryA head comment = 'First commit'.
+	self assert: repositoryA hasHead.
+	self assert: repositoryA branch name equals: repositoryA queries initialDefaultBranchName.
+	self assert: repositoryA head comment equals: 'First commit'.
 
 	^ repositoryA
 ]
@@ -92,7 +96,7 @@ PureGitLocalExamples >> initRepositoryA [
 	self assert: repositoryA hasHead not.
 	self assert: repositoryA branch isNil.
 	self assert: repositoryA queries allBranches isEmpty.
-	self assert: repositoryA queries tags toArray wait isEmpty.
+	self assert: repositoryA queries tags hasNext wait not.
 	self assert: repositoryA queries remotes isEmpty.
 
 	^ repositoryA
@@ -106,15 +110,20 @@ PureGitLocalExamples >> pullRepositoryAToRepositoryB [
 	| numberFile |
 
 	self thirdCommitInRepositoryA.
+
+	"self assert: repositoryB queries incomingCommits isEmpty not"
 	
 	repositoryB branch upstream remote pull.
-	
+
+	"self assert: repositoryB queries incomingCommits isEmpty"
+
 	numberFile := repositoryB location / 'number.txt'.
 
-	self assert: numberFile contents lines first = '3. third'.
-	self assert: repositoryB head comment = 'Third commit'.
+	self assert: numberFile contents lines first equals: '3. third'.
+	self assert: repositoryB head comment equals: 'Third commit'.
 
-	self assert: repositoryA head = repositoryB head. 
+	self assert: repositoryA head equals: repositoryB head.
+	self assert: repositoryA branch equals: repositoryB branch.
 
 	^ repositoryB
 ]
@@ -140,10 +149,11 @@ PureGitLocalExamples >> pushRepositoryBToRepositoryA [
 
 	numberFile := repositoryA location / 'number.txt'.
 
-	self assert: numberFile contents lines first = '2. second'.
-	self assert: repositoryA branch commit comment trimBoth = 'Second commit'.
+	self assert: numberFile contents lines first equals: '2. second'.
+	self assert: repositoryA branch commit comment trimBoth equals: 'Second commit'.
 
-	self assert: repositoryA head = repositoryB head.
+	self assert: repositoryA head equals: repositoryB head.
+	self assert: repositoryA branch equals: repositoryB branch.
 
 	^ self
 ]
@@ -189,8 +199,8 @@ PureGitLocalExamples >> secondCommitInRepositoryB [
 
 	repositoryB operations commit: 'Second commit'.
 
-	self assert: repositoryB branch name = repositoryA queries initialDefaultBranchName.
-	self assert: repositoryB head comment = 'Second commit'.
+	self assert: repositoryB branch name equals: repositoryA queries initialDefaultBranchName.
+	self assert: repositoryB head comment equals: 'Second commit'.
 
 	^ repositoryB
 ]
@@ -216,7 +226,7 @@ PureGitLocalExamples >> thirdCommitInRepositoryA [
 
 	repositoryA operations commit: 'Third commit'.
 
-	self assert: repositoryA head comment = 'Third commit'.
+	self assert: repositoryA head comment equals: 'Third commit'.
 
 	^ repositoryA
 ]
