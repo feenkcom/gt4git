@@ -61,6 +61,21 @@ PureGitLocalExamples >> firstCommitInRepositoryA [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitLocalExamples >> gtDetailsFor: composite [
+	<gtView>
+	^ composite columnedList
+		title: 'Details';
+		priority: 20;
+		items: [ {
+			{ 'repository A' . repositoryA }.
+			{ 'repository B' . repositoryB }.
+		} ];
+		column: 'key' text: #first;
+		column: 'value' text: #second weight: 3;
+		send: #last
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitLocalExamples >> initRepositoryA [
 	<gtExample>
 	<noTest>
@@ -84,6 +99,56 @@ PureGitLocalExamples >> initRepositoryA [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitLocalExamples >> pullRepositoryAToRepositoryB [
+	<gtExample>
+	<noTest>
+
+	| numberFile |
+
+	self thirdCommitInRepositoryA.
+	
+	repositoryB branch upstream remote pull.
+	
+	numberFile := repositoryB location / 'number.txt'.
+
+	self assert: numberFile contents lines first = '3. third'.
+	self assert: repositoryB head comment = 'Third commit'.
+
+	self assert: repositoryA head = repositoryB head. 
+
+	^ repositoryB
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitLocalExamples >> pushRepositoryBToRepositoryA [
+	<gtExample>
+	<noTest>
+
+	| numberFile |
+
+	repositoryB := self secondCommitInRepositoryB.
+
+	"self assert: repositoryB queries outgoingCommits isEmpty not."
+
+	repositoryA operations createBranch: 'branch-temporary'. "git won't push into local remote when branch is the same"
+
+	repositoryB branch upstream remote push.
+
+	"self assert: repositoryB queries outgoingCommits isEmpty."
+
+	repositoryA operations checkout: repositoryA queries initialDefaultBranchName.
+
+	numberFile := repositoryA location / 'number.txt'.
+
+	self assert: numberFile contents lines first = '2. second'.
+	self assert: repositoryA branch commit comment trimBoth = 'Second commit'.
+
+	self assert: repositoryA head = repositoryB head.
+
+	^ self
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitLocalExamples >> repositoryALocation [
 	^ self baseDirectory / self repositoryAName
 ]
@@ -101,4 +166,57 @@ PureGitLocalExamples >> repositoryBLocation [
 { #category : #'*GToolkit4Git' }
 PureGitLocalExamples >> repositoryBName [
 	^ 'RepositoryB'
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitLocalExamples >> secondCommitInRepositoryB [
+	<gtExample>
+	<noTest>
+
+	| numberFile |
+
+	repositoryB := self cloneRepositoryAIntoRepositoryB.
+
+	numberFile := repositoryB location / 'number.txt'.
+
+	numberFile writeStreamDo: [ :out |
+		out truncate.
+		(ZnNewLineWriterStream on: out)
+			forPlatformLineEnding;
+			<< '2. second'; newLine ].
+
+	repositoryB operations stage: numberFile basename.
+
+	repositoryB operations commit: 'Second commit'.
+
+	self assert: repositoryB branch name = repositoryA queries initialDefaultBranchName.
+	self assert: repositoryB head comment = 'Second commit'.
+
+	^ repositoryB
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitLocalExamples >> thirdCommitInRepositoryA [
+	<gtExample>
+	<noTest>
+
+	| numberFile |
+
+	self pushRepositoryBToRepositoryA.
+
+	numberFile := repositoryA location / 'number.txt'.
+
+	numberFile writeStreamDo: [ :out |
+		out truncate.
+		(ZnNewLineWriterStream on: out)
+			forPlatformLineEnding;
+			<< '3. third'; newLine ].
+
+	repositoryA operations stage: numberFile basename.
+
+	repositoryA operations commit: 'Third commit'.
+
+	self assert: repositoryA head comment = 'Third commit'.
+
+	^ repositoryA
 ]
