@@ -79,6 +79,40 @@ PureGitLocalExamples >> firstCommitInRepositoryA [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitLocalExamples >> fourthCommitInBranchInRepositoryA [
+	<gtExample>
+	<noTest>
+
+	| numberFile originalBranch |
+
+	repositoryA := self thirdCommitInRepositoryA.
+	
+	originalBranch := repositoryA branch.
+
+	repositoryA operations createBranch: 'feature-1'.
+
+	self assert: repositoryA branch name equals: 'feature-1'.
+
+	numberFile := repositoryA location / 'number.txt'.
+
+	numberFile writeStreamDo: [ :out |
+		out truncate.
+		(ZnNewLineWriterStream on: out)
+			forPlatformLineEnding;
+			<< '4. fourth'; newLine ].
+
+	repositoryA operations stage: numberFile basename.
+
+	repositoryA operations commit: 'Fourth commit'.
+
+	self assert: repositoryA head comment equals: 'Fourth commit'.
+	self assert: repositoryA head equals: repositoryA branch commit.
+	self assert: repositoryA head parent equals: originalBranch commit.
+
+	^ repositoryA
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitLocalExamples >> gtDetailsFor: composite [
 	<gtView>
 	^ composite columnedList
@@ -112,6 +146,49 @@ PureGitLocalExamples >> initRepositoryA [
 	self assert: repositoryA queries allBranches isEmpty.
 	self assert: repositoryA queries tags hasNext wait not.
 	self assert: repositoryA queries remotes isEmpty.
+
+	^ repositoryA
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitLocalExamples >> mergeBranchInRepositoryA [
+	<gtExample>
+	<noTest>
+
+	| numberFile featureBranch initialBranch initialDefaultBranchName |
+
+	repositoryA := self fourthCommitInBranchInRepositoryA.
+
+	numberFile := repositoryA location / 'number.txt'.
+
+	self assert: numberFile contents lines first equals: '4. fourth'.
+
+	featureBranch := repositoryA branch.
+
+	self assert: featureBranch name equals: 'feature-1'.
+	self assert: featureBranch commit equals: repositoryA head.
+
+	initialDefaultBranchName := repositoryA queries initialDefaultBranchName.
+	initialBranch := repositoryA queries localBranches
+		detect: [ :each | each name = initialDefaultBranchName ].
+
+	initialBranch checkout.
+
+	self assert: numberFile contents lines first equals: '3. third'.
+	self assert: initialBranch commit equals: repositoryA head.
+
+	featureBranch merge.
+
+	initialBranch := repositoryA queries localBranches
+		detect: [ :each | each name = initialDefaultBranchName ].
+	featureBranch := repositoryA queries localBranches
+		detect: [ :each | each name = 'feature-1' ].
+
+	self assert: initialBranch commit equals: featureBranch commit.
+	self assert: initialBranch equals: repositoryA branch.
+	self assert: featureBranch commit equals: repositoryA branch commit.
+
+	self assert: numberFile contents lines first equals: '4. fourth'.
 
 	^ repositoryA
 ]
@@ -151,7 +228,7 @@ PureGitLocalExamples >> pushRepositoryBToRepositoryA [
 
 	self assert: repositoryB branch outgoingCommits hasNext wait.
 
-	repositoryA operations createBranch: 'branch-temporary'. "git won't push into local remote when branch is the same"
+	repositoryA operations createBranch: 'temporary'. "git won't push into local remote when branch is the same"
 
 	repositoryB branch upstream remote push.
 
