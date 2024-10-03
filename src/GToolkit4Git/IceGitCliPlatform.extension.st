@@ -1,6 +1,16 @@
 Extension { #name : #IceGitCliPlatform }
 
 { #category : #'*GToolkit4Git' }
+IceGitCliPlatform class >> gtConfigFor: composite [
+	<gtClassView>
+	^ composite forward
+		title: 'Config';
+		priority: 55;
+		object: [ self current ];
+		view: #gtConfigFor:
+]
+
+{ #category : #'*GToolkit4Git' }
 IceGitCliPlatform >> gtConfigFor: composite [
 	<gtView>
 	^ composite forward
@@ -10,6 +20,16 @@ IceGitCliPlatform >> gtConfigFor: composite [
 		object: [ self config ];
 		view: #gtItemsFor: ;
 		actionUpdateButton
+]
+
+{ #category : #'*GToolkit4Git' }
+IceGitCliPlatform class >> gtDetailsFor: composite [
+	<gtClassView>
+	^ composite forward
+		title: 'Details';
+		priority: 50;
+		object: [ self current ];
+		view: #gtDetailsFor:
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -47,6 +67,28 @@ IceGitCliPlatform >> gtInstallActionFor: aComposite [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceGitCliPlatform class >> gtInstallActionFor: aComposite [
+	<gtClassAction>
+	
+	^ aComposite button
+		label: 'Install';
+		tooltip: 'Make Libgit-CLI the default Iceberg implementation';
+		priority: 20;
+		action: [ :element | self current install ]
+]
+
+{ #category : #'*GToolkit4Git' }
+IceGitCliPlatform class >> gtUninstallActionFor: aComposite [
+	<gtClassAction>
+	
+	^ aComposite button
+		label: 'Uninstall';
+		tooltip: 'Reset the Iceberg implementation to its Libgit2 FFI implementation';
+		priority: 30;
+		action: [ :element | self current uninstall ]
+]
+
+{ #category : #'*GToolkit4Git' }
 IceGitCliPlatform >> gtUninstallActionFor: aComposite [
 	<gtAction>
 	
@@ -66,4 +108,15 @@ IceGitCliPlatform >> gtValidateActionFor: aComposite [
 		tooltip: 'Validate and throw errors';
 		priority: 10;
 		action: [ :element | element phlow spawnObject: self validate ]
+]
+
+{ #category : #'*GToolkit4Git' }
+IceGitCliPlatform class >> gtValidateActionFor: aComposite [
+	<gtClassAction>
+	
+	^ aComposite button
+		label: 'Validate';
+		tooltip: 'Validate and throw errors';
+		priority: 10;
+		action: [ :element | element phlow spawnObject: self current validate ]
 ]

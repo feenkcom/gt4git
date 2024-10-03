@@ -26,6 +26,49 @@ PureGitFile >> gtActionOperationsFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitFile >> gtBlameFor: composite [
+	<gtView>
+	| timestampFormat colors |
+	timestampFormat := ZTimestampFormat fromString: '2001-02-03 16:05'.
+	colors := BrExplicitIdentityNormalizer new
+		colors: BrGlamorousColors distinctTenLightColors;
+		defaultColor: Color veryLightGray.
+	^ composite columnedList
+		title: 'Blame';
+		priority: 50;
+		tooltip: 'Show last commit for each line of ' , self path;
+		items: [ self blame ];
+		column: '#' 
+			text: #lineNumber 
+			weight: 0.125;
+		column: 'Commit' 
+			text: [ :blameLine | blameLine shortId ] 
+			weight: 0.165;
+		column: 'Timestamp' 
+			text: [ :blameLine | timestampFormat format: blameLine timestamp ] 
+			weight: 0.33;
+		column: 'Author' 
+			stencil: [ :blameLine | | color |
+				color := colors value: blameLine author.
+				BrLabel new
+					layout: BlLinearLayout horizontal;
+					constraintsDo: [ :c | 
+						c horizontal matchParent.
+						c vertical fitContent ];
+					aptitude: (BrGlamorousLabelAptitude new 
+									foreground: color gtContrastingColor) ;
+					text: blameLine author;
+					background: color ]
+			weight: 0.5;
+		column: 'Line' 
+			stencil: [ :blameLine |
+				BrLabel new
+					aptitude: BrGlamorousLabelAptitude new editorMeasurement;
+					text: blameLine line ]
+			weight: 2.0
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitFile >> gtContentsFor: composite [
 	<gtView>
 	| text |

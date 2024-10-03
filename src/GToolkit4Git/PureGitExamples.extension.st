@@ -19,10 +19,10 @@ PureGitExamples >> exampleAnatomyOfACommit [
 	blob := entry resolve.
 
 	self assert: commit comment equals: self exampleSecondCommitComment.
-	self assert: blob text equals: self exampleFileContentsChanged.
+	self assert: blob text equals: self exampleFileContentsChangedInRepository.
 	self 
 		assert: blob id
-		equals: (PureGitBlob hashText: self exampleFileContentsChanged).
+		equals: (PureGitBlob hashText: self exampleFileContentsChangedInRepository).
 	
 	self assert: commit hasSingleParent.
 
@@ -31,7 +31,7 @@ PureGitExamples >> exampleAnatomyOfACommit [
 
 	self assert: commit id ~= parent id.
 	self assert: blob id ~= parentBlob id.
-	self assert: parentBlob text equals: self exampleFileContents.
+	self assert: parentBlob text equals: self exampleFileContentsInRepository.
 
 	changes := commit changesToParent.
 
@@ -98,7 +98,7 @@ PureGitExamples >> exampleContentAddressableObjectStore [
 
 	repository := self exampleSecondCommitInRepository.
 
-	id := PureGitBlob hashText: self exampleFileContents.
+	id := PureGitBlob hashText: self exampleFileContentsInRepository.
 
 	self assert: id isString.
 	self assert: id size equals: 40.
@@ -107,13 +107,13 @@ PureGitExamples >> exampleContentAddressableObjectStore [
 	blob := repository resolveBlob: id.
 
 	self assert: blob id equals: id.
-	self assert: blob text equals: self exampleFileContents.
+	self assert: blob text equals: self exampleFileContentsInRepository.
 
-	idChanged := PureGitBlob hashText: self exampleFileContentsChanged.
+	idChanged := PureGitBlob hashText: self exampleFileContentsChangedInRepository.
 	blobChanged := repository resolveBlob: idChanged.
 
 	self assert: blobChanged id equals: idChanged.
-	self assert: blobChanged text equals: self exampleFileContentsChanged.
+	self assert: blobChanged text equals: self exampleFileContentsChangedInRepository.
 
 	self assert: id ~= idChanged.
 	self assert: blob contents ~= blobChanged contents.
@@ -158,8 +158,9 @@ PureGitExamples >> exampleFileContents [
 	<gtExample>
 
 	^ String streamContents: [ :out |
-		(ZnNewLineWriterStream on: out) 
-			<< 'Sic mundus creatus est.'; cr ]
+		(ZnNewLineWriterStream on: out)
+			forPlatformLineEnding;
+			<< 'Sic mundus creatus est.'; newLine ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -167,9 +168,42 @@ PureGitExamples >> exampleFileContentsChanged [
 	<gtExample>
 
 	^ String streamContents: [ :out |
-		(ZnNewLineWriterStream on: out) 
-			<< 'Sic mundus creatus est.'; cr;
-			<< 'Anno MMXXIV'; cr ]
+		(ZnNewLineWriterStream on: out)
+			forPlatformLineEnding;
+			<< 'Sic mundus creatus est.'; newLine;
+			<< 'Anno MMXXIV'; newLine ]
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleFileContentsChangedInRepository [
+	<gtExample>
+
+	| autoCrLf |
+	autoCrLf := self currentIceGitCliPlatform config
+			at: 'core.autocrlf'
+			ifAbsent: [ 'false' ].
+	^ autoCrLf = 'false'
+		ifTrue: [ self exampleFileContentsChanged ]
+		ifFalse: [ String streamContents: [ :out | 
+					(ZnNewLineWriterStream on: out)
+						forLf;
+						nextPutAll: self exampleFileContentsChanged ] ]
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleFileContentsInRepository [
+	<gtExample>
+
+	| autoCrLf |
+	autoCrLf := self currentIceGitCliPlatform config
+			at: 'core.autocrlf'
+			ifAbsent: [ 'false' ].
+	^ autoCrLf = 'false'
+		ifTrue: [ self exampleFileContents ]
+		ifFalse: [ String streamContents: [ :out | 
+					(ZnNewLineWriterStream on: out)
+						forLf;
+						nextPutAll: self exampleFileContents ] ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -205,8 +239,8 @@ PureGitExamples >> exampleFirstCommitInRepository [
 	entry := head tree entries first.
 	
 	self assert: entry name equals: self exampleFilename.
-	self assert: entry resolve text equals: self exampleFileContents.
-	self assert: entry id equals: (PureGitBlob hashText: self exampleFileContents).
+	self assert: entry resolve text equals: self exampleFileContentsInRepository.
+	self assert: entry id equals: (PureGitBlob hashText: self exampleFileContentsInRepository).
 
 	^ repository
 ]
@@ -413,8 +447,8 @@ PureGitExamples >> exampleSecondCommitInRepository [
 	entry := head tree entries first.
 	
 	self assert: entry name equals: self exampleFilename.
-	self assert: entry resolve text equals: self exampleFileContentsChanged.
-	self assert: entry id equals: (PureGitBlob hashText: self exampleFileContentsChanged).
+	self assert: entry resolve text equals: self exampleFileContentsChangedInRepository.
+	self assert: entry id equals: (PureGitBlob hashText: self exampleFileContentsChangedInRepository).
 
 	^ repository
 ]

@@ -14,8 +14,10 @@ PureGitExtendedFileCommit >> gtDetailsFor: composite [
 			{ 'number of lines changed' 
 				. self numberOfLinesChangedDescription
 				. self numberOfLinesChanged }.
-
-			{ 'number of lines' . self numberOfLines }.
+			{ 'number of lines added' . self numberOfLinesAdded }.
+			{ 'number of lines removed' . self numberOfLinesRemoved }.
+			{ 'number of lines modified' . self numberOfLinesModified }.
+			{ 'file estimated number of lines' . self numberOfLines }.
 			{ 'authors top 3' 
 				. self authorTop3Description 
 				. self authors }.

@@ -9,6 +9,18 @@ PureGitRepository >> gtActionOperationsFor: composite [
 		content: [ :aButton | 
 			BrGlamorousSimpleContextMenuContent new
 				items: (Array streamContents: [ :actions |
+					actions nextPut: 'Pull' -> [ :e |
+						self operations pull: #().
+						e fireEvent: BrDropdownHideWish new ].
+					actions nextPut: 'Push' -> [ :e |
+						self operations push: #().
+						e fireEvent: BrDropdownHideWish new ].
+					actions nextPut: 'Fetch' -> [ :e |
+						self operations fetch: #().
+						e fireEvent: BrDropdownHideWish new ].
+					actions nextPut: 'Merge' -> [ :e |
+						self operations merge: #().
+						e fireEvent: BrDropdownHideWish new ].
 					self exists
 						ifTrue: [
 							actions nextPut: 'Delete' -> [ :e | 
@@ -260,12 +272,11 @@ PureGitRepository >> gtHistoryFor: composite [
 { #category : #'*GToolkit4Git' }
 PureGitRepository >> gtInternalsFor: composite [
 	<gtView>
-	^ composite forward
+	^ (self queries internals gtItemsFor: composite)
 		title: 'Internals';
 		priority: 80;
-		object: [ self queries internals ];
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
-		view: #gtItemsFor:
+		expandAll
 ]
 
 { #category : #'*GToolkit4Git' }
