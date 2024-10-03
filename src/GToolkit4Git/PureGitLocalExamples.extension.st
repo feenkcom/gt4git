@@ -38,6 +38,20 @@ PureGitLocalExamples >> cloneRepositoryAIntoRepositoryB [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitLocalExamples >> fetchRepositoryAToRepositoryB [
+	<gtExample>
+	<noTest>
+
+	self thirdCommitInRepositoryA.
+
+	repositoryB branch upstream remote fetch.
+
+	self assert: repositoryB branch incomingCommits hasNext wait.
+
+	^ self
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitLocalExamples >> firstCommitInRepositoryA [
 	<gtExample>
 	<noTest>
@@ -110,12 +124,10 @@ PureGitLocalExamples >> pullRepositoryAToRepositoryB [
 	| numberFile |
 
 	self thirdCommitInRepositoryA.
-
-	"self assert: repositoryB queries incomingCommits isEmpty not"
 	
 	repositoryB branch upstream remote pull.
 
-	"self assert: repositoryB queries incomingCommits isEmpty"
+	self assert: repositoryB branch incomingCommits hasNext wait not.
 
 	numberFile := repositoryB location / 'number.txt'.
 
@@ -125,7 +137,7 @@ PureGitLocalExamples >> pullRepositoryAToRepositoryB [
 	self assert: repositoryA head equals: repositoryB head.
 	self assert: repositoryA branch equals: repositoryB branch.
 
-	^ repositoryB
+	^ self
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -137,13 +149,13 @@ PureGitLocalExamples >> pushRepositoryBToRepositoryA [
 
 	repositoryB := self secondCommitInRepositoryB.
 
-	"self assert: repositoryB queries outgoingCommits isEmpty not."
+	self assert: repositoryB branch outgoingCommits hasNext wait.
 
 	repositoryA operations createBranch: 'branch-temporary'. "git won't push into local remote when branch is the same"
 
 	repositoryB branch upstream remote push.
 
-	"self assert: repositoryB queries outgoingCommits isEmpty."
+	self assert: repositoryB branch outgoingCommits hasNext wait not.
 
 	repositoryA operations checkout: repositoryA queries initialDefaultBranchName.
 
