@@ -22,19 +22,5 @@ PureGitLocalBranch >> gtOperations [
 			ifFalse: [
 				actions nextPut: 'Merge' -> [ :e | 
 					self merge.
-					e fireEvent: BrDropdownHideWish new ] ].
-		self hasUpstream
-			ifTrue: [
-				actions nextPut: 'Pull' -> [ :e |
-					self pull.
-					e fireEvent: BrDropdownHideWish new ].
-				actions nextPut: 'Push' -> [ :e |
-					self push.
-					e fireEvent: BrDropdownHideWish new ].
-				actions nextPut: 'Fetch' -> [ :e |
-					self fetch.
-					e fireEvent: BrDropdownHideWish new ] ].
-		actions nextPut: 'Delete' -> [ :e | 
-			e phlow spawnObject: 'Not yet implemented'.
-			e fireEvent: BrDropdownHideWish new ] ]
+					e fireEvent: BrDropdownHideWish new ] ] ]
 ]

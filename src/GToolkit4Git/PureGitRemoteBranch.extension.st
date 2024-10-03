@@ -12,18 +12,6 @@ PureGitRemoteBranch >> gtOperations [
 	^ Array streamContents: [ :actions | 
 		actions nextPut: 'Merge' -> [ :e | 
 			self merge.
-			e fireEvent: BrDropdownHideWish new ].
-		actions nextPut: 'Pull' -> [ :e |
-			self pull.
-			e fireEvent: BrDropdownHideWish new ].
-		actions nextPut: 'Push' -> [ :e |
-			self push.
-			e fireEvent: BrDropdownHideWish new ].
-		actions nextPut: 'Fetch' -> [ :e |
-			self fetch.
-			e fireEvent: BrDropdownHideWish new ] .
-		actions nextPut: 'Delete' -> [ :e | 
-			e phlow spawnObject: 'Not yet implemented'.
 			e fireEvent: BrDropdownHideWish new ] ]
 ]
 
