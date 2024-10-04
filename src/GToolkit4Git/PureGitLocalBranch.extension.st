@@ -7,7 +7,19 @@ PureGitLocalBranch >> gtDetails [
 		{ 'upstream' 
 			. self upstream ifNil: [ '' ] ifNotNil: [ :branch | branch name ]
 			. self upstream }.
+		{ 'commits ahead' . self commitsAhead }.
+		{ 'commits behind' . self commitsBehind }.
 	} 
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitLocalBranch >> gtIncomingCommitsFor: composite [
+	<gtView>
+	^ (self gtLogViewFor: composite)
+		title: 'Incoming';
+		priority: 40;
+		tooltip: 'Incoming commits from remote';
+		items: [ self incomingCommits ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -23,4 +35,14 @@ PureGitLocalBranch >> gtOperations [
 				actions nextPut: 'Merge' -> [ :e | 
 					self merge.
 					e fireEvent: BrDropdownHideWish new ] ] ]
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitLocalBranch >> gtOutgoingCommitsFor: composite [
+	<gtView>
+	^ (self gtLogViewFor: composite)
+		title: 'Outgoing';
+		priority: 45;
+		tooltip: 'Outgoing commits to remote';
+		items: [ self outgoingCommits ]
 ]

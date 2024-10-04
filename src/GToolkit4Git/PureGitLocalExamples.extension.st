@@ -38,7 +38,35 @@ PureGitLocalExamples >> cloneRepositoryAIntoRepositoryB [
 ]
 
 { #category : #'*GToolkit4Git' }
-PureGitLocalExamples >> fetchRepositoryAToRepositoryB [
+PureGitLocalExamples >> fetchRepositoryAToRepositoryBAfterFifthCommit [
+	<gtExample>
+	<noTest>
+
+	self fifthCommitInRepositoryA.
+
+	repositoryB branch upstream remote fetch.
+
+	self assert: repositoryB branch incomingCommits hasNext wait.
+
+	^ self
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitLocalExamples >> fetchRepositoryAToRepositoryBAfterMergeBranchInRepositoryA [
+	<gtExample>
+	<noTest>
+
+	self mergeBranchInRepositoryA.
+
+	repositoryB branch upstream remote fetch.
+
+	self assert: repositoryB branch incomingCommits hasNext wait.
+
+	^ self
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitLocalExamples >> fetchRepositoryAToRepositoryBAfterThirdCommit [
 	<gtExample>
 	<noTest>
 
@@ -193,7 +221,7 @@ PureGitLocalExamples >> mergeBranchInRepositoryA [
 	<gtExample>
 	<noTest>
 
-	| numberFile featureBranch extraFile previousHead|
+	| numberFile featureBranch extraFile previousHead |
 
 	repositoryA := self fifthCommitInRepositoryA.
 
