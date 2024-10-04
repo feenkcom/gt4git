@@ -46,6 +46,7 @@ PureGitCommit >> gtDetails [
 		{ 'timestamp' . self timestamp }.
 		{ 'comment' 
 			. self comment firstLineWithEllipsis
-			. self comment }
+			. self comment }.
+		{ 'URL' . self gitHubURL ifNil: [ '' ] }.
 	}
 ]
