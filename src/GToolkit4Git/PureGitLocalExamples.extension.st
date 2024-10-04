@@ -52,6 +52,44 @@ PureGitLocalExamples >> fetchRepositoryAToRepositoryB [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitLocalExamples >> fifthCommitInRepositoryA [
+	<gtExample>
+	<noTest>
+
+	| numberFile extraFile initialDefaultBranchName initialBranch |
+
+	repositoryA := self fourthCommitInBranchInRepositoryA.
+
+	initialDefaultBranchName := repositoryA queries initialDefaultBranchName.
+	initialBranch := repositoryA queries localBranches
+		detect: [ :each | each name = initialDefaultBranchName ].
+
+	initialBranch checkout.
+
+	numberFile := repositoryA location / 'number.txt'.
+
+	self assert: numberFile contents lines first equals: '3. third'.
+	self assert: initialBranch commit equals: repositoryA head.
+
+	extraFile := repositoryA location / 'extra.txt'.
+
+	extraFile writeStreamDo: [ :out |
+		out truncate.
+		(ZnNewLineWriterStream on: out)
+			forPlatformLineEnding;
+			<< 'This is extra'; newLine ].
+
+	repositoryA operations stage: extraFile basename.
+
+	repositoryA operations commit: 'Fifth commit'.
+
+	self assert: repositoryA head comment equals: 'Fifth commit'.
+	self assert: repositoryA head equals: repositoryA branch commit.
+
+	^ repositoryA
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitLocalExamples >> firstCommitInRepositoryA [
 	<gtExample>
 	<noTest>
@@ -155,38 +193,28 @@ PureGitLocalExamples >> mergeBranchInRepositoryA [
 	<gtExample>
 	<noTest>
 
-	| numberFile featureBranch initialBranch initialDefaultBranchName |
+	| numberFile featureBranch extraFile previousHead|
 
-	repositoryA := self fourthCommitInBranchInRepositoryA.
+	repositoryA := self fifthCommitInRepositoryA.
 
 	numberFile := repositoryA location / 'number.txt'.
 
-	self assert: numberFile contents lines first equals: '4. fourth'.
-
-	featureBranch := repositoryA branch.
-
-	self assert: featureBranch name equals: 'feature-1'.
-	self assert: featureBranch commit equals: repositoryA head.
-
-	initialDefaultBranchName := repositoryA queries initialDefaultBranchName.
-	initialBranch := repositoryA queries localBranches
-		detect: [ :each | each name = initialDefaultBranchName ].
-
-	initialBranch checkout.
-
-	self assert: numberFile contents lines first equals: '3. third'.
-	self assert: initialBranch commit equals: repositoryA head.
-
-	featureBranch merge.
-
-	initialBranch := repositoryA queries localBranches
-		detect: [ :each | each name = initialDefaultBranchName ].
 	featureBranch := repositoryA queries localBranches
 		detect: [ :each | each name = 'feature-1' ].
 
-	self assert: initialBranch commit equals: featureBranch commit.
-	self assert: initialBranch equals: repositoryA branch.
-	self assert: featureBranch commit equals: repositoryA branch commit.
+	extraFile := repositoryA location / 'extra.txt'.
+
+	self assert: numberFile contents lines first equals: '3. third'.
+	self assert: extraFile contents lines first equals: 'This is extra'.
+
+	previousHead := repositoryA head.
+
+	featureBranch merge.
+
+	self assert: (repositoryA head comment beginsWith: 'Merge').
+	self assert: repositoryA head numberOfParents equals: 2.
+	self assert: (repositoryA head parents includes:  previousHead).
+	self assert: (repositoryA head parents includes:  featureBranch commit).
 
 	self assert: numberFile contents lines first equals: '4. fourth'.
 
