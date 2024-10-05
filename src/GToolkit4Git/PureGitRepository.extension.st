@@ -328,7 +328,7 @@ PureGitRepository >> gtStagedChangesFor: composite [
 					commentCreationPane := GtGitCommentCreationPane new.
 					commentCreationPane
 						acceptAction: [ :aModel :aButton |
-							self stagedChanges isEmpty
+							self queries stagedChanges isEmpty
 								ifFalse: [ self operations commit: commentCreationPane comment ].
 							aButton enqueueTask: (BlTaskAction new 
 								action: [ aTab viewContentElement phlow update.
