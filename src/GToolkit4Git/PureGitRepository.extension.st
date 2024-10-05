@@ -119,75 +119,11 @@ PureGitRepository >> gtDetailsFor: composite [
 PureGitRepository >> gtFilesFor: composite [
 	<gtView>
 	self exists ifFalse: [ ^ composite empty ].
-	^ composite columnedTree
+	^ composite forward
 		title: 'Files';
 		priority: 45;
-		items: [ Array with: self resolveDirectory ];
-		children: #children;
-		column: 'Path'
-			text: [ :each | each basename ifEmpty: [ self location ] ]
-			weight: 2.0;
-		column: 'Size'
-			text: [ :each |
-				each isDirectory
-					ifTrue: [ '' ]
-					ifFalse: [ 
-						[ each size humanReadableSISizeString ]
-							on: FileException, FileSystemError
-							do: [ :anException | anException return: '' ] ] ]
-			weight: 0.25;
-		column: 'Created'
-			text: [  :each |
-				[ each creationTime printToSeconds ]
-					on: FileException, FileSystemError
-					do: [ :anException | anException return: '' ] ]
-			weight: 0.5;
-		column: 'Tracked'
-			icon: [ :each | 
-				each isDirectory
-					ifTrue: [ BrGlamorousIcons empty ]
-					ifFalse: [ each isTracked
-						ifTrue: [ BrGlamorousIcons accept ]
-						ifFalse: [ BrGlamorousIcons close ] ] ]
-			weight: 0.25;
-		column: 'Status index'
-			text: [ :each | each isDirectory 
-				ifTrue: [ '' ]
-				ifFalse: [ each status statusInIndex = #unmodified ifTrue: [ '' ] ifFalse: [ each status statusInIndex ] ] ]
-			weight: 0.5;
-		column: 'Status worktree'
-			text: [ :each | each isDirectory 
-				ifTrue: [ '' ] 
-				ifFalse: [ each status statusInWorkTree = #unmodified ifTrue: [ '' ] ifFalse: [ each status statusInWorkTree ] ] ]
-			weight: 0.5;
-		updateWhen: PureGitRepositoryModified in: [ self announcer ];
-		actionUpdateButton;
-		actionStencil: [ :aTab | | aptitude |
-			aptitude := BrGlamorousWithDropdownAptitude
-				handle: [
-					BrButton new
-						aptitude: BrGlamorousButtonWithIconAptitude;
-						icon: BrGlamorousVectorIcons add;
-						label: 'Create new file' ]
-				content: [ | fileCreationPane |
-					fileCreationPane := GtGitFileCreationPane new.
-					fileCreationPane
-						acceptAction: [ :aModel :aButton | | filename |
-							filename := fileCreationPane filename.
-							(self location / filename) ensureCreateFile.
-							self announceRepositoryModified.
-							aButton enqueueTask: (BlTaskAction new 
-								action: [ aTab viewContentElement phlow update.
-									aButton fireEvent: BrDropdownHideWish new]) ];
-						cancelAction: [ :aModel :aButton |
-							aButton enqueueTask: (BlTaskAction new 
-								action: [ aButton fireEvent: BrDropdownHideWish new ]) ].
-					fileCreationPane asElement ].			
-			BrButton new
-				aptitude: BrGlamorousButtonWithIconAptitude + aptitude;
-				icon: BrGlamorousVectorIcons add;
-				label: 'Create new file' ];
-		expandOneLevel
+		object: [ self resolveDirectory ];
+		view: #gtFilesFor:
 ]
 
 { #category : #'*GToolkit4Git' }
