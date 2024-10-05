@@ -27,7 +27,12 @@ GtGitMagrittePane >> acceptLabel [
 
 { #category : #converting }
 GtGitMagrittePane >> asElement [
-	^ self asGtMagritteViewModel asElement padding: (BlInsets all: 10)
+	| viewModel element |
+	viewModel := self asGtMagritteViewModel.
+	viewModel focusFirstInputField.
+	element := viewModel asElement.
+	element padding: (BlInsets all: 10).
+	^ element
 ]
 
 { #category : #accessing }
