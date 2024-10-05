@@ -138,17 +138,21 @@ PureGitExamples >> exampleDetachedHead [
 	branch := repository branch.
 
 	self assert: repository hasDetachedHead not.
-	self assert: head = branch commit.
-	self assert: (repository location / self exampleFilename) contents = self exampleFileContentsChanged.
+	self assert: head equals: branch commit.
+	self 
+		assert: (repository location / self exampleFilename) contents
+		equals: self exampleFileContentsChanged.
 
 	parent := head parent.
 
 	parent checkout.
 
 	self assert: repository hasDetachedHead.
-	self assert: repository head = parent.
+	self assert: repository head equals: parent.
 	self assert: repository branch isNil.
-	self assert: (repository location / self exampleFilename) contents = self exampleFileContents.
+	self 
+		assert: (repository location / self exampleFilename) contents
+		equals: self exampleFileContents.
 
 	^ repository
 ]
@@ -256,14 +260,17 @@ PureGitExamples >> exampleFixDetachedHead [
 
 	initialDefaultBranchName := repository queries initialDefaultBranchName.
 
-	branch := repository queries localBranches detect: [ :each | each name = initialDefaultBranchName ].
+	branch := repository queries localBranches 
+		detect: [ :each | each name = initialDefaultBranchName ].
 
 	branch checkout.
 
 	self assert: repository hasDetachedHead not.
-	self assert: repository head = branch commit.
-	self assert: repository branch = branch.
-	self assert: (repository location / self exampleFilename) contents = self exampleFileContentsChanged.
+	self assert: repository head equals: branch commit.
+	self assert: repository branch equals: branch.
+	self 
+		assert: (repository location / self exampleFilename) contents 
+		equals: self exampleFileContentsChanged.
 
 	^ repository
 ]
@@ -330,9 +337,10 @@ PureGitExamples >> exampleGt4GitRootCommit [
 	rootCommit := repository queries resolveCommit: '9cfbcd6a921f237abc14446d565cc440a60793e8'. 
 
 	self assert: rootCommit isRoot.
-	self assert: rootCommit id = '9cfbcd6a921f237abc14446d565cc440a60793e8'.
-	self assert: rootCommit commitId = '9cfbcd6a921f237abc14446d565cc440a60793e8'.
-	self assert: rootCommit author = 'George Ganea'.
+	self assert: rootCommit hasParents not.
+	self assert: rootCommit id equals: '9cfbcd6a921f237abc14446d565cc440a60793e8'.
+	self assert: rootCommit commitId equals: '9cfbcd6a921f237abc14446d565cc440a60793e8'.
+	self assert: rootCommit author equals: 'George Ganea'.
 	self assert: (rootCommit comment includesSubstring: 'created a new repo').
 
 	^ rootCommit
@@ -370,10 +378,10 @@ PureGitExamples >> exampleNewStagedFileInRepository [
 
 	fileStatuses := repository status.
 
-	self assert: fileStatuses size = 1.
-	self assert: fileStatuses first path = self exampleFilename.
-	self assert: fileStatuses first statusInWorkTree = #unmodified.
-	self assert: fileStatuses first statusInIndex = #added.
+	self assert: fileStatuses size equals: 1.
+	self assert: fileStatuses first path equals: self exampleFilename.
+	self assert: fileStatuses first statusInWorkTree equals: #unmodified.
+	self assert: fileStatuses first statusInIndex equals: #added.
 
 	^ repository
 ]
@@ -391,10 +399,10 @@ PureGitExamples >> exampleNewUntrackedFileInRepository [
 		out nextPutAll: self exampleFileContents ].
 
 	fileStatuses := repository status.
-	self assert: fileStatuses size = 1.
-	self assert: fileStatuses first path = self exampleFilename.
-	self assert: fileStatuses first statusInWorkTree = #unknown.
-	self assert: fileStatuses first statusInIndex = #unknown.
+	self assert: fileStatuses size equals: 1.
+	self assert: fileStatuses first path equals: self exampleFilename.
+	self assert: fileStatuses first statusInWorkTree equals: #unknown.
+	self assert: fileStatuses first statusInIndex equals: #unknown.
 
 	^ repository
 ]
@@ -596,16 +604,16 @@ PureGitExamples >> exampleUnstageFileInRepository [
 	fileStatuses := repository status.
 
 	self assert: fileStatuses isEmpty not.
-	self assert: fileStatuses first path = 'extra.txt'.
-	self assert:  fileStatuses first statusInIndex = #added.
+	self assert: fileStatuses first path equals: 'extra.txt'.
+	self assert:  fileStatuses first statusInIndex equals: #added.
 
 	repository operations unstage: 'extra.txt'.
 
 	fileStatuses := repository status.
 
 	self assert: fileStatuses isEmpty not.
-	self assert: fileStatuses first path = 'extra.txt'.
-	self assert:  fileStatuses first statusInIndex = #unknown.
+	self assert: fileStatuses first path equals: 'extra.txt'.
+	self assert:  fileStatuses first statusInIndex equals: #unknown.
 
 	(repository location / 'extra.txt') delete.
 
