@@ -6,30 +6,7 @@ PureGitRepository >> gtActionOperationsFor: composite [
 	^ composite dropdown
 		tooltip: 'Repository operations';
 		icon: BrGlamorousVectorIcons hamburger;
-		content: [ :aButton | 
-			BrGlamorousSimpleContextMenuContent new
-				items: (Array streamContents: [ :actions |
-					actions nextPut: 'Pull' -> [ :e |
-						self operations pull: #().
-						e fireEvent: BrDropdownHideWish new ].
-					actions nextPut: 'Push' -> [ :e |
-						self operations push: #().
-						e fireEvent: BrDropdownHideWish new ].
-					actions nextPut: 'Fetch' -> [ :e |
-						self operations fetch: #().
-						e fireEvent: BrDropdownHideWish new ].
-					actions nextPut: 'Merge' -> [ :e |
-						self operations merge: #().
-						e fireEvent: BrDropdownHideWish new ].
-					self exists
-						ifTrue: [
-							actions nextPut: 'Delete' -> [ :e | 
-								self operations delete.
-								e fireEvent: BrDropdownHideWish new ] ] 
-						ifFalse: [
-							actions nextPut: 'Init' -> [ :e | 
-								self operations init.
-								e fireEvent: BrDropdownHideWish new ] ] ]) ]
+		content: [ :aButton | BrGlamorousSimpleContextMenuContent new items: self gtOperations ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -230,6 +207,48 @@ PureGitRepository >> gtLogFor: composite [
 		column: 'Comment' text: [ :commit | commit comment firstLineWithEllipsis ] weight: 2;
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitRepository >> gtOperations [
+	^ Array
+		streamContents: [ :actions | 
+			self exists
+				ifTrue: [ actions
+						nextPut: 'Pull'
+								-> [ :e | 
+									self operations pull: #().
+									e fireEvent: BrDropdownHideWish new ].
+					actions
+						nextPut: 'Push'
+								-> [ :e | 
+									self operations push: #().
+									e fireEvent: BrDropdownHideWish new ].
+					actions
+						nextPut: 'Fetch'
+								-> [ :e | 
+									self operations fetch: #().
+									e fireEvent: BrDropdownHideWish new ].
+					actions
+						nextPut: 'Merge'
+								-> [ :e | 
+									self operations merge: #().
+									e fireEvent: BrDropdownHideWish new ].
+					actions
+						nextPut: 'Code'
+								-> [ :e | 
+									e phlow spawnObject: (PureGitCodeRepository on: self location).
+									e fireEvent: BrDropdownHideWish new ].
+					actions
+						nextPut: 'Delete'
+								-> [ :e | 
+									self operations delete.
+									e fireEvent: BrDropdownHideWish new ] ]
+				ifFalse: [ actions
+						nextPut: 'Init'
+								-> [ :e | 
+									self operations init.
+									e fireEvent: BrDropdownHideWish new ] ] ]
 ]
 
 { #category : #'*GToolkit4Git' }
