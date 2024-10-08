@@ -6,8 +6,29 @@ PureGitFileStatus >> gtActionGitFileFor: composite [
 	^ composite button
 		icon: BrGlamorousIcons file;
 		tooltip: 'Open as git file';
-		priority: 20;
+		priority: 30;
 		action: [ :element | element phlow spawnObject: self gitFile ]
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitFileStatus >> gtActionOperationsFor: composite [
+	<gtAction>
+	^ composite dropdown
+		tooltip: 'File operations';
+		icon: BrGlamorousVectorIcons hamburger;
+		priority: 20;
+		content: [ :aButton | | gitFile |
+			gitFile := self gitFile.
+			BrGlamorousSimpleContextMenuContent new
+				items: (Array streamContents: [ :actions |
+					(gitFile isTracked not or: [ gitFile isModifiedInWorkTree ]) ifTrue: [
+						actions nextPut: 'Stage' -> [ :e |
+							gitFile stage.
+							e fireEvent: BrDropdownHideWish new ] ].
+					gitFile isStaged ifTrue: [
+						actions nextPut: 'Unstage' -> [ :e |
+							gitFile unstage.
+							e fireEvent: BrDropdownHideWish new ] ] ]) ]
 ]
 
 { #category : #'*GToolkit4Git' }
