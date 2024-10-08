@@ -34,7 +34,8 @@ PureGitPackage >> gtViewIncomingChangesFor: composite [
 	^ composite list
 		title: 'Incoming';
 		priority: 30;
-		items: [ self incomingChanges operations ]
+		items: [ self incomingChanges operations ];
+		actionUpdateButton
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -43,5 +44,6 @@ PureGitPackage >> gtViewOutgoingChangesFor: composite [
 	^ composite list
 		title: 'Outgoing';
 		priority: 35;
-		items: [ self outgoingChanges operations ]
+		items: [ self outgoingChanges operations ];
+		actionUpdateButton
 ]
