@@ -6,6 +6,7 @@ PureGitPackage >> gtActionLoadFor: composite [
 	^ composite button
 		label: 'Load';
 		priority: 20;
+		tooltip: 'Read and force load package from repository';
 		action: [ self load ]
 ]
 
@@ -15,6 +16,7 @@ PureGitPackage >> gtActionSaveFor: composite [
 	^ composite button
 		label: 'Save';
 		priority: 25;
+		tooltip: 'Write package to repository';
 		action: [ self save ]
 ]
 
@@ -24,4 +26,22 @@ PureGitPackage >> gtDetails [
 		{ 'name' . self name }.
 		{ 'loaded' . self isLoaded }.
 	}
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitPackage >> gtViewIncomingChangesFor: composite [
+	<gtView>
+	^ composite list
+		title: 'Incoming';
+		priority: 30;
+		items: [ self incomingChanges operations ]
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitPackage >> gtViewOutgoingChangesFor: composite [
+	<gtView>
+	^ composite list
+		title: 'Outgoing';
+		priority: 35;
+		items: [ self outgoingChanges operations ]
 ]
