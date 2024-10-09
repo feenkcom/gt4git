@@ -30,7 +30,7 @@ GtGitRepositoryHistoryRecord class >> capture: aRepository [
 		ifFalse: [ 
 			record originUrl: aRepository originUrl.
 			record headCommitId: aRepository head commit id ].
-	aRepository workingCopy packages do: [ :each |
+	aRepository workingCopy loadedPackages do: [ :each |
 		record packages add: each name ].
 	^ record
 ]
