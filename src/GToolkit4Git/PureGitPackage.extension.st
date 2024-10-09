@@ -6,7 +6,7 @@ PureGitPackage >> gtActionLoadFor: composite [
 	^ composite button
 		label: 'Load';
 		priority: 20;
-		tooltip: 'Read and force load package from repository';
+		tooltip: 'Read and load package from repository';
 		action: [ self load ]
 ]
 
@@ -25,6 +25,10 @@ PureGitPackage >> gtDetails [
 	^ super gtDetails , {
 		{ 'name' . self name }.
 		{ 'loaded' . self isLoaded }.
+		{ 'loaded commit'
+			. self loadedCommitId ifNil: [ '' ].
+			. self loadedCommit }.
+		{ 'up to date' . self isUpToDate }.
 	}
 ]
 
@@ -36,6 +40,17 @@ PureGitPackage >> gtViewIncomingChangesFor: composite [
 		priority: 30;
 		items: [ self incomingChanges operations ];
 		actionUpdateButton
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitPackage class >> gtViewLoadedCommitsFor: composite [
+	<gtClassView>
+	^ composite columnedList
+		title: 'Loaded commits';
+		priority: 40;
+		items: [ self loadedCommits associations ];
+		column: 'Package' text: #key;
+		column: 'Commit' text: #value
 ]
 
 { #category : #'*GToolkit4Git' }
