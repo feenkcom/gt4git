@@ -730,7 +730,8 @@ GtGitRepository >> gtActionRepairFor: anAction [
 GtGitRepository >> gtAllCommitsFor: aView [
 	<gtView>
 	<gtRepositoryView>
-	self repository isGitCliRepository ifFalse: [^aView empty].
+	self repository isGitCliRepository ifFalse: [ ^ aView empty ].
+	self isMissing ifTrue: [ ^ aView empty ].
 	^ aView explicit
 		title: 'All Commits' translated;
 		priority: 4;

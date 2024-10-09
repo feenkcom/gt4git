@@ -1,12 +1,13 @@
 Class {
 	#name : #GtGitCliSignal,
-	#superclass : #ContextStackSignal,
+	#superclass : #BeaconSignal,
 	#traits : 'TGtBeaconSignalStartEndType',
 	#classTraits : 'TGtBeaconSignalStartEndType classTrait',
 	#instVars : [
 		'args',
 		'output',
-		'operation'
+		'operation',
+		'repository'
 	],
 	#classVars : [
 		'memoryLogger'
@@ -16,7 +17,7 @@ Class {
 
 { #category : #'instance creation' }
 GtGitCliSignal class >> args: aCollection [
-	^self new args: aCollection
+	^ self new args: aCollection
 ]
 
 { #category : #'instance creation' }
@@ -29,7 +30,7 @@ GtGitCliSignal class >> args: aCollection output: aCollectionOfStrings [
 
 { #category : #accessing }
 GtGitCliSignal class >> eventType [
-	^GtGitCliEvent
+	^ GtGitCliEvent
 ]
 
 { #category : #logging }
@@ -85,8 +86,13 @@ GtGitCliSignal class >> memoryLogger [
 		ifNil: [ 
 			memoryLogger := CircularMemoryLogger named: self name.
 			memoryLogger entryCount: 64.
-			memoryLogger startFor: self.
+			memoryLogger startFor: GtGitCliSignal , GtGitCliContextStackSignal.
 			memoryLogger ]
+]
+
+{ #category : #logging }
+GtGitCliSignal class >> resetMemoryLogger [
+	memoryLogger := nil
 ]
 
 { #category : #logging }
@@ -211,8 +217,23 @@ GtGitCliSignal >> printOneLineContentsOn: aStream [
 ]
 
 { #category : #accessing }
+GtGitCliSignal >> repository [
+	^ repository
+]
+
+{ #category : #accessing }
+GtGitCliSignal >> repository: aRepository [
+	repository := aRepository
+]
+
+{ #category : #accessing }
 GtGitCliSignal >> signalTypeLabel [
 	^ 'GtGitCliSignal'
+]
+
+{ #category : #accessing }
+GtGitCliSignal >> stack [
+	^ #()
 ]
 
 { #category : #printing }
