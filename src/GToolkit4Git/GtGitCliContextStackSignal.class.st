@@ -6,7 +6,8 @@ Class {
 	#instVars : [
 		'args',
 		'output',
-		'operation'
+		'operation',
+		'repository'
 	],
 	#category : #'GToolkit4Git-Libgit-CLI-GT'
 }
@@ -131,6 +132,16 @@ GtGitCliContextStackSignal >> printOneLineContentsOn: aStream [
 	args
 		do: [ :arg | aStream nextPutAll: arg ]
 		separatedBy: [ aStream nextPut: $  ]
+]
+
+{ #category : #accessing }
+GtGitCliContextStackSignal >> repository [
+	^ repository
+]
+
+{ #category : #accessing }
+GtGitCliContextStackSignal >> repository: aRepository [
+	repository := aRepository
 ]
 
 { #category : #accessing }

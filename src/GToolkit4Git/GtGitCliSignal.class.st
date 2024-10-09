@@ -6,7 +6,8 @@ Class {
 	#instVars : [
 		'args',
 		'output',
-		'operation'
+		'operation',
+		'repository'
 	],
 	#classVars : [
 		'memoryLogger'
@@ -213,6 +214,16 @@ GtGitCliSignal >> printOneLineContentsOn: aStream [
 	args
 		do: [ :arg | aStream nextPutAll: arg ]
 		separatedBy: [ aStream nextPut: $  ]
+]
+
+{ #category : #accessing }
+GtGitCliSignal >> repository [
+	^ repository
+]
+
+{ #category : #accessing }
+GtGitCliSignal >> repository: aRepository [
+	repository := aRepository
 ]
 
 { #category : #accessing }
