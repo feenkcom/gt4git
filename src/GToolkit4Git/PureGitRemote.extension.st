@@ -37,6 +37,6 @@ PureGitRemote >> gtBranchesFor: composite [
 PureGitRemote >> gtDetails [
 	^ super gtDetails , {
 		{ 'name' . self name }.
-		{ 'url' . self url }
+		{ 'url' . self url . self gitUrl }
 	}
 ]
