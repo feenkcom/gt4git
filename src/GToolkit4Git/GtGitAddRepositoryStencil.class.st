@@ -97,6 +97,7 @@ GtGitAddRepositoryStencil >> localPage [
 
 	fileBrowser vExact: 400.
 	fileBrowser hExact: 464.
+	
 
 	fileBrowser buttonLabel: 'Import'.
 	fileBrowser okAction: [ :filePath | 
