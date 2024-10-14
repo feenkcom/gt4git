@@ -50,3 +50,14 @@ PureGitCommit >> gtDetails [
 		{ 'URL' . self gitHubURL ifNil: [ '' ] }.
 	}
 ]
+
+{ #category : #'*GToolkit4Git' }
+PureGitCommit >> gtFileSystemFor: aView [
+	<gtView>
+	^ aView forward
+		title: 'Filesystem';
+		priority: 40;
+		tooltip: 'Filesystem tree at time of commit';
+		object: [ self fileSystem ];
+		view: #gtTreeFor:
+]
