@@ -347,6 +347,35 @@ PureGitExamples >> exampleGt4GitRootCommit [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleIcebergGitCli [
+	<gtExample>
+	<noTest>
+
+	| workingDirectory gitUrl repository |
+
+	workingDirectory := FileLocator temp resolve / 'example-clone'.
+	workingDirectory exists ifTrue: [ workingDirectory deleteAll ].
+
+	gitUrl := PureGitUrl with: 'git@github.com:feenkcom/iceberg-git-cli.git'.
+
+	self assert: gitUrl isScpUrl.
+	self assert: gitUrl ownerName equals: 'feenkcom'.
+	self assert: gitUrl repositoryName equals: 'iceberg-git-cli'.
+
+	repository := gitUrl cloneWithOwnerPrefixIn: workingDirectory.
+
+	self 
+		assert: repository location 
+		equals: workingDirectory / gitUrl ownerName / gitUrl repositoryName.
+
+	self assert: repository exists.
+	self assert: repository hasHead.
+	self assert: repository branch upstream remote url equals: gitUrl url.
+
+	^ repository
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitExamples >> exampleInitializedRepository [
 	<gtExample>
 	<noTest>

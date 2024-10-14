@@ -95,7 +95,9 @@ GtGitAddRepositoryStencil >> localPage [
 	| fileBrowser |
 	fileBrowser := BrFileSelector new margin: (BlInsets all: 5).
 
-	fileBrowser matchParent.
+	fileBrowser vExact: 400.
+	fileBrowser hExact: 464.
+	
 
 	fileBrowser buttonLabel: 'Import'.
 	fileBrowser okAction: [ :filePath | 

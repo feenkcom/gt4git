@@ -50,3 +50,32 @@ PureGitCommit >> gtDetails [
 		{ 'URL' . self gitHubURL ifNil: [ '' ] }.
 	}
 ]
+
+{ #category : #'*GToolkit4Git' }
+PureGitCommit >> gtFileSystemFor: aView [
+	<gtView>
+	^ aView forward
+		title: 'Filesystem';
+		priority: 40;
+		tooltip: 'Filesystem tree at time of commit';
+		object: [ self fileSystem ];
+		view: #gtTreeFor:
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitCommit >> gtPackagesFor: composite [
+	<gtView>
+	self repository isCodeRepository ifFalse: [ ^ composite empty ].
+	^ composite list
+		title: 'Packages';
+		priority: 50;
+		tooltip: 'Source code packages at time of commit';
+		items: [ (self fileSystem / self repository srcDirectory basename) 
+					directories collect: #basename ];
+		itemText: #yourself;
+		send: [ :package | | reader |
+			reader := TonelReader 
+						on: self fileSystem / self repository srcDirectory basename 
+						fileName: package.
+			reader version changes ]
+]
