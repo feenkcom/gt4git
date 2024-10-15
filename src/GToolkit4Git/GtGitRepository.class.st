@@ -25,12 +25,12 @@ GtGitRepository class >> forClass: aClass [
 { #category : #'instance creation' }
 GtGitRepository class >> forPackage: aPackage [
 	| repository |
-	
-	repository := IceRepository registry detect: [ :aRepo | 
-		aRepo workingCopy loadedPackages anySatisfy: [ :icePackage | 
-			icePackage package = aPackage name ] ] ifNone: [ nil ].
-	^ repository ifNotNil: [ 
-		self fromIcebergRepository: repository ]
+	repository := IceRepository registry
+			detect: [ :aRepo | 
+				aRepo workingCopy loadedPackages
+					anySatisfy: [ :icePackage | icePackage package sameContentAs: aPackage name ] ]
+			ifNone: [ nil ].
+	^ repository ifNotNil: [ self fromIcebergRepository: repository ]
 ]
 
 { #category : #'instance creation' }
