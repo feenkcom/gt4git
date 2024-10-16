@@ -120,7 +120,8 @@ PureGitRepository >> gtHistoryFor: composite [
 			color := HiWheelColorStrategy new.
 			color ruler: ruler.
 			list := BrColumnedList new.
-			list rowStencil: BrGlamorousColumnedListSelectableRowElementStencilBuilder new.
+			list
+				rowStencil: BrGlamorousColumnedListSelectableRowElementStencilBuilder new.
 			list column
 				title: 'Graph';
 				stencil: [ :_ :i | ruler gtElementForRow: i value withColorStrategy: color ];
@@ -139,11 +140,11 @@ PureGitRepository >> gtHistoryFor: composite [
 					BrTagger new
 						aptitude: (BrGlamorousTaggerAptitude new
 								tagLabel: ([ :aTag | 
-									BrEditor new
-										beReadOnlyWithoutSelection;
-										aptitude: BrGlamorousEditableLabelAptitude new glamorousCodeTinySize;
-										fitContent;
-										text: aTag name ] asStencilBuilder: BrTaggerTagStencilBuilder));
+									BrButton new
+										aptitude: BrGlamorousButtonWithLabelAptitude new glamorousCodeTinySize;
+										label: aTag name;
+										action: [ :element | element phlow spawnObject: (self queries resolveBranchOrTag: aTag name) ] ]
+										asStencilBuilder: BrTaggerTagStencilBuilder));
 						namedTags: (commits at: i) labels ];
 				weight: 1.
 			list column
