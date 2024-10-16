@@ -38,7 +38,7 @@ UnifiedDiffChangeChunk >> gtViewGtDiffFor: composite [
 	<gtView>
 	^ composite forward
 		title: 'GtDiff';
-		priority: 40;
+		priority: 15;
 		object: [ self gtDiff ];
 		view: #gtTextView:
 ]
@@ -103,6 +103,7 @@ UnifiedDiffChangeChunk >> gtViewStatsFor: composite [
 		title: 'Stats';
 		priority: 25;
 		items: [ {
+			{ 'range' . self range }.
 			{ '# lines changed' . self numberOfLinesChanged }.
 			{ '# lines added' . self numberOfLinesAdded }.
 			{ '# lines removed' . self numberOfLinesRemoved }.

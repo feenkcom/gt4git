@@ -14,3 +14,33 @@ UnifiedDiffCollection >> gtViewDiffsFor: composite [
 		column: '# lines removed' text: #numberOfLinesRemoved;
 		column: '# lines modified' text: #numberOfLinesModified
 ]
+
+{ #category : #'*GToolkit4Git' }
+UnifiedDiffCollection >> gtViewDiffsTreeFor: composite [
+	<gtView>
+	^ composite columnedTree
+		title: 'Tree';
+		priority: 20;
+		items: [ Array with: self ];
+		children: #children;
+		column: 'Description' text: #description;
+		expandAll
+]
+
+{ #category : #'*GToolkit4Git' }
+UnifiedDiffCollection >> gtViewStatsFor: composite [
+	<gtView>
+	self diffs ifNil: [ ^ composite empty ].
+	^ composite columnedList
+		title: 'Stats';
+		priority: 40;
+		items: [ {
+			{ 'description' . self description }.
+			{ '# changed files' . self numberOfChanges }.
+			{ '# lines added' . self numberOfLinesAdded }.
+			{ '# lines removed' . self numberOfLinesRemoved }.
+		} ];
+		column: 'key' text: #first weight: 0.5;
+		column: 'value' text: #second;
+		send: #last
+]
