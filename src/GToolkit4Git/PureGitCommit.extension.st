@@ -70,12 +70,30 @@ PureGitCommit >> gtPackagesFor: composite [
 		title: 'Packages';
 		priority: 50;
 		tooltip: 'Source code packages at time of commit';
-		items: [ (self fileSystem / self repository srcDirectory basename) 
-					directories collect: #basename ];
+		items: [ self packageNames ];
 		itemText: #yourself;
-		send: [ :package | | reader |
-			reader := TonelReader 
-						on: self fileSystem / self repository srcDirectory basename 
-						fileName: package.
-			reader version changes ]
+		contextItemLabel: 'Snapshot'
+			action: [ :element :package | 
+				| snapshot |
+				BlTaskAction
+					enqueueElement: element
+					action: [ snapshot := (self readerForPackage: package) snapshot.
+						element phlow spawnObject: snapshot ] ];
+		contextItemLabel: 'Changes to image'
+			action: [ :element :package | 
+				| changes |
+				BlTaskAction
+					enqueueElement: element
+					action: [ changes := (self readerForPackage: package) version changes.
+						element phlow spawnObject: changes ] ];
+		contextItemLabel: 'Changes to parent'
+			action: [ :element :package | 
+				| commitSnapshot parentSnapshot changes |
+				BlTaskAction
+					enqueueElement: element
+					action: [ commitSnapshot := (self readerForPackage: package) snapshot.
+						parentSnapshot := (self parent readerForPackage: package) snapshot.
+						changes := commitSnapshot patchRelativeToBase: parentSnapshot.
+						element phlow spawnObject: changes ] ];
+		send: [ :package | (self readerForPackage: package) snapshot ]
 ]
