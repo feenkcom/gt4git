@@ -3,7 +3,7 @@ Trait {
 	#instVars : [
 		'repositoryModel'
 	],
-	#category : 'GToolkit4Git-Model'
+	#category : #'GToolkit4Git-Model'
 }
 
 { #category : #'api - repository model' }

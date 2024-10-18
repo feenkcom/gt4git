@@ -17,6 +17,10 @@ PureGitFile >> gtActionOperationsFor: composite [
 						actions nextPut: 'Unstage' -> [ :e |
 							self unstage.
 							e fireEvent: BrDropdownHideWish new ] ].
+					(self isTracked and: [ self isModifiedInWorkTree ]) ifTrue: [
+						actions nextPut: 'Restore' -> [ :e |
+							self restore.
+							e fireEvent: BrDropdownHideWish new ] ].
 					actions nextPut: 'Analyze history over time' -> [ :e | 
 						e phlow spawnObject: self analyze.
 						e fireEvent: BrDropdownHideWish new ].

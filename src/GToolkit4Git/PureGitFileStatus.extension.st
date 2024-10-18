@@ -28,7 +28,11 @@ PureGitFileStatus >> gtActionOperationsFor: composite [
 					gitFile isStaged ifTrue: [
 						actions nextPut: 'Unstage' -> [ :e |
 							gitFile unstage.
-							e fireEvent: BrDropdownHideWish new ] ] ]) ]
+							e fireEvent: BrDropdownHideWish new ] ].
+					(gitFile isTracked and: [ gitFile isModifiedInWorkTree ]) ifTrue: [
+						actions nextPut: 'Restore' -> [ :e |
+							gitFile restore.
+							e fireEvent: BrDropdownHideWish new ] ]. ]) ]
 ]
 
 { #category : #'*GToolkit4Git' }

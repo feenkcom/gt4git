@@ -6,7 +6,7 @@ Class {
 	#instVars : [
 		'lastMessage'
 	],
-	#category : 'GToolkit4Git-UI - View Model'
+	#category : #'GToolkit4Git-UI - View Model'
 }
 
 { #category : #initialization }
