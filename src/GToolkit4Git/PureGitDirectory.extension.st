@@ -39,10 +39,10 @@ PureGitDirectory >> gtFilesFor: composite [
 		column: 'Tracked'
 			icon: [ :each | 
 				each isDirectory
-					ifTrue: [ BrGlamorousIcons empty ]
+					ifTrue: [ BrGlamorousVectorIcons transparent ]
 					ifFalse: [ each isTracked
-						ifTrue: [ BrGlamorousIcons accept ]
-						ifFalse: [ BrGlamorousIcons close ] ] ]
+						ifTrue: [ BrGlamorousVectorIcons accept ]
+						ifFalse: [ BrGlamorousVectorIcons close ] ] ]
 			weight: 0.25;
 		column: 'Status index'
 			text: [ :each | (each isDirectory or: [ each status statusInIndex = #unmodified ])
