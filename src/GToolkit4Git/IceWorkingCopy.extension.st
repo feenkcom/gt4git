@@ -1,6 +1,17 @@
 Extension { #name : #IceWorkingCopy }
 
 { #category : #'*GToolkit4Git' }
+IceWorkingCopy >> gtActionRepairFor: composite [
+	<gtAction>
+	self isDetached ifFalse: [ ^ composite noAction ].
+	^ composite button
+		icon: BrGlamorousVectorIcons repair;
+		tooltip: 'Adopt repository head as reference commit';
+		priority: 30;
+		action: [ :element | element phlow spawnObject: (self referenceCommit: self repository headCommit) ]		
+]
+
+{ #category : #'*GToolkit4Git' }
 IceWorkingCopy >> gtAllLoadedExamples [
 	^ self loadedPackages flatCollect: [ :anIcePackage |
 		| rPackage |
