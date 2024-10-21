@@ -56,6 +56,27 @@ IceWorkingCopy >> gtPackagesFor: aView [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceWorkingCopy >> gtViewDetailsIn: composite [
+	<gtView>
+	^ composite columnedList
+		title: 'Details';
+		priority: 10;
+		items: [ {
+			{ 'repository' . self repository }.
+			{ 'reference commit' . self referenceCommit }.
+			{ 'project' . self project }.
+			{ 'properties' . self properties }.
+			{ 'modified' . self isModified }.
+			{ 'detached' . self isDetached }.
+			{ 'in merge' . self isInMerge }.
+		} ];
+		column: 'Key' text: #first;
+		column: 'Value' text: #second weight: 3;
+		send: #last;
+		actionUpdateButton
+]
+
+{ #category : #'*GToolkit4Git' }
 IceWorkingCopy >> gtViewDiffToReferenceCommitFor: aView [
 	<gtView>
 	^ (self diffToReferenceCommit 
