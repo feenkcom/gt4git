@@ -7,6 +7,7 @@ PureGitBlameLine >> gtDetailsFor: composite [
 		title: 'Details';
 		priority: 20;
 		items: [ {
+			{ 'path' . self path }.
 			{ 'line number' . self lineNumber }.
 			{ 'line' . self line }.
 			{ 'author' . self author }.
