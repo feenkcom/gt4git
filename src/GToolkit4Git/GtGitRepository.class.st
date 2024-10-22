@@ -734,7 +734,7 @@ GtGitRepository >> gtAllCommitsFor: aView [
 	self isMissing ifTrue: [ ^ aView empty ].
 	^ aView explicit
 		title: 'All Commits' translated;
-		priority: 4;
+		priority: 6;
 		stencil: [ | list color branches commits ruler |
 			branches := self repository allBranches.
 			commits := self repository allCommits.
@@ -842,7 +842,7 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 		  items: [ changes children ];
 		  children: #children;
 		  expandUpTo: 3;
-		  priority: 1;
+		  priority: 3;
 		  stencil: [ :anIceNode | 
 			  | element contextMenuOptions |
 			  contextMenuOptions := self contextMenuOptionsFor: anIceNode.
@@ -983,7 +983,7 @@ GtGitRepository >> gtCommitsFor: aView [
 	outgoingCommits := self viewModel outgoingCommits.
 	^ aView columnedList
 		title: 'Commits' translated;
-		priority: 2;
+		priority: 5;
 		items: [ (AsyncSequenceStream forCollection: incomingCommits)
 				merge: self repository head commitStream ];
 		column: 'Status'
@@ -1099,7 +1099,7 @@ GtGitRepository >> gtReadmeFor: aView context: aContext [
 
 	^ aView explicit
 		  title: 'README';
-		  priority: 5;
+		  priority: 10;
 		  stencil: [ 
 			  | snippet snippetViewModel |
 			  snippet := LeTextSnippet string: (readme exists
@@ -1165,31 +1165,34 @@ GtGitRepository >> gtViewDetailsIn: composite [
 	<gtView>
 	^ composite columnedList
 		title: 'Details';
-		priority: 45;
+		priority: 2;
 		items: [ {
-			{ 'Name' . self name }.
-			{ 'Origin' . [ self repository originUrl ] on: Error do: [ '' ] }.
-			{ 'Branch' . [ self repository branchName ] on: Error do: [ '' ] }.
-			{ 'Code directory' 
+			{ 'name' . self name }.
+			{ 'origin' . [ self repository originUrl ] on: Error do: [ '' ] }.
+			{ 'branch' . [ self repository branchName ] on: Error do: [ '' ] }.
+			{ 'code directory' 
 				. [ self repository codeDirectory ] on: Error do: [ '' ]
 				. [ self repository codeDirectory asFileReference ] on: Error do: [ '' ]}.
-			{ 'Implementation' 
+			{ 'implementation' 
 				. self repository isGitCliRepository 
 					ifTrue: [ 'Libgit-CLI' ] 
 					ifFalse: [ 'Libgit2 FFI' ] }.
-			{ 'Missing' . self isMissing }.
-			{ 'Setup done' . self isSetupDone }.
-			{ 'Uninitialized' . self isUninitialized }.
-			{ 'Modified' . [ self isModified ] on: Error do: [ '' ] }.
-			{ 'Dirty' . [ self repository isDirty ] on: Error do: [ '' ] }.
-			{ 'Committable' . self isCommittable }.
-			{ 'Has repository' . self hasRepository }.
-			{ 'Has package' . self hasPackage }.
-			{ 'Has database' . self hasDatabase }.
-			{ 'Has basline' . self hasBaseline }.
-			{ 'Has commits' . self hasCommits }.
-			{ 'Has changes' . [ self hasChanges ] on: Error do: [ '' ] }.
-			{ 'Status' . self status }
+			{ 'iceberg repository' . self repository }.
+			{ 'iceberg working copy' . self icebergWorkingCopy }.
+			{ 'lepiter working copy' . self lepiterWorkingCopy }.
+			{ 'missing' . self isMissing }.
+			{ 'setup done' . self isSetupDone }.
+			{ 'uninitialized' . self isUninitialized }.
+			{ 'modified' . [ self isModified ] on: Error do: [ '' ] }.
+			{ 'dirty' . [ self repository isDirty ] on: Error do: [ '' ] }.
+			{ 'committable' . self isCommittable }.
+			{ 'has repository' . self hasRepository }.
+			{ 'has package' . self hasPackage }.
+			{ 'has database' . self hasDatabase }.
+			{ 'has basline' . self hasBaseline }.
+			{ 'has commits' . self hasCommits }.
+			{ 'has changes' . [ self hasChanges ] on: Error do: [ '' ] }.
+			{ 'status' . self status }
 		} ];
 		column: 'Key' text: #first;
 		column: 'Value' text: #second weight: 3;

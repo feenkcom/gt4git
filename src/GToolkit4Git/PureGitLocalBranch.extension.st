@@ -24,7 +24,12 @@ PureGitLocalBranch >> gtIncomingCommitsFor: composite [
 
 { #category : #'*GToolkit4Git' }
 PureGitLocalBranch >> gtOperations [
-	^ Array streamContents: [ :actions | 
+	^ Array streamContents: [ :actions |
+		self commitsAhead > 0
+			ifTrue: [
+				actions nextPut: 'Push' -> [ :e | 
+					self push.
+					e fireEvent: BrDropdownHideWish new ]].
 		self isCurrent
 			ifFalse: [ 
 				actions nextPut: 'Checkout' -> [ :e | 

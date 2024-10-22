@@ -50,6 +50,15 @@ GtGitRepositoryElement >> createFetchRepositoryButton [
 ]
 
 { #category : #'building - actions' }
+GtGitRepositoryElement >> createInspectRepositoryButton [
+	^ BrButton new
+		aptitude: BrGlamorousButtonWithIconAptitude;
+		icon: BrGlamorousVectorIcons inspect;
+		label: 'Inspect';
+		action: [ :aButton | aButton phlow spawnObject: self repositoryViewModel repositoryModel ]
+]
+
+{ #category : #'building - actions' }
 GtGitRepositoryElement >> createPullRepositoryWithIncomingCommits: aListOfIncomingCommits [
 	| dropdownButton incomingLabel |
 	
@@ -462,6 +471,7 @@ GtGitRepositoryElement >> updateToolbarElement [
 		addItem: (labelElement := self createRepositoryLabelElement);
 		addItem: self createRemoveRepositoryButton;
 		addItem: self createActionsHeaderSeparator;
+		addItem: self createInspectRepositoryButton;
 		addItem: self createFetchRepositoryButton.
 
 	incomingCommits := self repositoryViewModel incomingCommits.

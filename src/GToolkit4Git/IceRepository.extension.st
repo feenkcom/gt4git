@@ -117,6 +117,37 @@ IceRepository >> gtToolActionFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceRepository >> gtViewDetailsIn: composite [
+	<gtView>
+	^ composite columnedList
+		title: 'Details';
+		priority: 5;
+		items: [ {
+			{ 'name' . self name }.
+			{ 'origin' . [ self originUrl ] on: Error do: [ '' ] }.
+			{ 'branch' . [ self branchName ] on: Error do: [ '' ] }.
+			{ 'code directory' 
+				. [ self codeDirectory ] on: Error do: [ '' ]
+				. [ self codeDirectory asFileReference ] on: Error do: [ '' ]}.
+			{ 'head' . self head }.
+			{ 'head commit' . self headCommit }.
+			{ 'working copy' . self workingCopy }.
+			{ 'index' . self index }.
+			{ 'implementation' 
+				. self isGitCliRepository 
+					ifTrue: [ 'Libgit-CLI' ] 
+					ifFalse: [ 'Libgit2 FFI' ] }.
+			{ 'missing' . self isMissing }.
+			{ 'modified' . [ self isModified ] on: Error do: [ '' ] }.
+			{ 'dirty' . [ self isDirty ] on: Error do: [ '' ] }.
+		} ];
+		column: 'Key' text: #first;
+		column: 'Value' text: #second weight: 3;
+		send: #last;
+		actionUpdateButton
+]
+
+{ #category : #'*GToolkit4Git' }
 IceRepository >> gtViewDiffToReferenceCommitFor: aView [
 	"<gtView>"
 	^ self workingCopy 

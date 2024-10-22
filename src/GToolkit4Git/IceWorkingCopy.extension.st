@@ -1,6 +1,17 @@
 Extension { #name : #IceWorkingCopy }
 
 { #category : #'*GToolkit4Git' }
+IceWorkingCopy >> gtActionRepairFor: composite [
+	<gtAction>
+	self isDetached ifFalse: [ ^ composite noAction ].
+	^ composite button
+		icon: BrGlamorousVectorIcons repair;
+		tooltip: 'Adopt repository head as reference commit';
+		priority: 30;
+		action: [ :element | element phlow spawnObject: (self referenceCommit: self repository headCommit) ]		
+]
+
+{ #category : #'*GToolkit4Git' }
 IceWorkingCopy >> gtAllLoadedExamples [
 	^ self loadedPackages flatCollect: [ :anIcePackage |
 		| rPackage |
@@ -53,6 +64,27 @@ IceWorkingCopy >> gtPackagesFor: aView [
 						anElement phlow fireToolUpdateWish.
 						anActOnEvent beActed ] ]
 			tooltip: 'Add Package'
+]
+
+{ #category : #'*GToolkit4Git' }
+IceWorkingCopy >> gtViewDetailsIn: composite [
+	<gtView>
+	^ composite columnedList
+		title: 'Details';
+		priority: 10;
+		items: [ {
+			{ 'repository' . self repository }.
+			{ 'reference commit' . self referenceCommit }.
+			{ 'project' . self project }.
+			{ 'properties' . self properties }.
+			{ 'modified' . self isModified }.
+			{ 'detached' . self isDetached }.
+			{ 'in merge' . self isInMerge }.
+		} ];
+		column: 'Key' text: #first;
+		column: 'Value' text: #second weight: 3;
+		send: #last;
+		actionUpdateButton
 ]
 
 { #category : #'*GToolkit4Git' }
