@@ -13,6 +13,7 @@ PureGitBlameLine >> gtDetailsFor: composite [
 			{ 'author' . self author }.
 			{ 'timestmap' . self timestamp }.
 			{ 'commit' . self commit shortCommitId . self commit }.
+			{ 'comment' . self commit comment }.
 		} ];
 		column: 'key' text: #first;
 		column: 'value' text: #second weight: 3;
