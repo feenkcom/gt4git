@@ -21,6 +21,19 @@ PureGitPackage >> gtActionSaveFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitPackage >> gtActionSetLoadedCommitFor: composite [
+	<gtAction>
+	^ composite button
+		label: 'Set';
+		priority: 30;
+		tooltip: 'Set package loaded commit to repository head';
+		action: [
+			self incomingChanges isEmpty
+				ifTrue: [ self setLoadedCommit ]
+				ifFalse: [ self error: 'Cannot set package loaded commit to repository head as there are incoming changes' ] ]
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitPackage >> gtDetails [
 	^ super gtDetails , {
 		{ 'name' . self name }.
