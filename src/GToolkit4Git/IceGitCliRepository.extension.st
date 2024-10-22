@@ -72,7 +72,7 @@ IceGitCliRepository >> gtStatusFor: aView [
 	self isMissing ifTrue: [ ^ aView empty ].
 	^ aView columnedTree
 		  title: 'File statuses';
-		  priority: 2;
+		  priority: 10;
 		  items: [ 
 			  (self getStatusByFile associations groupedBy: [ :each | 
 					   each value categoryName ]) associations sort: [ :a | 

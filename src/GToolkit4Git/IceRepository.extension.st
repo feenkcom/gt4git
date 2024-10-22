@@ -121,7 +121,7 @@ IceRepository >> gtViewDetailsIn: composite [
 	<gtView>
 	^ composite columnedList
 		title: 'Details';
-		priority: 10;
+		priority: 5;
 		items: [ {
 			{ 'name' . self name }.
 			{ 'origin' . [ self originUrl ] on: Error do: [ '' ] }.
