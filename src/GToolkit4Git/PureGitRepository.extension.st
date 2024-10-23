@@ -209,7 +209,7 @@ PureGitRepository >> gtLogFor: composite [
 		actionStencil: [ :aButton | 
 			GtSpotterDropdownButtonStencil new
 				object: self;
-				tooltip: 'Search commit comments';
+				tooltip: 'Search commits';
 				objectActOn: [ :anActOnEvent :anItem :theButton | | targetCommit |
 					targetCommit := anActOnEvent objectToSend.
 					(targetCommit isKindOf: PureGitCommit) 
@@ -222,7 +222,7 @@ PureGitRepository >> gtLogFor: composite [
 							columnedList selectOne: (columnedList items indexOf: targetCommit) ].
 					anActOnEvent beActed ];
 				asElement ]
-			tooltip: 'Search commit comments';
+			tooltip: 'Search commits';
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton
 ]
@@ -278,6 +278,17 @@ PureGitRepository >> gtRemotesFor: composite [
 		items: [ self queries remotes ];
 		column: 'name' text: #name;
 		column: 'url' text: #url
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitRepository >> gtSearchCommitAuthorsFor: aSearch [
+	<gtSearch>
+	^ aSearch list
+		title: 'Commit authors';
+		priority: 55;
+		items: [ self log ];
+		itemName: [ :commit | commit author ];
+		filterBySubstring
 ]
 
 { #category : #'*GToolkit4Git' }
