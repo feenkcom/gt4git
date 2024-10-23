@@ -28,6 +28,17 @@ PureGitExtendedFileCommit >> gtDetailsFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitExtendedFileCommit >> gtViewChangesToParentFor: composite [
+	<gtView>
+	^ composite forward
+		title: 'Changes';
+		priority: 30;
+		tooltip: 'Changes to parent';
+		object: [ self changesToParent ];
+		view: #gtViewChangeChunksFor:
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitExtendedFileCommit >> gtViewOwnershipFor: composite [
 	<gtView>
 	| normalizer plotterData |
