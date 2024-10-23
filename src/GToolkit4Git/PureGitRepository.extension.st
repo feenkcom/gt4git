@@ -206,6 +206,23 @@ PureGitRepository >> gtLogFor: composite [
 		column: 'Timestamp' text: [ :commit | timestampFormat format: commit timestamp ] weight: 0.5;
 		column: 'Author' text: [ :commit | commit author ];
 		column: 'Comment' text: [ :commit | commit comment firstLineWithEllipsis ] weight: 2;
+		actionStencil: [ :aButton | 
+			GtSpotterDropdownButtonStencil new
+				object: self;
+				tooltip: 'Search commits';
+				objectActOn: [ :anActOnEvent :anItem :theButton | | targetCommit |
+					targetCommit := anActOnEvent objectToSend.
+					(targetCommit isKindOf: PureGitCommit) 
+						ifTrue: [ | columnedList |
+							columnedList := theButton phlow viewContent 
+								allChildrenBreadthFirstDetect: [ :child | 
+									child isKindOf:  BrColumnedList ] 
+								ifFound: [ :child | child ].
+							columnedList scrollToItem: targetCommit.
+							columnedList selectOne: (columnedList items indexOf: targetCommit) ].
+					anActOnEvent beActed ];
+				asElement ]
+			tooltip: 'Search commits';
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton
 ]
@@ -261,6 +278,28 @@ PureGitRepository >> gtRemotesFor: composite [
 		items: [ self queries remotes ];
 		column: 'name' text: #name;
 		column: 'url' text: #url
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitRepository >> gtSearchCommitAuthorsFor: aSearch [
+	<gtSearch>
+	^ aSearch list
+		title: 'Commit authors';
+		priority: 55;
+		items: [ self log ];
+		itemName: [ :commit | commit author ];
+		filterBySubstring
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitRepository >> gtSearchCommitCommentsFor: aSearch [
+	<gtSearch>
+	^ aSearch list
+		title: 'Commit comments';
+		priority: 50;
+		items: [ self log ];
+		itemName: [ :commit | commit comment ];
+		filterBySubstring
 ]
 
 { #category : #'*GToolkit4Git' }

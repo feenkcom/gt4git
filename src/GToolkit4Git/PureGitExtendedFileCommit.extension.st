@@ -17,7 +17,7 @@ PureGitExtendedFileCommit >> gtDetailsFor: composite [
 			{ 'number of lines added' . self numberOfLinesAdded }.
 			{ 'number of lines removed' . self numberOfLinesRemoved }.
 			{ 'number of lines modified' . self numberOfLinesModified }.
-			{ 'file estimated number of lines' . self numberOfLines }.
+			{ 'estimated file number of lines' . self numberOfLines ifNil: [ '' ] }.
 			{ 'authors top 3' 
 				. self authorTop3Description 
 				. self authors }.
@@ -28,9 +28,21 @@ PureGitExtendedFileCommit >> gtDetailsFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitExtendedFileCommit >> gtViewChangesToParentFor: composite [
+	<gtView>
+	^ composite forward
+		title: 'Changes';
+		priority: 30;
+		tooltip: 'Changes to parent';
+		object: [ self changesToParent ];
+		view: #gtViewChangeChunksFor:
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitExtendedFileCommit >> gtViewOwnershipFor: composite [
 	<gtView>
 	| normalizer plotterData |
+	self authors isEmpty ifTrue: [ ^ composite empty ].
 	^ composite explicit
 		title: 'Ownership';
 		priority: 40;
