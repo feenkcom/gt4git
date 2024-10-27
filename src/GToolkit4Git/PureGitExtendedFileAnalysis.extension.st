@@ -4,16 +4,23 @@ Extension { #name : #PureGitExtendedFileAnalysis }
 PureGitExtendedFileAnalysis >> gtViewGraphFor: composite [
 	<gtView>
 	| min max scale colors height maxChanged |
-	min := self commits min: [ :each | each numberOfLines ].
-	max := self commits max: [ :each | each numberOfLines ].
-	maxChanged := self commits max: [ :each | each numberOfLinesChanged abs ].
-	scale := max reciprocal * 800.
+	min := SmallInteger maxVal.
+	max := maxChanged := scale := 0.
 	colors := BrIdentityNormalizer new.
 	height := 4.
 	^ composite columnedList
 		title: 'Graph';
 		priority: 40;
-		items: [ self commits ];
+		items: [ | commits |
+			commits := self commits toArray wait.
+			commits do: [ :each | | numberOfLines numberOfLinesChanged |
+				numberOfLines := each numberOfLines.
+				numberOfLinesChanged := each numberOfLinesChanged abs.
+				min := min min: numberOfLines.
+				max := max max: numberOfLines.
+				maxChanged := maxChanged max: numberOfLinesChanged ].
+			scale := max reciprocal * 800.
+			commits ];
 		column: 'Commit'
 			stencil: [ :item | | width |
 				width := (item numberOfLinesChanged abs / maxChanged * 50) max: 10.
