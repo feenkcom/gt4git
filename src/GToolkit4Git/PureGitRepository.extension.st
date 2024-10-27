@@ -186,11 +186,11 @@ PureGitRepository >> gtHistoryFor: composite [
 { #category : #'*GToolkit4Git' }
 PureGitRepository >> gtInternalsFor: composite [
 	<gtView>
-	^ (self queries internals gtItemsFor: composite)
+	^ composite explicit
 		title: 'Internals';
 		priority: 80;
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
-		expandAll
+		stencil: [ (self queries internals gtItemsFor: composite) expandAll ]
 ]
 
 { #category : #'*GToolkit4Git' }
