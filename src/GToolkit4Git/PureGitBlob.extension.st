@@ -1,6 +1,18 @@
 Extension { #name : #PureGitBlob }
 
 { #category : #'*GToolkit4Git' }
+PureGitBlob >> gtDetails [
+	^ super gtDetails , {
+		{ 'blob' 
+			. self shortId
+			. self id }.
+		{ 'contents'
+			. '{1} bytes' format: { self contents size }
+			. self contents }
+	}
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitBlob >> gtImageFor: composite [
 	<gtView>
 	| bytes |
