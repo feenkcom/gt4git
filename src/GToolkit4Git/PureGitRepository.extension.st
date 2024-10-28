@@ -258,9 +258,9 @@ PureGitRepository >> gtOperations [
 									e phlow spawnObject: (PureGitCodeRepository on: self location).
 									e fireEvent: BrDropdownHideWish new ].
 					actions
-						nextPut: 'Delete'
+						nextPut: 'Statistics'
 								-> [ :e | 
-									self operations delete.
+									e phlow spawnObject: (PureGitRepositoryStatistics inRepository: self).
 									e fireEvent: BrDropdownHideWish new ] ]
 				ifFalse: [ actions
 						nextPut: 'Init'
