@@ -211,6 +211,48 @@ PureGitExamples >> exampleFileContentsInRepository [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleFileHistory [
+	<gtExample>
+	<noTest>
+
+	| repository path gitFile log lastCommit reconstructedContents fileContents|
+
+	repository := self exampleGt4Git.
+
+	path := 'src/GToolkit4Git/GtGitRepository.class.st'.
+
+	gitFile := repository resolveFilePath: path.
+
+	self assert: gitFile exists.
+
+	log := gitFile log.
+
+	lastCommit := log next wait value.
+
+	self assert: lastCommit path equals: path.
+
+	self assert: log asyncSimilarCopy size wait < repository log size wait.
+
+	self assert: lastCommit contents equals: gitFile contents.
+
+	self assert: lastCommit contentsByFilesystem equals: gitFile contents.
+
+	reconstructedContents := (gitFile logPatchReverse
+		inject: String empty
+		into: [ :contents :extendedFileCommit |
+			extendedFileCommit changesToParent applyTo: contents ]) wait.
+
+	fileContents := String streamContents: [ :out | 
+		gitFile contents linesDo: [ :line | out nextPutAll: line; cr ] ].
+
+	self 
+		assert: reconstructedContents 
+		equals: fileContents.
+
+	^ gitFile
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitExamples >> exampleFilename [
 	^ 'file-1.txt'
 ]
