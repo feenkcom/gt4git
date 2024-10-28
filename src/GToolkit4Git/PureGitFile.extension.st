@@ -76,7 +76,7 @@ PureGitFile >> gtBlameFor: composite [
 PureGitFile >> gtContentsFor: composite [
 	<gtView>
 	| text |
-	[ text := self fileReference contents ] 
+	[ text := self contents ] 
 		on: ZnCharacterEncodingError 
 		do: [ ^ composite empty ].
 	^ composite textEditor
@@ -93,6 +93,7 @@ PureGitFile >> gtDetails [
 		{ 'path' . self path . self fileReference }.
 		{ 'basename' . self basename }.
 		{ 'parent' . self parent path . self parent }.
+		{ 'exists' . self exists }.
 		{ 'status' . self status statusSummary . self status }.
 		{ 'tracked' . self isTracked }.
 		{ 'staged' . self isStaged }.
@@ -104,7 +105,7 @@ PureGitFile >> gtDetails [
 PureGitFile >> gtEditorFor: composite [
 	<gtView>
 	| text |
-	[ text := self fileReference contents ] 
+	[ text := self contents ] 
 		on: ZnCharacterEncodingError 
 		do: [ ^ composite empty ].
 	^ composite forward
