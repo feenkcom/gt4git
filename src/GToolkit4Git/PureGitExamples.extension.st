@@ -215,7 +215,7 @@ PureGitExamples >> exampleFileHistory [
 	<gtExample>
 	<noTest>
 
-	| repository path gitFile log lastCommit reconstructedContents fileContents|
+	| repository path gitFile log lastCommit reconstructedContents fileContents |
 
 	repository := self exampleGt4Git.
 
@@ -225,13 +225,13 @@ PureGitExamples >> exampleFileHistory [
 
 	self assert: gitFile exists.
 
-	log := gitFile log.
+	log := gitFile log toArray wait.
 
-	lastCommit := log next wait value.
+	lastCommit := log first.
 
 	self assert: lastCommit path equals: path.
 
-	self assert: log asyncSimilarCopy size wait < repository log size wait.
+	self assert: log size < repository log size wait.
 
 	self assert: lastCommit contents equals: gitFile contents.
 
@@ -242,8 +242,7 @@ PureGitExamples >> exampleFileHistory [
 		into: [ :contents :extendedFileCommit |
 			extendedFileCommit changesToParent applyTo: contents ]) wait.
 
-	fileContents := String streamContents: [ :out | 
-		gitFile contents linesDo: [ :line | out nextPutAll: line; cr ] ].
+	fileContents := gitFile contents replaceAll: Character lf with: Character cr.
 
 	self 
 		assert: reconstructedContents 
