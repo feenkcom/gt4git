@@ -242,7 +242,8 @@ PureGitExamples >> exampleFileHistory [
 		into: [ :contents :extendedFileCommit |
 			extendedFileCommit changesToParent applyTo: contents ]) wait.
 
-	fileContents := gitFile contents replaceAll: Character lf with: Character cr.
+	fileContents := String streamContents: [ :out |
+		gitFile contents linesDo: [ :line | out nextPutAll: line; cr ] ].
 
 	self 
 		assert: reconstructedContents 
