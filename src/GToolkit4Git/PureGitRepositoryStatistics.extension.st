@@ -5,7 +5,7 @@ PureGitRepositoryStatistics >> gtDetails [
 	^ super gtDetails , {
 		{ 'number of commits'
 			. self log size
-			. self log }.
+			. PureGitCommitsCollection withAll: self log }.
 		{ 'first commit'
 			. self describeTimestamp: self firstCommit timestamp
 			. self firstCommit }.
@@ -27,5 +27,5 @@ PureGitRepositoryStatistics >> gtViewContributorsIn: composite [
 		items: [ (self log groupedBy: #author) associations sort: [ :each | each value size ] descending ];
 		column: 'author' text: [ :each | each key ];
 		column: 'number of commits' text: [ :each | each value size ];
-		send: #value
+		send: [ :each | PureGitCommitsCollection withAll: each value ]
 ]
