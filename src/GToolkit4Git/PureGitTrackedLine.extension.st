@@ -9,10 +9,10 @@ PureGitTrackedLine >> asKumpelGraphElement [
 					doWithIndex: [ :lineNumber :rank | 
 						lineNumber = 0
 							ifFalse: [ | point |
-								point := (rank * 10) @ (lineNumber * 5).
+								point := (rank * 20) @ (lineNumber * 5).
 								out
 									nextPut: point;
-									nextPut: (point translateBy: 5 @ 0) ] ] ].
+									nextPut: (point translateBy: 10 @ 0) ] ] ].
 	vertices := vertices
 			, (vertices reversed collect: [ :point | point translateBy: 0 @ 5 ]).
 	^ BlPolygonElement new

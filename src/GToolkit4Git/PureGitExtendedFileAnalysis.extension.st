@@ -16,7 +16,9 @@ PureGitExtendedFileAnalysis >> gtViewGraphFor: composite [
 	| min max scale colors height maxChanged |
 	min := SmallInteger maxVal.
 	max := maxChanged := scale := 0.
-	colors := BrIdentityNormalizer new.
+	colors := BrExplicitIdentityNormalizer new
+		colors: BrGlamorousColors distinctTenLightColors;
+		defaultColor: Color veryLightGray..
 	height := 4.
 	^ composite columnedList
 		title: 'Graph';
@@ -75,6 +77,10 @@ PureGitExtendedFileAnalysis >> gtViewHistoryFor: composite [
 { #category : #'*GToolkit4Git' }
 PureGitExtendedFileAnalysis >> gtViewKumpelFor: composite [
 	<gtView>
+	| colors |
+	colors := BrExplicitIdentityNormalizer new
+		colors: BrGlamorousColors distinctTenLightColors;
+		defaultColor: Color veryLightGray..
 	^ composite explicit
 		title: 'Kumpel';
 		priority: 60;
@@ -84,7 +90,9 @@ PureGitExtendedFileAnalysis >> gtViewKumpelFor: composite [
 			container constraintsDo: [ :c |
 				c horizontal matchParent.
 				c vertical matchParent ].
-			self versions last do: [ :trackedLine |
-				container addChild: trackedLine asKumpelGraphElement ].
+			self versions last do: [ :trackedLine | | element |
+				element := trackedLine asKumpelGraphElement.
+				element background: (colors value: (self authorOfTrackedLine: trackedLine)).
+				container addChild: element ].
 			container ]
 ]
