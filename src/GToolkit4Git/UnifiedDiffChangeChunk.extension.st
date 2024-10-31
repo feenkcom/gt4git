@@ -104,6 +104,12 @@ UnifiedDiffChangeChunk >> gtViewStatsFor: composite [
 		priority: 25;
 		items: [ {
 			{ 'range' . self range }.
+			{ 'old start' . self oldStart }.
+			{ 'old count' . self oldCount }.
+			{ 'old end' . self oldEnd }.
+			{ 'new start' . self newStart }.
+			{ 'new count' . self newCount }.
+			{ 'new end' . self newEnd }.
 			{ '# lines changed' . self numberOfLinesChanged }.
 			{ '# lines added' . self numberOfLinesAdded }.
 			{ '# lines removed' . self numberOfLinesRemoved }.
