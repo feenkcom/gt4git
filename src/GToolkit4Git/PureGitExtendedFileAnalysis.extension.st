@@ -1,6 +1,16 @@
 Extension { #name : #PureGitExtendedFileAnalysis }
 
 { #category : #'*GToolkit4Git' }
+PureGitExtendedFileAnalysis >> gtViewBlameFor: composite [
+	<gtView>
+	^ composite forward
+		title: 'Blame';
+		priority: 50;
+		object: [ self file ];
+		view: #gtBlameFor:
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitExtendedFileAnalysis >> gtViewGraphFor: composite [
 	<gtView>
 	| min max scale colors height maxChanged |
@@ -11,16 +21,15 @@ PureGitExtendedFileAnalysis >> gtViewGraphFor: composite [
 	^ composite columnedList
 		title: 'Graph';
 		priority: 40;
-		items: [ | commits |
-			commits := self commits toArray wait.
-			commits do: [ :each | | numberOfLines numberOfLinesChanged |
+		items: [
+			self commits do: [ :each | | numberOfLines numberOfLinesChanged |
 				numberOfLines := each numberOfLines.
 				numberOfLinesChanged := each numberOfLinesChanged abs.
 				min := min min: numberOfLines.
 				max := max max: numberOfLines.
 				maxChanged := maxChanged max: numberOfLinesChanged ].
 			scale := max reciprocal * 800.
-			commits ];
+			self commits ];
 		column: 'Commit'
 			stencil: [ :item | | width |
 				width := (item numberOfLinesChanged abs / maxChanged * 50) max: 10.
@@ -61,4 +70,21 @@ PureGitExtendedFileAnalysis >> gtViewHistoryFor: composite [
 		column: 'Delta' text: [ :commit | commit numberOfLinesChangedDescription ] weight: 0.125;
 		column: 'Size' text: [ :commit | commit numberOfLines ] weight: 0.125;
 		column: 'Top 3 owners' text: [ :commit | commit authorTop3Description ]
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExtendedFileAnalysis >> gtViewKumpelFor: composite [
+	<gtView>
+	^ composite explicit
+		title: 'Kumpel';
+		priority: 60;
+		tooltip: 'Show line history over time';
+		stencil: [ | container |
+			container := BlElement new.
+			container constraintsDo: [ :c |
+				c horizontal matchParent.
+				c vertical matchParent ].
+			self versions last do: [ :trackedLine |
+				container addChild: trackedLine asKumpelGraphElement ].
+			container ]
 ]
