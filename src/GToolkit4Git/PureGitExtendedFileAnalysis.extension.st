@@ -1,6 +1,16 @@
 Extension { #name : #PureGitExtendedFileAnalysis }
 
 { #category : #'*GToolkit4Git' }
+PureGitExtendedFileAnalysis >> gtViewBlameFor: composite [
+	<gtView>
+	^ composite forward
+		title: 'Blame';
+		priority: 50;
+		object: [ self file ];
+		view: #gtBlameFor:
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitExtendedFileAnalysis >> gtViewGraphFor: composite [
 	<gtView>
 	| min max scale colors height maxChanged |
@@ -11,16 +21,15 @@ PureGitExtendedFileAnalysis >> gtViewGraphFor: composite [
 	^ composite columnedList
 		title: 'Graph';
 		priority: 40;
-		items: [ | commits |
-			commits := self commits toArray wait.
-			commits do: [ :each | | numberOfLines numberOfLinesChanged |
+		items: [
+			self commits do: [ :each | | numberOfLines numberOfLinesChanged |
 				numberOfLines := each numberOfLines.
 				numberOfLinesChanged := each numberOfLinesChanged abs.
 				min := min min: numberOfLines.
 				max := max max: numberOfLines.
 				maxChanged := maxChanged max: numberOfLinesChanged ].
 			scale := max reciprocal * 800.
-			commits ];
+			self commits ];
 		column: 'Commit'
 			stencil: [ :item | | width |
 				width := (item numberOfLinesChanged abs / maxChanged * 50) max: 10.
