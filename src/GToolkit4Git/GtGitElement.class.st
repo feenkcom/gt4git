@@ -43,6 +43,10 @@ GtGitElement >> initialize [
 	self matchParent.
 	self initializeView.
 	self navigationModel: self defaultNavigationModel.
+	self phlow 
+		accessTool: (GtPhlowToolClassType forClass: self class) 
+		viewModel: #navigationModel 
+		object: #repository
 ]
 
 { #category : #accessing }
