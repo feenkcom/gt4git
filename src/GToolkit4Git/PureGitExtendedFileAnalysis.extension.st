@@ -18,7 +18,7 @@ PureGitExtendedFileAnalysis >> gtViewGraphFor: composite [
 	max := maxChanged := scale := 0.
 	colors := BrExplicitIdentityNormalizer new
 		colors: BrGlamorousColors distinctTenLightColors;
-		defaultColor: Color veryLightGray..
+		defaultColor: Color veryLightGray.
 	height := 4.
 	^ composite columnedList
 		title: 'Graph';
@@ -80,7 +80,7 @@ PureGitExtendedFileAnalysis >> gtViewKumpelFor: composite [
 	| colors |
 	colors := BrExplicitIdentityNormalizer new
 		colors: BrGlamorousColors distinctTenLightColors;
-		defaultColor: Color veryLightGray..
+		defaultColor: Color veryLightGray.
 	^ composite explicit
 		title: 'Kumpel';
 		priority: 60;
