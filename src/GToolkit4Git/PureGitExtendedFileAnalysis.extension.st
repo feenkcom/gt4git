@@ -71,3 +71,20 @@ PureGitExtendedFileAnalysis >> gtViewHistoryFor: composite [
 		column: 'Size' text: [ :commit | commit numberOfLines ] weight: 0.125;
 		column: 'Top 3 owners' text: [ :commit | commit authorTop3Description ]
 ]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExtendedFileAnalysis >> gtViewKumpelFor: composite [
+	<gtView>
+	^ composite explicit
+		title: 'Kumpel';
+		priority: 60;
+		tooltip: 'Show line history over time';
+		stencil: [ | container |
+			container := BlElement new.
+			container constraintsDo: [ :c |
+				c horizontal matchParent.
+				c vertical matchParent ].
+			self versions last do: [ :trackedLine |
+				container addChild: trackedLine asKumpelGraphElement ].
+			container ]
+]
