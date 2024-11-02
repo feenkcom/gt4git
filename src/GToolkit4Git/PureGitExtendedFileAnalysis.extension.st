@@ -90,7 +90,7 @@ PureGitExtendedFileAnalysis >> gtViewKumpelFor: composite [
 			container constraintsDo: [ :c |
 				c horizontal matchParent.
 				c vertical matchParent ].
-			self versions last do: [ :trackedLine | | element |
+			self uniqueTrackedLines do: [ :trackedLine | | element |
 				element := trackedLine asKumpelGraphElement.
 				element background: (colors value: (self authorOfTrackedLine: trackedLine)).
 				container addChild: element ].
