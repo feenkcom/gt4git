@@ -578,6 +578,26 @@ PureGitExamples >> exampleSvcDemoEmptyFileCommit [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleSvcDemoIncrementalHistoryContentsReconstruction [
+	<gtExample>
+	<noTest>
+
+	| repository gitDirectory gitFiles |
+
+	repository := self exampleSvcDemo.
+
+	gitDirectory := repository resolveDirectoryPath: 'src/SvcDemo'.
+
+	gitFiles := gitDirectory children select: [ :each |
+		'*.class.st' match: each path  ].
+
+	gitFiles do: [ :each |
+		each validateIncrementalHistoryContentsReconstruction ].
+
+	^ gitFiles
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitExamples >> exampleSvcDemoTestCommit [
 	<gtExample>
 	<noTest>
