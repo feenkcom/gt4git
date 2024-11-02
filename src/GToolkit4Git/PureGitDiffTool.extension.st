@@ -13,7 +13,8 @@ PureGitDiffTool >> asRopedText [
 { #category : #'*GToolkit4Git' }
 PureGitDiffTool >> gtDetails [
 	^ super gtDetails , {
-		'diff args' . self diffArgs }
+		{ 'diff args' . self diffArgs }
+	}
 ]
 
 { #category : #'*GToolkit4Git' }
