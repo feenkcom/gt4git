@@ -1,7 +1,7 @@
-Extension { #name : #PureGitExtendedFileAnalysis }
+Extension { #name : #PureGitTrackedFile }
 
 { #category : #'*GToolkit4Git' }
-PureGitExtendedFileAnalysis >> gtViewBlameFor: composite [
+PureGitTrackedFile >> gtViewBlameFor: composite [
 	<gtView>
 	^ composite forward
 		title: 'Blame';
@@ -11,7 +11,7 @@ PureGitExtendedFileAnalysis >> gtViewBlameFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
-PureGitExtendedFileAnalysis >> gtViewGraphFor: composite [
+PureGitTrackedFile >> gtViewGraphFor: composite [
 	<gtView>
 	| min max scale colors height maxChanged |
 	min := SmallInteger maxVal.
@@ -56,7 +56,7 @@ PureGitExtendedFileAnalysis >> gtViewGraphFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
-PureGitExtendedFileAnalysis >> gtViewHistoryFor: composite [
+PureGitTrackedFile >> gtViewHistoryFor: composite [
 	<gtView>
 	| timestampFormat |
 	timestampFormat := ZTimestampFormat fromString: '2001-02-03 16:05'.
@@ -75,24 +75,27 @@ PureGitExtendedFileAnalysis >> gtViewHistoryFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
-PureGitExtendedFileAnalysis >> gtViewKumpelFor: composite [
+PureGitTrackedFile >> gtViewKumpelFor: composite [
 	<gtView>
-	| colors |
-	colors := BrExplicitIdentityNormalizer new
-		colors: BrGlamorousColors distinctTenLightColors;
-		defaultColor: Color veryLightGray.
 	^ composite explicit
 		title: 'Kumpel';
 		priority: 60;
 		tooltip: 'Show line history over time';
-		stencil: [ | container |
+		stencil: [ | container colors |
+			colors := BrExplicitIdentityNormalizer new
+					colors: BrGlamorousColors distinctTenLightColors;
+					defaultColor: Color veryLightGray.
 			container := BlElement new.
-			container constraintsDo: [ :c |
-				c horizontal matchParent.
-				c vertical matchParent ].
-			self uniqueTrackedLines do: [ :trackedLine | | element |
-				element := trackedLine asKumpelGraphElement.
-				element background: (colors value: (self authorOfTrackedLine: trackedLine)).
-				container addChild: element ].
+			container
+				constraintsDo: [ :c | 
+					c horizontal matchParent.
+					c vertical matchParent ].
+			self uniqueTrackedLines
+				do: [ :trackedLine | 
+					| element |
+					element := trackedLine asKumpelGraphElement.
+					element background: (colors value: (self authorOfTrackedLine: trackedLine)).
+					element border: (colors value: (self authorOfTrackedLine: trackedLine)).
+					container addChild: element ].
 			container ]
 ]
