@@ -97,5 +97,6 @@ PureGitTrackedFile >> gtViewKumpelFor: composite [
 					element background: (colors value: (self authorOfTrackedLine: trackedLine)).
 					element border: (colors value: (self authorOfTrackedLine: trackedLine)).
 					container addChild: element ].
-			container ]
+			container size: ((self versions size) * PureGitTrackedLine versionWidth) @ (PureGitTrackedLine lineHeight * (self maxLinesCount)).
+			container beInSeparateCompositionLayer asScrollableElement ]
 ]

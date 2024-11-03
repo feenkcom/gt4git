@@ -2,7 +2,7 @@ Extension { #name : #PureGitTrackedLine }
 
 { #category : #'*GToolkit4Git' }
 PureGitTrackedLine >> asKumpelGraphElement [
-	| vertices maxExtent|
+	| vertices maxExtent |
 	maxExtent := 0.
 	vertices := Array
 			streamContents: [ :out | 
@@ -10,14 +10,17 @@ PureGitTrackedLine >> asKumpelGraphElement [
 					doWithIndex: [ :lineNumber :index | 
 						lineNumber = 0
 							ifFalse: [ | startPoint endPoint |
-								startPoint := ((index - 1) * (self class versionWidth + self class versionMargin)) @ ((lineNumber - 1) * self class lineHeight).
-								endPoint := startPoint translateBy: (self class versionWidth @ 0).
+								startPoint := ((index - 1)
+										* (self class versionWidth + self class versionMargin))
+										@ ((lineNumber - 1) * self class lineHeight).
+								endPoint := startPoint translateBy: self class versionWidth @ 0.
 								maxExtent := maxExtent max: endPoint.
 								out
 									nextPut: startPoint;
 									nextPut: endPoint ] ] ].
 	vertices := vertices
-			, (vertices reversed collect: [ :point | point translateBy: 0 @ self class lineHeight ]).
+			, (vertices reversed
+					collect: [ :point | point translateBy: 0 @ self class lineHeight ]).
 	^ BlElement new
 		size: (maxExtent translateBy: 0 @ 5);
 		geometry: (BlPolygon vertices: vertices);
