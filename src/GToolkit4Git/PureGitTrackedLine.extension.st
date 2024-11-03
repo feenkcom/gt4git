@@ -28,6 +28,15 @@ PureGitTrackedLine >> asKumpelGraphElement [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitTrackedLine >> gtLineFor: aView [
+	<gtView>
+	^ aView textEditor 
+		title: 'Line';
+		priority: 1;
+		text: [ self line ]
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitTrackedLine >> gtViewGraphFor: composite [
 	<gtView>
 	^ composite explicit
