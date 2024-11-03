@@ -7,17 +7,17 @@ PureGitTrackedLine >> asKumpelGraphElement [
 	vertices := Array
 			streamContents: [ :out | 
 				self positionsInVersions
-					doWithIndex: [ :lineNumber :rank | 
+					doWithIndex: [ :lineNumber :index | 
 						lineNumber = 0
 							ifFalse: [ | startPoint endPoint |
-								startPoint := (rank * 12) @ (lineNumber * 5).
-								endPoint := startPoint translateBy: 10 @ 0.
+								startPoint := ((index - 1) * (self class versionWidth + self class versionMargin)) @ ((lineNumber - 1) * self class lineHeight).
+								endPoint := startPoint translateBy: (self class versionWidth @ 0).
 								maxExtent := maxExtent max: endPoint.
 								out
 									nextPut: startPoint;
 									nextPut: endPoint ] ] ].
 	vertices := vertices
-			, (vertices reversed collect: [ :point | point translateBy: 0 @ 5 ]).
+			, (vertices reversed collect: [ :point | point translateBy: 0 @ self class lineHeight ]).
 	^ BlElement new
 		size: (maxExtent translateBy: 0 @ 5);
 		geometry: (BlPolygon vertices: vertices);
