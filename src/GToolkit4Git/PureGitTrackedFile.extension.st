@@ -85,10 +85,6 @@ PureGitTrackedFile >> gtViewKumpelFor: composite [
 					colors: BrGlamorousColors distinctTenLightColors;
 					defaultColor: Color veryLightGray.
 			container := BlElement new.
-			container
-				constraintsDo: [ :c | 
-					c horizontal matchParent.
-					c vertical matchParent ].
 			self uniqueTrackedLines
 				do: [ :trackedLine | 
 					| element |
