@@ -80,7 +80,6 @@ PureGitTrackedFile >> gtViewKumpelFor: composite [
 	^ composite explicit
 		title: 'Kumpel';
 		priority: 60;
-		tooltip: 'Show line history over time';
 		stencil: [ | container colors |
 			colors := BrExplicitIdentityNormalizer new
 					colors: BrGlamorousColors distinctTenLightColors;
@@ -94,9 +93,22 @@ PureGitTrackedFile >> gtViewKumpelFor: composite [
 				do: [ :trackedLine | 
 					| element |
 					element := trackedLine asKumpelGraphElement.
-					element background: (colors value: (self authorOfTrackedLine: trackedLine)).
-					element border: (colors value: (self authorOfTrackedLine: trackedLine)).
+					element
+						addAptitude: (BrStyleCommonAptitude new
+								default: [ :s | 
+									s background: (colors value: (self authorOfTrackedLine: trackedLine)).
+									s border: (colors value: (self authorOfTrackedLine: trackedLine)) ];
+								hovered: [ :s | 
+									s background: (colors value: (self authorOfTrackedLine: trackedLine)) darker.
+									s
+										border: (colors value: (self authorOfTrackedLine: trackedLine)) darker ];
+								pressed: [ :s | s background: (colors value: (self authorOfTrackedLine: trackedLine)) muchDarker ]).
+					element when: BlClickEvent do: [:e | e target phlow spawnObject: trackedLine ].
 					container addChild: element ].
-			container size: ((self versions size) * PureGitTrackedLine versionWidth) @ (PureGitTrackedLine lineHeight * (self maxLinesCount)).
-			container beInSeparateCompositionLayer asScrollableElement ]
+			container
+				size: (self versions size * PureGitTrackedLine versionWidth)
+						@ (PureGitTrackedLine lineHeight * self maxLinesCount).
+			container beInSeparateCompositionLayer asScrollableElement
+				margin: (BlInsets all: 10) ];
+		tooltip: 'Show line history over time'
 ]
