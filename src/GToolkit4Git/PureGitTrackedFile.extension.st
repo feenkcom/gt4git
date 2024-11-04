@@ -1,6 +1,21 @@
 Extension { #name : #PureGitTrackedFile }
 
 { #category : #'*GToolkit4Git' }
+PureGitTrackedFile >> gtVersionsFor: aView [
+	<gtView>
+	^ aView columnedList
+		title: 'Versions';
+		items: [ self versions ];
+		column: 'Index' text: [ :each | each versionNumber ] width: 50;
+		column: 'Timestamp' text: [ :each | (ZTimestampFormat fromString: '2001-02-03 16:05') format: each commit timestamp ] width: 110;
+		column: 'Commit' text: [ :each | each commit shortId ] width: 100;
+		column: 'Author' text: [ :each | each commit author ] width: 100;
+		column: 'Comment' text: [ :each | each commit comment firstLineWithEllipsis ];
+		column: 'Delta' text: [ :each | each commit numberOfLinesChangedDescription ] width: 50;
+		column: 'Lines count' text: [ :each | each lines size ] width: 50
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitTrackedFile >> gtViewBlameFor: composite [
 	<gtView>
 	^ composite forward
