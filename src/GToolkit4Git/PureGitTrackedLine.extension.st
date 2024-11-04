@@ -2,22 +2,38 @@ Extension { #name : #PureGitTrackedLine }
 
 { #category : #'*GToolkit4Git' }
 PureGitTrackedLine >> asKumpelGraphElement [
-	| vertices |
+	| vertices maxExtent |
+	maxExtent := 0.
 	vertices := Array
 			streamContents: [ :out | 
 				self positionsInVersions
-					doWithIndex: [ :lineNumber :rank | 
+					doWithIndex: [ :lineNumber :index | 
 						lineNumber = 0
-							ifFalse: [ | point |
-								point := (rank * 20) @ (lineNumber * 5).
+							ifFalse: [ | startPoint endPoint |
+								startPoint := ((index - 1)
+										* (self class versionWidth + self class versionMargin))
+										@ ((lineNumber - 1) * self class lineHeight).
+								endPoint := startPoint translateBy: self class versionWidth @ 0.
+								maxExtent := maxExtent max: endPoint.
 								out
-									nextPut: point;
-									nextPut: (point translateBy: 10 @ 0) ] ] ].
+									nextPut: startPoint;
+									nextPut: endPoint ] ] ].
 	vertices := vertices
-			, (vertices reversed collect: [ :point | point translateBy: 0 @ 5 ]).
-	^ BlPolygonElement new
-		vertices: vertices;
+			, (vertices reversed
+					collect: [ :point | point translateBy: 0 @ self class lineHeight ]).
+	^ BlElement new
+		size: (maxExtent translateBy: 0 @ 5);
+		geometry: (BlPolygon vertices: vertices);
 		background: Color blue
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitTrackedLine >> gtLineFor: aView [
+	<gtView>
+	^ aView textEditor 
+		title: 'Line';
+		priority: 1;
+		text: [ self line ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -26,5 +42,5 @@ PureGitTrackedLine >> gtViewGraphFor: composite [
 	^ composite explicit
 		title: 'Graph';
 		priority: 20;
-		stencil: [ self asKumpelGraphElement ]
+		stencil: [ self asKumpelGraphElement asScrollableElement]
 ]

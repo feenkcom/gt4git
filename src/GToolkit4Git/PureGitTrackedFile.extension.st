@@ -1,7 +1,7 @@
-Extension { #name : #PureGitExtendedFileAnalysis }
+Extension { #name : #PureGitTrackedFile }
 
 { #category : #'*GToolkit4Git' }
-PureGitExtendedFileAnalysis >> gtViewBlameFor: composite [
+PureGitTrackedFile >> gtViewBlameFor: composite [
 	<gtView>
 	^ composite forward
 		title: 'Blame';
@@ -11,7 +11,7 @@ PureGitExtendedFileAnalysis >> gtViewBlameFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
-PureGitExtendedFileAnalysis >> gtViewGraphFor: composite [
+PureGitTrackedFile >> gtViewGraphFor: composite [
 	<gtView>
 	| min max scale colors height maxChanged |
 	min := SmallInteger maxVal.
@@ -56,7 +56,7 @@ PureGitExtendedFileAnalysis >> gtViewGraphFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
-PureGitExtendedFileAnalysis >> gtViewHistoryFor: composite [
+PureGitTrackedFile >> gtViewHistoryFor: composite [
 	<gtView>
 	| timestampFormat |
 	timestampFormat := ZTimestampFormat fromString: '2001-02-03 16:05'.
@@ -75,24 +75,42 @@ PureGitExtendedFileAnalysis >> gtViewHistoryFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
-PureGitExtendedFileAnalysis >> gtViewKumpelFor: composite [
+PureGitTrackedFile >> gtViewKumpelFor: composite [
 	<gtView>
-	| colors |
-	colors := BrExplicitIdentityNormalizer new
-		colors: BrGlamorousColors distinctTenLightColors;
-		defaultColor: Color veryLightGray.
+	| identityIndex |
 	^ composite explicit
 		title: 'Kumpel';
 		priority: 60;
-		tooltip: 'Show line history over time';
-		stencil: [ | container |
+		stencil: [ | container colors strongColors lightColors |
+			lightColors := BrGlamorousColors distinctTenLightColors
+					, {Color veryLightGray}.
+			strongColors := BrGlamorousColors distinctTenStrongColors , {Color gray}.
+			colors := BrExplicitIdentityNormalizer new
+					candidates: (1 to: 10);
+					defaultCandidate: 11.
 			container := BlElement new.
-			container constraintsDo: [ :c |
-				c horizontal matchParent.
-				c vertical matchParent ].
-			self uniqueTrackedLines do: [ :trackedLine | | element |
-				element := trackedLine asKumpelGraphElement.
-				element background: (colors value: (self authorOfTrackedLine: trackedLine)).
-				container addChild: element ].
-			container ]
+			self uniqueTrackedLines
+				do: [ :trackedLine | 
+					| element |
+					element := trackedLine asKumpelGraphElement.
+					identityIndex := colors value: (self authorOfTrackedLine: trackedLine).
+					element
+						addAptitude: (BrStyleCommonAptitude new
+								default: [ :s | 
+									s background: (lightColors at: identityIndex).
+									s border: (lightColors at: identityIndex) ];
+								hovered: [ :s | 
+									s background: (strongColors at: identityIndex) darker.
+									s border: (strongColors at: identityIndex) darker ];
+								pressed: [ :s | s background: (strongColors at: identityIndex) muchDarker ]).
+					element
+						when: BlClickEvent
+						do: [ :e | e target phlow spawnObject: trackedLine ].
+					container addChild: element ].
+			container
+				size: ((self versions size *  (PureGitTrackedLine versionWidth + PureGitTrackedLine versionMargin)) - PureGitTrackedLine versionMargin)
+						@ (PureGitTrackedLine lineHeight * self maxLinesCount).
+			container beInSeparateCompositionLayer asScrollableElement
+				margin: (BlInsets all: 10) ];
+		tooltip: 'Show line history over time'
 ]
