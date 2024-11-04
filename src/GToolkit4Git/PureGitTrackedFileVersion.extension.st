@@ -21,14 +21,17 @@ PureGitTrackedFileVersion >> gtViewKumpelFor: composite [
 					element
 						border: (colors value: (trackedFile authorOfTrackedLine: trackedLine)).
 					container addChild: element ].
-			container size: ((trackedFile versions size) * PureGitTrackedLine versionWidth) @ (PureGitTrackedLine lineHeight * (trackedFile maxLinesCount)).
+			container
+				size: ((trackedFile versions size *  (PureGitTrackedLine versionWidth + PureGitTrackedLine versionMargin)) - PureGitTrackedLine versionMargin)
+						@ (PureGitTrackedLine lineHeight * trackedFile maxLinesCount).
 			container
 				addChild: (BlElement new
 						background: (Color black alpha: 0.3);
 						zIndex: 100;
-						size: PureGitTrackedLine versionWidth @ (PureGitTrackedLine lineHeight * (lines size));
+						size: PureGitTrackedLine versionWidth @ (PureGitTrackedLine lineHeight * lines size);
 						relocate: ((versionNumber - 1)
 								* (PureGitTrackedLine versionWidth + PureGitTrackedLine versionMargin))
 								@ 0).
-			container beInSeparateCompositionLayer asScrollableElement margin: (BlInsets all: 10) ]
+			container beInSeparateCompositionLayer asScrollableElement
+				margin: (BlInsets all: 10) ]
 ]

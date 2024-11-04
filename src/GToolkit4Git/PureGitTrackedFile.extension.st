@@ -92,32 +92,38 @@ PureGitTrackedFile >> gtViewHistoryFor: composite [
 { #category : #'*GToolkit4Git' }
 PureGitTrackedFile >> gtViewKumpelFor: composite [
 	<gtView>
+	| identityIndex |
 	^ composite explicit
 		title: 'Kumpel';
 		priority: 60;
-		stencil: [ | container colors |
+		stencil: [ | container colors strongColors lightColors |
+			lightColors := BrGlamorousColors distinctTenLightColors
+					, {Color veryLightGray}.
+			strongColors := BrGlamorousColors distinctTenStrongColors , {Color gray}.
 			colors := BrExplicitIdentityNormalizer new
-					colors: BrGlamorousColors distinctTenLightColors;
-					defaultColor: Color veryLightGray.
+					candidates: (1 to: 10);
+					defaultCandidate: 11.
 			container := BlElement new.
 			self uniqueTrackedLines
 				do: [ :trackedLine | 
 					| element |
 					element := trackedLine asKumpelGraphElement.
+					identityIndex := colors value: (self authorOfTrackedLine: trackedLine).
 					element
 						addAptitude: (BrStyleCommonAptitude new
 								default: [ :s | 
-									s background: (colors value: (self authorOfTrackedLine: trackedLine)).
-									s border: (colors value: (self authorOfTrackedLine: trackedLine)) ];
+									s background: (lightColors at: identityIndex).
+									s border: (lightColors at: identityIndex) ];
 								hovered: [ :s | 
-									s background: (colors value: (self authorOfTrackedLine: trackedLine)) darker.
-									s
-										border: (colors value: (self authorOfTrackedLine: trackedLine)) darker ];
-								pressed: [ :s | s background: (colors value: (self authorOfTrackedLine: trackedLine)) muchDarker ]).
-					element when: BlClickEvent do: [:e | e target phlow spawnObject: trackedLine ].
+									s background: (strongColors at: identityIndex) darker.
+									s border: (strongColors at: identityIndex) darker ];
+								pressed: [ :s | s background: (strongColors at: identityIndex) muchDarker ]).
+					element
+						when: BlClickEvent
+						do: [ :e | e target phlow spawnObject: trackedLine ].
 					container addChild: element ].
 			container
-				size: (self versions size * PureGitTrackedLine versionWidth)
+				size: ((self versions size *  (PureGitTrackedLine versionWidth + PureGitTrackedLine versionMargin)) - PureGitTrackedLine versionMargin)
 						@ (PureGitTrackedLine lineHeight * self maxLinesCount).
 			container beInSeparateCompositionLayer asScrollableElement
 				margin: (BlInsets all: 10) ];
