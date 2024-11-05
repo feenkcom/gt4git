@@ -31,5 +31,9 @@ CompiledMethod >> gtGitCommitsFor: aView [
 						button phlow
 							spawnTool: (GtGitPhlowTool new
 									repository: (GtGitRepository fromIcebergRepository: repository)) ]
-					ifNone: [ {} ] ]
+					ifNone: [ {} ] ];
+		actionButtonIcon: BrGlamorousVectorIcons changes 
+			tooltip: 'Pure git method versions' 
+			action: [ :button |
+				button phlow spawnObject: (PureGitMethodVersions with: self) ]
 ]
