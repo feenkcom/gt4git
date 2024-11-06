@@ -1,14 +1,28 @@
 Extension { #name : #PureGitFile }
 
 { #category : #'*GToolkit4Git' }
+PureGitFile >> gtActionGitFileFor: composite [
+	<gtAction>
+	^ composite button
+		icon: BrGlamorousVectorIcons branching;
+		tooltip: 'View git file status';
+		priority: 30;
+		action: [ :element | element phlow spawnObject: self status ]
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitFile >> gtActionOperationsFor: composite [
 	<gtAction>
 	^ composite dropdown
 		tooltip: 'File operations';
 		icon: BrGlamorousVectorIcons hamburger;
+		priority: 20;
 		content: [ :aButton | 
 			BrGlamorousSimpleContextMenuContent new
 				items: (Array streamContents: [ :actions |
+					actions nextPut: 'Status' -> [ :e |
+						e phlow spawnObject: self status.
+						e fireEvent: BrDropdownHideWish new ].
 					(self isTracked not or: [ self isModifiedInWorkTree ]) ifTrue: [
 						actions nextPut: 'Stage' -> [ :e |
 							self stage.

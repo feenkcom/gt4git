@@ -21,6 +21,9 @@ PureGitFileStatus >> gtActionOperationsFor: composite [
 			gitFile := self gitFile.
 			BrGlamorousSimpleContextMenuContent new
 				items: (Array streamContents: [ :actions |
+					actions nextPut: 'File' -> [ :e |
+						e phlow spawnObject: self gitFile.
+						e fireEvent: BrDropdownHideWish new ].
 					(gitFile isTracked not or: [ gitFile isModifiedInWorkTree ]) ifTrue: [
 						actions nextPut: 'Stage' -> [ :e |
 							gitFile stage.
@@ -41,7 +44,8 @@ PureGitFileStatus >> gtDetails [
 		{ 'path' . self path . self fileReference }.
 		{ 'original path' . self originalPath ifNil: [ '' ] . self originalPath }.
 		{ 'status in index' . self statusInIndex }.
-		{ 'status in work tree' . self statusInWorkTree }
+		{ 'status in work tree' . self statusInWorkTree }.
+		{ 'git file' . self path . self gitFile }.
 	}
 ]
 
