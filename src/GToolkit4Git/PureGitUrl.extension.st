@@ -18,6 +18,10 @@ PureGitUrl >> gtDetails [
 		details := details , {
 			{ 'host name' . self hostname }
 		} ].
+	self gitHubWebUrl ifNotNil: [ :gitHubWebUrl |
+		details := details , {
+			{ 'github web url' . gitHubWebUrl }
+		} ].
 	^ details
 ]
 
