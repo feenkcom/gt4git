@@ -47,7 +47,7 @@ PureGitCommit >> gtDetails [
 		{ 'comment' 
 			. self comment firstLineWithEllipsis
 			. self comment }.
-		{ 'URL' . self gitHubURL ifNil: [ '' ] }.
+		{ 'github web url' . self gitHubWebUrl ifNil: [ '' ] }.
 	}
 ]
 

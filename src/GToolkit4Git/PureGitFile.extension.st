@@ -1,14 +1,28 @@
 Extension { #name : #PureGitFile }
 
 { #category : #'*GToolkit4Git' }
+PureGitFile >> gtActionGitFileFor: composite [
+	<gtAction>
+	^ composite button
+		icon: BrGlamorousVectorIcons branching;
+		tooltip: 'View git file status';
+		priority: 30;
+		action: [ :element | element phlow spawnObject: self status ]
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitFile >> gtActionOperationsFor: composite [
 	<gtAction>
 	^ composite dropdown
 		tooltip: 'File operations';
 		icon: BrGlamorousVectorIcons hamburger;
+		priority: 20;
 		content: [ :aButton | 
 			BrGlamorousSimpleContextMenuContent new
 				items: (Array streamContents: [ :actions |
+					actions nextPut: 'Status' -> [ :e |
+						e phlow spawnObject: self status.
+						e fireEvent: BrDropdownHideWish new ].
 					(self isTracked not or: [ self isModifiedInWorkTree ]) ifTrue: [
 						actions nextPut: 'Stage' -> [ :e |
 							self stage.
@@ -72,21 +86,6 @@ PureGitFile >> gtBlameFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
-PureGitFile >> gtContentsFor: composite [
-	<gtView>
-	| text |
-	[ text := self contents ] 
-		on: ZnCharacterEncodingError 
-		do: [ ^ composite empty ].
-	^ composite textEditor
-		title: 'Contents';
-		priority: 30;
-		tooltip: 'Current contents in work tree on file system';
-		glamorousCodeFontAndSize;
-		text: [ text ]
-]
-
-{ #category : #'*GToolkit4Git' }
 PureGitFile >> gtDetails [
 	^ super gtDetails , {
 		{ 'path' . self path . self fileReference }.
@@ -107,12 +106,17 @@ PureGitFile >> gtEditorFor: composite [
 	[ text := self contents ] 
 		on: ZnCharacterEncodingError 
 		do: [ ^ composite empty ].
-	^ composite forward
-		title: 'Editor';
-		priority: 35;
-		tooltip: 'Edit current contents in work tree on file system';
-		object: [ self fileReference ];
-		view: #gtContentsFor:
+	^ composite explicit
+		title: 'Contents';
+		priority: 30;
+		tooltip: 'Current contents in work tree on file system';
+		stencil: [ | pane |
+			pane := self fileReference gtEditorView.
+			pane
+				childNamed: #editor
+				ifFound: [ :editor |
+					editor aptitude: BrGlamorousCodeEditorAptitude ].
+			pane ]
 ]
 
 { #category : #'*GToolkit4Git' }

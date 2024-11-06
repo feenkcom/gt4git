@@ -1,6 +1,21 @@
 Extension { #name : #PureGitTrackedFile }
 
 { #category : #'*GToolkit4Git' }
+PureGitTrackedFile >> gtVersionsFor: aView [
+	<gtView>
+	^ aView columnedList
+		title: 'Versions';
+		items: [ self versions ];
+		column: 'Index' text: [ :each | each versionNumber ] width: 50;
+		column: 'Timestamp' text: [ :each | (ZTimestampFormat fromString: '2001-02-03 16:05') format: each commit timestamp ] width: 110;
+		column: 'Commit' text: [ :each | each commit shortId ] width: 100;
+		column: 'Author' text: [ :each | each commit author ] width: 100;
+		column: 'Comment' text: [ :each | each commit comment firstLineWithEllipsis ];
+		column: 'Delta' text: [ :each | each commit numberOfLinesChangedDescription ] width: 50;
+		column: 'Lines count' text: [ :each | each lines size ] width: 50
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitTrackedFile >> gtViewBlameFor: composite [
 	<gtView>
 	^ composite forward
@@ -81,13 +96,13 @@ PureGitTrackedFile >> gtViewKumpelFor: composite [
 	^ composite explicit
 		title: 'Kumpel';
 		priority: 60;
+		tooltip: 'Show line history over time';
 		stencil: [ | container colors strongColors lightColors |
-			lightColors := BrGlamorousColors distinctTenLightColors
-					, {Color veryLightGray}.
-			strongColors := BrGlamorousColors distinctTenStrongColors , {Color gray}.
+			lightColors := BrGlamorousColors distinctTenLightColors , { Color veryLightGray }.
+			strongColors := BrGlamorousColors distinctTenStrongColors , { Color gray }.
 			colors := BrExplicitIdentityNormalizer new
-					candidates: (1 to: 10);
-					defaultCandidate: 11.
+					colors: (1 to: 10);
+					defaultColor: 11.
 			container := BlElement new.
 			self uniqueTrackedLines
 				do: [ :trackedLine | 
@@ -108,9 +123,9 @@ PureGitTrackedFile >> gtViewKumpelFor: composite [
 						do: [ :e | e target phlow spawnObject: trackedLine ].
 					container addChild: element ].
 			container
-				size: ((self versions size *  (PureGitTrackedLine versionWidth + PureGitTrackedLine versionMargin)) - PureGitTrackedLine versionMargin)
+				size: ((self versions size *  (PureGitTrackedLine versionWidth + PureGitTrackedLine versionMargin))
+							- PureGitTrackedLine versionMargin)
 						@ (PureGitTrackedLine lineHeight * self maxLinesCount).
-			container beInSeparateCompositionLayer asScrollableElement
-				margin: (BlInsets all: 10) ];
-		tooltip: 'Show line history over time'
+			container beInSeparateCompositionLayer asCanvassableElement
+				margin: (BlInsets all: 10) ]
 ]

@@ -32,6 +32,6 @@ PureGitTrackedFileVersion >> gtViewKumpelFor: composite [
 						relocate: ((versionNumber - 1)
 								* (PureGitTrackedLine versionWidth + PureGitTrackedLine versionMargin))
 								@ 0).
-			container beInSeparateCompositionLayer asScrollableElement
+			container beInSeparateCompositionLayer asCanvassableElement
 				margin: (BlInsets all: 10) ]
 ]
