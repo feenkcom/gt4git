@@ -21,5 +21,15 @@ PureGitMethodVersions >> gtViewVersionsIn: composite [
 		column: 'timestamp' text: [ :each | timestampFormat format: each key timeStamp timestamp ] weight: 0.4;
 		column: 'author' text: [ :each | each key timeStamp author ];
 		column: 'comment' text: [ :each | each key timeStamp comment ] weight: 2.0;
+		contextItemLabel: 'Inspect diff'
+			action: [ :element :item | 
+				BlTaskAction
+					enqueueElement: element
+					action: [ element phlow spawnObject: item value ] ];
+		contextItemLabel: 'Inspect commit'
+			action: [ :element :item | 
+				BlTaskAction
+					enqueueElement: element
+					action: [ element phlow spawnObject: item key timeStamp ] ];
 		send: #value
 ]
