@@ -54,6 +54,21 @@ PureGitDirectory >> gtFilesFor: composite [
 				ifTrue: [ '' ] 
 				ifFalse: [ each status statusInWorkTree ] ]
 			weight: 0.5;
+		contextItemLabel: 'Inspect file'
+			action: [ :element :each | element phlow spawnObject: each value ];
+		contextItemLabel: 'Inspect status'
+			action: [ :element :each | element phlow spawnObject: each value status ];
+		contextItemLabel: 'Stage'
+			action: [ :element :each | each value stage ]
+			if: [ :each | each value canBeStaged ];
+		contextItemLabel: 'Unstage'
+			action: [ :element :each | each value unstage ]
+			if: [ :each | each value isStaged ];
+		contextItemLabel: 'Restore'
+			action: [ :element :each | each value restore ]
+			if: [ :each | each value canBeRestored ];
+		contextItemLabel: 'Delete'
+			action: [ :element :each | each value delete ];
 		updateWhen: PureGitRepositoryModified in: [ self repository announcer ];
 		actionUpdateButton;
 		actionStencil: [ :aTab | | aptitude |

@@ -6,18 +6,7 @@ PureGitRemote >> gtActionOperationsFor: composite [
 	^ composite dropdown
 		tooltip: 'Repository operations';
 		icon: BrGlamorousVectorIcons hamburger;
-		content: [ :aButton | 
-			BrGlamorousSimpleContextMenuContent new
-				items: (Array streamContents: [ :actions |
-					actions nextPut: 'Pull' -> [ :e |
-						self pull.
-						e fireEvent: BrDropdownHideWish new ].
-					actions nextPut: 'Push' -> [ :e |
-						self push.
-						e fireEvent: BrDropdownHideWish new ].
-					actions nextPut: 'Fetch' -> [ :e |
-						self fetch.
-						e fireEvent: BrDropdownHideWish new ] ]) ]
+		content: [ :aButton | BrGlamorousSimpleContextMenuContent new items: self gtOperations ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -40,4 +29,25 @@ PureGitRemote >> gtDetails [
 		{ 'url' . self url . self gitUrl }.
 		{ 'github web url' . self gitHubWebUrl ifNil: [ '' ] }
 	}
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitRemote >> gtOperations [
+	^ Array
+		streamContents: [ :actions | 
+			actions
+				nextPut: 'Pull'
+						-> [ :e | 
+							self pull.
+							e fireEvent: BrDropdownHideWish new ].
+			actions
+				nextPut: 'Push'
+						-> [ :e | 
+							self push.
+							e fireEvent: BrDropdownHideWish new ].
+			actions
+				nextPut: 'Fetch'
+						-> [ :e | 
+							self fetch.
+							e fireEvent: BrDropdownHideWish new ] ]
 ]
