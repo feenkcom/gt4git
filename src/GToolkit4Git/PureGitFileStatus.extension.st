@@ -17,25 +17,7 @@ PureGitFileStatus >> gtActionOperationsFor: composite [
 		tooltip: 'File operations';
 		icon: BrGlamorousVectorIcons hamburger;
 		priority: 20;
-		content: [ :aButton | | gitFile |
-			gitFile := self gitFile.
-			BrGlamorousSimpleContextMenuContent new
-				items: (Array streamContents: [ :actions |
-					actions nextPut: 'File' -> [ :e |
-						e phlow spawnObject: self gitFile.
-						e fireEvent: BrDropdownHideWish new ].
-					(gitFile isTracked not or: [ gitFile isModifiedInWorkTree ]) ifTrue: [
-						actions nextPut: 'Stage' -> [ :e |
-							gitFile stage.
-							e fireEvent: BrDropdownHideWish new ] ].
-					gitFile isStaged ifTrue: [
-						actions nextPut: 'Unstage' -> [ :e |
-							gitFile unstage.
-							e fireEvent: BrDropdownHideWish new ] ].
-					(gitFile isTracked and: [ gitFile isModifiedInWorkTree ]) ifTrue: [
-						actions nextPut: 'Restore' -> [ :e |
-							gitFile restore.
-							e fireEvent: BrDropdownHideWish new ] ]. ]) ]
+		content: [ :aButton | BrGlamorousSimpleContextMenuContent new items: self gtOperations ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -47,6 +29,42 @@ PureGitFileStatus >> gtDetails [
 		{ 'status in work tree' . self statusInWorkTree }.
 		{ 'git file' . self path . self gitFile }.
 	}
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitFileStatus >> gtOperations [
+	| gitFile |
+	gitFile := self gitFile.
+	^ Array
+		streamContents: [ :actions | 
+			actions
+				nextPut: 'File'
+						-> [ :e | 
+							e phlow spawnObject: gitFile.
+							e fireEvent: BrDropdownHideWish new ].
+			gitFile canBeStaged
+				ifTrue: [ actions
+						nextPut: 'Stage'
+								-> [ :e | 
+									gitFile stage.
+									e fireEvent: BrDropdownHideWish new ] ].
+			gitFile isStaged
+				ifTrue: [ actions
+						nextPut: 'Unstage'
+								-> [ :e | 
+									gitFile unstage.
+									e fireEvent: BrDropdownHideWish new ] ].
+			gitFile canBeRestored
+				ifTrue: [ actions
+						nextPut: 'Restore'
+								-> [ :e | 
+									gitFile restore.
+									e fireEvent: BrDropdownHideWish new ] ].
+			actions
+				nextPut: 'Delete'
+						-> [ :e | 
+							gitFile delete.
+							e fireEvent: BrDropdownHideWish new ] ]
 ]
 
 { #category : #'*GToolkit4Git' }
