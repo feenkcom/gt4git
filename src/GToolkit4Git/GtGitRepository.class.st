@@ -1189,7 +1189,7 @@ GtGitRepository >> gtViewDetailsIn: composite [
 			{ 'has repository' . self hasRepository }.
 			{ 'has package' . self hasPackage }.
 			{ 'has database' . self hasDatabase }.
-			{ 'has basline' . self hasBaseline }.
+			{ 'has baseline' . self hasBaseline }.
 			{ 'has commits' . self hasCommits }.
 			{ 'has changes' . [ self hasChanges ] on: Error do: [ '' ] }.
 			{ 'status' . self status }
