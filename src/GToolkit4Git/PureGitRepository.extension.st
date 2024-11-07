@@ -277,7 +277,11 @@ PureGitRepository >> gtRemotesFor: composite [
 		priority: 37;
 		items: [ self queries remotes ];
 		column: 'name' text: #name;
-		column: 'url' text: #url
+		column: 'url' text: #url;
+		contextItemLabel: 'Inspect' action: [ :element :remote | element phlow spawnObject: remote ];
+		contextItemLabel: 'Push' action: [ :element :remote | remote push ];
+		contextItemLabel: 'Pull' action: [ :element :remote | remote pull ];
+		contextItemLabel: 'Fetch' action: [ :element :remote | remote fetch ]
 ]
 
 { #category : #'*GToolkit4Git' }
