@@ -17,30 +17,7 @@ PureGitFile >> gtActionOperationsFor: composite [
 		tooltip: 'File operations';
 		icon: BrGlamorousVectorIcons hamburger;
 		priority: 20;
-		content: [ :aButton | 
-			BrGlamorousSimpleContextMenuContent new
-				items: (Array streamContents: [ :actions |
-					actions nextPut: 'Status' -> [ :e |
-						e phlow spawnObject: self status.
-						e fireEvent: BrDropdownHideWish new ].
-					(self isTracked not or: [ self isModifiedInWorkTree ]) ifTrue: [
-						actions nextPut: 'Stage' -> [ :e |
-							self stage.
-							e fireEvent: BrDropdownHideWish new ] ].
-					self isStaged ifTrue: [
-						actions nextPut: 'Unstage' -> [ :e |
-							self unstage.
-							e fireEvent: BrDropdownHideWish new ] ].
-					(self isTracked and: [ self isModifiedInWorkTree ]) ifTrue: [
-						actions nextPut: 'Restore' -> [ :e |
-							self restore.
-							e fireEvent: BrDropdownHideWish new ] ].
-					actions nextPut: 'Analyze history over time' -> [ :e | 
-						e phlow spawnObject: self analyze.
-						e fireEvent: BrDropdownHideWish new ].
-					actions nextPut: 'Delete' -> [ :e | 
-						self delete.
-						e fireEvent: BrDropdownHideWish new ] ]) ]
+		content: [ :aButton | BrGlamorousSimpleContextMenuContent new items: self gtOperations ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -133,4 +110,43 @@ PureGitFile >> gtLogFor: composite [
 		column: 'Timestamp' text: [ :commit | timestampFormat format: commit timestamp ] weight: 0.5;
 		column: 'Author' text: [ :commit | commit author ];
 		column: 'Comment' text: [ :commit | commit comment firstLineWithEllipsis ] weight: 2
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitFile >> gtOperations [
+	^ Array
+		streamContents: [ :actions | 
+			actions
+				nextPut: 'Status'
+						-> [ :e | 
+							e phlow spawnObject: self status.
+							e fireEvent: BrDropdownHideWish new ].
+			self canBeStaged
+				ifTrue: [ actions
+						nextPut: 'Stage'
+								-> [ :e | 
+									self stage.
+									e fireEvent: BrDropdownHideWish new ] ].
+			self isStaged
+				ifTrue: [ actions
+						nextPut: 'Unstage'
+								-> [ :e | 
+									self unstage.
+									e fireEvent: BrDropdownHideWish new ] ].
+			self canBeRestored
+				ifTrue: [ actions
+						nextPut: 'Restore'
+								-> [ :e | 
+									self restore.
+									e fireEvent: BrDropdownHideWish new ] ].
+			actions
+				nextPut: 'Analyze history over time'
+						-> [ :e | 
+							e phlow spawnObject: self analyze.
+							e fireEvent: BrDropdownHideWish new ].
+			actions
+				nextPut: 'Delete'
+						-> [ :e | 
+							self delete.
+							e fireEvent: BrDropdownHideWish new ] ]
 ]

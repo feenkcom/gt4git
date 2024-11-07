@@ -277,7 +277,11 @@ PureGitRepository >> gtRemotesFor: composite [
 		priority: 37;
 		items: [ self queries remotes ];
 		column: 'name' text: #name;
-		column: 'url' text: #url
+		column: 'url' text: #url;
+		contextItemLabel: 'Inspect' action: [ :element :remote | element phlow spawnObject: remote ];
+		contextItemLabel: 'Push' action: [ :element :remote | remote push ];
+		contextItemLabel: 'Pull' action: [ :element :remote | remote pull ];
+		contextItemLabel: 'Fetch' action: [ :element :remote | remote fetch ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -348,20 +352,37 @@ PureGitRepository >> gtStatusFor: composite [
 	^ composite explicit
 		title: 'Status';
 		priority: 25;
-		stencil: [
-			self exists
+		stencil: [ self exists
 				ifTrue: [ | fileStatuses |
 					(fileStatuses := self queries status)
-						ifNotEmpty: [
-							composite columnedList
+						ifNotEmpty: [ composite columnedList
 								items: [ fileStatuses ];
-								column: 'Status in index' text: #statusInIndex weight: 0.5;
-								column: 'Status in work tree' text: #statusInWorkTree weight: 0.5;
-								column: 'Path' text: #path weight: 3]
-						ifEmpty: [
-							composite text text: 'nothing to commit, working tree clean' ]]
-				ifFalse: [
-					composite text text: 'git repository does not exist' ] ];
+								column: 'Status in index'
+									text: #statusInIndex
+									weight: 0.5;
+								column: 'Status in work tree'
+									text: #statusInWorkTree
+									weight: 0.5;
+								column: 'Path'
+									text: #path
+									weight: 3;
+								contextItemLabel: 'Inspect status'
+									action: [ :element :item | element phlow spawnObject: item ];
+								contextItemLabel: 'Inspect file'
+									action: [ :element :item | element phlow spawnObject: item value gitFile ];
+								contextItemLabel: 'Stage'
+									action: [ :element :item | item gitFile stage ]
+									if: [ :item | item gitFile canBeStaged ];
+								contextItemLabel: 'Unstage'
+									action: [ :element :item | item gitFile unstage ]
+									if: [ :item | item gitFile isStaged ];
+								contextItemLabel: 'Restore'
+									action: [ :element :item | item gitFile stage ]
+									if: [ :item | item gitFile canBeRestored ];
+								contextItemLabel: 'Delete'
+									action: [ :element :item | item value gitFile delete ] ]
+						ifEmpty: [ composite text text: 'nothing to commit, working tree clean' ] ]
+				ifFalse: [ composite text text: 'git repository does not exist' ] ];
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton
 ]

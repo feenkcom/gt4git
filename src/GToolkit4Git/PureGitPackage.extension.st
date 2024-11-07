@@ -52,7 +52,9 @@ PureGitPackage >> gtViewIncomingChangesFor: composite [
 		title: 'Incoming';
 		priority: 30;
 		object: [ self incomingChanges ];
-		view: #gtViewOperationsTreeIn:
+		view: #gtViewOperationsTreeIn:;
+		actionUpdateButton;
+		updateWhen: PureGitRepositoryModified in: [ self repository announcer ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -73,5 +75,7 @@ PureGitPackage >> gtViewOutgoingChangesFor: composite [
 		title: 'Outgoing';
 		priority: 35;
 		object: [ self outgoingChanges ];
-		view: #gtViewOperationsTreeIn:
+		view: #gtViewOperationsTreeIn:;
+		actionUpdateButton;
+		updateWhen: PureGitRepositoryModified in: [ self repository announcer ]
 ]
