@@ -545,6 +545,7 @@ PureGitExamples >> exampleSvcDemo [
 		ifTrue: [ repository location deleteAll ].
 
 	^ (repository operations async clone: 'git@github.com:svenvc/svc-demo.git')
+
 		then: [ :result | 
 
 			self assert: repository exists.
