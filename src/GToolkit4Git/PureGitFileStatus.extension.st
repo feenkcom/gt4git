@@ -46,24 +46,24 @@ PureGitFileStatus >> gtOperations [
 				ifTrue: [ actions
 						nextPut: 'Stage'
 								-> [ :e | 
-									gitFile stage.
+									e phlow spawnObject: gitFile stage.
 									e fireEvent: BrDropdownHideWish new ] ].
 			gitFile isStaged
 				ifTrue: [ actions
 						nextPut: 'Unstage'
 								-> [ :e | 
-									gitFile unstage.
+									e phlow spawnObject: gitFile unstage.
 									e fireEvent: BrDropdownHideWish new ] ].
 			gitFile canBeRestored
 				ifTrue: [ actions
 						nextPut: 'Restore'
 								-> [ :e | 
-									gitFile restore.
+									e phlow spawnObject: gitFile restore.
 									e fireEvent: BrDropdownHideWish new ] ].
 			actions
 				nextPut: 'Delete'
 						-> [ :e | 
-							gitFile delete.
+							e phlow spawnObject: gitFile delete.
 							e fireEvent: BrDropdownHideWish new ] ]
 ]
 

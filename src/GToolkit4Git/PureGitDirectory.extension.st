@@ -59,16 +59,16 @@ PureGitDirectory >> gtFilesFor: composite [
 		contextItemLabel: 'Inspect status'
 			action: [ :element :each | element phlow spawnObject: each value status ];
 		contextItemLabel: 'Stage'
-			action: [ :element :each | each value stage ]
+			action: [ :element :each | element phlow spawnObject: each value stage ]
 			if: [ :each | each value canBeStaged ];
 		contextItemLabel: 'Unstage'
-			action: [ :element :each | each value unstage ]
+			action: [ :element :each | element phlow spawnObject: each value unstage ]
 			if: [ :each | each value isStaged ];
 		contextItemLabel: 'Restore'
-			action: [ :element :each | each value restore ]
+			action: [ :element :each | element phlow spawnObject: each value restore ]
 			if: [ :each | each value canBeRestored ];
 		contextItemLabel: 'Delete'
-			action: [ :element :each | each value delete ];
+			action: [ :element :each | element phlow spawnObject: each value delete ];
 		updateWhen: PureGitRepositoryModified in: [ self repository announcer ];
 		actionUpdateButton;
 		actionStencil: [ :aTab | | aptitude |

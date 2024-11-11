@@ -38,16 +38,16 @@ PureGitRemote >> gtOperations [
 			actions
 				nextPut: 'Pull'
 						-> [ :e | 
-							self pull.
+							e phlow spawnObject: self pull.
 							e fireEvent: BrDropdownHideWish new ].
 			actions
 				nextPut: 'Push'
 						-> [ :e | 
-							self push.
+							e phlow spawnObject: self push.
 							e fireEvent: BrDropdownHideWish new ].
 			actions
 				nextPut: 'Fetch'
 						-> [ :e | 
-							self fetch.
+							e phlow spawnObject: self fetch.
 							e fireEvent: BrDropdownHideWish new ] ]
 ]
