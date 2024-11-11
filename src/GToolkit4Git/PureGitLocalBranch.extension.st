@@ -28,17 +28,17 @@ PureGitLocalBranch >> gtOperations [
 		self commitsAhead > 0
 			ifTrue: [
 				actions nextPut: 'Push' -> [ :e | 
-					self push.
+					e phlow spawnObject: self push.
 					e fireEvent: BrDropdownHideWish new ]].
 		self isCurrent
 			ifFalse: [ 
 				actions nextPut: 'Checkout' -> [ :e | 
-					self checkout.
+					e phlow spawnObject: self checkout.
 					e fireEvent: BrDropdownHideWish new ] ].
 		self isCurrent
 			ifFalse: [
 				actions nextPut: 'Merge' -> [ :e | 
-					self merge.
+					e phlow spawnObject: self merge.
 					e fireEvent: BrDropdownHideWish new ] ] ]
 ]
 

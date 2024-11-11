@@ -42,9 +42,7 @@ PureGitRepository >> gtBranchesFor: composite [
 					branchCreationPane
 						acceptAction: [ :aModel :aButton | | branchName |
 							branchName := branchCreationPane branchName.
-							self 
-								operations createBranch: branchName"; 
-								configureUpstreamIfNecessary".
+							self operations createBranch: branchName.
 							aButton enqueueTask: (BlTaskAction new 
 								action: [ aTab viewContentElement phlow update.
 									aButton fireEvent: BrDropdownHideWish new]) ];
@@ -235,22 +233,22 @@ PureGitRepository >> gtOperations [
 				ifTrue: [ actions
 						nextPut: 'Pull'
 								-> [ :e | 
-									self operations pull: #().
+									e phlow spawnObject: (self operations async pull: #()).
 									e fireEvent: BrDropdownHideWish new ].
 					actions
 						nextPut: 'Push'
 								-> [ :e | 
-									self operations push: #().
+									e phlow spawnObject: (self operations async push: #()).
 									e fireEvent: BrDropdownHideWish new ].
 					actions
 						nextPut: 'Fetch'
 								-> [ :e | 
-									self operations fetch: #().
+									e phlow spawnObject: (self operations async fetch: #()).
 									e fireEvent: BrDropdownHideWish new ].
 					actions
 						nextPut: 'Merge'
 								-> [ :e | 
-									self operations merge: #().
+									e phlow spawnObject: (self operations async merge: #()).
 									e fireEvent: BrDropdownHideWish new ].
 					actions
 						nextPut: 'Code'
@@ -265,7 +263,7 @@ PureGitRepository >> gtOperations [
 				ifFalse: [ actions
 						nextPut: 'Init'
 								-> [ :e | 
-									self operations init.
+									e phlow spawnObject: (self operations async init).
 									e fireEvent: BrDropdownHideWish new ] ] ]
 ]
 
@@ -371,16 +369,16 @@ PureGitRepository >> gtStatusFor: composite [
 								contextItemLabel: 'Inspect file'
 									action: [ :element :item | element phlow spawnObject: item value gitFile ];
 								contextItemLabel: 'Stage'
-									action: [ :element :item | item gitFile stage ]
+									action: [ :element :item | element phlow spawnObject: item gitFile stage ]
 									if: [ :item | item gitFile canBeStaged ];
 								contextItemLabel: 'Unstage'
-									action: [ :element :item | item gitFile unstage ]
+									action: [ :element :item | element phlow spawnObject: item gitFile unstage ]
 									if: [ :item | item gitFile isStaged ];
 								contextItemLabel: 'Restore'
-									action: [ :element :item | item gitFile stage ]
+									action: [ :element :item | element phlow spawnObject: item gitFile stage ]
 									if: [ :item | item gitFile canBeRestored ];
 								contextItemLabel: 'Delete'
-									action: [ :element :item | item value gitFile delete ] ]
+									action: [ :element :item | element phlow spawnObject: item value gitFile delete ] ]
 						ifEmpty: [ composite text text: 'nothing to commit, working tree clean' ] ]
 				ifFalse: [ composite text text: 'git repository does not exist' ] ];
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];

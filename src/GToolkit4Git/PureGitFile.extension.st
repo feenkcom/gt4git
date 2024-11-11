@@ -125,19 +125,19 @@ PureGitFile >> gtOperations [
 				ifTrue: [ actions
 						nextPut: 'Stage'
 								-> [ :e | 
-									self stage.
+									e phlow spawnObject: self stage.
 									e fireEvent: BrDropdownHideWish new ] ].
 			self isStaged
 				ifTrue: [ actions
 						nextPut: 'Unstage'
 								-> [ :e | 
-									self unstage.
+									e phlow spawnObject: self unstage.
 									e fireEvent: BrDropdownHideWish new ] ].
 			self canBeRestored
 				ifTrue: [ actions
 						nextPut: 'Restore'
 								-> [ :e | 
-									self restore.
+									e phlow spawnObject: self restore.
 									e fireEvent: BrDropdownHideWish new ] ].
 			actions
 				nextPut: 'Analyze history over time'
@@ -147,6 +147,6 @@ PureGitFile >> gtOperations [
 			actions
 				nextPut: 'Delete'
 						-> [ :e | 
-							self delete.
+							e phlow spawnObject: self delete.
 							e fireEvent: BrDropdownHideWish new ] ]
 ]

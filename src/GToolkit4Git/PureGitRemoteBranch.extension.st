@@ -11,7 +11,7 @@ PureGitRemoteBranch >> gtDetails [
 PureGitRemoteBranch >> gtOperations [
 	^ Array streamContents: [ :actions | 
 		actions nextPut: 'Merge' -> [ :e | 
-			self merge.
+			e phlow spawnObject: self merge.
 			e fireEvent: BrDropdownHideWish new ] ]
 ]
 

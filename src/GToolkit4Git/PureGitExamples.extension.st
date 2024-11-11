@@ -544,12 +544,14 @@ PureGitExamples >> exampleSvcDemo [
 	repository location exists
 		ifTrue: [ repository location deleteAll ].
 
-	repository operations clone: 'git@github.com:svenvc/svc-demo.git'.
+	^ (repository operations async clone: 'git@github.com:svenvc/svc-demo.git')
 
-	self assert: repository exists.
-	self assert: repository hasHead.
+		then: [ :result | 
 
-	^ repository
+			self assert: repository exists.
+			self assert: repository hasHead.
+
+			result ]
 ]
 
 { #category : #'*GToolkit4Git' }

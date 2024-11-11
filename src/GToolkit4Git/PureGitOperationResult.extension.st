@@ -13,7 +13,7 @@ PureGitOperationResult >> gtDescriptionFor: composite [
 PureGitOperationResult >> gtDetails [
 	^ super gtDetails , {
 		{ 'operation' . self operation }.
-		{ 'args' . self args }.
+		{ 'arg' . self arg }.
 		{ 'result' . self result }.
 		{ 'duration' . self duration }.
 	}
