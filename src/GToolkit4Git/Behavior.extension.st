@@ -15,8 +15,8 @@ Behavior >> gtGitButtonFor: anAction [
 				ifTrue: [ repository := coder repository.
 					repository
 						ifNil: [ aButton phlow
-								spawnTool: (GtPhlowValuableTool new
-										valuable: [ GtGitAddToRepositoryElement new package: coder navigationModel selectedPackage ]) ]
+								spawnTool: (GtPhlowExplicitTool new
+										stencil: [ GtGitAddToRepositoryElement new package: coder navigationModel selectedPackage ]) ]
 						ifNotNil: [ aButton phlow
 								spawnTool: (GtGitPhlowTool new repository: repository) ] ] ]
 ]
