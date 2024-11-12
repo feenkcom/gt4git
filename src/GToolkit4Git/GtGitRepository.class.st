@@ -1049,6 +1049,13 @@ GtGitRepository >> gtCommitsFor: aView [
 				element phlow fireToolUpdateWish ]
 ]
 
+{ #category : #'*GToolkit4Git' }
+GtGitRepository >> gtDefaultInspectorTool [
+	^ GtPhlowCompositeTool new
+		addTool: super gtDefaultInspectorTool;
+		addTool: (GtGitPhlowTool new repository: self)
+]
+
 { #category : #'gt - extensions' }
 GtGitRepository >> gtExamplesFor: aView [
 	<gtView>
@@ -1075,17 +1082,6 @@ GtGitRepository >> gtLepiterAwarePull [
 
 
 	self announceRepositoryModified
-]
-
-{ #category : #'gt - extensions' }
-GtGitRepository >> gtLiveFor: aView [
-	<gtView>
-	"<gtRepositoryView>"
-	(self isKindOf: GtGitRepository) ifFalse: [ ^ aView empty ].
-	^ aView explicit
-		title: 'Live';
-		priority: 4;
-		stencil: [ GtGitPhlowTool new repository: self ]
 ]
 
 { #category : #'gt - extensions' }

@@ -11,6 +11,12 @@ IceRepository class >> creatorClass [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceRepository class >> gtGitRepositories [
+	^ self repositories
+		collect: [ :each | GtGitRepository fromIcebergRepository: each ]
+]
+
+{ #category : #'*GToolkit4Git' }
 IceRepository >> gtLepiterAwareCheckoutBranch: branchName withWorkingCopy: aLepiterWorkingCopy [
 	"Convenience method to checkout all packages from a branch given a branch name"
 
@@ -176,9 +182,17 @@ IceRepository class >> gtViewRegistryIn: composite [
 		title: 'Registry';
 		tooltip: 'Show registered repositories';
 		priority: 40;
-		items: [ self registry sorted: #name ascending];
+		items: [ self registry sorted: #name ascending ];
 		column: 'Name' text: #name;
-		column: 'Origin' text: [ :each | [ each originUrl ] on: Error do: [ '' ] ]
+		column: 'Origin' text: [ :each | [ each originUrl ] on: Error do: [ '' ] ];
+		contextItemLabel: 'Inspect IceRepository'
+			action: [ :element :each | element phlow spawnObject: each ];
+		contextItemLabel: 'Inspect GtGitRepository'
+			action: [ :element :each | element phlow spawnObject: (GtGitRepository fromIcebergRepository: each) ];
+		contextItemLabel: 'Open Git tool'
+			action: [ :element :each | 
+				element phlow
+					spawnObject: (GtGitPhlowTool new repository: (GtGitRepository fromIcebergRepository: each)) ]
 ]
 
 { #category : #'*GToolkit4Git' }
