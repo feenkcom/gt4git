@@ -80,8 +80,8 @@ PureGitFile >> gtDetails [
 PureGitFile >> gtEditorFor: composite [
 	<gtView>
 	| text |
-	[ text := self contents ] 
-		on: ZnCharacterEncodingError 
+	[ text := self contents ]
+		on: ZnCharacterEncodingError
 		do: [ ^ composite empty ].
 	^ composite explicit
 		title: 'Contents';
@@ -91,8 +91,16 @@ PureGitFile >> gtEditorFor: composite [
 			pane := self fileReference gtEditorView.
 			pane
 				childNamed: #editor
-				ifFound: [ :editor |
-					editor aptitude: BrGlamorousCodeEditorAptitude ].
+				ifFound: [ :editor | editor aptitude: BrGlamorousCodeEditorAptitude ].
+			"sadly we cannot augment the shortcut primary S that easily"
+			pane
+				childNamed: #saveButton
+				ifFound: [ :button | | action |
+					action := button action.
+					button
+						action: [ :element :model :event | 
+							self repository announceRepositoryModified.
+							action cull: element cull: model cull: event ] ].
 			pane ]
 ]
 

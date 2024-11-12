@@ -1078,6 +1078,17 @@ GtGitRepository >> gtLepiterAwarePull [
 ]
 
 { #category : #'gt - extensions' }
+GtGitRepository >> gtLiveFor: aView [
+	<gtView>
+	"<gtRepositoryView>"
+	(self isKindOf: GtGitRepository) ifFalse: [ ^ aView empty ].
+	^ aView explicit
+		title: 'Live';
+		priority: 4;
+		stencil: [ GtGitPhlowTool new repository: self ]
+]
+
+{ #category : #'gt - extensions' }
 GtGitRepository >> gtPackagesFor: aView context: aContext [
 	<gtView>
 	<gtRepositoryView>
@@ -1168,6 +1179,7 @@ GtGitRepository >> gtViewDetailsIn: composite [
 		priority: 2;
 		items: [ {
 			{ 'name' . self name }.
+			{ 'location' . [ self repository location ] on: Error do: [ '' ] }.
 			{ 'origin' . [ self repository originUrl ] on: Error do: [ '' ] }.
 			{ 'branch' . [ self repository branchName ] on: Error do: [ '' ] }.
 			{ 'code directory' 
