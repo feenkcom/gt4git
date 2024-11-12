@@ -1049,6 +1049,13 @@ GtGitRepository >> gtCommitsFor: aView [
 				element phlow fireToolUpdateWish ]
 ]
 
+{ #category : #'*GToolkit4Git' }
+GtGitRepository >> gtDefaultInspectorTool [
+	^ GtPhlowCompositeTool new
+		addTool: super gtDefaultInspectorTool;
+		addTool: (GtGitPhlowTool new repository: self)
+]
+
 { #category : #'gt - extensions' }
 GtGitRepository >> gtExamplesFor: aView [
 	<gtView>
