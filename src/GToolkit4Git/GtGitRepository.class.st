@@ -1078,17 +1078,6 @@ GtGitRepository >> gtLepiterAwarePull [
 ]
 
 { #category : #'gt - extensions' }
-GtGitRepository >> gtLiveFor: aView [
-	<gtView>
-	"<gtRepositoryView>"
-	(self isKindOf: GtGitRepository) ifFalse: [ ^ aView empty ].
-	^ aView explicit
-		title: 'Live';
-		priority: 4;
-		stencil: [ GtGitPhlowTool new repository: self ]
-]
-
-{ #category : #'gt - extensions' }
 GtGitRepository >> gtPackagesFor: aView context: aContext [
 	<gtView>
 	<gtRepositoryView>
