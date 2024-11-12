@@ -55,7 +55,12 @@ PureGitRepository >> gtBranchesFor: composite [
 			BrButton new
 				aptitude: BrGlamorousButtonWithIconAptitude + aptitude;
 				icon: BrGlamorousVectorIcons add;
-				label: 'Create new branch' ]
+				label: 'Create new branch' ];
+		contextItemLabel: 'Inspect' 
+			action: [ :element :branch | element phlow spawnObject: branch ];
+		contextItemLabel: 'Checkout' 
+			action: [ :element :branch | element phlow spawnObject: branch checkout ] 
+			if: [ :branch | branch isLocal and: [ branch isCurrent not ] ]
 ]
 
 { #category : #'*GToolkit4Git' }
