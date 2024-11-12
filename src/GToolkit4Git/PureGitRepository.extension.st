@@ -316,32 +316,36 @@ PureGitRepository >> gtStagedChangesFor: composite [
 		tooltip: 'Changes added to index for next commit';
 		text: [ self stagedChangesAsRopedText ];
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
-		actionStencil: [ :aTab | | aptitude |
+		actionStencil: [ :aTab | 
+			| aptitude |
 			aptitude := BrGlamorousWithDropdownAptitude
-				handle: [
-					BrButton new
-						aptitude: BrGlamorousButtonWithIconAptitude;
-						icon: BrGlamorousVectorIcons play;
-						label: 'Commit staged changes' ]
-				content: [ | commentCreationPane |
-					commentCreationPane := GtGitCommentCreationPane new.
-					commentCreationPane
-						acceptAction: [ :aModel :aButton |
-							self queries stagedChanges isEmpty
-								ifFalse: [ self operations commit: commentCreationPane comment ].
-							aButton enqueueTask: (BlTaskAction new 
-								action: [ aTab viewContentElement phlow update.
-									aButton fireEvent: BrDropdownHideWish new]) ];
-						cancelAction: [ :aModel :aButton |
-							aButton enqueueTask: (BlTaskAction new 
-								action: [ aButton fireEvent: BrDropdownHideWish new ]) ].
-					commentCreationPane asElement ].			
+					handle: [ BrButton new
+							aptitude: BrGlamorousButtonWithIconAptitude;
+							icon: BrGlamorousVectorIcons play;
+							label: 'Commit staged changes' ]
+					content: [ | commentCreationPane |
+						commentCreationPane := GtGitCommentCreationPane new.
+						commentCreationPane
+							acceptAction: [ :aModel :aButton | 
+								BlTaskAction
+									enqueueElement: aButton
+									action: [ | comment |
+										comment := commentCreationPane comment.
+										self queries stagedChanges isEmpty
+											ifFalse: [ aTab phlow
+												spawnObject: (self operations async commit: comment) ].
+										aButton fireEvent: BrDropdownHideWish new ] ];
+							cancelAction: [ :aModel :aButton | 
+								BlTaskAction
+									enqueueElement: aButton
+									action: [ aButton fireEvent: BrDropdownHideWish new ] ].
+						commentCreationPane asElement ].
 			BrButton new
 				aptitude: BrGlamorousButtonWithIconAptitude + aptitude;
 				icon: BrGlamorousVectorIcons play;
 				label: 'Commit staged changes' ];
 		actionButtonIcon: BrGlamorousVectorIcons changes
-			tooltip: 'Unified diff' 
+			tooltip: 'Unified diff'
 			action: [ :aButton | aButton phlow spawnObject: self queries stagedChanges ];
 		actionUpdateButton
 ]
