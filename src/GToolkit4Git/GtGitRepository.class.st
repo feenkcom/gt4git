@@ -1179,6 +1179,7 @@ GtGitRepository >> gtViewDetailsIn: composite [
 		priority: 2;
 		items: [ {
 			{ 'name' . self name }.
+			{ 'location' . [ self repository location ] on: Error do: [ '' ] }.
 			{ 'origin' . [ self repository originUrl ] on: Error do: [ '' ] }.
 			{ 'branch' . [ self repository branchName ] on: Error do: [ '' ] }.
 			{ 'code directory' 

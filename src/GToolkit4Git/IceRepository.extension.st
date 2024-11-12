@@ -124,6 +124,7 @@ IceRepository >> gtViewDetailsIn: composite [
 		priority: 5;
 		items: [ {
 			{ 'name' . self name }.
+			{ 'location' . self location }.
 			{ 'origin' . [ self originUrl ] on: Error do: [ '' ] }.
 			{ 'branch' . [ self branchName ] on: Error do: [ '' ] }.
 			{ 'code directory' 
