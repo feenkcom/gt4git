@@ -11,6 +11,12 @@ IceRepository class >> creatorClass [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceRepository class >> gtGitRepositories [
+	^ self repositories
+		collect: [ :each | GtGitRepository fromIcebergRepository: each ]
+]
+
+{ #category : #'*GToolkit4Git' }
 IceRepository >> gtLepiterAwareCheckoutBranch: branchName withWorkingCopy: aLepiterWorkingCopy [
 	"Convenience method to checkout all packages from a branch given a branch name"
 
