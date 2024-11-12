@@ -42,13 +42,15 @@ PureGitRepository >> gtBranchesFor: composite [
 					branchCreationPane
 						acceptAction: [ :aModel :aButton | | branchName |
 							branchName := branchCreationPane branchName.
-							self operations createBranch: branchName.
-							aButton enqueueTask: (BlTaskAction new 
-								action: [ aTab viewContentElement phlow update.
-									aButton fireEvent: BrDropdownHideWish new]) ];
+							BlTaskAction 
+								enqueueElement: aButton 
+								action: [ 
+									aTab phlow spawnObject: (self operations async createBranch: branchName).
+									aButton fireEvent: BrDropdownHideWish new] ];
 						cancelAction: [ :aModel :aButton |
-							aButton enqueueTask: (BlTaskAction new 
-								action: [ aButton fireEvent: BrDropdownHideWish new ]) ].
+							BlTaskAction 
+								enqueueElement: aButton 
+								action: [ aButton fireEvent: BrDropdownHideWish new ] ].
 					branchCreationPane asElement ].			
 			BrButton new
 				aptitude: BrGlamorousButtonWithIconAptitude + aptitude;
