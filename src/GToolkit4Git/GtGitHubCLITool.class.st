@@ -25,6 +25,7 @@ GtGitHubCLITool >> authToken [
 	This effectively verifies if the token was set correctly."
 
 	<gtExample>
+	<noTest>
 
 	| output |
 	output := self ghProcessBuilder
@@ -103,6 +104,10 @@ GtGitHubCLITool >> repositoryList [
 
 { #category : #accessing }
 GtGitHubCLITool >> token [
+	self
+		assert: GtGitHubTokenHolder hasToken
+		description: 'Please set your GitHub Personal Access Token in GhTokenHolder'.
+
 	^ GtGitHubTokenHolder token
 ]
 
