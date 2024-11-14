@@ -16,7 +16,7 @@ I can be used in several ways:
 Note that in the first two usages the token is saved along with the image.
 "
 Class {
-	#name : #GhTokenHolder,
+	#name : #GtGitHubTokenHolder,
 	#superclass : #Object,
 	#classVars : [
 		'filePath',
@@ -26,70 +26,69 @@ Class {
 }
 
 { #category : #initialization }
-GhTokenHolder class >> clearToken [
+GtGitHubTokenHolder class >> clearToken [
 	token := nil
 ]
 
 { #category : #example }
-GhTokenHolder class >> exampleFromFile [
+GtGitHubTokenHolder class >> exampleReadAndCacheTokenFromFile [
 	<gtExample>
 	<noTest>
-	
+
 	| exampleFilePath |
-	
+
 	exampleFilePath := FileLocator home / '.secrets' / 'gh_token.txt'.
-	
+
 	self clearToken.
 
-	self fromFile: exampleFilePath.
-	
+	self readAndCacheTokenFrom: exampleFilePath.
+
 	self assert: self hasToken.
-	
+
 	^ self token
 ]
 
 { #category : #example }
-GhTokenHolder class >> exampleReadFromFile [
+GtGitHubTokenHolder class >> exampleReadTokenEachTimeFromFile [
 	<gtExample>
 	<noTest>
-	
+
 	| exampleFilePath |
-	
+
 	exampleFilePath := FileLocator home / '.secrets' / 'gh_token.txt'.
-	
+
 	self clearToken.
 
-	self readTokenFrom: exampleFilePath.
-	
+	self readTokenEachTimeFrom: exampleFilePath.
+
 	self assert: self hasToken.
-	
+
 	^ self token
 ]
 
+{ #category : #testing }
+GtGitHubTokenHolder class >> hasToken [
+	^ self token isEmptyOrNil not
+]
+
 { #category : #initialization }
-GhTokenHolder class >> fromFile: aFileReference [
+GtGitHubTokenHolder class >> readAndCacheTokenFrom: aFileReference [
+	"Read and set my token from aFileReference.
+	Note that this also means the token will be saved along with the image"
+
+	self token: aFileReference asFileReference contents lines first
+]
+
+{ #category : #initialization }
+GtGitHubTokenHolder class >> readTokenEachTimeFrom: aFileReference [
 	"Set the file from which I will read the token to aFileReference.
 	Note that the token will not be saved along with the image, but read every time it is needed."
 	
 	filePath := aFileReference asFileReference
 ]
 
-{ #category : #testing }
-GhTokenHolder class >> hasToken [
-	^ self token isEmptyOrNil not
-]
-
-{ #category : #initialization }
-GhTokenHolder class >> readTokenFrom: aFileReference [
-	"Read and set my token from aFileReference.
-	Note that this also means the token will be saved along with the image"
-
-	self token: aFileReference asFileReference contents lines first.
-	^ self token
-]
-
 { #category : #accessing }
-GhTokenHolder class >> token [
+GtGitHubTokenHolder class >> token [
 	"Return the token that I hold, either as set directly or read from a file each time"
 	
 	token ifNotNil: [ ^ token ].
@@ -101,7 +100,7 @@ GhTokenHolder class >> token [
 ]
 
 { #category : #initialization }
-GhTokenHolder class >> token: aString [
+GtGitHubTokenHolder class >> token: aString [
 	"Set the token that I hold to aString.
 	Note that this also means the token will be saved along with the image"
 

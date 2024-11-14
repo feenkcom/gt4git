@@ -14,7 +14,6 @@ Class {
 	#name : #GtGitHubCLITool,
 	#superclass : #Object,
 	#instVars : [
-		'token',
 		'workingDirectory'
 	],
 	#category : #'GToolkit4Git-Tools'
@@ -24,6 +23,9 @@ Class {
 GtGitHubCLITool >> authToken [
 	"Return the authentication token being used.
 	This effectively verifies if the token was set correctly."
+
+	<gtExample>
+	<noTest>
 
 	| output |
 	output := self ghProcessBuilder
@@ -70,11 +72,6 @@ GtGitHubCLITool >> ghProcessBuilder [
 		yourself
 ]
 
-{ #category : #initialization }
-GtGitHubCLITool >> readTokenFrom: aFileReference [
-	self token: aFileReference asFileReference contents lines first
-]
-
 { #category : #operations }
 GtGitHubCLITool >> repository [
 	"Return the repository pointed to by the working directory,
@@ -107,12 +104,11 @@ GtGitHubCLITool >> repositoryList [
 
 { #category : #accessing }
 GtGitHubCLITool >> token [
-	^ token ifNil: [ GhTokenHolder token ]
-]
+	self
+		assert: GtGitHubTokenHolder hasToken
+		description: 'Please set your GitHub Personal Access Token in GhTokenHolder'.
 
-{ #category : #initialization }
-GtGitHubCLITool >> token: aGitHubToken [
-	token := aGitHubToken trimBoth
+	^ GtGitHubTokenHolder token
 ]
 
 { #category : #operations }
@@ -132,8 +128,9 @@ GtGitHubCLITool >> user [
 GtGitHubCLITool >> version [
 	"Return gh command line tool version information.
 	This needs no token, nor working directory to be set."
-	
+
 	<gtExample>
+
 	^ (GtExternalProcessBuilder new
 		command: 'gh';
 		args: #('--version');
