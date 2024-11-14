@@ -3,10 +3,30 @@ Class {
 	#superclass : #BlElement,
 	#instVars : [
 		'session',
-		'currentPromise'
+		'currentPromise',
+		'futureConfiguration'
 	],
 	#category : #'GToolkit4Git-UI'
 }
+
+{ #category : #initialization }
+GtGitStatusElement >> defaultFutureConfiguration [
+	^ AsyncFutureExecutionConfiguration new 
+		customGroup: #Git;
+		lowPriority
+]
+
+{ #category : #accessing }
+GtGitStatusElement >> futureConfiguration [
+	<return: #AsyncFutureExecutionConfiguration>
+	^ futureConfiguration ifNil: [ 
+		futureConfiguration := self defaultFutureConfiguration ]
+]
+
+{ #category : #accessing }
+GtGitStatusElement >> futureConfiguration: aAsyncFutureExecutionConfiguration [
+	futureConfiguration := aAsyncFutureExecutionConfiguration
+]
 
 { #category : #accessing }
 GtGitStatusElement >> initialize [
@@ -28,8 +48,10 @@ GtGitStatusElement >> initializeOn: aRepository [
 			asAsyncFuture.
 
 	(currentPromise isNil or: [ currentPromise isFulfilled ])
-		ifTrue: [ currentPromise := future await ]
-		ifFalse: [ currentPromise then: [ currentPromise := future await ] ]
+		ifTrue: [ currentPromise := future await: self futureConfiguration ]
+		ifFalse: [ currentPromise then: [ currentPromise := future await: self futureConfiguration ] ].
+		
+	self enqueueTask: (BlPromiseTask new promise: currentPromise)
 ]
 
 { #category : #accessing }
