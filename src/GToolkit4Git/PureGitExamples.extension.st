@@ -145,7 +145,7 @@ PureGitExamples >> exampleDetachedHead [
 
 	parent := head parent.
 
-	parent checkout.
+	parent checkout wait.
 
 	self assert: repository hasDetachedHead.
 	self assert: repository head equals: parent.
