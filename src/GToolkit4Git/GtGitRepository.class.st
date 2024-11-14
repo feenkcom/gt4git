@@ -309,7 +309,7 @@ GtGitRepository >> contextMenuOptionsFor: anIceNode [
 GtGitRepository >> createPullRequest [
 	| login switcher repository upstreamOwner branchName description |
 	self 
-		assert: GhTokenHolder hasToken 
+		assert: GtGitHubTokenHolder hasToken 
 		description: 'Please set your GitHub Personal Access Token in GhTokenHolder'.
 
 	login := GtGitHubAPITool new user login.
@@ -521,7 +521,7 @@ GtGitRepository >> forgetLepiterDatabases [
 GtGitRepository >> fork [
 	| login switcher clone repository |
 	self 
-		assert: GhTokenHolder hasToken 
+		assert: GtGitHubTokenHolder hasToken 
 		description: 'Please set your GitHub Personal Access Token in GhTokenHolder'.
 
 	login := GtGitHubAPITool new user login.

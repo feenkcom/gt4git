@@ -55,7 +55,7 @@ GtGitRepositoryHistoryRecord >> fork [
 
 	| login switcher fork repository |
 	self 
-		assert: GhTokenHolder hasToken 
+		assert: GtGitHubTokenHolder hasToken 
 		description: 'Please set your GitHub Personal Access Token in GhTokenHolder'.
 
 	login := GtGitHubAPITool new user login.

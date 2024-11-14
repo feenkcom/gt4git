@@ -5,14 +5,11 @@ I am a wrapper around the GitHub REST API.
 
 See https://docs.github.com/en/rest
 
-I need a personal access token to work.
+I need a personal access token to work which I get from GhTokenHolder
 "
 Class {
 	#name : #GtGitHubAPITool,
 	#superclass : #Object,
-	#instVars : [
-		'token'
-	],
 	#category : #'GToolkit4Git-Tools'
 }
 
@@ -51,11 +48,6 @@ GtGitHubAPITool >> forkRepositoryOwner: owner name: repositoryName [
 		post
 ]
 
-{ #category : #initialization }
-GtGitHubAPITool >> readTokenFrom: aFileReference [
-	self token: aFileReference asFileReference contents lines first
-]
-
 { #category : #operations }
 GtGitHubAPITool >> repositoryList [
 	"Return a list of the user's repositories, limited to 100."
@@ -86,12 +78,7 @@ GtGitHubAPITool >> restClient [
 
 { #category : #accessing }
 GtGitHubAPITool >> token [
-	^ token ifNil: [ GhTokenHolder token ]
-]
-
-{ #category : #initialization }
-GtGitHubAPITool >> token: aGitHubToken [
-	token := aGitHubToken trimBoth
+	^ GtGitHubTokenHolder token
 ]
 
 { #category : #operations }
