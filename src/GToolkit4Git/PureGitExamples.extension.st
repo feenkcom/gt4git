@@ -404,17 +404,20 @@ PureGitExamples >> exampleIcebergGitCli [
 	self assert: gitUrl ownerName equals: 'feenkcom'.
 	self assert: gitUrl repositoryName equals: 'iceberg-git-cli'.
 
-	repository := gitUrl cloneWithOwnerPrefixIn: workingDirectory.
+	^ (gitUrl cloneWithOwnerPrefixIn: workingDirectory)
 
-	self 
-		assert: repository location 
-		equals: workingDirectory / gitUrl ownerName / gitUrl repositoryName.
+		then: [ :result |
+			repository := result repository.
 
-	self assert: repository exists.
-	self assert: repository hasHead.
-	self assert: repository branch upstream remote url equals: gitUrl url.
+			self 
+				assert: repository location 
+				equals: workingDirectory / gitUrl ownerName / gitUrl repositoryName.
 
-	^ repository
+			self assert: repository exists.
+			self assert: repository hasHead.
+			self assert: repository branch upstream remote url equals: gitUrl url.
+
+			repository ]
 ]
 
 { #category : #'*GToolkit4Git' }
