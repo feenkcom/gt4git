@@ -145,16 +145,18 @@ PureGitExamples >> exampleDetachedHead [
 
 	parent := head parent.
 
-	parent checkout wait.
+	^ parent checkout
 
-	self assert: repository hasDetachedHead.
-	self assert: repository head equals: parent.
-	self assert: repository branch isNil.
-	self 
-		assert: (repository location / self exampleFilename) contents
-		equals: self exampleFileContents.
+		then: [ :result |
 
-	^ repository
+			self assert: repository hasDetachedHead.
+			self assert: repository head equals: parent.
+			self assert: repository branch isNil.
+			self 
+				assert: (repository location / self exampleFilename) contents
+			equals: self exampleFileContents.
+
+			repository ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -296,25 +298,29 @@ PureGitExamples >> exampleFixDetachedHead [
 	<gtExample>
 	<noTest>
 
-	| repository initialDefaultBranchName branch |
+	| initialDefaultBranchName branch |
 
-	repository := self exampleDetachedHead.
+	^ self exampleDetachedHead
 
-	initialDefaultBranchName := repository queries initialDefaultBranchName.
+		then: [ :repository |
 
-	branch := repository queries localBranches 
-		detect: [ :each | each name = initialDefaultBranchName ].
+			initialDefaultBranchName := repository queries initialDefaultBranchName.
 
-	branch checkout.
+			branch := repository queries localBranches 
+				detect: [ :each | each name = initialDefaultBranchName ].
 
-	self assert: repository hasDetachedHead not.
-	self assert: repository head equals: branch commit.
-	self assert: repository branch equals: branch.
-	self 
-		assert: (repository location / self exampleFilename) contents 
-		equals: self exampleFileContentsChanged.
+			branch checkout
 
-	^ repository
+				then: [ :result |
+
+					self assert: repository hasDetachedHead not.
+					self assert: repository head equals: branch commit.
+					self assert: repository branch equals: branch.
+					self 
+						assert: (repository location / self exampleFilename) contents 
+						equals: self exampleFileContentsChanged.
+
+					repository ] ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -322,9 +328,13 @@ PureGitExamples >> exampleGToolkit [
 	<gtExample>
 	<noTest>
 
-	| repository |
+	| systemRepository repository |
 
-	repository := PureGitRepository on: (IceRepository repositoryNamed: 'gtoolkit') location.
+	systemRepository := IceRepository repositoryNamed: 'gtoolkit'.
+
+	self assert: systemRepository notNil.
+
+	repository := PureGitRepository on: systemRepository location.
 
 	self assert: repository exists.
 
@@ -336,9 +346,13 @@ PureGitExamples >> exampleGt4Git [
 	<gtExample>
 	<noTest>
 
-	| repository |
+	| systemRepository repository |
 
-	repository := PureGitRepository on: (IceRepository repositoryNamed: 'gt4git') location.
+	systemRepository := IceRepository repositoryNamed: 'gt4git'.
+
+	self assert: systemRepository notNil.
+
+	repository := PureGitRepository on: systemRepository location.
 
 	self assert: repository exists.
 
@@ -350,7 +364,9 @@ PureGitExamples >> exampleGt4GitLogHead [
 	<gtExample>
 	<noTest>
 
-	| repository commit events |
+	| signalClass repository commit events |
+
+	signalClass := IceGitCliPlatform current signalClass.
 
 	IceGitCliPlatform current signalClass: GtGitCliSignal.
 
@@ -363,6 +379,8 @@ PureGitExamples >> exampleGt4GitLogHead [
 	self assert: GtGitCliSignal memoryLogger recordings isNotEmpty.
 
 	events := GtGitCliSignal groupedEvents.
+
+	IceGitCliPlatform current signalClass: signalClass.
 
 	^ events
 ]
@@ -564,22 +582,28 @@ PureGitExamples >> exampleSvcDemoEmptyFileCommit [
 
 	| repository commit tree docTree emptyEntry emptyBlob |
 
-	repository := self exampleSvcDemo.
+	^ self exampleSvcDemo
+		then: [ :result |
+		
+			repository := result repository.
 
-	commit := (repository log 
-			select: [ :each | each timestamp asBeginOfDay = '2024-09-05' asZTimestamp ]) next wait value.
+			(repository log 
+					select: [ :each | each timestamp asBeginOfDay = '2024-09-05' asZTimestamp ]) next
 
-	self assert: commit comment = 'Added an empty file'.
+				then: [ :future |
+					commit := future value.
 
-	tree := commit tree.
-	docTree := (tree entryNamed: 'doc') resolve.
-	emptyEntry := docTree entryNamed: 'empty'.
-	emptyBlob := emptyEntry resolve.
+					self assert: commit comment = 'Added an empty file'.
 
-	self assert: emptyEntry id = (PureGitBlob hashText: String empty).
-	self assert: emptyBlob text = String empty.
+					tree := commit tree.
+					docTree := (tree entryNamed: 'doc') resolve.
+					emptyEntry := docTree entryNamed: 'empty'.
+					emptyBlob := emptyEntry resolve.
 
-	^ commit
+					self assert: emptyEntry id = (PureGitBlob hashText: String empty).
+					self assert: emptyBlob text = String empty.
+
+					commit ] ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -589,17 +613,21 @@ PureGitExamples >> exampleSvcDemoIncrementalHistoryContentsReconstruction [
 
 	| repository gitDirectory gitFiles |
 
-	repository := self exampleSvcDemo.
+	^ self exampleSvcDemo
 
-	gitDirectory := repository resolveDirectoryPath: 'src/SvcDemo'.
+		then: [ :result |
+		
+			repository := result repository.
 
-	gitFiles := gitDirectory children select: [ :each |
-		'*.class.st' match: each path  ].
+			gitDirectory := repository resolveDirectoryPath: 'src/SvcDemo'.
 
-	gitFiles do: [ :each |
-		each validateIncrementalHistoryContentsReconstruction ].
+			gitFiles := gitDirectory children select: [ :each |
+							'*.class.st' match: each path  ].
 
-	^ gitFiles
+			gitFiles do: [ :each |
+				each validateIncrementalHistoryContentsReconstruction ].
+
+			gitFiles ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -609,7 +637,7 @@ PureGitExamples >> exampleSvcDemoTestCommit [
 
 	| repository commit parentCommit tree parentTree entry parentEntry docTree parentDocTree diff |
 
-	repository := self exampleSvcDemo.
+	repository := self exampleSvcDemo wait value repository.
 
 	commit := (repository log
 		select: [ :each | each timestamp asBeginOfDay = '2024-09-06' asZTimestamp ]) next wait value.
