@@ -26,6 +26,11 @@ Class {
 }
 
 { #category : #initialization }
+GtGitHubTokenHolder class >> clearFilePath [
+	filePath := nil
+]
+
+{ #category : #initialization }
 GtGitHubTokenHolder class >> clearToken [
 	token := nil
 ]
