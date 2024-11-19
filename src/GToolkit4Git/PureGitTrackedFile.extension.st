@@ -12,7 +12,7 @@ PureGitTrackedFile >> gtVersionsFor: aView [
 		column: 'Author' text: [ :each | each commit author ] width: 100;
 		column: 'Comment' text: [ :each | each commit comment firstLineWithEllipsis ];
 		column: 'Delta' text: [ :each | each commit numberOfLinesChangedDescription ] width: 50;
-		column: 'Lines count' text: [ :each | each lines size ] width: 50
+		column: 'Size' text: [ :each | each lines size ] width: 50
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -47,27 +47,46 @@ PureGitTrackedFile >> gtViewGraphFor: composite [
 				maxChanged := maxChanged max: numberOfLinesChanged ].
 			self commits ];
 		column: 'Change'
-			stencil: [ :extendedFileCommit | | width normalisedNumberOfLinesChanged |
+			stencil: [ :extendedFileCommit | | element container normalisedNumberOfLinesChanged |
+				(container := BlElement new)
+					layout: BlFrameLayout new;
+					constraintsDo: [ :c |
+						c horizontal matchParent.
+						c vertical fitContent ].
 				normalisedNumberOfLinesChanged := extendedFileCommit numberOfLinesChanged abs / maxChanged.
-				width := normalisedNumberOfLinesChanged * 75.
-				BlElement new
+				(element := BlElement new)
 					background: (colors value: extendedFileCommit author);
-					size: width @ height ]
+					constraintsDo: [ :c |
+						c horizontal matchParent.
+						c vertical exact: height.
+						c frame horizontal weight: normalisedNumberOfLinesChanged ].
+				container addChild: element ]
 			weight: 1;
 		column: 'Ownership' 
-			stencil: [ :extendedFileCommit | | element width normalisedNumberOfLines  |
-				element := BlElement new
+			stencil: [ :extendedFileCommit | | container normalisedNumberOfLines |
+				(container := BlElement new)
 					layout: BlLinearLayout horizontal;
 					constraintsDo: [ :c | 
-						c horizontal fitContent.
+						c horizontal matchParent.
 						c vertical fitContent ].
 				normalisedNumberOfLines := extendedFileCommit numberOfLines / max.
-				width := normalisedNumberOfLines * 1000.
-				extendedFileCommit sortedAuthors doWithIndex: [ :ownership :index |
-					element addChild: (BlElement new
-						background: (colors value: ownership key);
-						size: ((width * ownership value) rounded @ height)) ].
-				element ]
+				extendedFileCommit sortedAuthors doWithIndex: [ :ownership :index | | weight |
+					weight := ownership value * normalisedNumberOfLines.
+					weight > 0 ifTrue: [
+						container addChild: (BlElement new
+							background: (colors value: ownership key);
+							constraintsDo: [ :c |
+								c horizontal matchParent.
+								c vertical exact: height.
+								c linear weight: weight ]) ] ].
+				normalisedNumberOfLines < 1
+					ifTrue: [
+						container addChild:  (BlElement new
+							constraintsDo: [ :c |
+								c horizontal matchParent.
+								c vertical exact: height.
+								c linear weight: 1 - normalisedNumberOfLines ]) ].
+				container ]
 			weight: 10
 ]
 
