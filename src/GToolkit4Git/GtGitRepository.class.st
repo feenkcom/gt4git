@@ -48,6 +48,16 @@ GtGitRepository class >> fromIcebergRepository: anIceRepository [
 		icebergRepository: anIceRepository
 ]
 
+{ #category : #testing }
+GtGitRepository class >> hasRepoNamed: repoName [
+	"GtGitRepository hasRepoNamed: 'gtoolkit'"
+
+	^ IceRepository registry
+		detect: [ :aRepo | aRepo name = repoName ]
+		ifFound: [ true ]
+		ifNone: [ false ]
+]
+
 { #category : #'api - actions adding/removing' }
 GtGitRepository >> addBaseline: aBaselineName [
 
