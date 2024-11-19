@@ -46,9 +46,12 @@ PureGitExtendedFileCommit >> gtViewOwnershipFor: composite [
 	^ composite explicit
 		title: 'Ownership';
 		priority: 40;
-		stencil: [ normalizer := BrIdentityNormalizer new.
-			plotterData := GtPlotterDataGroup new 
-				values: (self authors associations sort: #value descending).
+		stencil: [
+			normalizer := BrExplicitIdentityNormalizer new
+					colors: BrGlamorousColors distinctTenLightColors;
+					defaultColor: Color veryLightGray.
+			plotterData := GtPlotterDataGroup new
+					values: (self authors associations sort: #value descending).
 			plotterData := plotterData labelled: #key.
 			plotterData := plotterData background: [ :each | normalizer value: each key ].
 			GtPlotter new horizontalBarChart
