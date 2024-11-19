@@ -28,9 +28,9 @@ PureGitTrackedFile >> gtViewBlameFor: composite [
 { #category : #'*GToolkit4Git' }
 PureGitTrackedFile >> gtViewGraphFor: composite [
 	<gtView>
-	| min max scale colors height maxChanged |
+	| min max colors height maxChanged |
 	min := SmallInteger maxVal.
-	max := maxChanged := scale := 0.
+	max := maxChanged := 0.
 	colors := BrExplicitIdentityNormalizer new
 		colors: BrGlamorousColors distinctTenLightColors;
 		defaultColor: Color veryLightGray.
@@ -45,29 +45,30 @@ PureGitTrackedFile >> gtViewGraphFor: composite [
 				min := min min: numberOfLines.
 				max := max max: numberOfLines.
 				maxChanged := maxChanged max: numberOfLinesChanged ].
-			scale := max reciprocal * 800.
 			self commits ];
-		column: 'Commit'
-			stencil: [ :item | | width |
-				width := (item numberOfLinesChanged abs / maxChanged * 50) max: 10.
+		column: 'Change'
+			stencil: [ :extendedFileCommit | | width normalisedNumberOfLinesChanged |
+				normalisedNumberOfLinesChanged := extendedFileCommit numberOfLinesChanged abs / maxChanged.
+				width := normalisedNumberOfLinesChanged * 75.
 				BlElement new
-					background: (colors value: item author);
+					background: (colors value: extendedFileCommit author);
 					size: width @ height ]
-			width: 60;
+			weight: 1;
 		column: 'Ownership' 
-			stencil: [ :item | | element width |
+			stencil: [ :extendedFileCommit | | element width normalisedNumberOfLines  |
 				element := BlElement new
 					layout: BlLinearLayout horizontal;
 					constraintsDo: [ :c | 
 						c horizontal fitContent.
 						c vertical fitContent ].
-				width := 200 + (item numberOfLines * scale).
-				item sortedAuthors doWithIndex: [ :ownership :index |
+				normalisedNumberOfLines := extendedFileCommit numberOfLines / max.
+				width := normalisedNumberOfLines * 1000.
+				extendedFileCommit sortedAuthors doWithIndex: [ :ownership :index |
 					element addChild: (BlElement new
 						background: (colors value: ownership key);
 						size: ((width * ownership value) rounded @ height)) ].
 				element ]
-			width: 1000
+			weight: 10
 ]
 
 { #category : #'*GToolkit4Git' }
