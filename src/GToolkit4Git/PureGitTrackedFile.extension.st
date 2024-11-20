@@ -47,15 +47,20 @@ PureGitTrackedFile >> gtViewGraphFor: composite [
 				maxChanged := maxChanged max: numberOfLinesChanged ].
 			self commits ];
 		column: 'Change'
-			stencil: [ :extendedFileCommit | | element container normalisedNumberOfLinesChanged |
+			stencil: [ :extendedFileCommit | | element container normalisedNumberOfLinesChanged tooltip |
 				(container := BlElement new)
 					layout: BlFrameLayout new;
 					constraintsDo: [ :c |
 						c horizontal matchParent.
 						c vertical fitContent ].
 				normalisedNumberOfLinesChanged := extendedFileCommit numberOfLinesChanged abs / maxChanged.
+				tooltip := '{1} {2} {3}' format: { 
+					extendedFileCommit numberOfLinesChangedDescription. 
+					extendedFileCommit author.
+					extendedFileCommit comment }.
 				(element := BlElement new)
 					background: (colors value: extendedFileCommit author);
+					addAptitude: (BrGlamorousWithLabelTooltipAptitude text: tooltip);
 					constraintsDo: [ :c |
 						c horizontal matchParent.
 						c vertical exact: height.
@@ -63,29 +68,23 @@ PureGitTrackedFile >> gtViewGraphFor: composite [
 				container addChild: element ]
 			weight: 1;
 		column: 'Ownership' 
-			stencil: [ :extendedFileCommit | | container normalisedNumberOfLines |
+			stencil: [ :extendedFileCommit | | container |
 				(container := BlElement new)
 					layout: BlLinearLayout horizontal;
 					constraintsDo: [ :c | 
 						c horizontal matchParent.
 						c vertical fitContent ].
-				normalisedNumberOfLines := extendedFileCommit numberOfLines / max.
-				extendedFileCommit sortedAuthors doWithIndex: [ :ownership :index | | weight |
-					weight := ownership value * normalisedNumberOfLines.
+				extendedFileCommit sortedAuthors doWithIndex: [ :ownership :index | | weight tooltip |
+					weight := ownership value.
+					tooltip := '{1} {2}%' format: { ownership key . ownership value * 100 printShowingDecimalPlaces: 2 }.
 					weight > 0 ifTrue: [
 						container addChild: (BlElement new
 							background: (colors value: ownership key);
+							addAptitude: (BrGlamorousWithLabelTooltipAptitude text: tooltip);
 							constraintsDo: [ :c |
 								c horizontal matchParent.
 								c vertical exact: height.
 								c linear weight: weight ]) ] ].
-				normalisedNumberOfLines < 1
-					ifTrue: [
-						container addChild:  (BlElement new
-							constraintsDo: [ :c |
-								c horizontal matchParent.
-								c vertical exact: height.
-								c linear weight: 1 - normalisedNumberOfLines ]) ].
 				container ]
 			weight: 10
 ]
