@@ -21,15 +21,32 @@ PureGitFile >> gtActionOperationsFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitFile >> gtAuthorsFor: composite [
+	<gtView>
+	^ composite columnedList
+		title: 'Authors';
+		priority: 50;
+		tooltip: 'Authors who committed to ' , self path;
+		items: [ self authors values sort: #numberOfCommits descending ];
+		column: 'Name'
+			stencil: [ :each | 
+				BrLabel new
+					constraintsDo: [ :c | 
+						c horizontal matchParent.
+						c vertical fitContent ];
+					aptitude: (BrGlamorousLabelAptitude new foreground: each color gtContrastingColor);
+					text: each name;
+					background: each color ];
+		column: 'Number of commits'
+			text: #numberOfCommits
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitFile >> gtBlameFor: composite [
 	<gtView>
-	| colors |
-	colors := BrExplicitIdentityNormalizer new
-			colors: BrGlamorousColors distinctTenLightColors;
-			defaultColor: Color veryLightGray.
 	^ composite columnedList
 		title: 'Blame';
-		priority: 50;
+		priority: 60;
 		tooltip: 'Show last commit for each line of ' , self path;
 		items: [ self blame ];
 		column: '#'
@@ -44,9 +61,8 @@ PureGitFile >> gtBlameFor: composite [
 		column: 'Author'
 			stencil: [ :blameLine | 
 				| color |
-				color := colors value: blameLine author.
+				color := (self authors at: blameLine author) color.
 				BrLabel new
-					layout: BlLinearLayout horizontal;
 					constraintsDo: [ :c | 
 						c horizontal matchParent.
 						c vertical fitContent ];
@@ -116,7 +132,17 @@ PureGitFile >> gtLogFor: composite [
 		items: [ self log ];
 		column: 'Commit' text: [ :commit | commit shortCommitId ] weight: 0.5;
 		column: 'Timestamp' text: [ :commit | timestampFormat format: commit timestamp ] weight: 0.5;
-		column: 'Author' text: [ :commit | commit author ];
+		column: 'Author'
+			stencil: [ :commit | 
+				| color |
+				color := (self authors at: commit author) color.
+				BrLabel new
+					constraintsDo: [ :c | 
+						c horizontal matchParent.
+						c vertical fitContent ];
+					aptitude: (BrGlamorousLabelAptitude new foreground: color gtContrastingColor);
+					text: commit author;
+					background: color ];
 		column: 'Comment' text: [ :commit | commit comment firstLineWithEllipsis ] weight: 2
 ]
 

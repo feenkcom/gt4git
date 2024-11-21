@@ -5,14 +5,55 @@ PureGitTrackedFile >> gtVersionsFor: aView [
 	<gtView>
 	^ aView columnedList
 		title: 'Versions';
+		priority: 75;
 		items: [ self versions ];
 		column: 'Index' text: [ :each | each versionNumber ] width: 50;
 		column: 'Timestamp' text: [ :each | (ZTimestampFormat fromString: '2001-02-03 16:05') format: each commit timestamp ] width: 110;
 		column: 'Commit' text: [ :each | each commit shortId ] width: 100;
-		column: 'Author' text: [ :each | each commit author ] width: 100;
+		column: 'Author'
+			stencil: [ :each | 
+				| color |
+				color := (self authors at: each commit author) color.
+				BrLabel new
+					constraintsDo: [ :c | 
+						c horizontal matchParent.
+						c vertical fitContent ];
+					aptitude: (BrGlamorousLabelAptitude new foreground: color gtContrastingColor);
+					text: each commit author;
+					background: color ]
+			width: 100;
 		column: 'Comment' text: [ :each | each commit comment firstLineWithEllipsis ];
 		column: 'Delta' text: [ :each | each commit numberOfLinesChangedDescription ] width: 50;
 		column: 'Size' text: [ :each | each lines size ] width: 50
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitTrackedFile >> gtViewAuthorsFor: composite [
+	<gtView>
+	^ composite columnedList
+		title: 'Authors';
+		priority: 50;
+		tooltip: 'Authors who committed to ' , self path;
+		items: [ self authors values sort: #numberOfCommits descending ];
+		column: 'Name'
+			stencil: [ :each | 
+				BrLabel new
+					constraintsDo: [ :c | 
+						c horizontal matchParent.
+						c vertical fitContent ];
+					aptitude: (BrGlamorousLabelAptitude new foreground: each color gtContrastingColor);
+					text: each name;
+					background: each color ];
+		column: 'Number of commits'
+			text: #numberOfCommits;
+		column: 'Lines changed'
+			text: [ :each | (self commitsByAuthor: each name) sum: #numberOfLinesChanged ];
+		column: 'Lines added'
+			text: [ :each | (self commitsByAuthor: each name) sum: #numberOfLinesAdded ];
+		column: 'Lines removed'
+			text: [ :each | (self commitsByAuthor: each name) sum: #numberOfLinesRemoved ];
+		column: 'Lines modified'
+			text: [ :each | (self commitsByAuthor: each name) sum: #numberOfLinesModified ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -28,12 +69,9 @@ PureGitTrackedFile >> gtViewBlameFor: composite [
 { #category : #'*GToolkit4Git' }
 PureGitTrackedFile >> gtViewGraphFor: composite [
 	<gtView>
-	| min max colors height maxChanged |
+	| min max height maxChanged |
 	min := SmallInteger maxVal.
 	max := maxChanged := 0.
-	colors := BrExplicitIdentityNormalizer new
-		colors: BrGlamorousColors distinctTenLightColors;
-		defaultColor: Color veryLightGray.
 	height := 4.
 	^ composite columnedList
 		title: 'Graph';
@@ -59,7 +97,7 @@ PureGitTrackedFile >> gtViewGraphFor: composite [
 					extendedFileCommit author.
 					extendedFileCommit comment }.
 				(element := BlElement new)
-					background: (colors value: extendedFileCommit author);
+					background: (self authors at: extendedFileCommit author) color;
 					addAptitude: (BrGlamorousWithLabelTooltipAptitude text: tooltip);
 					constraintsDo: [ :c |
 						c horizontal matchParent.
@@ -79,7 +117,7 @@ PureGitTrackedFile >> gtViewGraphFor: composite [
 					tooltip := '{1} {2}%' format: { ownership key . ownership value * 100 printShowingDecimalPlaces: 2 }.
 					weight > 0 ifTrue: [
 						container addChild: (BlElement new
-							background: (colors value: ownership key);
+							background: (self authors at: ownership key) color;
 							addAptitude: (BrGlamorousWithLabelTooltipAptitude text: tooltip);
 							constraintsDo: [ :c |
 								c horizontal matchParent.
@@ -101,7 +139,18 @@ PureGitTrackedFile >> gtViewHistoryFor: composite [
 		column: '#' text: [ :_ :index | index ] weight: 0.125;
 		column: 'Timestamp' text: [ :commit | timestampFormat format: commit timestamp ] weight: 0.333;
 		column: 'Commit' text: [ :commit | commit shortId ] weight: 0.25;
-		column: 'Author' text: [ :commit | commit author ] weight: 0.333;
+		column: 'Author'
+			stencil: [ :commit | 
+				| color |
+				color := (self authors at: commit author) color.
+				BrLabel new
+					constraintsDo: [ :c | 
+						c horizontal matchParent.
+						c vertical fitContent ];
+					aptitude: (BrGlamorousLabelAptitude new foreground: color gtContrastingColor);
+					text: commit author;
+					background: color ]
+			weight: 0.333;
 		column: 'Comment' text: [ :commit | commit comment firstLineWithEllipsis ];
 		column: 'Delta' text: [ :commit | commit numberOfLinesChangedDescription ] weight: 0.125;
 		column: 'Size' text: [ :commit | commit numberOfLines ] weight: 0.125;
@@ -114,7 +163,7 @@ PureGitTrackedFile >> gtViewKumpelFor: composite [
 	| identityIndex |
 	^ composite explicit
 		title: 'Kumpel';
-		priority: 60;
+		priority: 70;
 		tooltip: 'Show line history over time';
 		stencil: [ | container colors strongColors lightColors |
 			lightColors := BrGlamorousColors distinctTenLightColors , { Color veryLightGray }.
