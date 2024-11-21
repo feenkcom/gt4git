@@ -11,9 +11,8 @@ PureGitTrackedFile >> gtVersionsFor: aView [
 		column: 'Timestamp' text: [ :each | (ZTimestampFormat fromString: '2001-02-03 16:05') format: each commit timestamp ] width: 110;
 		column: 'Commit' text: [ :each | each commit shortId ] width: 100;
 		column: 'Author'
-			stencil: [ :each | 
-				| color |
-				color := (self authors at: each commit author) color.
+			stencil: [ :each | | color |
+				color := self colorForAuthor: each commit author.
 				BrLabel new
 					constraintsDo: [ :c | 
 						c horizontal matchParent.
@@ -97,7 +96,7 @@ PureGitTrackedFile >> gtViewGraphFor: composite [
 					extendedFileCommit author.
 					extendedFileCommit comment }.
 				(element := BlElement new)
-					background: (self authors at: extendedFileCommit author) color;
+					background: (self colorForAuthor: extendedFileCommit author);
 					addAptitude: (BrGlamorousWithLabelTooltipAptitude text: tooltip);
 					constraintsDo: [ :c |
 						c horizontal matchParent.
@@ -117,7 +116,7 @@ PureGitTrackedFile >> gtViewGraphFor: composite [
 					tooltip := '{1} {2}%' format: { ownership key . ownership value * 100 printShowingDecimalPlaces: 2 }.
 					weight > 0 ifTrue: [
 						container addChild: (BlElement new
-							background: (self authors at: ownership key) color;
+							background: (self colorForAuthor: ownership key);
 							addAptitude: (BrGlamorousWithLabelTooltipAptitude text: tooltip);
 							constraintsDo: [ :c |
 								c horizontal matchParent.
@@ -140,9 +139,8 @@ PureGitTrackedFile >> gtViewHistoryFor: composite [
 		column: 'Timestamp' text: [ :commit | timestampFormat format: commit timestamp ] weight: 0.333;
 		column: 'Commit' text: [ :commit | commit shortId ] weight: 0.25;
 		column: 'Author'
-			stencil: [ :commit | 
-				| color |
-				color := (self authors at: commit author) color.
+			stencil: [ :commit | | color |
+				color := (self colorForAuthor: commit author).
 				BrLabel new
 					constraintsDo: [ :c | 
 						c horizontal matchParent.
@@ -160,35 +158,31 @@ PureGitTrackedFile >> gtViewHistoryFor: composite [
 { #category : #'*GToolkit4Git' }
 PureGitTrackedFile >> gtViewKumpelFor: composite [
 	<gtView>
-	| identityIndex |
 	^ composite explicit
 		title: 'Kumpel';
 		priority: 70;
 		tooltip: 'Show line history over time';
-		stencil: [ | container colors strongColors lightColors |
-			lightColors := BrGlamorousColors distinctTenLightColors , { Color veryLightGray }.
-			strongColors := BrGlamorousColors distinctTenStrongColors , { Color gray }.
-			colors := BrExplicitIdentityNormalizer new
-					colors: (1 to: 10);
-					defaultColor: 11.
+		stencil: [ | container |
 			container := BlElement new.
 			self uniqueTrackedLines
 				do: [ :trackedLine | 
-					| element |
+					| authorName author element |
 					element := trackedLine asKumpelGraphElement.
-					identityIndex := colors value: (self authorOfTrackedLine: trackedLine).
+					authorName := self authorOfTrackedLine: trackedLine.
+					author := self authors at: authorName ifAbsent: [ nil ].
 					element
 						addAptitude: (BrStyleCommonAptitude new
 								default: [ :s | 
-									s background: (lightColors at: identityIndex).
-									s border: (lightColors at: identityIndex) ];
+									s background: (self colorForAuthor:  authorName).
+									s border: (self colorForAuthor:  authorName) ];
 								hovered: [ :s | 
-									s background: (strongColors at: identityIndex) darker.
-									s border: (strongColors at: identityIndex) darker ];
-								pressed: [ :s | s background: (strongColors at: identityIndex) muchDarker ]).
+									s background: (self contrastColorForAuthor: authorName) darker.
+									s border: (self contrastColorForAuthor: authorName) darker ];
+								pressed: [ :s | s background: (self contrastColorForAuthor: authorName) muchDarker ]).
 					element
 						when: BlClickEvent
-						do: [ :e | e target phlow spawnObject: trackedLine ].
+						do: [ :e | e target phlow 
+								spawnObject: (e modifiers isShift ifTrue: [ author ] ifFalse: [ trackedLine ]) ].
 					container addChild: element ].
 			container
 				size: ((self versions size *  (PureGitTrackedLine versionWidth + PureGitTrackedLine versionMargin))

@@ -61,7 +61,7 @@ PureGitFile >> gtBlameFor: composite [
 		column: 'Author'
 			stencil: [ :blameLine | 
 				| color |
-				color := (self authors at: blameLine author) color.
+				color := self colorForAuthor: blameLine author.
 				BrLabel new
 					constraintsDo: [ :c | 
 						c horizontal matchParent.
@@ -135,7 +135,7 @@ PureGitFile >> gtLogFor: composite [
 		column: 'Author'
 			stencil: [ :commit | 
 				| color |
-				color := (self authors at: commit author) color.
+				color := self colorForAuthor: commit author.
 				BrLabel new
 					constraintsDo: [ :c | 
 						c horizontal matchParent.
