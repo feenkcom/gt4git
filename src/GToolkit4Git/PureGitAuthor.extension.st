@@ -11,6 +11,9 @@ PureGitAuthor >> gtDetailsFor: composite [
 			{ 'color'
 				. 9632 asCharacter asRopedText foreground: self color
 				. self color }.
+			{ 'contrasting color'
+				. 9632 asCharacter asRopedText foreground: self contrastColor
+				. self contrastColor }.
 			{ 'number of commits' . self numberOfCommits}.
 		} ];
 		column: 'key' text: #first;
