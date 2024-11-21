@@ -116,7 +116,7 @@ PureGitTrackedFile >> gtViewGraphFor: composite [
 					tooltip := '{1} {2}%' format: { ownership key . ownership value * 100 printShowingDecimalPlaces: 2 }.
 					weight > 0 ifTrue: [
 						container addChild: (BlElement new
-							background: (self colorForAuthor: extendedFileCommit author);
+							background: (self colorForAuthor: ownership key);
 							addAptitude: (BrGlamorousWithLabelTooltipAptitude text: tooltip);
 							constraintsDo: [ :c |
 								c horizontal matchParent.
