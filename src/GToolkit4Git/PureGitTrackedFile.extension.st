@@ -180,6 +180,11 @@ PureGitTrackedFile >> gtViewKumpelFor: composite [
 									s border: (self contrastColorForAuthor: authorName) darker ];
 								pressed: [ :s | s background: (self contrastColorForAuthor: authorName) muchDarker ]).
 					element
+						addAptitude: (BrGlamorousWithContextMenuAptitude
+								content: [ BrLabel new
+									aptitude: BrGlamorousLabelAptitude;
+									text: authorName ]).
+					element
 						when: BlClickEvent
 						do: [ :e | e target phlow 
 								spawnObject: (e modifiers isShift ifTrue: [ author ] ifFalse: [ trackedLine ]) ].

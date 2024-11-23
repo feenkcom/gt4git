@@ -23,7 +23,7 @@ PureGitTrackedLine >> asKumpelGraphElement [
 					collect: [ :point | point translateBy: 0 @ self class lineHeight ]).
 	^ BlElement new
 		size: (maxExtent translateBy: 0 @ 5);
-		geometry: (BlPolygon vertices: vertices);
+		geometry: (BlPolygonGeometry vertices: vertices);
 		background: Color blue
 ]
 
