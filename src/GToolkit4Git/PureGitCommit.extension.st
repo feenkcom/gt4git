@@ -31,7 +31,8 @@ PureGitCommit >> gtCommentFor: composite [
 
 { #category : #'*GToolkit4Git' }
 PureGitCommit >> gtDetails [
-	^ super gtDetails , {
+	| details |
+	details := super gtDetails , {
 		{ 'commit'
 			. self shortCommitId 
 			. self id  }.
@@ -43,12 +44,23 @@ PureGitCommit >> gtDetails [
 			. self shortParentIds asCommaString
 			. self parents }.
 		{ 'author' . self author }.
+		{ 'email' . self email }.
 		{ 'timestamp' . self timestamp }.
+	}.
+	self hasDifferentAuthorAndCommitter 
+		ifTrue: [
+			details := details , {
+				{ 'committer' . self committer }.
+				{ 'committer email' . self committerEmail }.
+				{ 'committer timestamp' . self committerTimestamp }.
+		} ].
+	details := details , {
 		{ 'comment' 
 			. self comment firstLineWithEllipsis
 			. self comment }.
 		{ 'github web url' . self gitHubWebUrl ifNil: [ '' ] }.
-	}
+	}.
+	^ details
 ]
 
 { #category : #'*GToolkit4Git' }
