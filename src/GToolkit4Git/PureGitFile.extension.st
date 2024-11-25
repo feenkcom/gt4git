@@ -87,6 +87,7 @@ PureGitFile >> gtDetails [
 		{ 'exists' . self exists }.
 		{ 'status' . self status statusSummary . self status }.
 		{ 'tracked' . self isTracked }.
+		{ 'clean' . self isClean }.
 		{ 'staged' . self isStaged }.
 		{ 'modified in worktree' . self isModifiedInWorkTree }.
 	}
