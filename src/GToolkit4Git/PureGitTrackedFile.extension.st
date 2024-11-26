@@ -1,6 +1,28 @@
 Extension { #name : #PureGitTrackedFile }
 
 { #category : #'*GToolkit4Git' }
+PureGitTrackedFile >> gtDetailsFor: composite [
+	<gtView>
+	^ composite columnedList
+		title: 'Details';
+		priority: 20;
+		items: [ {
+			{ 'git file'
+				. self file path
+				. self file }.
+			{ 'commits'
+				. self commits size
+				. self commits }.
+			{ 'versions'
+				. self versions size
+				. self versions }.
+		} ];
+		column: 'key' text: #first;
+		column: 'value' text: #second weight: 3;
+		send: #last
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitTrackedFile >> gtVersionsFor: aView [
 	<gtView>
 	^ aView columnedList
