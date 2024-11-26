@@ -55,7 +55,7 @@ PureGitExtendedFileCommit >> gtViewOwnershipFor: composite [
 			plotterData := plotterData labelled: #key.
 			plotterData := plotterData background: [ :each | normalizer value: each key ].
 			GtPlotter new horizontalBarChart
-				barWidthScale: (GtPlotterLinearScale new domainFrom: 0 to: (plotterData values max: #value));
+				barWidthScale: (GtPlotterLinearScale new domainFrom: 0 to: 1);
 				amountOfTicks: 1;
 				barWidthData: #value;
 				barHeightScale: (GtPlotterConstantScale new constant: 20);
