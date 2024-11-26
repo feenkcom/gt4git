@@ -185,3 +185,12 @@ PureGitFile >> gtOperations [
 							e phlow spawnObject: self delete.
 							e fireEvent: BrDropdownHideWish new ] ]
 ]
+
+{ #category : #'*GToolkit4Git' }
+PureGitFile >> gtViewElementFor: aView [
+	<gtView>
+	^ aView forward
+		title: 'Element';
+		object: [ self analyze ];
+		view: #gtViewElementFor:
+]

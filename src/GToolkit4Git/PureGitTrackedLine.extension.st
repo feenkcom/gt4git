@@ -42,5 +42,5 @@ PureGitTrackedLine >> gtViewGraphFor: composite [
 	^ composite explicit
 		title: 'Graph';
 		priority: 20;
-		stencil: [ self asKumpelGraphElement asScrollableElement]
+		stencil: [ self asKumpelGraphElement asCanvassableElement ]
 ]
