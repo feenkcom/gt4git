@@ -9,66 +9,17 @@ PureGitTrackedFile >> asCombinedGraphElement [
 			c horizontal fitContent.
 			c vertical matchParent ].
 	maxChanged := (self commits collect: #numberOfLinesChanged) max.
-	self commits do: [ :extendedFileCommit | 
-		| commitContainer changeElement labelElement ownershipElement normalisedNumberOfLinesChanged tooltip |
+	self commits do: [ :extendedFileCommit | | commitContainer |
 		(commitContainer := BlElement new)
 			layout: BlLinearLayout vertical;
 			constraintsDo: [ :c |
 				c horizontal fitContent.
 				c vertical matchParent ].
 
-		normalisedNumberOfLinesChanged := extendedFileCommit numberOfLinesChanged abs / maxChanged.
-		tooltip := '{1} {2} {3}' format: { 
-			extendedFileCommit numberOfLinesChangedDescription. 
-			extendedFileCommit author.
-			extendedFileCommit comment }.
-		(changeElement := BlElement new)
-			layout: BlFrameLayout new;
-			constraintsDo: [ :c |
-				c horizontal fitContent.
-				c vertical exact: 100 ].
-		changeElement addChild: (BlElement new
-			background: (self colorForAuthor: extendedFileCommit author);
-			addAptitude: (BrGlamorousWithLabelTooltipAptitude text: tooltip);
-			constraintsDo: [ :c |
-				c horizontal exact: self versionThickness.
-				c vertical matchParent.
-				c frame vertical weight: normalisedNumberOfLinesChanged.
-				c frame vertical alignBottom ]).
-		commitContainer addChild: changeElement.
+		commitContainer addChild: (self verticalChangeBarElementFor: extendedFileCommit normalized: maxChanged).
+		commitContainer addChild: (self verticalCommitLabelElementFor: extendedFileCommit).
+		commitContainer addChild: (self verticalOwnershipBarElementFor: extendedFileCommit).
 
-		tooltip := ZTimestampFormat verbose format: extendedFileCommit timestamp.
-		(labelElement := BrFrame new)
-			fitContent;
-			constraintsDo: [ :c | 
-				c linear vertical alignBottom.
-				c vertical exact: 50 ];
-			addChild: (BrLabel new
-				addAptitude: BrGlamorousLabelAptitude;
-				addAptitude: (BrGlamorousWithLabelTooltipAptitude text: tooltip );
-				beTinySize;
-				text: extendedFileCommit shortId;
-				constraintsDo: [ :c | c accountTransformation ];
-				transformDo: [ :t | t rotateBy: -90 ]).
-		commitContainer addChild: labelElement.
-
-		(ownershipElement := BlElement new)
-			layout: BlLinearLayout vertical;
-			constraintsDo: [ :c | 
-				c horizontal fitContent.
-				c vertical exact: 200 ].
-		extendedFileCommit sortedAuthors reversed doWithIndex: [ :ownership :index | | weight |
-			weight := ownership value.
-			tooltip := '{1} {2}%' format: { ownership key . ownership value * 100 printShowingDecimalPlaces: 2 }.
-			weight > 0 ifTrue: [
-				ownershipElement addChild: (BlElement new
-					background: (self colorForAuthor: ownership key);
-					addAptitude: (BrGlamorousWithLabelTooltipAptitude text: tooltip);
-					constraintsDo: [ :c |
-						c horizontal exact: self versionThickness.
-						c vertical matchParent.
-						c linear weight: weight ]) ] ].
-		commitContainer addChild: ownershipElement.
 		commitContainer when: BlClickEvent do: [ :e | e target phlow spawnObject: extendedFileCommit ].
 		mainContainer addChild: commitContainer ].
 	^ mainContainer
@@ -328,4 +279,73 @@ PureGitTrackedFile >> horizontalOwnershipBarElementFor: extendedFileCommit [
 { #category : #'*GToolkit4Git' }
 PureGitTrackedFile >> versionThickness [
 	^ 14
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitTrackedFile >> verticalChangeBarElementFor: extendedFileCommit normalized: maxChanged [
+	| element container normalisedNumberOfLinesChanged tooltip |
+	(container := BlElement new)
+		layout: BlFrameLayout new;
+		constraintsDo: [ :c |
+				c horizontal fitContent.
+				c vertical exact: 100 ].
+	normalisedNumberOfLinesChanged := extendedFileCommit numberOfLinesChanged abs / maxChanged.
+	tooltip := '{1} {2} {3}' format: { 
+		extendedFileCommit numberOfLinesChangedDescription. 
+		extendedFileCommit author.
+		extendedFileCommit comment }.
+	(element := BlElement new)
+		background: (self colorForAuthor: extendedFileCommit author);
+		addAptitude: (BrGlamorousWithLabelTooltipAptitude text: tooltip);
+		constraintsDo: [ :c |
+			c horizontal exact: self versionThickness.
+			c vertical matchParent.
+			c frame vertical weight: normalisedNumberOfLinesChanged.
+			c frame vertical alignBottom ].
+	container addChild: element .
+	^ container 
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitTrackedFile >> verticalCommitLabelElementFor: extendedFileCommit [
+	| tooltip element |
+	tooltip := ZTimestampFormat verbose format: extendedFileCommit timestamp.
+	(element := BrFrame new)
+		fitContent;
+		constraintsDo: [ :c | 
+			c linear vertical alignBottom.
+			c vertical exact: 50 ];
+		addChild: (BrLabel new
+			addAptitude: BrGlamorousLabelAptitude;
+			addAptitude: (BrGlamorousWithLabelTooltipAptitude text: tooltip );
+			beTinySize;
+			text: extendedFileCommit shortId;
+			constraintsDo: [ :c | c accountTransformation ];
+			transformDo: [ :t | t rotateBy: -90 ]).
+	^ element
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitTrackedFile >> verticalOwnershipBarElementFor: extendedFileCommit [
+	| container |
+	(container := BlElement new)
+		layout: BlLinearLayout vertical;
+		constraintsDo: [ :c | 
+			c horizontal fitContent.
+			c vertical exact: 200 ].
+	extendedFileCommit sortedAuthors reversed doWithIndex: [ :ownership :index |
+		| weight tooltip|
+		weight := ownership value.
+		tooltip := '{1} {2}%' format: { 
+			ownership key.
+			ownership value * 100 printShowingDecimalPlaces: 2 }.
+		weight > 0 ifTrue: [
+			container addChild: (BlElement new
+				background: (self colorForAuthor: ownership key);
+				addAptitude: (BrGlamorousWithLabelTooltipAptitude text: tooltip);
+				constraintsDo: [ :c |
+					c horizontal exact: self versionThickness.
+					c vertical matchParent.
+					c linear weight: weight ]) ] ].
+	^ container
 ]
