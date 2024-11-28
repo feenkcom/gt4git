@@ -61,6 +61,28 @@ PureGitTrackedFile >> asKumpelGraphElement [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitTrackedFile >> asSuperGraphElement [
+	| container element |
+	(container := BlElement new)
+		layout: BlLinearLayout vertical;
+		constraintsDo: [ :c |
+				c horizontal fitContent.
+				c vertical matchParent ].
+
+	element := self asCombinedGraphElement.
+	element childrenDo: [ :each | each children last removeFromParent ].
+	container addChild: element.
+
+	container addChild: self asKumpelGraphElement asCanvassableElement.
+
+	element := self asCombinedGraphElement.
+	element childrenDo: [ :each | 2 timesRepeat: [ each children first removeFromParent ] ].
+	container addChild: element.
+
+	^ container
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitTrackedFile >> gtDetailsFor: composite [
 	<gtView>
 	^ composite columnedList
@@ -228,6 +250,17 @@ PureGitTrackedFile >> gtViewKumpelFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitTrackedFile >> gtViewSuperElementFor: composite [
+	<gtView>
+	^ composite explicit
+		title: 'Super';
+		priority: 46;
+		stencil: [ 
+			self asSuperGraphElement asScrollableElement
+				margin: (BlInsets all: 10) ]
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitTrackedFile >> horizontalChangeBarElementFor: extendedFileCommit normalized: maxChanged [
 	| element container normalisedNumberOfLinesChanged tooltip |
 	(container := BlElement new)
@@ -316,7 +349,7 @@ PureGitTrackedFile >> verticalCommitLabelElementFor: extendedFileCommit [
 			c linear vertical alignBottom.
 			c vertical exact: 50 ];
 		addChild: (BrLabel new
-			addAptitude: BrGlamorousLabelAptitude;
+			addAptitude: BrGlamorousLabelAptitude new glamorousMonospace;
 			addAptitude: (BrGlamorousWithLabelTooltipAptitude text: tooltip );
 			beTinySize;
 			text: extendedFileCommit shortId;
