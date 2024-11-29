@@ -37,11 +37,11 @@ PureGitPackage >> gtActionSetLoadedCommitFor: composite [
 PureGitPackage >> gtDetails [
 	^ super gtDetails , {
 		{ 'name' . self name }.
-		{ 'loaded' . self isLoaded }.
+		{ 'loaded' . self isLoaded gtColoredText . self isLoaded }.
 		{ 'loaded commit'
 			. self loadedCommitId ifNil: [ '' ].
 			. self loadedCommit }.
-		{ 'up to date' . self isUpToDate }.
+		{ 'up to date' . self isUpToDate gtColoredText . self isUpToDate }.
 	}
 ]
 

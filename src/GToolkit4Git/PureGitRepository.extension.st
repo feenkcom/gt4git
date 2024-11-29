@@ -68,7 +68,7 @@ PureGitRepository >> gtDetails [
 	| details head branch |
 	details := {
 		{ 'location' . self location ifNil: [ 'not set' ] . self location }.
-		{ 'exists' . self exists }
+		{ 'exists' . self exists gtColoredText . self exists }
 	}.
 	self hasHead
 		ifTrue: [
