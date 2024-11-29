@@ -44,15 +44,16 @@ IceGitCliPlatform >> gtDetailsFor: aView [
 			{ 'git executable name' . self gitExecutableName }.
 			{ 'git path resolved' . [ self resolveGitPath ] on: Error do: [ '' ] }. 
 			{ 'git exec path' . [ self gitExecPath ] on: Error do: [ '' ] }. 
-			{ 'valid git' . [ self validateGit ] on: Error do: [ false ] }.
-			{ 'valid git setup' . [ self validateGitSetup ] on: Error do: [ false ] }.
-			{ 'installed' . self isInstalled }.
-			{ 'signal class' . self signalClass }.
-			{ 'logging enabled' . self isLoggingEnabled }.
-			{ 'sign commits' . self signCommits } } ];
+			{ 'valid git' . self isValidGit gtColoredText . self isValidGit }.
+			{ 'valid git setup' . self isValidGitSetup gtColoredText . self isValidGitSetup }.
+			{ 'installed' . self isInstalled gtColoredText . self isInstalled }.
+			{ 'signal class' . self signalClass ifNil: [ '' ] . self signalClass }.
+			{ 'logging enabled' . self isLoggingEnabled gtColoredText . self isLoggingEnabled }.
+			{ 'sign commits' . self signCommits gtColoredText . self signCommits} } ];
 		column: 'Key' text: #first weight: 0.5;
 		column: 'Value' text: #second;
 		send: #last;
+		updateWhen: Announcement in: self announcer;
 		actionUpdateButton
 ]
 
