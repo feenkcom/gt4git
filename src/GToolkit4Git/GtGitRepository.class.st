@@ -1198,18 +1198,24 @@ GtGitRepository >> gtViewDetailsIn: composite [
 			{ 'iceberg repository' . self repository }.
 			{ 'iceberg working copy' . self icebergWorkingCopy }.
 			{ 'lepiter working copy' . self lepiterWorkingCopy }.
-			{ 'missing' . self isMissing }.
-			{ 'setup done' . self isSetupDone }.
-			{ 'uninitialized' . self isUninitialized }.
-			{ 'modified' . [ self isModified ] on: Error do: [ '' ] }.
-			{ 'dirty' . [ self repository isDirty ] on: Error do: [ '' ] }.
-			{ 'committable' . self isCommittable }.
-			{ 'has repository' . self hasRepository }.
-			{ 'has package' . self hasPackage }.
-			{ 'has database' . self hasDatabase }.
-			{ 'has baseline' . self hasBaseline }.
-			{ 'has commits' . self hasCommits }.
-			{ 'has changes' . [ self hasChanges ] on: Error do: [ '' ] }.
+			{ 'missing' . self isMissing gtColoredText . self isMissing }.
+			{ 'setup done' . self isSetupDone gtColoredText . self isSetupDone }.
+			{ 'uninitialized' . self isUninitialized gtColoredText . self isUninitialized }.
+			{ 'modified'
+				. [ self isModified gtColoredText ] on: Error do: [ '' ]
+				. [ self isModified ] on: Error do: [ '' ] }.
+			{ 'dirty'
+				. [ self repository isDirty gtColoredText ] on: Error do: [ '' ]
+				. [ self repository isDirty ] on: Error do: [ '' ] }.
+			{ 'committable' . self isCommittable gtColoredText . self isCommittable }.
+			{ 'has repository' . self hasRepository gtColoredText  . self hasRepository }.
+			{ 'has package' . self hasPackage gtColoredText . self hasPackage }.
+			{ 'has database' . self hasDatabase gtColoredText . self hasDatabase }.
+			{ 'has baseline' . self hasBaseline gtColoredText . self hasBaseline }.
+			{ 'has commits' . self hasCommits gtColoredText . self hasCommits }.
+			{ 'has changes' 
+				. [ self hasChanges gtColoredText ] on: Error do: [ '' ]
+				. [ self hasChanges ] on: Error do: [ '' ] }.
 			{ 'status' . self status }
 		} ];
 		column: 'Key' text: #first;

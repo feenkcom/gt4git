@@ -6,7 +6,7 @@ PureGitDirectory >> gtDetails [
 		{ 'path' . self path . self fileReference }.
 		{ 'basename' . self basename }.
 		{ 'parent' . self parent path . self parent }.
-		{ 'root' . self isRoot }.
+		{ 'root' . self isRoot gtColoredText . self isRoot }.
 	}
 ]
 

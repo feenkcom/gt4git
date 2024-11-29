@@ -144,9 +144,13 @@ IceRepository >> gtViewDetailsIn: composite [
 				. self isGitCliRepository 
 					ifTrue: [ 'Libgit-CLI' ] 
 					ifFalse: [ 'Libgit2 FFI' ] }.
-			{ 'missing' . self isMissing }.
-			{ 'modified' . [ self isModified ] on: Error do: [ '' ] }.
-			{ 'dirty' . [ self isDirty ] on: Error do: [ '' ] }.
+			{ 'missing' . self isMissing gtColoredText . self isMissing }.
+			{ 'modified' 
+				. ([ self isModified ] on: Error do: [ '' ]) gtColoredText
+				. [ self isModified ] on: Error do: [ '' ] }.
+			{ 'dirty' 
+				. ([ self isDirty ] on: Error do: [ '' ]) gtColoredText
+				. [ self isDirty ] on: Error do: [ '' ] }.
 		} ];
 		column: 'Key' text: #first;
 		column: 'Value' text: #second weight: 3;

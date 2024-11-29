@@ -27,10 +27,10 @@ PureGitFileStatus >> gtDetails [
 		{ 'original path' . self originalPath ifNil: [ '' ] . self originalPath }.
 		{ 'status in index' . self statusInIndex }.
 		{ 'status in work tree' . self statusInWorkTree }.
-		{ 'tracked' . self isTracked }.
-		{ 'clean' . self isClean }.
-		{ 'staged' . self isStaged }.
-		{ 'modified in worktree' . self isModifiedInWorkTree }.
+		{ 'tracked' . self isTracked gtColoredText . self isTracked }.
+		{ 'clean' . self isClean gtColoredText . self isClean }.
+		{ 'staged' . self isStaged gtColoredText . self isStaged }.
+		{ 'modified in worktree' . self isModifiedInWorkTree gtColoredText . self isModifiedInWorkTree }.
 		{ 'git file' . self path . self gitFile }.
 	}
 ]

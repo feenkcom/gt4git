@@ -84,12 +84,12 @@ PureGitFile >> gtDetails [
 		{ 'path' . self path . self fileReference }.
 		{ 'basename' . self basename }.
 		{ 'parent' . self parent path . self parent }.
-		{ 'exists' . self exists }.
+		{ 'exists' . self exists gtColoredText . self exists }.
 		{ 'status' . self status statusSummary . self status }.
-		{ 'tracked' . self isTracked }.
-		{ 'clean' . self isClean }.
-		{ 'staged' . self isStaged }.
-		{ 'modified in worktree' . self isModifiedInWorkTree }.
+		{ 'tracked' . self isTracked gtColoredText . self isTracked }.
+		{ 'clean' . self isClean gtColoredText . self isClean }.
+		{ 'staged' . self isStaged gtColoredText . self isStaged }.
+		{ 'modified in worktree' . self isModifiedInWorkTree gtColoredText . self isModifiedInWorkTree }.
 	}
 ]
 

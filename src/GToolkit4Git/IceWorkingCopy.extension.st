@@ -77,9 +77,9 @@ IceWorkingCopy >> gtViewDetailsIn: composite [
 			{ 'reference commit' . self referenceCommit }.
 			{ 'project' . self project }.
 			{ 'properties' . self properties }.
-			{ 'modified' . self isModified }.
-			{ 'detached' . self isDetached }.
-			{ 'in merge' . self isInMerge }.
+			{ 'modified' . self isModified gtColoredText . self isModified }.
+			{ 'detached' . self isDetached gtColoredText . self isDetached }.
+			{ 'in merge' . self isInMerge gtColoredText . self isInMerge }.
 		} ];
 		column: 'Key' text: #first;
 		column: 'Value' text: #second weight: 3;

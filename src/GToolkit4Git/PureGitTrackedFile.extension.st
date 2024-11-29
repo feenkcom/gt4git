@@ -74,6 +74,8 @@ PureGitTrackedFile >> asSuperGraphElement [
 	container addChild: element.
 
 	container addChild: self asKumpelGraphElement asCanvassableElement.
+	
+	container addChild: (self horizontalAuthorsElement margin: (BlInsets top: 5 bottom: 5)).
 
 	element := self asCombinedGraphElement.
 	element childrenDo: [ :each | 2 timesRepeat: [ each children first removeFromParent ] ].
@@ -250,6 +252,16 @@ PureGitTrackedFile >> gtViewKumpelFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitTrackedFile >> gtViewLegendLegendFor: composite [
+	<gtView>
+	^ composite explicit
+		title: 'Legend';
+		priority: 51;
+		stencil: [ self horizontalAuthorsElement
+			margin: (BlInsets all: 10) ]
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitTrackedFile >> gtViewSuperElementFor: composite [
 	<gtView>
 	^ composite explicit
@@ -258,6 +270,31 @@ PureGitTrackedFile >> gtViewSuperElementFor: composite [
 		stencil: [ 
 			self asSuperGraphElement asScrollableElement
 				margin: (BlInsets all: 10) ]
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitTrackedFile >> horizontalAuthorsElement [
+	| container authors |
+	container := BlElement new
+	layout: BlLinearLayout horizontal;
+	constraintsDo: [ :c |
+		c horizontal matchParent.
+		c vertical fitContent ].
+	authors := self authors values sort: #numberOfCommits descending.
+	(authors first: (8 min: authors size)) do: [ :each | | label |
+		label := BrLabel new
+			aptitude: (BrGlamorousLabelAptitude new foreground: each color gtContrastingColor);
+			text: ('{1} ({2})' format: { each name . each numberOfCommits });
+			background: each color;
+			margin: (BlInsets left: 10);
+			constraintsDo: [ :c |
+				c horizontal fitContent.
+				c vertical fitContent ].
+		label
+			when: BlClickEvent 
+			do: [ :event | event target phlow spawnObject: each ].
+		container addChild: label ].
+	^ container
 ]
 
 { #category : #'*GToolkit4Git' }
