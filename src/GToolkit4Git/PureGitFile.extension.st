@@ -122,6 +122,15 @@ PureGitFile >> gtEditorFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitFile >> gtKumpelFor: aView [
+	<gtView>
+	^ aView forward
+		title: 'Kumpel';
+		object: [ self analyze ];
+		view: #gtKumpelFor:
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitFile >> gtLogFor: composite [
 	<gtView>
 	| timestampFormat |

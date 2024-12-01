@@ -128,6 +128,29 @@ PureGitTrackedFile >> gtDetailsFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitTrackedFile >> gtKumpelFor: composite [
+	<gtView>
+	^ composite explicit
+		title: 'Kumpel';
+		priority: 46;
+		stencil: [ 
+			self asSuperGraphElement asScrollableElement
+				margin: (BlInsets all: 10) ]
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitTrackedFile >> gtLineOwnershipEvolutionFor: composite [
+	<gtView>
+	^ composite explicit
+		title: 'Line ownership';
+		priority: 70;
+		tooltip: 'Show line history over time';
+		stencil: [ 
+			self asKumpelGraphElement beInSeparateCompositionLayer asCanvassableElement
+				margin: (BlInsets all: 10) ]
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitTrackedFile >> gtVersionsFor: aView [
 	<gtView>
 	^ aView columnedList
@@ -193,17 +216,6 @@ PureGitTrackedFile >> gtViewBlameFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
-PureGitTrackedFile >> gtViewElementFor: composite [
-	<gtView>
-	^ composite explicit
-		title: 'Element';
-		priority: 45;
-		stencil: [ 
-			self asCombinedGraphElement asScrollableElement 
-				margin: (BlInsets all: 10) ]
-]
-
-{ #category : #'*GToolkit4Git' }
 PureGitTrackedFile >> gtViewGraphFor: composite [
 	<gtView>
 	| min max height maxChanged |
@@ -261,18 +273,6 @@ PureGitTrackedFile >> gtViewHistoryFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
-PureGitTrackedFile >> gtViewKumpelFor: composite [
-	<gtView>
-	^ composite explicit
-		title: 'Kumpel';
-		priority: 70;
-		tooltip: 'Show line history over time';
-		stencil: [ 
-			self asKumpelGraphElement beInSeparateCompositionLayer asCanvassableElement
-				margin: (BlInsets all: 10) ]
-]
-
-{ #category : #'*GToolkit4Git' }
 PureGitTrackedFile >> gtViewLegendLegendFor: composite [
 	<gtView>
 	^ composite explicit
@@ -280,17 +280,6 @@ PureGitTrackedFile >> gtViewLegendLegendFor: composite [
 		priority: 51;
 		stencil: [ self horizontalAuthorsElement
 			margin: (BlInsets all: 10) ]
-]
-
-{ #category : #'*GToolkit4Git' }
-PureGitTrackedFile >> gtViewSuperElementFor: composite [
-	<gtView>
-	^ composite explicit
-		title: 'Super';
-		priority: 46;
-		stencil: [ 
-			self asSuperGraphElement asScrollableElement
-				margin: (BlInsets all: 10) ]
 ]
 
 { #category : #'*GToolkit4Git' }
