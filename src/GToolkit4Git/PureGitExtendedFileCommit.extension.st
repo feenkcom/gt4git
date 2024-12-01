@@ -1,6 +1,16 @@
 Extension { #name : #PureGitExtendedFileCommit }
 
 { #category : #'*GToolkit4Git' }
+PureGitExtendedFileCommit >> gtCommitContentsFor: aView [
+	<gtView>
+	^ aView forward
+		title: 'Contents';
+		priority: 25;
+		object: [ commit ];
+		view: #gtContentsFor:
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitExtendedFileCommit >> gtDetailsFor: composite [
 	<gtView>
 	^ composite columnedList

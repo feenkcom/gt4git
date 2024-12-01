@@ -15,7 +15,6 @@ PureGitTrackedFile >> asCombinedGraphElement [
 			constraintsDo: [ :c |
 				c horizontal fitContent.
 				c vertical matchParent ].
-
 		commitContainer addChild: (self verticalChangeBarElementFor: extendedFileCommit normalized: maxChanged).
 		commitContainer addChild: (self verticalCommitLabelElementFor: extendedFileCommit).
 		commitContainer addChild: (self verticalOwnershipBarElementFor: extendedFileCommit).
@@ -67,13 +66,13 @@ PureGitTrackedFile >> asSuperGraphElement [
 		layout: BlLinearLayout vertical;
 		constraintsDo: [ :c |
 				c horizontal fitContent.
-				c vertical matchParent ].
+				c vertical fitContent ].
 
 	element := self asCombinedGraphElement.
 	element childrenDo: [ :each | each children last removeFromParent ].
 	container addChild: element.
 
-	container addChild: self asKumpelGraphElement asCanvassableElement.
+	container addChild: self asKumpelGraphElement.
 	
 	container addChild: (self horizontalAuthorsElement margin: (BlInsets top: 5 bottom: 5)).
 
@@ -268,7 +267,7 @@ PureGitTrackedFile >> gtViewSuperElementFor: composite [
 		title: 'Super';
 		priority: 46;
 		stencil: [ 
-			self asSuperGraphElement asScrollableElement
+			self asSuperGraphElement asCanvassableElement
 				margin: (BlInsets all: 10) ]
 ]
 
@@ -348,7 +347,7 @@ PureGitTrackedFile >> horizontalOwnershipBarElementFor: extendedFileCommit [
 
 { #category : #'*GToolkit4Git' }
 PureGitTrackedFile >> versionThickness [
-	^ 14
+	^ PureGitTrackedLine versionWidth + PureGitTrackedLine versionMargin
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -358,7 +357,7 @@ PureGitTrackedFile >> verticalChangeBarElementFor: extendedFileCommit normalized
 		layout: BlFrameLayout new;
 		constraintsDo: [ :c |
 				c horizontal fitContent.
-				c vertical exact: 100 ].
+				c vertical exact: 50 ].
 	normalisedNumberOfLinesChanged := extendedFileCommit numberOfLinesChanged abs / maxChanged.
 	tooltip := '{1} {2} {3}' format: { 
 		extendedFileCommit numberOfLinesChangedDescription. 
@@ -383,7 +382,8 @@ PureGitTrackedFile >> verticalCommitLabelElementFor: extendedFileCommit [
 	(element := BrFrame new)
 		fitContent;
 		constraintsDo: [ :c | 
-			c linear vertical alignBottom.
+			c linear vertical alignCenter.
+			c linear horizontal alignCenter.
 			c vertical exact: 50 ];
 		addChild: (BrLabel new
 			addAptitude: BrGlamorousLabelAptitude new glamorousMonospace;
@@ -402,7 +402,7 @@ PureGitTrackedFile >> verticalOwnershipBarElementFor: extendedFileCommit [
 		layout: BlLinearLayout vertical;
 		constraintsDo: [ :c | 
 			c horizontal fitContent.
-			c vertical exact: 200 ].
+			c vertical exact: 50 ].
 	extendedFileCommit sortedAuthors reversed doWithIndex: [ :ownership :index |
 		| weight tooltip|
 		weight := ownership value.
