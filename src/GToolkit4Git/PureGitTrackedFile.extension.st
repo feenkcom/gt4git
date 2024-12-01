@@ -83,11 +83,9 @@ PureGitTrackedFile >> asSuperGraphElement [
 				do: [ :e | e target phlow spawnObject: extendedFileCommit ].
 			topContainer addChild: commitContainer ].
 	container addChild: topContainer.
-
 	container addChild: self asKumpelGraphElement.
 	container
 		addChild: (self horizontalAuthorsElement margin: (BlInsets top: 5 bottom: 5)).
-
 	bottomContainer := BrHorizontalPane new fitContent.
 	self commits
 		do: [ :extendedFileCommit | 
@@ -100,8 +98,6 @@ PureGitTrackedFile >> asSuperGraphElement [
 				do: [ :e | e target phlow spawnObject: extendedFileCommit ].
 			bottomContainer addChild: commitContainer ].
 	container addChild: bottomContainer.
-
-
 	^ container
 ]
 
@@ -134,7 +130,7 @@ PureGitTrackedFile >> gtKumpelFor: composite [
 		title: 'Kumpel';
 		priority: 46;
 		stencil: [ 
-			self asSuperGraphElement asScrollableElement
+			self asSuperGraphElement asCanvassableElement
 				margin: (BlInsets all: 10) ]
 ]
 
