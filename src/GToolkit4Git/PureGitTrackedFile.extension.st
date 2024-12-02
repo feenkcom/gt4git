@@ -142,7 +142,7 @@ PureGitTrackedFile >> gtLineOwnershipEvolutionFor: composite [
 		priority: 70;
 		tooltip: 'Show line history over time';
 		stencil: [ 
-			self asKumpelGraphElement beInSeparateCompositionLayer asCanvassableElement
+			self asKumpelGraphElement asCanvassableElement
 				margin: (BlInsets all: 10) ]
 ]
 
