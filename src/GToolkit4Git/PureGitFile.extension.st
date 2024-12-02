@@ -122,6 +122,15 @@ PureGitFile >> gtEditorFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitFile >> gtKumpelFor: aView [
+	<gtView>
+	^ aView forward
+		title: 'Kumpel';
+		object: [ self analyze ];
+		view: #gtKumpelFor:
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitFile >> gtLogFor: composite [
 	<gtView>
 	| timestampFormat |
@@ -184,13 +193,4 @@ PureGitFile >> gtOperations [
 						-> [ :e | 
 							e phlow spawnObject: self delete.
 							e fireEvent: BrDropdownHideWish new ] ]
-]
-
-{ #category : #'*GToolkit4Git' }
-PureGitFile >> gtViewElementFor: aView [
-	<gtView>
-	^ aView forward
-		title: 'Element';
-		object: [ self analyze ];
-		view: #gtViewElementFor:
 ]

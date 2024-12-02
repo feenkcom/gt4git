@@ -1,7 +1,7 @@
 Extension { #name : #PureGitTrackedFileVersion }
 
 { #category : #'*GToolkit4Git' }
-PureGitTrackedFileVersion >> gtViewKumpelFor: composite [
+PureGitTrackedFileVersion >> gtLineOwnershipEvolutionFor: composite [
 	<gtView>
 	^ composite explicit
 		title: 'Kumpel';
