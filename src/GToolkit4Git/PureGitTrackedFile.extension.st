@@ -50,8 +50,12 @@ PureGitTrackedFile >> asKumpelGraphElement [
 							text: authorName ]).
 		element
 			when: BlClickEvent
-			do: [ :e | e target phlow 
-					spawnObject: (e modifiers isShift ifTrue: [ author ] ifFalse: [ trackedLine ]) ].
+			do: [ :e |
+				e consumed: true.
+				e target phlow spawnObject: 
+					(e modifiers isShift 
+						ifTrue: [ self selectedVersionFrom: e trackedLine: trackedLine ] 
+						ifFalse: [ trackedLine ]) ].
 		container addChild: element ].
 	container
 		size: ((self versions size *  (PureGitTrackedLine versionWidth + PureGitTrackedLine versionMargin))
@@ -351,6 +355,22 @@ PureGitTrackedFile >> horizontalOwnershipBarElementFor: extendedFileCommit [
 					c vertical exact: self versionThickness.
 					c linear weight: weight ]) ] ].
 	^ container
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitTrackedFile >> selectedVersionFrom: event trackedLine: trackedLine [
+	| position vertex index version |
+	position := event localPosition.
+	"which piece (x range) defined by the pairs was clicked ?"
+	vertex := nil.
+	index := 0.
+	event currentTarget geometry vertices pairsDo: [ :from :to |
+		index := index + 1.
+		(position x between: from x and: to x)
+			ifTrue: [ vertex := index ] ].	
+	vertex := trackedLine startVersion + vertex - 1.
+	version := self versions at: vertex.
+	^ trackedLine -> version
 ]
 
 { #category : #'*GToolkit4Git' }

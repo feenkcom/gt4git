@@ -28,6 +28,24 @@ PureGitTrackedLine >> asKumpelGraphElement [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitTrackedLine >> gtContentsFor: composite context: context [
+	<gtView>
+	| gitFile |
+	context navigation
+		previousObjectSuchThat: [ :object | 
+			(object isKindOf: PureGitFile) 
+				or: [ object isKindOf: PureGitTrackedFile ] ]
+		do: [ :object | gitFile := object file ]
+		ifAbsent: [ ^ composite empty ].
+	gitFile ifNil: [ ^ composite empty ].
+	^ composite forward
+		title: 'Contents';
+		priority: 40;
+		object: [ gitFile ];
+		view: #gtEditorFor:
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitTrackedLine >> gtLineFor: aView [
 	<gtView>
 	^ aView textEditor 
