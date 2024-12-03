@@ -18,7 +18,7 @@ PureGitTrackedFileLineVersion >> gtContentsFor: composite [
 				selectNone;
 				select: lineRange first - 1 to: lineRange last.
 			element
-				scrollToPosition: self lineNumber;
+				scrollToPosition: (self lineNumber - 3 max: 1);
 				margin: (BlInsets all: 5).
 			element ]
 ]
