@@ -8,7 +8,8 @@ PureGitTrackedFileLineVersion >> gtDetailsFor: composite [
 		priority: 20;
 		items: [ {
 			{ 'path' . self path }.
-			{ 'commit' . self commit shortId . self commit }.
+			{ 'extended commit' . self extendedCommit shortId . self extendedCommit }.
+			{ 'commit' . self commit shortCommitId . self commit }.
 			{ 'line number' . self lineNumber }.
 			{ 'line contents' . self lineContents }.
 			{ 'tracked file version' . self file }.
