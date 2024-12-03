@@ -370,7 +370,10 @@ PureGitTrackedFile >> selectedVersionFrom: event trackedLine: trackedLine [
 			ifTrue: [ vertex := index ] ].	
 	vertex := trackedLine startVersion + vertex - 1.
 	version := self versions at: vertex.
-	^ trackedLine -> version
+	^ PureGitTrackedFileLineVersion new
+		file: version;
+		line: trackedLine;
+		yourself
 ]
 
 { #category : #'*GToolkit4Git' }
