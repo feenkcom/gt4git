@@ -54,8 +54,8 @@ PureGitTrackedFile >> asKumpelGraphElement [
 				e consumed: true.
 				e target phlow spawnObject: 
 					(e modifiers isShift 
-						ifTrue: [ self selectedVersionFrom: e trackedLine: trackedLine ] 
-						ifFalse: [ trackedLine ]) ].
+						ifTrue: [ trackedLine ]
+						ifFalse: [  self selectedVersionFrom: e trackedLine: trackedLine ]) ].
 		container addChild: element ].
 	container
 		size: ((self versions size *  (PureGitTrackedLine versionWidth + PureGitTrackedLine versionMargin))
