@@ -41,18 +41,12 @@ PureGitTrackedLine >> gtContentsFor: composite context: context [
 	^ composite explicit
 		title: 'Contents';
 		priority: 40;
-		stencil: [ | element editor |
-			element := BrEditorElement new
-				constraintsDo: [ :c | 
-					c horizontal matchParent.
-					c vertical matchParent ].
-			editor := BrTextEditorModel new.
-			editor text: gitFile contents asRopedText.
-			element editor: editor.
-			editor beReadOnlyWithoutSelection.
-			element aptitude: BrGlamorousCodeEditorAptitude.
-			element margin: (BlInsets all: 5).
-			element ]
+		stencil: [
+			(BrEditor new
+				aptitude: BrGlamorousCodeEditorAptitude new;
+				text: gitFile contents;
+				beReadOnlyWithSelection)
+					asElement margin: (BlInsets all: 5) ]
 ]
 
 { #category : #'*GToolkit4Git' }
