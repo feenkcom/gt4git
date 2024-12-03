@@ -38,11 +38,21 @@ PureGitTrackedLine >> gtContentsFor: composite context: context [
 		do: [ :object | gitFile := object file ]
 		ifAbsent: [ ^ composite empty ].
 	gitFile ifNil: [ ^ composite empty ].
-	^ composite forward
+	^ composite explicit
 		title: 'Contents';
 		priority: 40;
-		object: [ gitFile ];
-		view: #gtEditorFor:
+		stencil: [ | element editor |
+			element := BrEditorElement new
+				constraintsDo: [ :c | 
+					c horizontal matchParent.
+					c vertical matchParent ].
+			editor := BrTextEditorModel new.
+			editor text: gitFile contents asRopedText.
+			element editor: editor.
+			editor beReadOnlyWithoutSelection.
+			element aptitude: BrGlamorousCodeEditorAptitude.
+			element margin: (BlInsets all: 5).
+			element ]
 ]
 
 { #category : #'*GToolkit4Git' }
