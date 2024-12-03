@@ -7,22 +7,20 @@ PureGitTrackedFileVersion >> gtLineOwnershipEvolutionFor: composite [
 		title: 'Kumpel';
 		priority: 60;
 		tooltip: 'Show line history over time';
-		stencil: [ | container colors |
-			colors := BrExplicitIdentityNormalizer new
-					colors: BrGlamorousColors distinctTenLightColors;
-					defaultColor: Color veryLightGray.
+		stencil: [ | container |
 			container := BlElement new.
 			trackedFile uniqueTrackedLines
 				do: [ :trackedLine | 
 					| element |
 					element := trackedLine asKumpelGraphElement.
 					element
-						background: (colors value: (trackedFile authorOfTrackedLine: trackedLine)).
+						background: (self trackedFile colorForAuthor: (trackedFile authorOfTrackedLine: trackedLine)).
 					element
-						border: (colors value: (trackedFile authorOfTrackedLine: trackedLine)).
+						border: (self trackedFile colorForAuthor: (trackedFile authorOfTrackedLine: trackedLine)).
 					container addChild: element ].
 			container
-				size: ((trackedFile versions size *  (PureGitTrackedLine versionWidth + PureGitTrackedLine versionMargin)) - PureGitTrackedLine versionMargin)
+				size: ((trackedFile versions size *  (PureGitTrackedLine versionWidth + PureGitTrackedLine versionMargin))
+							- PureGitTrackedLine versionMargin)
 						@ (PureGitTrackedLine lineHeight * trackedFile maxLinesCount).
 			container
 				addChild: (BlElement new
@@ -30,8 +28,8 @@ PureGitTrackedFileVersion >> gtLineOwnershipEvolutionFor: composite [
 						zIndex: 100;
 						size: PureGitTrackedLine versionWidth @ (PureGitTrackedLine lineHeight * lines size);
 						relocate: ((versionNumber - 1)
-								* (PureGitTrackedLine versionWidth + PureGitTrackedLine versionMargin))
-								@ 0).
+											* (PureGitTrackedLine versionWidth + PureGitTrackedLine versionMargin))
+										@ 0).
 			container beInSeparateCompositionLayer asCanvassableElement
 				margin: (BlInsets all: 10) ]
 ]
