@@ -73,7 +73,9 @@ PureGitFile >> gtBlameFor: composite [
 		column: 'Line'
 			stencil: [ :blameLine | 
 				BrLabel new
-					aptitude: BrGlamorousLabelAptitude new editorMeasurement;
+					aptitude: BrGlamorousLabelAptitude new 
+									glamorousCodeFontAndSize
+									editorMeasurement;
 					text: blameLine line ]
 			weight: 2.0
 ]
