@@ -146,10 +146,10 @@ IceRepository >> gtViewDetailsIn: composite [
 					ifFalse: [ 'Libgit2 FFI' ] }.
 			{ 'missing' . self isMissing gtColoredText . self isMissing }.
 			{ 'modified' 
-				. ([ self isModified ] on: Error do: [ '' ]) gtColoredText
+				. [ self isModified gtColoredText ] on: Error do: [ '' ]
 				. [ self isModified ] on: Error do: [ '' ] }.
 			{ 'dirty' 
-				. ([ self isDirty ] on: Error do: [ '' ]) gtColoredText
+				. [ self isDirty gtColoredText ] on: Error do: [ '' ]
 				. [ self isDirty ] on: Error do: [ '' ] }.
 		} ];
 		column: 'Key' text: #first;
