@@ -193,10 +193,14 @@ IceRepository class >> gtViewRegistryIn: composite [
 			action: [ :element :each | element phlow spawnObject: each ];
 		contextItemLabel: 'Inspect GtGitRepository'
 			action: [ :element :each | element phlow spawnObject: (GtGitRepository fromIcebergRepository: each) ];
+		contextItemLabel: 'Inspect PureGitRepository'
+			action: [ :element :each | element phlow spawnObject: (PureGitRepository on: each location) ];
 		contextItemLabel: 'Open Git tool'
 			action: [ :element :each | 
 				element phlow
-					spawnObject: (GtGitPhlowTool new repository: (GtGitRepository fromIcebergRepository: each)) ]
+					spawnObject: (GtGitPhlowTool new repository: (GtGitRepository fromIcebergRepository: each)) ];
+		updateWhen: IceAnnouncement , IceRepositoryRegistryModified in: Iceberg announcer;
+		actionUpdateButton
 ]
 
 { #category : #'*GToolkit4Git' }
