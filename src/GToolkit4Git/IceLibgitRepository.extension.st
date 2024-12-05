@@ -34,7 +34,7 @@ IceLibgitRepository class >> fromGitCliRepository: existingRepository [
 	existingRepository isMissing ifTrue: [ ^ newRepository ].
 	newRepository workingCopy
 		referenceCommit: (newRepository
-				commitFromGitCommit: existingRepository workingCopy referenceCommit id).
+				lookupCommit: existingRepository workingCopy referenceCommit id).
 	newRepository workingCopy initializePackagesFromRepository.
 	^ newRepository
 ]
