@@ -23,16 +23,20 @@ IceLibgitRepository class >> creatorClass [
 ]
 
 { #category : #'*GToolkit4Git' }
-IceLibgitRepository class >> fromGitCliRepository: aRepo [
-	| repo |
-	repo := self new
-			location: aRepo location;
-			name: aRepo name.
-	aRepo isMissing ifTrue: [ ^ repo ].
-	repo workingCopy
-		referenceCommit: (repo commitFromGitCommit: aRepo workingCopy referenceCommit id).
-	repo workingCopy initializePackagesFromRepository.
-	^ repo
+IceLibgitRepository class >> fromGitCliRepository: existingRepository [
+	"Create a new repository based on an existing repository
+	from which the location, name and reference commit are used"
+
+	| newRepository |
+	newRepository := self new
+			location: existingRepository location;
+			name: existingRepository name.
+	existingRepository isMissing ifTrue: [ ^ newRepository ].
+	newRepository workingCopy
+		referenceCommit: (newRepository
+				commitFromGitCommit: existingRepository workingCopy referenceCommit id).
+	newRepository workingCopy initializePackagesFromRepository.
+	^ newRepository
 ]
 
 { #category : #'*GToolkit4Git' }
