@@ -33,17 +33,23 @@ GitCliEnabler >> gtViewRegistryIn: composite [
 		column: 'Name' text: #name;
 		column: 'Origin' text: [ :each | [ each originUrl ] on: Error do: [ '' ] ];
 		column: 'Implementation'
-			text: [ :each | each isGitCliRepository ifTrue: [ 'Libgit-CLI' ] ifFalse: [ 'Libgit2 FFI' ] ];
+			text: [ :each | 
+				each isGitCliRepository
+					ifTrue: [ 'Libgit-CLI' asRopedText foreground: Color blue ]
+					ifFalse: [ 'Libgit2 FFI' asRopedText foreground: Color orange ] ];
 		contextItemLabel: 'Inspect IceRepository'
-			action: [ :element :each | element phlow spawnObject: each ];
+			action: [ :element :repository | element phlow spawnObject: repository ];
 		contextItemLabel: 'Inspect GtGitRepository'
-			action: [ :element :each | element phlow spawnObject: (GtGitRepository fromIcebergRepository: each) ];
+			action: [ :element :repository | element phlow spawnObject: (GtGitRepository fromIcebergRepository: repository) ];
 		contextItemLabel: 'Inspect PureGitRepository'
-			action: [ :element :each | element phlow spawnObject: (PureGitRepository on: each location) ];
+			action: [ :element :repository | element phlow spawnObject: (PureGitRepository on: repository location) ];
 		contextItemLabel: 'Open Git tool'
-			action: [ :element :each | 
+			action: [ :element :repository | 
 				element phlow
-					spawnObject: (GtGitPhlowTool new repository: (GtGitRepository fromIcebergRepository: each)) ];
-		updateWhen: IceAnnouncement , IceRepositoryRegistryModified in: Iceberg announcer;
+					spawnObject: (GtGitPhlowTool new repository: (GtGitRepository fromIcebergRepository: repository)) ];
+		contextItemLabel: 'Switch Implementation'
+			action: [ :element :repository | self switchRepositoryImplementation: repository ];
+		updateWhen: IceAnnouncement , IceRepositoryRegistryModified
+			in: Iceberg announcer;
 		actionUpdateButton
 ]
