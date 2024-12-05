@@ -82,6 +82,22 @@ IceRepository >> gtPullInWorkingCopy: aLepiterWorkingCopy [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceRepository >> gtRelease [
+	"I am about to become garbage, release users pointing at me"
+
+	self loadedPackages do: [ :icePackage | | mcPackage |
+		mcPackage := icePackage mcPackage.
+		"MCWorkingCopy instances are held in a global registry.
+		Through their ancestry containing IceMCVersionInfo instances
+		they hold onto the commit, package and repository.
+		When we unregister them they will be recreated with ancestry"
+		mcPackage hasWorkingCopy 
+			ifTrue: [ mcPackage workingCopy unregister ] ].
+
+	commitsInPackageCache ifNotNil: [ commitsInPackageCache removeAll ]
+]
+
+{ #category : #'*GToolkit4Git' }
 IceRepository >> gtRemoteBranchesFor: aView [
 	<gtView>
 	^ aView list

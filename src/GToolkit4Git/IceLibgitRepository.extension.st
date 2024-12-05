@@ -93,6 +93,13 @@ IceLibgitRepository >> gtRawStatusFor: aView [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceLibgitRepository >> gtRelease [
+	super gtRelease.
+	commitCache ifNotNil: [ commitCache removeAll ].
+	self free
+]
+
+{ #category : #'*GToolkit4Git' }
 IceLibgitRepository >> gtRemoteBranchesFor: aView [
 	<gtView>
 	self isMissing ifTrue: [ ^ aView empty ].
