@@ -1026,6 +1026,7 @@ GtGitRepository >> gtCommitsFor: aView [
 		column: 'Actions'
 			do: [ :aColumn | 
 				aColumn
+					width: 100;
 					cellStencil: [ BrHorizontalPane new
 							vExact: 24;
 							hExact: 150;
