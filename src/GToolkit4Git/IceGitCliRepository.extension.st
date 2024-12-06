@@ -11,6 +11,15 @@ IceGitCliRepository >> gtConfigFor: composite [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceGitCliRepository >> gtRelease [
+	super gtRelease.
+	commitMap ifNotNil: [ commitMap removeAll ].
+	revListMap ifNotNil: [ revListMap removeAll ].
+	remoteMap ifNotNil: [ remoteMap removeAll ].
+	self clearCaches
+]
+
+{ #category : #'*GToolkit4Git' }
 IceGitCliRepository >> gtRepositoryDirectoryFor: aView [
 	<gtView>
 	
