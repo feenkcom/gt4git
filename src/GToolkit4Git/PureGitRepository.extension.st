@@ -335,7 +335,7 @@ PureGitRepository >> gtStagedChangesFor: composite [
 								BlTaskAction
 									enqueueElement: aButton
 									action: [ | comment |
-										comment := commentCreationPane comment.
+										comment := commentCreationPane comment withCRs.
 										self queries stagedChanges isEmpty
 											ifFalse: [ aTab phlow
 												spawnObject: (self operations async commit: comment) ].
