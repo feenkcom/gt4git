@@ -109,3 +109,32 @@ PureGitCommit >> gtPackagesFor: composite [
 						element phlow spawnObject: changes ] ];
 		send: [ :package | (self readerForPackage: package) snapshot ]
 ]
+
+{ #category : #'*GToolkit4Git' }
+PureGitCommit >> gtVerificationFor: composite [
+	<gtView>
+	self gitHubWebUrl ifNil: [ ^ composite empty ].
+	^ composite columnedList
+		title: 'Verification';
+		priority: 60;
+		items: [ | data |
+			data := self gitHubData.
+			{
+				{ 'verified'
+					. ((data atPath: #(commit verification verified)) ifNil: [ false ]) gtColoredText
+					. data atPath: #(commit verification verified) }.
+				{ 'reason' . data atPath: #(commit verification reason) }.
+				{ 'author' . self author }.
+				{ 'email' . self email }.
+				{ 'timestamp' . self timestamp }.
+				{ 'committer' . self committer }.
+				{ 'committer email' . self committerEmail }.
+				{ 'committer timestamp' . self committerTimestamp }.
+				{ 'signature' . (data atPath: #(commit verification signature)) ifNil: [ '' ] }.
+				{ 'payload' . (data atPath: #(commit verification payload)) ifNil: [ '' ] }.
+				{ 'verified at' . (data atPath: #(commit verification 'verified_at')) ifNil: [ '' ] }.
+		} ];
+		column: 'key' text: #first;
+		column: 'value' text: #second weight: 3;
+		send: #last
+]
