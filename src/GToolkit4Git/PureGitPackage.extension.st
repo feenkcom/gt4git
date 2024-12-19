@@ -48,11 +48,10 @@ PureGitPackage >> gtDetails [
 { #category : #'*GToolkit4Git' }
 PureGitPackage >> gtViewIncomingChangesFor: composite [
 	<gtView>
-	^ composite forward
+	^ composite explicit
 		title: 'Incoming';
 		priority: 30;
-		object: [ self incomingChanges ];
-		view: #gtViewOperationsTreeIn:;
+		stencil: [ self incomingChanges gtViewOperationsTreeIn: composite ];
 		actionUpdateButton;
 		updateWhen: PureGitRepositoryModified in: [ self repository announcer ]
 ]
@@ -71,11 +70,10 @@ PureGitPackage class >> gtViewLoadedCommitsFor: composite [
 { #category : #'*GToolkit4Git' }
 PureGitPackage >> gtViewOutgoingChangesFor: composite [
 	<gtView>
-	^ composite forward
+	^ composite explicit
 		title: 'Outgoing';
 		priority: 35;
-		object: [ self outgoingChanges ];
-		view: #gtViewOperationsTreeIn:;
+		stencil: [ self outgoingChanges gtViewOperationsTreeIn: composite ];
 		actionUpdateButton;
 		updateWhen: PureGitRepositoryModified in: [ self repository announcer ]
 ]
