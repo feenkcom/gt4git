@@ -474,14 +474,17 @@ GtGitRepository >> executeCommit: aCommitMessage [
 { #category : #'api - actions' }
 GtGitRepository >> executeCommit: aCommitMessage withChanges: changes [
 	| workingCopyDiff |
-	
 	workingCopyDiff := self workingCopyDiff.
-	self icebergWorkingCopy
-		commitChanges: (workingCopyDiff copyWithOnly: changes)
-		withMessage: aCommitMessage
-		force: false.
-	
-	self announceRepositoryModified.
+
+	IceGitCliPlatform current executor
+		repository: self icebergRepository;
+		log: #executeCommit
+			do: [ self icebergWorkingCopy
+					commitChanges: (workingCopyDiff copyWithOnly: changes)
+					withMessage: aCommitMessage
+					force: false ].
+
+	self announceRepositoryModified
 ]
 
 { #category : #'api - actions' }
@@ -1573,47 +1576,52 @@ GtGitRepository >> statusElementColored: aColor withTooltip: aString [
 
 { #category : #accessing }
 GtGitRepository >> statusModel [
+	^ IceGitCliPlatform current executor
+		repository: self icebergRepository;
+		log: #statusModel 
+			do: [ self statusModelInternal ]
+]
 
-	| conflicting |
-	[ 
-	| entity statusCollection incoming outgoing |
+{ #category : #accessing }
+GtGitRepository >> statusModelInternal [
+	[ | entity statusCollection conflicting incoming outgoing |
 	entity := self icebergRepository.
 
-	entity isMissing ifTrue: [ ^ { GtGitStatusMissing new } ].
+	entity isMissing ifTrue: [ ^ {GtGitStatusMissing new} ].
 
-	entity workingCopy workingCopyState isUnknownCommitState ifTrue: [ 
-		^ { (GtGitStatusUnknownCommitState new message:
-			   entity workingCopy workingCopyState description) } ].
-	entity workingCopy isDetached ifTrue: [ 
-		^ { GtGitStatusDetachedWorkingCopy new } ].
-	(entity head isDetached and: [ entity head tags notEmpty ]) ifTrue: [ 
-		^ { GtGitStatusDetachedHead new } ].
-	entity head isDetached ifTrue: [ ^ { GtGitStatusDetachedHead new } ].
+	entity workingCopy workingCopyState isUnknownCommitState
+		ifTrue: [ ^ {GtGitStatusUnknownCommitState new
+					message: entity workingCopy workingCopyState description} ].
 
-	entity workingCopy project isUnborn ifTrue: [ 
-		^ { GtGitStatusNoProject new } ].
+	entity workingCopy isDetached
+		ifTrue: [ ^ {GtGitStatusDetachedWorkingCopy new} ].
+
+	(entity head isDetached and: [ entity head tags notEmpty ])
+		ifTrue: [ ^ {GtGitStatusDetachedHead new} ].
+
+	entity head isDetached ifTrue: [ ^ {GtGitStatusDetachedHead new} ].
+
+	entity workingCopy project isUnborn ifTrue: [ ^ {GtGitStatusNoProject new} ].
 
 	statusCollection := OrderedCollection new.
-	self isModified ifTrue: [ 
-		statusCollection add: GtGitStatusUncommittedChanges new ].
+	self isModified
+		ifTrue: [ statusCollection add: GtGitStatusUncommittedChanges new ].
 
 	conflicting := self conflictingCommits size.
-	conflicting > 0 ifTrue: [ 
-		statusCollection add: (GtGitStatusConflicting new count: conflicting) ].
+	conflicting > 0
+		ifTrue: [ statusCollection add: (GtGitStatusConflicting new count: conflicting) ].
 
 	incoming := self incomingCommits size - conflicting.
-	incoming > 0 ifTrue: [ 
-		statusCollection add: (GtGitStatusIncoming new count: incoming) ].
+	incoming > 0
+		ifTrue: [ statusCollection add: (GtGitStatusIncoming new count: incoming) ].
 
 	outgoing := self outgoingCommits size.
-	outgoing > 0 ifTrue: [ 
-		statusCollection add: (GtGitStatusOutgoing new count: outgoing) ].
-
+	outgoing > 0
+		ifTrue: [ statusCollection add: (GtGitStatusOutgoing new count: outgoing) ].
 
 	^ statusCollection ]
 		on: Error
-		do: [ :error | 
-			^ { (GtGitStatusUnknownError new message: error description) } ]
+		do: [ :error | ^ {GtGitStatusUnknownError new message: error description} ]
 ]
 
 { #category : #'gt - extensions' }
@@ -1630,5 +1638,8 @@ GtGitRepository >> workingCopy [
 
 { #category : #'api - repository' }
 GtGitRepository >> workingCopyDiff [
-	^ self lepiterWorkingCopy diffToReferenceCommit
+	^ IceGitCliPlatform current executor
+		repository: self repository;
+		log: #workingCopyDiff 
+			do: [ self lepiterWorkingCopy diffToReferenceCommit ]
 ]

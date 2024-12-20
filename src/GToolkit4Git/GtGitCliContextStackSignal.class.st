@@ -146,7 +146,7 @@ GtGitCliContextStackSignal >> repository: aRepository [
 
 { #category : #accessing }
 GtGitCliContextStackSignal >> signalTypeLabel [
-	^ 'GtGitCliSignal'
+	^ 'git ' , self operation asString
 ]
 
 { #category : #printing }
