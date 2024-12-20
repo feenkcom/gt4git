@@ -14,6 +14,11 @@ GtGitCliEvent >> args [
 	^ self eventStartedSignal args
 ]
 
+{ #category : #acccessing }
+GtGitCliEvent >> eventLabel [
+	^ 'git ' , self operation asString 
+]
+
 { #category : #accessing }
 GtGitCliEvent >> firstArg [
 	| args |
