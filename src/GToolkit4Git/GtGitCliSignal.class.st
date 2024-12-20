@@ -228,7 +228,7 @@ GtGitCliSignal >> repository: aRepository [
 
 { #category : #accessing }
 GtGitCliSignal >> signalTypeLabel [
-	^ 'GtGitCliSignal'
+	^ 'git ' , self operation asString
 ]
 
 { #category : #accessing }

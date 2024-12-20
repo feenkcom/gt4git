@@ -14,13 +14,31 @@ GtGitCliEvent >> args [
 	^ self eventStartedSignal args
 ]
 
+{ #category : #acccessing }
+GtGitCliEvent >> eventLabel [
+	^ 'git ' , self operation asString 
+]
+
+{ #category : #accessing }
+GtGitCliEvent >> firstArg [
+	| args |
+	args := self args.
+	^ args isEmpty
+		ifTrue: [ nil ]
+		ifFalse: [ args first ]
+]
+
 { #category : #'gt extensions' }
 GtGitCliEvent >> gtGitHelpFor: aView [
 	<gtView>
 	^ aView textEditor
 		title: 'Git help';
 		priority: 7;
-		text: [ IceGitCliPlatform current executor gitHelpFor: self eventStartedSignal args first ]
+		text: [ | command |
+			command := self firstArg.
+			command
+				ifNil: [ '' ]
+				ifNotNil: [ IceGitCliPlatform current executor gitHelpFor: command ] ]
 ]
 
 { #category : #'gt extensions' }
@@ -53,6 +71,15 @@ GtGitCliEvent >> operation [
 { #category : #accessing }
 GtGitCliEvent >> output [
 	^ self eventCompletedSignal output
+]
+
+{ #category : #accessing }
+GtGitCliEvent >> restArgs [
+	| args |
+	args := self args.
+	^ args isEmpty
+		ifTrue: [ #() ]
+		ifFalse: [ args allButFirst ]
 ]
 
 { #category : #accessing }
