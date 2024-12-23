@@ -236,7 +236,7 @@ GtGitRepository >> branchDescription [
 				read: [ :aModel | aModel repository branchName ]
 				write: [ :aModel :aValue | aModel repository checkoutBranch: aValue ]);
 		blocCompletion: [ GtStringsCompletionStrategy new
-				completions: (GtPrefixTree withAll: (icebergRepository allBranches collect: #name)) ];
+				completions: self branchNameCompletions ];
 		editorAptitude: [ BrGlamorousRegularEditorAptitude new glamorousFormEditorCodeFontAndSize ];
 		labelAptitude: [ BrGlamorousLabelAptitude new glamorousFormLabelStyle ];
 		addCondition: [ :aValue | (aValue includesSubstring: '..') not ]
@@ -254,6 +254,13 @@ GtGitRepository >> branchDescription [
 		addCondition: [ :aValue | (aValue includesSubstring: '//') not ]
 			labelled: 'May not contain multiple consecutive slashes';
 		comment: 'A branch name. If you set it to a non-existant branch, a new one will be created.'
+]
+
+{ #category : #accessing }
+GtGitRepository >> branchNameCompletions [
+	^ self executor
+		log: #branchNameCompletions
+		do: [ GtPrefixTree withAll: (icebergRepository allBranches collect: #name) ]
 ]
 
 { #category : #'api - repository' }
@@ -996,14 +1003,17 @@ GtGitRepository >> gtCommitsFor: aView [
 	| conflicts incomingCommits outgoingCommits |
 	self isMissing ifTrue: [ ^ aView empty ].
 
-	conflicts := self conflictingCommits.
-	incomingCommits := self incomingCommits.
-	outgoingCommits := self viewModel outgoingCommits.
+	self executor log: #gtCommitsFor do: [
+		conflicts := self conflictingCommits.
+		incomingCommits := self incomingCommits.
+		outgoingCommits := self viewModel outgoingCommits ].
 	^ aView columnedList
 		title: 'Commits' translated;
 		priority: 5;
-		items: [ (AsyncSequenceStream forCollection: incomingCommits)
-				merge: self repository head commitStream ];
+		items: [ self executor 
+			log: #gtCommitsStreamFor: 
+			do: [ (AsyncSequenceStream forCollection: incomingCommits)
+					merge: self repository head commitStream ] ];
 		column: 'Status'
 			icon: [ :item | 
 				((incomingCommits contains: [ :aCommit | aCommit = item ])
@@ -1261,10 +1271,12 @@ GtGitRepository >> hasDatabase [
 
 { #category : #'gt - extensions' }
 GtGitRepository >> hasNonSetupCommits [
-	^ self hasCommits
-		and: [ self repository head commits last comment = 'Initial commit'
-				ifTrue: [ self repository head commits size > 1 ]
-				ifFalse: [ true ] ]
+	^ self executor
+		log: #hasNonSetupCommits
+		do: [ self hasCommits
+				and: [ self repository head commits last comment = 'Initial commit'
+						ifTrue: [ self repository head commits size > 1 ]
+						ifFalse: [ true ] ] ]
 ]
 
 { #category : #accessing }
@@ -1311,10 +1323,11 @@ GtGitRepository >> icebergWorkingCopy [
 
 { #category : #'api - repository' }
 GtGitRepository >> incomingCommits [
-
-	^ self isCommittable
-		  ifTrue: [ self icebergRepository incomingCommits ]
-		  ifFalse: [ #() ]
+	^ self executor
+		log: #incomingCommits
+		do: [ self isCommittable
+				ifTrue: [ self icebergRepository incomingCommits ]
+				ifFalse: [ #() ] ]
 ]
 
 { #category : #initialization }
@@ -1403,10 +1416,11 @@ GtGitRepository >> originDescription [
 
 { #category : #'api - repository' }
 GtGitRepository >> outgoingCommits [
-
-	^ self isCommittable
-		  ifTrue: [ self icebergRepository outgoingCommits ]
-		  ifFalse: [ #(  ) ]
+	^ self executor
+		log: #outgoingCommits
+		do: [ self isCommittable
+				ifTrue: [ self icebergRepository outgoingCommits ]
+				ifFalse: [ #() ] ]
 ]
 
 { #category : #printing }
@@ -1549,8 +1563,10 @@ GtGitRepository >> setupInstructions [
 
 { #category : #'gt - extensions' }
 GtGitRepository >> setupItems [
-	^ (GtGitRepositorySetupItem allSubclasses sorted: #priority ascending)
-		collect: [ :aClass | aClass new repository: self ]
+	^ self executor
+		log: #setupItems
+		do: [ (GtGitRepositorySetupItem allSubclasses sorted: #priority ascending)
+				collect: [ :aClass | aClass new repository: self ] ]
 ]
 
 { #category : #'api - actions' }
