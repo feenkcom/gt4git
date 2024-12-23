@@ -476,8 +476,7 @@ GtGitRepository >> executeCommit: aCommitMessage withChanges: changes [
 	| workingCopyDiff |
 	workingCopyDiff := self workingCopyDiff.
 
-	IceGitCliPlatform current executor
-		repository: self icebergRepository;
+	self executor 
 		log: #executeCommit
 			do: [ self icebergWorkingCopy
 					commitChanges: (workingCopyDiff copyWithOnly: changes)
@@ -487,10 +486,17 @@ GtGitRepository >> executeCommit: aCommitMessage withChanges: changes [
 	self announceRepositoryModified
 ]
 
+{ #category : #accessing }
+GtGitRepository >> executor [
+	^ IceGitCliPlatform current executor
+		repository: self icebergRepository;
+		yourself
+]
+
 { #category : #'api - actions' }
 GtGitRepository >> fetch [
-	self icebergRepository fetch.
-	self announceRepositoryModified.
+	self executor log: #fetch do: [ self icebergRepository fetch ].
+	self announceRepositoryModified
 ]
 
 { #category : #magritte }
@@ -628,8 +634,10 @@ GtGitRepository >> gtActionFetchFor: anAction [
 		label: 'Fetch';
 		priority: 2;
 		tooltip: 'Fetch all commits and branches from all remotes';
-		action: [ :aButton |
-			(IceTipRepositoryModel on: self icebergRepository) fetch.
+		action: [ :aButton | 
+			self executor
+				log: #fetch
+				do: [ (IceTipRepositoryModel on: self icebergRepository) fetch ].
 			self announceRepositoryModified.
 			aButton phlow fireToolUpdateWish ]
 ]
@@ -647,36 +655,33 @@ GtGitRepository >> gtActionForgetFor: anAction [
 { #category : #'gt - extensions' }
 GtGitRepository >> gtActionPullFor: anAction [
 	<gtAction>
-	
-	(IceTipRepositoryModel on: self icebergRepository) isDetached ifTrue: [ 
-		^ anAction noAction ].
-	
+	(IceTipRepositoryModel on: self icebergRepository) isDetached
+		ifTrue: [ ^ anAction noAction ].
+
 	^ anAction button
-		  label: 'Pull';
-		  priority: 3;
-		  tooltip: 'Pull all commits and branches from all remotes and merge';
-		  action: [ :aButton | 
-			  [ self gtLepiterAwarePull ]
-				  on: IceMergeResolutionRequest
-				  do: [ :r | aButton phlow spawnObject: r merge ].
-			  aButton phlow fireToolUpdateWish ]
+		label: 'Pull';
+		priority: 3;
+		tooltip: 'Pull all commits and branches from all remotes and merge';
+		action: [ :aButton | 
+			[ self gtLepiterAwarePull ]
+				on: IceMergeResolutionRequest
+				do: [ :r | aButton phlow spawnObject: r merge ].
+			aButton phlow fireToolUpdateWish ]
 ]
 
 { #category : #'gt - extensions' }
 GtGitRepository >> gtActionPushFor: anAction [
 	<gtAction>
-	
-	(IceTipRepositoryModel on: self icebergRepository) isDetached 
+	(IceTipRepositoryModel on: self icebergRepository) isDetached
 		ifTrue: [ ^ anAction noAction ].
-	
+
 	^ anAction button
 		label: 'Push';
 		priority: 4;
 		tooltip: 'Push current commits to the default push remote';
 		action: [ :aButton | 
-			self icebergRepository push.
+			self executor log: #push do: [ self icebergRepository push ].
 			self announceRepositoryModified.
-			
 			aButton phlow fireToolUpdateWish ]
 ]
 
@@ -687,29 +692,29 @@ GtGitRepository >> gtActionRefreshFor: anAction [
 		label: 'Refresh';
 		priority: 1;
 		tooltip: 'Refresh by recomputing changes in dirty packages';
-		action: [ :aButton |
-		
+		action: [ :aButton | 
+			| diff dirtyPackages |
 			"Aim to only recalculate the dirty flag for packages that are marked as dirty.
 			We skip packages that are not marked as dirty."
+			self executor
+				log: #refresh
+				do: [ self icebergRepository isModified
+						ifTrue: [  
+							"If the repository is not marked as modified no action is needed here" 
+							"We compute the diff but only recalculate the status for dirty packages"
+							diff := IceDiff
+									new
+									sourceVersion: self icebergRepository workingCopy;
+									targetVersion: self icebergRepository workingCopy referenceCommit;
+									buildFull.
 
-			| diff dirtyPackages |
-			self icebergRepository isModified ifTrue: [ 
-				"If the repository is not marked as modified no action is needed here"
+							dirtyPackages := self icebergRepository loadedPackages
+									select: [ :each | each isDirty ].
+							dirtyPackages
+								do: [ :each | each beDirty: (diff includesPackageNamed: each name) ].
+							self announceRepositoryModified ] ].
 
-
-				"We compute the diff but only recalculate the status for dirty packages"
-				diff := IceDiff new
-					sourceVersion: self icebergRepository workingCopy;
-					targetVersion: self icebergRepository workingCopy referenceCommit;
-					buildFull.
-		
-				dirtyPackages := self icebergRepository loadedPackages 
-					select: [ :each | each isDirty ].
-				dirtyPackages do: [ :each |
-					each beDirty: (diff includesPackageNamed: each name) ].
-					self announceRepositoryModified. ]. 
-				
-			aButton phlow fireToolUpdateWish ]. 
+			aButton phlow fireToolUpdateWish ]
 ]
 
 { #category : #'gt - extensions' }
@@ -1083,17 +1088,20 @@ GtGitRepository >> gtExamplesFor: aView [
 ]
 
 { #category : #'api - actions' }
-GtGitRepository >> gtLepiterAwareCheckoutBranch: aBranchName [ 
-	self icebergRepository 
-		gtLepiterAwareCheckoutBranch: aBranchName 
-		withWorkingCopy: self lepiterWorkingCopy
+GtGitRepository >> gtLepiterAwareCheckoutBranch: aBranchName [
+	self executor
+		log: #gtLepiterAwareCheckoutBranch
+		do: [ self icebergRepository
+				gtLepiterAwareCheckoutBranch: aBranchName
+				withWorkingCopy: self lepiterWorkingCopy ]
 ]
 
 { #category : #accessing }
 GtGitRepository >> gtLepiterAwarePull [
-	self icebergRepository configureUpstreamIfNecessary.
-	self icebergRepository gtPullInWorkingCopy: self lepiterWorkingCopy.
-
+	self executor
+		log: #gtLepiterAwarePull
+		do: [ self icebergRepository configureUpstreamIfNecessary.
+			self icebergRepository gtPullInWorkingCopy: self lepiterWorkingCopy ].
 
 	self announceRepositoryModified
 ]
@@ -1411,18 +1419,22 @@ GtGitRepository >> printOn: aStream [
 
 { #category : #'api - actions' }
 GtGitRepository >> pull [
-	self icebergRepository configureUpstreamIfNecessary.
-	self icebergRepository pull.
-	
-	self announceRepositoryModified.
+	self executor
+		log: #pull
+		do: [ self icebergRepository configureUpstreamIfNecessary.
+			self icebergRepository pull ].
+
+	self announceRepositoryModified
 ]
 
 { #category : #'api - actions' }
 GtGitRepository >> push [
-	self icebergRepository configureUpstreamIfNecessary.
-	self icebergRepository push.
-	
-	self announceRepositoryModified.
+	self executor
+		log: #push
+		do: [ self icebergRepository configureUpstreamIfNecessary.
+			self icebergRepository push ].
+
+	self announceRepositoryModified
 ]
 
 { #category : #accessing }
@@ -1576,8 +1588,7 @@ GtGitRepository >> statusElementColored: aColor withTooltip: aString [
 
 { #category : #accessing }
 GtGitRepository >> statusModel [
-	^ IceGitCliPlatform current executor
-		repository: self icebergRepository;
+	^ self executor
 		log: #statusModel 
 			do: [ self statusModelInternal ]
 ]
@@ -1638,8 +1649,7 @@ GtGitRepository >> workingCopy [
 
 { #category : #'api - repository' }
 GtGitRepository >> workingCopyDiff [
-	^ IceGitCliPlatform current executor
-		repository: self repository;
+	^ self executor
 		log: #workingCopyDiff 
 			do: [ self lepiterWorkingCopy diffToReferenceCommit ]
 ]
