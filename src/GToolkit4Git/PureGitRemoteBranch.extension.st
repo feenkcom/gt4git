@@ -10,6 +10,9 @@ PureGitRemoteBranch >> gtDetails [
 { #category : #'*GToolkit4Git' }
 PureGitRemoteBranch >> gtOperations [
 	^ Array streamContents: [ :actions | 
+		actions nextPut: 'Checkout' -> [ :e | 
+			e phlow spawnObject: self checkout.
+			e fireEvent: BrDropdownHideWish new ].
 		actions nextPut: 'Merge' -> [ :e | 
 			e phlow spawnObject: self merge.
 			e fireEvent: BrDropdownHideWish new ] ]
