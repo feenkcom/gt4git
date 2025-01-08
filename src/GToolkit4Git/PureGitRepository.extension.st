@@ -60,7 +60,7 @@ PureGitRepository >> gtBranchesFor: composite [
 			action: [ :element :branch | element phlow spawnObject: branch ];
 		contextItemLabel: 'Checkout' 
 			action: [ :element :branch | element phlow spawnObject: branch checkout ] 
-			if: [ :branch | branch isLocal and: [ branch isCurrent not ] ]
+			if: [ :branch | branch isRemote or: [ branch isLocal and: [ branch isCurrent not ] ] ]
 ]
 
 { #category : #'*GToolkit4Git' }

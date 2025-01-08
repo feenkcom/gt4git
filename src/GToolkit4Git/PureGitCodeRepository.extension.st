@@ -13,7 +13,7 @@ PureGitCodeRepository >> gtViewPackagesFor: composite [
 	^ composite columnedList
 		title: 'Packages';
 		priority: 60;
-		items: [ self packages ];
+		items: [ self packages sorted: #name ascending ];
 		column: 'Name' text: #name;
 		column: 'Loaded' text: #isLoaded;
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
