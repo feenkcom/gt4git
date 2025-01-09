@@ -53,6 +53,9 @@ PureGitPackage >> gtViewIncomingChangesFor: composite [
 		priority: 30;
 		stencil: [ self incomingChanges gtViewOperationsTreeIn: composite ];
 		actionUpdateButton;
+		actionButtonLabel: 'Apply'
+			tooltip: 'Apply all incoming changes'
+			action: [ :aButton | self applyIncomingChanges ];
 		updateWhen: PureGitRepositoryModified in: [ self repository announcer ]
 ]
 
