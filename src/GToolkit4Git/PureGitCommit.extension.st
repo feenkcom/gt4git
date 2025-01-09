@@ -8,6 +8,15 @@ PureGitCommit >> changesToParentAsRopedText [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitCommit >> gtActionOperationsFor: composite [
+	<gtAction>
+	^ composite dropdown
+		tooltip: 'Commit operations';
+		icon: BrGlamorousVectorIcons hamburger;
+		content: [ :aButton | BrGlamorousSimpleContextMenuContent new items: self gtOperations ]
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitCommit >> gtChangesFor: composite [
 	<gtView>
 	^ composite textEditor
@@ -72,6 +81,14 @@ PureGitCommit >> gtFileSystemFor: aView [
 		tooltip: 'Filesystem tree at time of commit';
 		object: [ self fileSystem ];
 		view: #gtTreeFor:
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitCommit >> gtOperations [
+	^ Array streamContents: [ :actions | 
+		actions nextPut: 'Checkout' -> [ :e | 
+			e phlow spawnObject: self checkout.
+			e fireEvent: BrDropdownHideWish new ] ]
 ]
 
 { #category : #'*GToolkit4Git' }
