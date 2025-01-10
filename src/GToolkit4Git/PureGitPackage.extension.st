@@ -40,7 +40,7 @@ PureGitPackage >> gtDetails [
 		{ 'loaded' . self isLoaded gtColoredText . self isLoaded }.
 		{ 'loaded commit'
 			. self loadedCommitId ifNil: [ '' ].
-			. self loadedCommit }.
+			. [ self loadedCommit ] on: Error do: [ :exception | exception ] }.
 		{ 'up to date' . self isUpToDate gtColoredText . self isUpToDate }.
 	}
 ]
@@ -67,7 +67,11 @@ PureGitPackage class >> gtViewLoadedCommitsFor: composite [
 		priority: 40;
 		items: [ self loadedCommits associations ];
 		column: 'Package' text: #key;
-		column: 'Commit' text: #value
+		column: 'Commit' text: #value;
+		actionUpdateButton;
+		contextItemLabel: 'Clear'
+			action: [ :element :association | 
+				self loadedCommits removeKey: association key ]
 ]
 
 { #category : #'*GToolkit4Git' }
