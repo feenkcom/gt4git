@@ -40,7 +40,7 @@ PureGitPackage >> gtDetails [
 		{ 'loaded' . self isLoaded gtColoredText . self isLoaded }.
 		{ 'loaded commit'
 			. self loadedCommitId ifNil: [ '' ].
-			. self loadedCommit }.
+			. [ self loadedCommit ] on: Error do: [ :exception | exception ] }.
 		{ 'up to date' . self isUpToDate gtColoredText . self isUpToDate }.
 	}
 ]
