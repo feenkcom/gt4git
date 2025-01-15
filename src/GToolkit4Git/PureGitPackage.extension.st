@@ -27,8 +27,8 @@ PureGitPackage >> gtActionSetLoadedCommitFor: composite [
 		label: 'Set';
 		priority: 30;
 		tooltip: 'Set package loaded commit to repository head';
-		action: [
-			self incomingChanges isEmpty
+		action: [ :button :element :model :event |
+			(event modifiers isPrimary or: [ self incomingChanges isEmpty ])
 				ifTrue: [ self setLoadedCommit ]
 				ifFalse: [ self error: 'Cannot set package loaded commit to repository head as there are incoming changes' ] ]
 ]
@@ -69,9 +69,10 @@ PureGitPackage class >> gtViewLoadedCommitsFor: composite [
 		column: 'Package' text: #key;
 		column: 'Commit' text: #value;
 		actionUpdateButton;
+		updateWhen: Announcement in: self announcer;
 		contextItemLabel: 'Clear'
 			action: [ :element :association | 
-				self loadedCommits removeKey: association key ]
+				self clearLoadedCommitFor: association key ]
 ]
 
 { #category : #'*GToolkit4Git' }
