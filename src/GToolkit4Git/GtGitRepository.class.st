@@ -465,6 +465,17 @@ GtGitRepository >> databasesDescription [
 					(aMemento readObservableValueUsing: aDescription) observe: anElementSink ] ]
 ]
 
+{ #category : #'gt - extensions' }
+GtGitRepository >> executeAsAsyncJob: block [
+	| gtJob |
+	gtJob := GtJob block: block.
+	GtNotificationJob new
+		summaryClass: GtSingleJobNotificationSummary;
+		job: gtJob;
+		registerNotifications.
+	^ [ gtJob run ] asAsyncPromise
+]
+
 { #category : #'api - actions' }
 GtGitRepository >> executeCommit: aCommitMessage [
 	| workingCopyDiff |
