@@ -45,8 +45,10 @@ GtGitRepositoryElement >> createFetchRepositoryButton [
 		aptitude: BrGlamorousButtonWithIconAptitude;
 		icon: BrGlamorousVectorIcons refresh;
 		label: 'Fetch';
-		action: [ :aButton | 
-			self fetchAllRepositoriesFrom: aButton ]
+		action: [ :aButton |
+			self repositoryModel executeAsAsyncJob: [ :job |
+				job label: 'Fetching...'.
+				self fetchAllRepositoriesFrom: aButton ] ]
 ]
 
 { #category : #'building - actions' }
@@ -78,8 +80,10 @@ GtGitRepositoryElement >> createPullRepositoryWithIncomingCommits: aListOfIncomi
 					self
 						showCommits: aListOfIncomingCommits
 						on: dropdownButton
-						withAction: [ :aButton | 
-							self pullFrom: aButton ]
+						withAction: [ :aButton |
+							self repositoryModel executeAsAsyncJob: [ :job |
+								job label: 'Pulling...'.
+								self pullFrom: aButton ] ]
 						named: 'Pull' ])
 				+ (BrGlamorousWithLabelTooltipAptitude new text: 'Pull');
 		icon: BrGlamorousVectorIcons down;
@@ -94,7 +98,10 @@ GtGitRepositoryElement >> createPullRepositoryWithNoIncommingCommitsButton [
 				+ (BrGlamorousWithLabelTooltipAptitude new text: 'Pull'));
 			icon: BrGlamorousVectorIcons down;
 			label: '';
-			action: [ :aButton | self pullFrom: aButton ]
+			action: [ :aButton | 
+				self repositoryModel executeAsAsyncJob: [ :job |
+					job label: 'Pulling...'.
+					self pullFrom: aButton ] ]
 ]
 
 { #category : #'building - actions' }
@@ -114,8 +121,10 @@ GtGitRepositoryElement >> createPushButtonForCommits: aListOfOutgoingCommits [
 					self
 						showCommits: aListOfOutgoingCommits
 						on: dropdownButton
-						withAction: [ :aButton | 
-							self pushFrom: aButton ]
+						withAction: [ :aButton |
+							self repositoryModel executeAsAsyncJob: [ :job |
+								job label: 'Pushing...'.
+								self pushFrom: aButton ] ]
 						named: 'Push' ])
 			+ (BrGlamorousWithLabelTooltipAptitude new text: 'Push');
 		icon: BrGlamorousVectorIcons up;
@@ -335,6 +344,11 @@ GtGitRepositoryElement >> pushFrom: aButton [
 { #category : #'private - updating' }
 GtGitRepositoryElement >> repository [
 	^ self repositoryViewModel repositoryModel repository
+]
+
+{ #category : #acce }
+GtGitRepositoryElement >> repositoryModel [
+	^ self repositoryViewModel repositoryModel 
 ]
 
 { #category : #'private - updating' }
