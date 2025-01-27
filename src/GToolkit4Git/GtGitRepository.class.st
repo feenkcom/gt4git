@@ -652,12 +652,14 @@ GtGitRepository >> gtActionFetchFor: anAction [
 		label: 'Fetch';
 		priority: 2;
 		tooltip: 'Fetch all commits and branches from all remotes';
-		action: [ :aButton | 
-			self executor
-				log: #fetch
-				do: [ (IceTipRepositoryModel on: self icebergRepository) fetch ].
-			self announceRepositoryModified.
-			aButton phlow fireToolUpdateWish ]
+		action: [ :aButton |
+			self executeAsAsyncJob: [ :job |
+				job label: 'Fetching...'.
+				self executor
+					log: #fetch
+					do: [ (IceTipRepositoryModel on: self icebergRepository) fetch ].
+				self announceRepositoryModified.
+				aButton phlow fireToolUpdateWish ] ]
 ]
 
 { #category : #'gt - extensions' }
@@ -680,11 +682,13 @@ GtGitRepository >> gtActionPullFor: anAction [
 		label: 'Pull';
 		priority: 3;
 		tooltip: 'Pull all commits and branches from all remotes and merge';
-		action: [ :aButton | 
-			[ self gtLepiterAwarePull ]
-				on: IceMergeResolutionRequest
-				do: [ :r | aButton phlow spawnObject: r merge ].
-			aButton phlow fireToolUpdateWish ]
+		action: [ :aButton |
+			self executeAsAsyncJob: [ :job |
+				job label: 'Pulling...'.
+				[ self gtLepiterAwarePull ]
+					on: IceMergeResolutionRequest
+					do: [ :r | aButton phlow spawnObject: r merge ].
+				aButton phlow fireToolUpdateWish ] ]
 ]
 
 { #category : #'gt - extensions' }
@@ -697,10 +701,12 @@ GtGitRepository >> gtActionPushFor: anAction [
 		label: 'Push';
 		priority: 4;
 		tooltip: 'Push current commits to the default push remote';
-		action: [ :aButton | 
-			self executor log: #push do: [ self icebergRepository push ].
-			self announceRepositoryModified.
-			aButton phlow fireToolUpdateWish ]
+		action: [ :aButton |
+			self executeAsAsyncJob: [ :job |
+				job label: 'Pushing...'.
+				self executor log: #push do: [ self icebergRepository push ].
+				self announceRepositoryModified.
+				aButton phlow fireToolUpdateWish ] ]
 ]
 
 { #category : #'gt - extensions' }
@@ -993,9 +999,11 @@ GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts incoming: i
 						aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
 						label: outgoing size asString;
 						icon: BrGlamorousVectorIcons up;
-						action: [ :aButton | 
-							self push.
-							aButton phlow fireToolUpdateWish ]) ].
+						action: [ :aButton |
+							self executeAsAsyncJob: [ :job |
+								job label: 'Pushing...'.
+								self push.
+								aButton phlow fireToolUpdateWish ] ]) ].
 	(incoming size > 0 and: [ incoming first = item and: [ remotes isNotEmpty ] ])
 		ifTrue: [ container
 				addChild: (BrButton new
@@ -1003,8 +1011,10 @@ GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts incoming: i
 						label: incoming size asString;
 						icon: BrGlamorousVectorIcons down;
 						action: [ :aButton | 
-							self gtLepiterAwarePull.
-							aButton phlow fireToolUpdateWish ]) ]
+							self executeAsAsyncJob: [ :job |
+								job label: 'Pulling...'.
+								self gtLepiterAwarePull.
+								aButton phlow fireToolUpdateWish ] ]) ]
 ]
 
 { #category : #'gt - extensions' }
