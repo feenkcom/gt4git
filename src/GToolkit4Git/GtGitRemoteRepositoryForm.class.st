@@ -37,6 +37,17 @@ GtGitRemoteRepositoryForm >> exampleText [
 ]
 
 { #category : #accessing }
+GtGitRemoteRepositoryForm >> executeAsAsyncJob: block [
+	| gtJob |
+	gtJob := GtJob block: block.
+	GtNotificationJob new
+		summaryClass: GtSingleJobNotificationSummary;
+		job: gtJob;
+		registerNotifications.
+	^ [ gtJob run ] asAsyncPromise
+]
+
+{ #category : #accessing }
 GtGitRemoteRepositoryForm >> initialize [
 	url := '' asRopedText
 			attribute: (BrGhostTextAttribute
@@ -48,17 +59,20 @@ GtGitRemoteRepositoryForm >> initialize [
 GtGitRemoteRepositoryForm >> magritteAcceptAction [
 	<magritteActionDescription>
 	^ super magritteAcceptAction
-		onSuccessCallback: [ [ | creator repo |
-			creator := IceRepository repositoryClass creatorClass new
-					remote: (IceGitRemote url: self url);
-					location: self projectLocation.
-			repo := creator createRepository.
-			repo register.
-			dropdown
-				ifNotNil: [ :aDropdown | 
-					aDropdown
-						enqueueTask: (BlTaskAction new action: [ aDropdown dispatchEvent: BrDropdownHideWish new ]) ].
-			self onCreated value: repo ] on: Error do: #debug ];
+		onSuccessCallback: [ self
+				executeAsAsyncJob: [ :job | 
+					job label: 'Cloning...'.
+					[ | creator repo |
+					creator := IceRepository repositoryClass creatorClass new
+							remote: (IceGitRemote url: self url);
+							location: self projectLocation.
+					repo := creator createRepository.
+					repo register.
+					dropdown
+						ifNotNil: [ :aDropdown | 
+							aDropdown
+								enqueueTask: (BlTaskAction new action: [ aDropdown dispatchEvent: BrDropdownHideWish new ]) ].
+					self onCreated value: repo ] on: Error do: #debug ] ];
 		beEnabledOnValidOverallStatus
 ]
 
