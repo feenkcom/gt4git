@@ -474,6 +474,8 @@ GtGitRepository >> executeAsAsyncJob: block [
 		job: gtJob;
 		registerNotifications.
 	^ [ gtJob run ] asAsyncPromise
+		errorHandler: AsyncPassExceptionHandler new;
+		yourself
 ]
 
 { #category : #'api - actions' }
