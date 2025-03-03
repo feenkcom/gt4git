@@ -6,7 +6,7 @@ Class {
 
 { #category : #importing }
 GtGitInsideGitChangeImporter >> ensureLepiterDatabaseFromDirectory: fileReference inParentNode: aNode [ 
-	self halt.
+	self shouldBeImplemented.
 ]
 
 { #category : #importing }
