@@ -17,7 +17,7 @@ GtGitRepositorySetupItem >> actionButtonLabelled: buttonText withDropdownContent
 	| aButton aDropdown |
 	aButton := BrButton new
 			aptitude: BrGlamorousButtonWithLabelAptitude
-					+ (BrGlamorousWithDropdownAptitude
+					+ (BrGlamorousWithExplicitDropdownAptitude
 							handle: [ aDropdown := BrButton new
 										aptitude: BrGlamorousButtonWithLabelAptitude - BrGlamorousButtonExteriorAptitude;
 										label: buttonText ]

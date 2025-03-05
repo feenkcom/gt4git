@@ -31,7 +31,7 @@ PureGitRepository >> gtBranchesFor: composite [
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton;
 		actionStencil: [ :aTab | | aptitude |
-			aptitude := BrGlamorousWithDropdownAptitude
+			aptitude := BrGlamorousWithExplicitDropdownAptitude
 				handle: [
 					BrButton new
 						aptitude: BrGlamorousButtonWithIconAptitude;
@@ -323,7 +323,7 @@ PureGitRepository >> gtStagedChangesFor: composite [
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionStencil: [ :aTab | 
 			| aptitude |
-			aptitude := BrGlamorousWithDropdownAptitude
+			aptitude := BrGlamorousWithExplicitDropdownAptitude
 					handle: [ BrButton new
 							aptitude: BrGlamorousButtonWithIconAptitude;
 							icon: BrGlamorousVectorIcons play;

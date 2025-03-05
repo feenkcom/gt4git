@@ -40,7 +40,7 @@ IceRepository >> gtLocalBranchesFor: aView [
 			each isLoaded ifTrue: [ text bold ].
 			text ];
 		actionStencil: [ :aTab | | aptitude |
-			aptitude := BrGlamorousWithDropdownAptitude
+			aptitude := BrGlamorousWithExplicitDropdownAptitude
 				handle: [
 					BrButton new
 						aptitude: BrGlamorousButtonWithIconAptitude;
