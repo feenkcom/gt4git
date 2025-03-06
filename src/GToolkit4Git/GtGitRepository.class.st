@@ -898,10 +898,7 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 				             margin: (BlInsets all: 3);
 				             constraintsDo: [ :c | c vertical fitContent ];
 				             aptitude:
-					             (BrGlamorousWithContextMenuAptitude content: [ 
-							              BrGlamorousSimpleContextMenuContent new
-								              items: contextMenuOptions;
-								              yourself ]).
+					             (BrGlamorousWithExplicitContextMenuAptitude itemsWithAnchorActions: contextMenuOptions).
 			  anIceNode value hasChanges ifTrue: [ |cb|
 				  element addChild: (cb := BrCheckbox new
 						   aptitude: BrGlamorousCheckboxAptitude
