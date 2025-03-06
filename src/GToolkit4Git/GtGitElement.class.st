@@ -112,11 +112,16 @@ GtGitElement >> navigationModel: aNavigationModel [
 ]
 
 { #category : #accessing }
-GtGitElement >> onNavigationModelChange: anEvent [
-	repository := anEvent repository.
-	self refreshView.
-	self updateTabLabel.
-	self fireEvent: (GtPhlowToolObjectChangeWish new object: repository)
+GtGitElement >> onNavigationModelChange: anAnnouncement [
+	"Announcements may come from a non-UI process. Let's enqueue the update."
+
+	BlTaskAction
+		enqueueElement: self
+		action: [ 
+			repository := anAnnouncement repository.
+			self refreshView.
+			self updateTabLabel.
+			self fireEvent: (GtPhlowToolObjectChangeWish new object: repository) ]
 ]
 
 { #category : #accessing }

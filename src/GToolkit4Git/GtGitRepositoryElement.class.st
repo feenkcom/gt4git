@@ -69,7 +69,7 @@ GtGitRepositoryElement >> createPullRepositoryWithIncomingCommits: aListOfIncomi
 	dropdownButton := BrButton new.
 	dropdownButton
 		aptitude: BrGlamorousButtonWithIconAndLabelAptitude
-			+ (BrGlamorousWithDropdownAptitude
+			+ (BrGlamorousWithExplicitDropdownAptitude
 				handle: [ 
 					BrButton new
 						aptitude: BrGlamorousButtonWithIconAndLabelAptitude
@@ -110,7 +110,7 @@ GtGitRepositoryElement >> createPushButtonForCommits: aListOfOutgoingCommits [
 	dropdownButton := BrButton new.
 	dropdownButton
 		aptitude: BrGlamorousButtonWithIconAndLabelAptitude
-			+ (BrGlamorousWithDropdownAptitude
+			+ (BrGlamorousWithExplicitDropdownAptitude
 				 handle: [ 
 					BrButton new
 						aptitude: BrGlamorousButtonWithIconAndLabelAptitude
@@ -179,7 +179,7 @@ GtGitRepositoryElement >> createRepairRepositoryButton [
 			ifFalse: [ 'Repair' ].
 	dropdownButton
 		aptitude: BrGlamorousButtonWithLabelAptitude
-				+ (BrGlamorousWithDropdownAptitude
+				+ (BrGlamorousWithExplicitDropdownAptitude
 						handle: [ BrButton new
 								aptitude: BrGlamorousButtonWithLabelAptitude - BrGlamorousButtonExteriorAptitude;
 								label: buttonLabel ]

@@ -72,7 +72,7 @@ PureGitDirectory >> gtFilesFor: composite [
 		updateWhen: PureGitRepositoryModified in: [ self repository announcer ];
 		actionUpdateButton;
 		actionStencil: [ :aTab | | aptitude |
-			aptitude := BrGlamorousWithDropdownAptitude
+			aptitude := BrGlamorousWithExplicitDropdownAptitude
 				handle: [
 					BrButton new
 						aptitude: BrGlamorousButtonWithIconAptitude;
