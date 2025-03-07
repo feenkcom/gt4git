@@ -71,7 +71,10 @@ IceGitCliRepository >> gtRepositoryDirectoryFor: aView [
 								  ifFalse: [ self index removeFileFromIndex: relative pathString ] ] ] ];
 		  actionButtonIcon: BrGlamorousIcons go
 		  tooltip: 'Open in OS'
-		  action: [ WebBrowser openOn: self location fullName ]
+		  action: [ WebBrowser openOn: self location fullName ];
+		  actionButtonIcon: BrGlamorousVectorIcons inspect 
+			tooltip: 'Inspect pure git repository' 
+			action: [ :element | element phlow spawnObject: (PureGitRepository on: self repositoryDirectory) ]
 ]
 
 { #category : #'*GToolkit4Git' }
