@@ -44,7 +44,7 @@ PureGitTrackedFile >> asKumpelGraphElement [
 						s border: (self contrastColorForAuthor: authorName) darker ];
 					pressed: [ :s | s background: (self contrastColorForAuthor: authorName) muchDarker ]).
 		element
-			addAptitude: (BrGlamorousWithContextMenuAptitude
+			addAptitude: (BrGlamorousWithExplicitContextMenuAptitude
 					content: [ BrLabel new
 							aptitude: BrGlamorousLabelAptitude;
 							text: authorName ]).

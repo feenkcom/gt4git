@@ -27,14 +27,12 @@ IceDiff >> gtViewInspectorDiffFor: aView [
 					c vertical fitContent ];
 				margin: (BlInsets all: 3);
 				constraintsDo: [ :c | c vertical fitContent ];
-				aptitude: (BrGlamorousWithContextMenuAptitude
-						content: [ BrGlamorousSimpleContextMenuContent new
-								items: ({anIceNode value canBeBrowsed
+				aptitude: (BrGlamorousWithExplicitContextMenuAptitude
+						itemsWithAnchorActions: [ ({anIceNode value canBeBrowsed
 											ifTrue: [ 'Browse'
 													-> [ :e | e phlow spawnTool: (anIceNode value definition toolIn: self) ] ]
 											ifFalse: [ nil ].
-										'Revert changes' -> [ self revertChanges: anIceNode ]} reject: #isNil);
-								yourself ]);
+										'Revert changes' -> [ self revertChanges: anIceNode ]} reject: #isNil) ]);
 				addChild: (anIceNode value icon asElement
 						constraintsDo: [ :c | c linear vertical alignCenter ]);
 				addChild: (BrLabel new
