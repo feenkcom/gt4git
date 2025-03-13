@@ -1268,6 +1268,19 @@ GtGitRepository >> gtViewDetailsIn: composite [
 		actionUpdateButton
 ]
 
+{ #category : #'gt - extensions' }
+GtGitRepository >> gtViewRepositoryConstraintsFor: aView [
+	<gtView>
+	<gtRepositoryView>
+	
+	^ aView forward
+		title: 'Constraints';
+		priority: 20;
+		object: [ GtGtoolkitRepositoryArchitecturalReport forRepository:  self ];
+		actionUpdateButton;
+		view: #gtItemsFor:
+]
+
 { #category : #accessing }
 GtGitRepository >> hasBaseline [
 	^ (self workingCopy packages detect: #isMetacelloBaseline ifNone: [ nil ])
