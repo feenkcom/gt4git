@@ -85,7 +85,7 @@ GtGitRepositoryElement >> createPullRepositoryWithIncomingCommits: aListOfIncomi
 								job label: 'Pulling...'.
 								self pullFrom: aButton ] ]
 						named: 'Pull' ])
-				+ (BrGlamorousWithLabelTooltipAptitude new text: 'Pull');
+				+ (BrGlamorousWithExplicitTooltipAptitude text: 'Pull');
 		icon: BrGlamorousVectorIcons down;
 		label: incomingLabel.
 	^ dropdownButton
@@ -95,7 +95,7 @@ GtGitRepositoryElement >> createPullRepositoryWithIncomingCommits: aListOfIncomi
 GtGitRepositoryElement >> createPullRepositoryWithNoIncommingCommitsButton [
 	^ BrButton new
 			aptitude: (BrGlamorousButtonWithIconAndLabelAptitude
-				+ (BrGlamorousWithLabelTooltipAptitude new text: 'Pull'));
+				+ (BrGlamorousWithExplicitTooltipAptitude text: 'Pull'));
 			icon: BrGlamorousVectorIcons down;
 			label: '';
 			action: [ :aButton | 
@@ -126,7 +126,7 @@ GtGitRepositoryElement >> createPushButtonForCommits: aListOfOutgoingCommits [
 								job label: 'Pushing...'.
 								self pushFrom: aButton ] ]
 						named: 'Push' ])
-			+ (BrGlamorousWithLabelTooltipAptitude new text: 'Push');
+			+ (BrGlamorousWithExplicitTooltipAptitude text: 'Push');
 		icon: BrGlamorousVectorIcons up;
 		label: aListOfOutgoingCommits size asRopedText.
 		
