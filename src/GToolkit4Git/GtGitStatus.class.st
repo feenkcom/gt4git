@@ -15,7 +15,7 @@ GtGitStatus >> asElement [
 	| element |
 	element := BlElement new
 		           addAptitude:
-			           (BrGlamorousWithLabelTooltipAptitude new text:
+			           (BrGlamorousWithExplicitTooltipAptitude text:
 					            self label);
 		           margin: (BlInsets right: 10);
 		           layout: BlLinearLayout horizontal alignCenter;

@@ -323,7 +323,7 @@ PureGitTrackedFile >> horizontalChangeBarElementFor: extendedFileCommit normaliz
 		extendedFileCommit comment }.
 	(element := BlElement new)
 		background: (self colorForAuthor: extendedFileCommit author);
-		addAptitude: (BrGlamorousWithLabelTooltipAptitude text: tooltip);
+		addAptitude: (BrGlamorousWithExplicitTooltipAptitude text: tooltip);
 		constraintsDo: [ :c |
 			c horizontal matchParent.
 			c vertical exact: self versionThickness.
@@ -349,7 +349,7 @@ PureGitTrackedFile >> horizontalOwnershipBarElementFor: extendedFileCommit [
 		weight > 0 ifTrue: [
 			container addChild: (BlElement new
 				background: (self colorForAuthor: ownership key);
-				addAptitude: (BrGlamorousWithLabelTooltipAptitude text: tooltip);
+				addAptitude: (BrGlamorousWithExplicitTooltipAptitude text: tooltip);
 				constraintsDo: [ :c |
 					c horizontal matchParent.
 					c vertical exact: self versionThickness.
@@ -397,7 +397,7 @@ PureGitTrackedFile >> verticalChangeBarElementFor: extendedFileCommit normalized
 					extendedFileCommit comment}.
 	(element := BlElement new)
 		background: (self colorForAuthor: extendedFileCommit author);
-		addAptitude: (BrGlamorousWithLabelTooltipAptitude text: tooltip);
+		addAptitude: (BrGlamorousWithExplicitTooltipAptitude text: tooltip);
 		constraintsDo: [ :c | 
 			c horizontal exact: self versionThickness.
 			c vertical matchParent.
@@ -421,7 +421,7 @@ PureGitTrackedFile >> verticalCommitLabelElementFor: extendedFileCommit [
 				addAptitude: (BrGlamorousLabelAptitude new
 						glamorousCodeTinySize;
 						foreground: (self colorForAuthor: extendedFileCommit author));
-				addAptitude: (BrGlamorousWithLabelTooltipAptitude text: tooltip);
+				addAptitude: (BrGlamorousWithExplicitTooltipAptitude text: tooltip);
 				beTinySize;
 				text: extendedFileCommit shortId;
 				constraintsDo: [ :c | c accountTransformation ];
@@ -446,7 +446,7 @@ PureGitTrackedFile >> verticalOwnershipBarElementFor: extendedFileCommit [
 		weight > 0 ifTrue: [
 			container addChild: (BlElement new
 				background: (self colorForAuthor: ownership key);
-				addAptitude: (BrGlamorousWithLabelTooltipAptitude text: tooltip);
+				addAptitude: (BrGlamorousWithExplicitTooltipAptitude text: tooltip);
 				constraintsDo: [ :c |
 					c horizontal exact: self versionThickness.
 					c vertical matchParent.

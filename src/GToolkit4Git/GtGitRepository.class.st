@@ -903,7 +903,7 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 				  element addChild: (cb := BrCheckbox new
 						   aptitude: BrGlamorousCheckboxAptitude
 							   +
-								   (BrGlamorousWithLabelTooltipAptitude new text:
+								   (BrGlamorousWithExplicitTooltipAptitude text:
 										    'Select for Commit');
 						   checked: (chosen includes: anIceNode value );
 						   whenCheckedDo: [ chosen add: anIceNode value ];
@@ -1634,7 +1634,7 @@ GtGitRepository >> statusElementColored: aColor withTooltip: aString [
 
 	^ BlElement new
 		  background: aColor;
-		  aptitude: (BrGlamorousWithLabelTooltipAptitude new text: aString)
+		  aptitude: (BrGlamorousWithExplicitTooltipAptitude text: aString)
 ]
 
 { #category : #accessing }
