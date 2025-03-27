@@ -9,7 +9,8 @@ AbstractFileReference >> filename [
 AbstractFileReference >> gtActionGitRepositoryFor: anAction [
 	<gtAction>
 
-	(self exists and: [ self isDirectory and: [ (self / '.git') exists ] ])
+	(self path isNetworkPath not and:
+	[ (self exists and: [ self isDirectory and: [ (self / '.git') exists ] ]) ])
 		ifFalse: [ ^ anAction noAction ].
 
 	^ anAction button
