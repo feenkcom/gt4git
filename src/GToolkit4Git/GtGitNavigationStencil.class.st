@@ -20,7 +20,6 @@ GtGitNavigationStencil >> announcer [
 
 { #category : #accessing }
 GtGitNavigationStencil >> create [
-
 	^ GtGitNavigationElement new
 		  navigationModel: self navigationModel;
 		  addChild: (GtPhlowCompositeView new
@@ -29,6 +28,10 @@ GtGitNavigationStencil >> create [
 						    pragmaName: #gtGitNavigation;
 						    collect);
 				   asElementDo: [ :aTabGroup | 
+				   	"otherwise is spawns myself"
+				   	aTabGroup
+				   		when: GtPhlowObjectToSpawn
+				   		do: [ :anEvent | anEvent consumed: true ].
 					   aTabGroup
 						   background: BrGlamorousColors neutralBackgroundColor;
 						   matchParent ])
