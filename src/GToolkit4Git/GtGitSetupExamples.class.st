@@ -18,7 +18,8 @@ GtGitSetupExamples >> cleanUpRepositoriesAndDatabases [
 GtGitSetupExamples >> simpleSetupView [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
-	| repository view setupItems executedItems|
+	<return: #BlElement>
+	| repository view setupItems executedItems |
 	lepiterExamples := GtIceLepiterExamples new.
 	repository := lepiterExamples gitRepositoryAWithNoLepiterDatabase.
 
@@ -38,9 +39,11 @@ GtGitSetupExamples >> simpleSetupView [
 GtGitSetupExamples >> simpleSetupViewWithLepiter [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
+	<return: #BlElement>
 	| repository view setupItems |
 	lepiterExamples := GtIceLepiterExamples new.
-	repository := lepiterExamples gitRepositoryAWithNewEmptyNotCommitedLepiterDatabase.
+	repository := lepiterExamples
+			gitRepositoryAWithNewEmptyNotCommitedLepiterDatabase.
 
 	(repository gtSetupHelpFor: GtPhlowView empty)
 		asElementDo: [ :anElement | view := anElement ].

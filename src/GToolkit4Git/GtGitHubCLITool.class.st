@@ -130,7 +130,7 @@ GtGitHubCLITool >> version [
 	This needs no token, nor working directory to be set."
 
 	<gtExample>
-
+	<return: #ByteString>
 	^ (GtExternalProcessBuilder new
 		command: 'gh';
 		args: #('--version');

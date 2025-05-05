@@ -59,11 +59,10 @@ GtGitRepositoryRegistryHistory class >> instance [
 { #category : #operations }
 GtGitRepositoryRegistryHistory >> capture [
 	<gtExample>
-	
+	<return: #GtGitRepositoryRegistryHistory>
 	self records removeAll.
-	IceRepository registry do: [ :each |
-		self records 
-			add: (GtGitRepositoryHistoryRecord capture: each) ]
+	IceRepository registry
+		do: [ :each | self records add: (GtGitRepositoryHistoryRecord capture: each) ]
 ]
 
 { #category : #accessing }
