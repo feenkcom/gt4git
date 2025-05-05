@@ -3,7 +3,7 @@ Extension { #name : #PureGitLocalExamples }
 { #category : #'*GToolkit4Git' }
 PureGitLocalExamples >> baseDirectory [
 	<gtExample>
-	
+	<return: #FileLocator>
 	^ (FileLocator temp / self class name) ensureCreateDirectory
 ]
 

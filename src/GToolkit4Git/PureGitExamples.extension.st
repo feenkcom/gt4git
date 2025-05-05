@@ -162,35 +162,41 @@ PureGitExamples >> exampleDetachedHead [
 { #category : #'*GToolkit4Git' }
 PureGitExamples >> exampleFileContents [
 	<gtExample>
-
-	^ String streamContents: [ :out |
-		(ZnNewLineWriterStream on: out)
-			forPlatformLineEnding;
-			<< 'Sic mundus creatus est.'; newLine ]
+	<return: #ByteString>
+	^ String
+		streamContents: [ :out | 
+			(ZnNewLineWriterStream on: out)
+				forPlatformLineEnding;
+				<< 'Sic mundus creatus est.';
+				newLine ]
 ]
 
 { #category : #'*GToolkit4Git' }
 PureGitExamples >> exampleFileContentsChanged [
 	<gtExample>
-
-	^ String streamContents: [ :out |
-		(ZnNewLineWriterStream on: out)
-			forPlatformLineEnding;
-			<< 'Sic mundus creatus est.'; newLine;
-			<< 'Anno MMXXIV'; newLine ]
+	<return: #ByteString>
+	^ String
+		streamContents: [ :out | 
+			(ZnNewLineWriterStream on: out)
+				forPlatformLineEnding;
+				<< 'Sic mundus creatus est.';
+				newLine;
+				<< 'Anno MMXXIV';
+				newLine ]
 ]
 
 { #category : #'*GToolkit4Git' }
 PureGitExamples >> exampleFileContentsChangedInRepository [
 	<gtExample>
-
+	<return: #ByteString>
 	| autoCrLf |
 	autoCrLf := self currentIceGitCliPlatform config
 			at: 'core.autocrlf'
 			ifAbsent: [ 'false' ].
 	^ autoCrLf = 'false'
 		ifTrue: [ self exampleFileContentsChanged ]
-		ifFalse: [ String streamContents: [ :out | 
+		ifFalse: [ String
+				streamContents: [ :out | 
 					(ZnNewLineWriterStream on: out)
 						forLf;
 						nextPutAll: self exampleFileContentsChanged ] ]
@@ -199,14 +205,15 @@ PureGitExamples >> exampleFileContentsChangedInRepository [
 { #category : #'*GToolkit4Git' }
 PureGitExamples >> exampleFileContentsInRepository [
 	<gtExample>
-
+	<return: #ByteString>
 	| autoCrLf |
 	autoCrLf := self currentIceGitCliPlatform config
 			at: 'core.autocrlf'
 			ifAbsent: [ 'false' ].
 	^ autoCrLf = 'false'
 		ifTrue: [ self exampleFileContents ]
-		ifFalse: [ String streamContents: [ :out | 
+		ifFalse: [ String
+				streamContents: [ :out | 
 					(ZnNewLineWriterStream on: out)
 						forLf;
 						nextPutAll: self exampleFileContents ] ]

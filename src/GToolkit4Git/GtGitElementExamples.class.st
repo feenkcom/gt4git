@@ -18,9 +18,10 @@ GtGitElementExamples >> cleanUpRepository [
 { #category : #examples }
 GtGitElementExamples >> expandedElement [
 	<gtExample>
+	<return: #GtPager>
 	| element |
 	element := self simpleElement createInPager maximized.
-	
+
 	^ element
 ]
 
@@ -32,17 +33,18 @@ GtGitElementExamples >> repositoryName [
 { #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElement [
 	<gtExample>
+	<return: #BlScripter>
 	| aScripter |
-	
 	aScripter := BlScripter new.
 	aScripter element: self expandedElement.
-	
+
 	^ aScripter
 ]
 
 { #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithAddDialogOpen [
 	<gtExample>
+	<return: #BlScripter>
 	| aScripter |
 	aScripter := self scripterOnExpandedElement.
 	aScripter
@@ -60,6 +62,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithAddDialogOpen [
 { #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithDeletedRepository [
 	<gtExample>
+	<return: #IceError>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDone.
 	aScripter
@@ -96,6 +99,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithDeletedRepository [
 { #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithEditedBranch [
 	<gtExample>
+	<return: #IceError>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithExpandedProperties.
 
@@ -129,6 +133,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithEditedBranch [
 { #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithExpandedProperties [
 	<gtExample>
+	<return: #IceError>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDone.
 
@@ -146,6 +151,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithExpandedProperties [
 { #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithExpandedSearch [
 	<gtExample>
+	<return: #BlScripter>
 	| aScripter |
 	aScripter := self scripterOnExpandedElement.
 	aScripter
@@ -163,6 +169,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithExpandedSearch [
 { #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogNavigated [
 	<gtExample>
+	<return: #BlScripter>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDialogOpen.
 	aScripter doubleClick
@@ -180,6 +187,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogNavigat
 { #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogOpen [
 	<gtExample>
+	<return: #BlScripter>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithAddDialogOpen.
 	(FileLocator imageDirectory / self repositoryName) ensureCreateDirectory.
@@ -197,6 +205,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogOpen [
 GtGitElementExamples >> scripterOnExpandedElementWithInitializationDone [
 	<gtExample>
 	<after: #cleanUpRepository>
+	<return: #IceError>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDialogNavigated.
 	aScripter
@@ -303,10 +312,11 @@ GtGitElementExamples >> scripterOnExpandedElementWithSelectedRepository [
 { #category : #examples }
 GtGitElementExamples >> simpleElement [
 	<gtExample>
+	<return: #GtGitElement>
 	| element |
 	element := GtGitElement new.
-	
+
 	self assert: element repository equals: nil.
-	
+
 	^ element
 ]

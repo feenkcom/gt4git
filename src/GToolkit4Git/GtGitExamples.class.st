@@ -7,6 +7,7 @@ Class {
 { #category : #'examples - repository - model' }
 GtGitExamples >> basicRepositoryElement [
 	<gtExample>
+	<return: #GtGitRepositoryElement>
 	| anElement |
 	anElement := GtGitRepositoryElement new.
 	^ anElement
@@ -15,6 +16,7 @@ GtGitExamples >> basicRepositoryElement [
 { #category : #'examples - repository - model' }
 GtGitExamples >> basicRepositoryModel [
 	<gtExample>
+	<return: #GtGitRepository>
 	| aModel |
 	aModel := GtGitRepository new.
 	self assert: aModel repository isNil.
@@ -24,6 +26,7 @@ GtGitExamples >> basicRepositoryModel [
 { #category : #'examples - repository - model' }
 GtGitExamples >> basicRepositoryViewModel [
 	<gtExample>
+	<return: #GtGitRepositoryViewModel>
 	| aViewModel |
 	aViewModel := GtGitRepositoryViewModel new.
 	self assert: aViewModel hasRepository not.
@@ -33,12 +36,11 @@ GtGitExamples >> basicRepositoryViewModel [
 { #category : #'examples - repository - model' }
 GtGitExamples >> mockRepository [
 	<gtExample>
+	<return: #IceGitCliRepository>
 	| aRepository |
 	aRepository := IceRepository registry
-		detect: [ :eachRepository | 
-			eachRepository name = 'gt4git' ]
-		ifNone: [ IceLibgitRepository new 
-			name: 'gt4git-mock' ].
+			detect: [ :eachRepository | eachRepository name = 'gt4git' ]
+			ifNone: [ IceLibgitRepository new name: 'gt4git-mock' ].
 	self assert: aRepository isNotNil.
 	^ aRepository
 ]
@@ -46,6 +48,7 @@ GtGitExamples >> mockRepository [
 { #category : #'examples - repository - model' }
 GtGitExamples >> repositoryElement [
 	<gtExample>
+	<return: #GtGitRepositoryElement>
 	| anElement aViewModel |
 	anElement := self basicRepositoryElement.
 	aViewModel := self repositoryViewModel.
@@ -57,6 +60,7 @@ GtGitExamples >> repositoryElement [
 { #category : #'examples - repository - model' }
 GtGitExamples >> repositoryModel [
 	<gtExample>
+	<return: #GtGitRepository>
 	| aModel aRepository |
 	aModel := self basicRepositoryModel.
 	aRepository := self mockRepository.
@@ -68,6 +72,7 @@ GtGitExamples >> repositoryModel [
 { #category : #'examples - repository - model' }
 GtGitExamples >> repositoryViewModel [
 	<gtExample>
+	<return: #GtGitRepositoryViewModel>
 	| aViewModel aModel |
 	aViewModel := self basicRepositoryViewModel.
 	aModel := self repositoryModel.

@@ -445,18 +445,19 @@ GtIceLepiterExamples >> detachLepiterDatabases [
 { #category : #'examples - checkout' }
 GtIceLepiterExamples >> gitRepositoryACheckoutNewBranch [
 	<gtExample>
-	
+	<return: #GtGitRepository>
 	| gtIceRepository targetDatabase |
 	gtIceRepository := self gitRepositoryACommitNewAddedPage.
-	
-	gtIceRepository 
-		gtLepiterAwareCheckoutBranch: self secondaryBranchName.
-		
-	self assert: gtIceRepository icebergRepository branchName equals: self secondaryBranchName.
+
+	gtIceRepository gtLepiterAwareCheckoutBranch: self secondaryBranchName.
+
+	self
+		assert: gtIceRepository icebergRepository branchName
+		equals: self secondaryBranchName.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
-	
-	self assertNoChangesInRepository:  gtIceRepository.
-	
+
+	self assertNoChangesInRepository: gtIceRepository.
+
 	^ gtIceRepository
 ]
 
@@ -464,178 +465,185 @@ GtIceLepiterExamples >> gitRepositoryACheckoutNewBranch [
 GtIceLepiterExamples >> gitRepositoryACommitEditedPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
+	<return: #GtGitRepository>
 	| gtIceRepository |
 	gtIceRepository := self gitRepositoryAEditExistingPage.
-	
+
 	gtIceRepository executeCommit: 'Edit Page1'.
-	
+
 	self assert: gtIceRepository getDeltasForFullDiff isEmpty.
 	self assert: gtIceRepository workingCopyDiff isEmpty.
-	
+
 	^ gtIceRepository
 ]
 
 { #category : #'examples - checkout' }
 GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch [
 	<gtExample>
-	
+	<return: #GtGitRepository>
 	| gtIceRepository targetDatabase existingPage |
 	gtIceRepository := self gitRepositoryACheckoutNewBranch.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
-	
+
 	existingPage := targetDatabase pageNamed: 'Page1'.
 	existingPage addSnippet: (LeTextSnippet string: 'Snippet2-SecondModified').
-	self 
-		assertOneModifiedPage: existingPage 
-		inRepository: gtIceRepository.
-	
+	self assertOneModifiedPage: existingPage inRepository: gtIceRepository.
+
 	gtIceRepository executeCommit: 'Edit Page1'.
-	self assertNoChangesInRepository:  gtIceRepository.
+	self assertNoChangesInRepository: gtIceRepository.
 	self assert: targetDatabase pageCount equals: 1.
 	self assert: existingPage children size equals: 2.
-	
+
 	^ gtIceRepository
 ]
 
 { #category : #'examples - checkout' }
 GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch [
 	<gtExample>
-	
+	<return: #GtGitRepository>
 	| gtIceRepository targetDatabase targetPage beforeBranches afterBranches |
 	gtIceRepository := self gitRepositoryACommitEditedPageInSecondBranch.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
-	
+
 	beforeBranches := gtIceRepository repository allBranches copy.
 	self assert: beforeBranches size equals: 2.
-	
-	gtIceRepository 
+
+	gtIceRepository
 		gtLepiterAwareCheckoutBranch: gtIceRepository repository initialDefaultBranchName.
-	self assertNoChangesInRepository:  gtIceRepository.
-	
-	afterBranches :=  gtIceRepository repository allBranches copy.
+	self assertNoChangesInRepository: gtIceRepository.
+
+	afterBranches := gtIceRepository repository allBranches copy.
 	self assert: beforeBranches size equals: 2.
-	
+
 	targetPage := targetDatabase pageNamed: 'Page1'.
 	self assert: targetDatabase pageCount equals: 1.
 	self assert: targetPage children size equals: 1.
-	
+
 	^ gtIceRepository
 ]
 
 { #category : #'examples - checkout' }
 GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_commitInMainBranch [
 	<gtExample>
-	
+	<return: #GtGitRepository>
 	| gtIceRepository targetDatabase targetPage |
-	gtIceRepository := self gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch.
+	gtIceRepository := self
+			gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 
 	targetPage := targetDatabase pageNamed: 'Page1'.
 	targetPage addSnippet: (LeTextSnippet string: 'Snippet2-MainModified').
-	self 
-		assertOneModifiedPage: targetPage 
-		inRepository: gtIceRepository.
-		
+	self assertOneModifiedPage: targetPage inRepository: gtIceRepository.
+
 	gtIceRepository executeCommit: 'Edit Page1'.
-	self assertNoChangesInRepository:  gtIceRepository.
-	
+	self assertNoChangesInRepository: gtIceRepository.
+
 	self assert: targetDatabase pageCount equals: 1.
 	self assert: targetPage children size equals: 2.
-	
+
 	^ gtIceRepository
 ]
 
 { #category : #'examples - merge' }
 GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_commitInMainBranch_mergeSecondBranchWithConflict [
 	<gtExample>
-	
+	<return: #GtGitIceMerge>
 	| gtIceRepository targetDatabase mergeException mergeAction conflicts |
-	gtIceRepository := self gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_commitInMainBranch.
+	gtIceRepository := self
+			gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_commitInMainBranch.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 
 	mergeException := nil.
-	[ 
-		gtIceRepository lepiterWorkingCopy 
-			mergeCommit: (gtIceRepository icebergRepository 
-				branchNamed: self secondaryBranchName) commit 
-	] on: IceMergeResolutionRequest do: [ :anException | mergeException := anException ].
+	[ gtIceRepository lepiterWorkingCopy
+		mergeCommit: (gtIceRepository icebergRepository branchNamed: self secondaryBranchName) commit ]
+		on: IceMergeResolutionRequest
+		do: [ :anException | mergeException := anException ].
 	self assert: mergeException notNil.
 	self assert: mergeException merge notNil.
-	
+
 	self assertNoChangesInRepository: gtIceRepository.
-	
+
 	mergeAction := mergeException merge.
 	self assert: mergeAction unresolvedConflictCount equals: 1.
 	conflicts := mergeAction gtConflicts first.
-	
+
 	^ mergeAction
 ]
 
 { #category : #'examples - checkout' }
 GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_mergeSecondBranch [
 	<gtExample>
-	
+	<return: #GtGitRepository>
 	| gtIceRepository targetDatabase targetPage |
-	gtIceRepository := self gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch.
+	gtIceRepository := self
+			gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
-	
-	gtIceRepository lepiterWorkingCopy 
-		mergeCommit: (gtIceRepository icebergRepository 
-			branchNamed: self secondaryBranchName) commit.
-	self assertNoChangesInRepository:  gtIceRepository.
-	
+
+	gtIceRepository lepiterWorkingCopy
+		mergeCommit: (gtIceRepository icebergRepository branchNamed: self secondaryBranchName) commit.
+	self assertNoChangesInRepository: gtIceRepository.
+
 	targetPage := targetDatabase pageNamed: 'Page1'.
 	self assert: targetPage children size equals: 2.
 	self assert: targetPage children first string equals: 'Snippet1'.
-	self assert: targetPage children second string equals: 'Snippet2-SecondModified'.
+	self
+		assert: targetPage children second string
+		equals: 'Snippet2-SecondModified'.
 	self assert: targetDatabase pageCount equals: 1.
-	
+
 	^ gtIceRepository
 ]
 
 { #category : #'examples - checkout' }
 GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_nonConflictingCommitInMainBranch [
 	<gtExample>
-	
+	<return: #GtGitRepository>
 	| gtIceRepository targetDatabase newPage |
-	gtIceRepository := self gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch.
+	gtIceRepository := self
+			gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 
 	newPage := LePage named: 'Page2'.
 	newPage addSnippet: (LeTextSnippet string: 'Snippet2-1').
 	targetDatabase addPage: newPage.
-	
+
 	self assertOneAddedPage: newPage inRepository: gtIceRepository.
-	
+
 	gtIceRepository executeCommit: 'Add Page2'.
-	self assertNoChangesInRepository:  gtIceRepository.
-	
+	self assertNoChangesInRepository: gtIceRepository.
+
 	self assert: targetDatabase pageCount equals: 2.
 	self assert: newPage children size equals: 1.
-	
+
 	^ gtIceRepository
 ]
 
 { #category : #'examples - merge' }
 GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_nonConflictingCommitInMainBranch_mergeSecondBranch [
 	<gtExample>
-	
+	<return: #GtGitRepository>
 	| gtIceRepository targetDatabase |
-	gtIceRepository := self gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_nonConflictingCommitInMainBranch.
+	gtIceRepository := self
+			gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_nonConflictingCommitInMainBranch.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
 
-	gtIceRepository lepiterWorkingCopy 
-		mergeCommit: (gtIceRepository icebergRepository 
-			branchNamed: self secondaryBranchName) commit.
-	
+	gtIceRepository lepiterWorkingCopy
+		mergeCommit: (gtIceRepository icebergRepository branchNamed: self secondaryBranchName) commit.
+
 	self assertNoChangesInRepository: gtIceRepository.
 	self assert: targetDatabase pageCount equals: 2.
 	self assert: (targetDatabase hasPageNamed: 'Page1').
 	self assert: (targetDatabase hasPageNamed: 'Page2').
-	self assert: (targetDatabase pageNamed: 'Page1') children first string equals: 'Snippet1'.
-	self assert: (targetDatabase pageNamed: 'Page1') children second string equals: 'Snippet2-SecondModified'.
-	self assert: (targetDatabase pageNamed: 'Page2') children first string equals: 'Snippet2-1'.
-	
+	self
+		assert: (targetDatabase pageNamed: 'Page1') children first string
+		equals: 'Snippet1'.
+	self
+		assert: (targetDatabase pageNamed: 'Page1') children second string
+		equals: 'Snippet2-SecondModified'.
+	self
+		assert: (targetDatabase pageNamed: 'Page2') children first string
+		equals: 'Snippet2-1'.
+
 	^ gtIceRepository
 ]
 
@@ -643,74 +651,75 @@ GtIceLepiterExamples >> gitRepositoryACommitEditedPageInSecondBranch_checkoutMai
 GtIceLepiterExamples >> gitRepositoryACommitNewAddedPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
+	<return: #GtGitRepository>
 	| gtIceRepository |
 	gtIceRepository := self gitRepositoryAWithNewAddedPage.
-	
+
 	gtIceRepository executeCommit: 'Add Page1'.
-	
+
 	self assert: gtIceRepository getDeltasForFullDiff isEmpty.
 	self assert: gtIceRepository workingCopyDiff isEmpty.
-	
+
 	^ gtIceRepository
 ]
 
 { #category : #'examples - checkout' }
 GtIceLepiterExamples >> gitRepositoryACommitNewPageInSecondBranch [
 	<gtExample>
-	
+	<return: #GtGitRepository>
 	| gtIceRepository targetDatabase newPage |
 	gtIceRepository := self gitRepositoryACheckoutNewBranch.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
-	
+
 	newPage := LePage named: 'Page2'.
 	newPage addSnippet: (LeTextSnippet string: 'Snippet2').
 	targetDatabase addPage: newPage.
 	self assertOneAddedPage: newPage inRepository: gtIceRepository.
-	
+
 	gtIceRepository executeCommit: 'Add Page2'.
-	self assertNoChangesInRepository:  gtIceRepository.
+	self assertNoChangesInRepository: gtIceRepository.
 	self assert: targetDatabase pageCount equals: 2.
 	self assert: (targetDatabase hasPageNamed: 'Page2').
-	
+
 	^ gtIceRepository
 ]
 
 { #category : #'examples - checkout' }
 GtIceLepiterExamples >> gitRepositoryACommitNewPageInSecondBranch_checkoutMainBranch [
 	<gtExample>
-	
+	<return: #GtGitRepository>
 	| gtIceRepository targetDatabase |
 	gtIceRepository := self gitRepositoryACommitNewPageInSecondBranch.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
-	
-	gtIceRepository 
+
+	gtIceRepository
 		gtLepiterAwareCheckoutBranch: gtIceRepository repository initialDefaultBranchName.
-	self assertNoChangesInRepository:  gtIceRepository.
-	
+	self assertNoChangesInRepository: gtIceRepository.
+
 	self assert: targetDatabase pageCount equals: 1.
 	self assert: (targetDatabase hasPageNamed: 'Page1').
 	self assert: (targetDatabase hasPageNamed: 'Page2') not.
-	
+
 	^ gtIceRepository
 ]
 
 { #category : #'examples - merge' }
 GtIceLepiterExamples >> gitRepositoryACommitNewPageInSecondBranch_checkoutMainBranch_mergeSecondBranch [
 	<gtExample>
-	
+	<return: #GtGitRepository>
 	| gtIceRepository targetDatabase |
-	gtIceRepository := self gitRepositoryACommitNewPageInSecondBranch_checkoutMainBranch.
+	gtIceRepository := self
+			gitRepositoryACommitNewPageInSecondBranch_checkoutMainBranch.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
-	
-	gtIceRepository lepiterWorkingCopy 
-		mergeCommit: (gtIceRepository icebergRepository 
-			branchNamed: self secondaryBranchName) commit.
-	self assertNoChangesInRepository:  gtIceRepository.
-	
+
+	gtIceRepository lepiterWorkingCopy
+		mergeCommit: (gtIceRepository icebergRepository branchNamed: self secondaryBranchName) commit.
+	self assertNoChangesInRepository: gtIceRepository.
+
 	self assert: targetDatabase pageCount equals: 2.
 	self assert: (targetDatabase hasPageNamed: 'Page1').
 	self assert: (targetDatabase hasPageNamed: 'Page2').
-	
+
 	^ gtIceRepository
 ]
 
@@ -718,14 +727,15 @@ GtIceLepiterExamples >> gitRepositoryACommitNewPageInSecondBranch_checkoutMainBr
 GtIceLepiterExamples >> gitRepositoryACommitNewUnnamedAddedPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
+	<return: #GtGitRepository>
 	| gtIceRepository |
 	gtIceRepository := self gitRepositoryAWithNewUnnamedAddedPage.
-	
+
 	gtIceRepository executeCommit: 'Add Page1 unnamed'.
-	
+
 	self assert: gtIceRepository getDeltasForFullDiff isEmpty.
 	self assert: gtIceRepository workingCopyDiff isEmpty.
-	
+
 	^ gtIceRepository
 ]
 
@@ -733,74 +743,75 @@ GtIceLepiterExamples >> gitRepositoryACommitNewUnnamedAddedPage [
 GtIceLepiterExamples >> gitRepositoryACommitRemovedPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
+	<return: #GtGitRepository>
 	| gtIceRepository |
 	gtIceRepository := self gitRepositoryARemoveExistingPage.
-	
+
 	gtIceRepository executeCommit: 'Remove Page1'.
-	
+
 	self assert: gtIceRepository getDeltasForFullDiff isEmpty.
 	self assert: gtIceRepository workingCopyDiff isEmpty.
-	
+
 	^ gtIceRepository
 ]
 
 { #category : #'examples - checkout' }
 GtIceLepiterExamples >> gitRepositoryACommitRemovedPageInSecondBranch [
 	<gtExample>
-	
+	<return: #GtGitRepository>
 	| gtIceRepository targetDatabase existingPage |
 	gtIceRepository := self gitRepositoryACheckoutNewBranch.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
-	
+
 	existingPage := targetDatabase pageNamed: 'Page1'.
 	existingPage removeSelf.
-	self 
-		assertOneRemovedPage: existingPage 
-		fromDatabase: targetDatabase 
+	self
+		assertOneRemovedPage: existingPage
+		fromDatabase: targetDatabase
 		inRepository: gtIceRepository.
-	
+
 	gtIceRepository executeCommit: 'Remove Page1'.
-	self assertNoChangesInRepository:  gtIceRepository.
+	self assertNoChangesInRepository: gtIceRepository.
 	self assert: targetDatabase pageCount equals: 0.
 	self assert: (targetDatabase hasPageNamed: 'Page1') not.
-	
+
 	^ gtIceRepository
 ]
 
 { #category : #'examples - checkout' }
 GtIceLepiterExamples >> gitRepositoryACommitRemovedPageInSecondBranch_checkoutMainBranch [
 	<gtExample>
-	
+	<return: #GtGitRepository>
 	| gtIceRepository targetDatabase |
 	gtIceRepository := self gitRepositoryACommitRemovedPageInSecondBranch.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
-	
-	gtIceRepository 
+
+	gtIceRepository
 		gtLepiterAwareCheckoutBranch: gtIceRepository repository initialDefaultBranchName.
-	self assertNoChangesInRepository:  gtIceRepository.
-	
+	self assertNoChangesInRepository: gtIceRepository.
+
 	self assert: targetDatabase pageCount equals: 1.
 	self assert: (targetDatabase hasPageNamed: 'Page1').
-	
+
 	^ gtIceRepository
 ]
 
 { #category : #'examples - merge' }
 GtIceLepiterExamples >> gitRepositoryACommitRemovedPageInSecondBranch_checkoutMainBranch_mergeSecondBranch [
 	<gtExample>
-	
+	<return: #GtGitRepository>
 	| gtIceRepository targetDatabase |
-	gtIceRepository := self gitRepositoryACommitRemovedPageInSecondBranch_checkoutMainBranch.
+	gtIceRepository := self
+			gitRepositoryACommitRemovedPageInSecondBranch_checkoutMainBranch.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
-	
-	gtIceRepository lepiterWorkingCopy 
-		mergeCommit: (gtIceRepository icebergRepository 
-			branchNamed: self secondaryBranchName) commit.
-	self assertNoChangesInRepository:  gtIceRepository.
-	
+
+	gtIceRepository lepiterWorkingCopy
+		mergeCommit: (gtIceRepository icebergRepository branchNamed: self secondaryBranchName) commit.
+	self assertNoChangesInRepository: gtIceRepository.
+
 	self assert: targetDatabase pageCount equals: 0.
 	self assert: (targetDatabase hasPageNamed: 'Page1') not.
-	
+
 	^ gtIceRepository
 ]
 
@@ -808,14 +819,15 @@ GtIceLepiterExamples >> gitRepositoryACommitRemovedPageInSecondBranch_checkoutMa
 GtIceLepiterExamples >> gitRepositoryACommitTwoNewUnnamedAddedPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
+	<return: #GtGitRepository>
 	| gtIceRepository |
 	gtIceRepository := self gitRepositoryAWithTwoNewUnnamedAddedPage.
-	
+
 	gtIceRepository executeCommit: 'Add Two Pages'.
-	
+
 	self assert: gtIceRepository getDeltasForFullDiff isEmpty.
 	self assert: gtIceRepository workingCopyDiff isEmpty.
-	
+
 	^ gtIceRepository
 ]
 
@@ -823,77 +835,84 @@ GtIceLepiterExamples >> gitRepositoryACommitTwoNewUnnamedAddedPage [
 GtIceLepiterExamples >> gitRepositoryAEditExistingPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
+	<return: #GtGitRepository>
 	| gtIceRepository targetDatabase targetPage |
 	gtIceRepository := self gitRepositoryACommitNewAddedPage.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
-	
+
 	targetPage := targetDatabase pageNamed: 'Page1'.
 	targetPage children first updateString: 'Updated Snippet1 Text'.
 
 	self assertOneModifiedPage: targetPage inRepository: gtIceRepository.
-	
+
 	^ gtIceRepository
 ]
 
 { #category : #'examples - merge' }
 GtIceLepiterExamples >> gitRepositoryAPageEditWithMergeConflict_acceptExistingChange [
 	<gtExample>
-	
+	<return: #GtGitIceMerge>
 	| mergeAction conflict |
-	mergeAction := self gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_commitInMainBranch_mergeSecondBranchWithConflict.
+	mergeAction := self
+			gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_commitInMainBranch_mergeSecondBranchWithConflict.
 
 	conflict := mergeAction gtConflicts first.
 	conflict selectRight.
 	self assert: conflict isResolved.
-	
+
 	^ mergeAction
 ]
 
 { #category : #'examples - merge' }
 GtIceLepiterExamples >> gitRepositoryAPageEditWithMergeConflict_acceptExistingChange_performMerge [
 	<gtExample>
-	
+	<return: #GtGitIceMerge>
 	| mergeAction targetDatabase targetPage |
-	mergeAction := self gitRepositoryAPageEditWithMergeConflict_acceptExistingChange.
-	
+	mergeAction := self
+			gitRepositoryAPageEditWithMergeConflict_acceptExistingChange.
+
 	targetDatabase := mergeAction lepiterWorkingCopy databases anyOne.
 	targetPage := targetDatabase pageNamed: 'Page1'.
 
 	mergeAction executeWithoutConflictSignal.
 	self assert: targetPage children size equals: 2.
 	self assert: targetPage children second string equals: 'Snippet2-MainModified'.
-	
+
 	^ mergeAction
 ]
 
 { #category : #'examples - merge' }
 GtIceLepiterExamples >> gitRepositoryAPageEditWithMergeConflict_acceptIncomingChange [
 	<gtExample>
-	
+	<return: #GtGitIceMerge>
 	| mergeAction conflict |
-	mergeAction := self gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_commitInMainBranch_mergeSecondBranchWithConflict.
+	mergeAction := self
+			gitRepositoryACommitEditedPageInSecondBranch_checkoutMainBranch_commitInMainBranch_mergeSecondBranchWithConflict.
 
 	conflict := mergeAction gtConflicts first.
 	conflict selectLeft.
 	self assert: conflict isResolved.
-	
+
 	^ mergeAction
 ]
 
 { #category : #'examples - merge' }
 GtIceLepiterExamples >> gitRepositoryAPageEditWithMergeConflict_acceptIncomingChange_performMerge [
 	<gtExample>
-	
+	<return: #GtGitIceMerge>
 	| mergeAction targetDatabase targetPage |
-	mergeAction := self gitRepositoryAPageEditWithMergeConflict_acceptIncomingChange.
-	
+	mergeAction := self
+			gitRepositoryAPageEditWithMergeConflict_acceptIncomingChange.
+
 	targetDatabase := mergeAction lepiterWorkingCopy databases anyOne.
 	targetPage := targetDatabase pageNamed: 'Page1'.
-	
+
 	mergeAction executeWithoutConflictSignal.
 	self assert: targetPage children size equals: 2.
-	self assert: targetPage children second string equals: 'Snippet2-SecondModified'.
-	
+	self
+		assert: targetPage children second string
+		equals: 'Snippet2-SecondModified'.
+
 	^ mergeAction
 ]
 
@@ -901,18 +920,19 @@ GtIceLepiterExamples >> gitRepositoryAPageEditWithMergeConflict_acceptIncomingCh
 GtIceLepiterExamples >> gitRepositoryARemoveExistingPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
+	<return: #GtGitRepository>
 	| gtIceRepository targetDatabase targetPage |
 	gtIceRepository := self gitRepositoryACommitNewAddedPage.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
-	
+
 	targetPage := targetDatabase pageNamed: 'Page1'.
 	targetPage removeSelf.
 
-	self 
-		assertOneRemovedPage: targetPage 
-		fromDatabase: targetDatabase 
+	self
+		assertOneRemovedPage: targetPage
+		fromDatabase: targetDatabase
 		inRepository: gtIceRepository.
-	
+
 	^ gtIceRepository
 ]
 
@@ -920,28 +940,29 @@ GtIceLepiterExamples >> gitRepositoryARemoveExistingPage [
 GtIceLepiterExamples >> gitRepositoryAWithEmptyCommitedLepiterDatabase [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
+	<return: #GtGitRepository>
 	| gtIceRepository |
-	
-	gtIceRepository := self gitRepositoryAWithNewEmptyNotCommitedLepiterDatabase. 
+	gtIceRepository := self gitRepositoryAWithNewEmptyNotCommitedLepiterDatabase.
 	gtIceRepository executeCommit: 'Add Database'.
-	
+
 	self assert: gtIceRepository getDeltasForFullDiff isEmpty.
 	self assert: gtIceRepository workingCopyDiff isEmpty.
-	
+
 	^ gtIceRepository
 ]
 
 { #category : #'examples - nested folder' }
 GtIceLepiterExamples >> gitRepositoryAWithEmptyCommitedLepiterDatabaseInNestedFolder [
 	<gtExample>
+	<return: #GtGitRepository>
 	| gtIceRepository |
-	
-	gtIceRepository := self gitRepositoryAWithNewEmptyNotCommitedLepiterDatabaseInNestedFolder. 
+	gtIceRepository := self
+			gitRepositoryAWithNewEmptyNotCommitedLepiterDatabaseInNestedFolder.
 	gtIceRepository executeCommit: 'Add Nested Database'.
-	
+
 	self assert: gtIceRepository getDeltasForFullDiff isEmpty.
 	self assert: gtIceRepository workingCopyDiff isEmpty.
-	
+
 	^ gtIceRepository
 ]
 
@@ -949,16 +970,17 @@ GtIceLepiterExamples >> gitRepositoryAWithEmptyCommitedLepiterDatabaseInNestedFo
 GtIceLepiterExamples >> gitRepositoryAWithNewAddedPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
+	<return: #GtGitRepository>
 	| gtIceRepository targetDatabase newPage |
 	gtIceRepository := self gitRepositoryAWithEmptyCommitedLepiterDatabase.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
-	
+
 	newPage := LePage named: 'Page1'.
 	newPage addSnippet: (LeTextSnippet string: 'Snippet1').
 	targetDatabase addPage: newPage.
-	
+
 	self assertOneAddedPage: newPage inRepository: gtIceRepository.
-	
+
 	^ gtIceRepository
 ]
 
@@ -966,24 +988,27 @@ GtIceLepiterExamples >> gitRepositoryAWithNewAddedPage [
 GtIceLepiterExamples >> gitRepositoryAWithNewEmptyNotCommitedLepiterDatabase [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
+	<return: #GtGitRepository>
 	| gtIceRepository lepiterWorkingCopy targetDatabase diff databaseNode |
-	
-	gtIceRepository := self 
-		createIcebergRepositoryNamed: self repositoryName 
-		withLepiterDatabaseNamed: 'database-a'. 
-	
+	gtIceRepository := self
+			createIcebergRepositoryNamed: self repositoryName
+			withLepiterDatabaseNamed: 'database-a'.
+
 	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
 	self assert: lepiterWorkingCopy databases size equals: 1.
 	targetDatabase := lepiterWorkingCopy databases anyOne.
-	self 
-		assert: lepiterWorkingCopy databases anyOne databaseName 
+	self
+		assert: lepiterWorkingCopy databases anyOne databaseName
 		equals: 'database-a'.
-	
+
 	diff := lepiterWorkingCopy diffToReferenceCommit.
 	self assert: diff isEmpty not.
 
-	self assertDiff: diff withChildrenCount: 1 andFullCount: 3.
-	
+	self
+		assertDiff: diff
+		withChildrenCount: 1
+		andFullCount: 3.
+
 	databaseNode := diff tree children first.
 	self
 		assertDatabaseNode: databaseNode
@@ -993,7 +1018,7 @@ GtIceLepiterExamples >> gitRepositoryAWithNewEmptyNotCommitedLepiterDatabase [
 		assertDatabasePropertiesNode: databaseNode children first
 		forDatabase: targetDatabase
 		withOperation: #add.
-	
+
 	^ gtIceRepository
 ]
 
@@ -1001,37 +1026,40 @@ GtIceLepiterExamples >> gitRepositoryAWithNewEmptyNotCommitedLepiterDatabase [
 GtIceLepiterExamples >> gitRepositoryAWithNewEmptyNotCommitedLepiterDatabaseInNestedFolder [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
+	<return: #GtGitRepository>
 	| gtIceRepository lepiterWorkingCopy targetDatabase diff folderOneNode folderTwoNode databaseNode |
-	
-	gtIceRepository := self 
-		createIcebergRepositoryNamed: self repositoryName 
-		withLepiterDatabaseNamed: 'database-a'
-		atLocation: 'lepiter/foo/bar'.
-	
+	gtIceRepository := self
+			createIcebergRepositoryNamed: self repositoryName
+			withLepiterDatabaseNamed: 'database-a'
+			atLocation: 'lepiter/foo/bar'.
+
 	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
 	self assert: lepiterWorkingCopy databases size equals: 1.
 	targetDatabase := lepiterWorkingCopy databases anyOne.
-	self 
-		assert: lepiterWorkingCopy databases anyOne databaseName 
+	self
+		assert: lepiterWorkingCopy databases anyOne databaseName
 		equals: 'database-a'.
-	
+
 	diff := lepiterWorkingCopy diffToReferenceCommit.
 	self assert: diff isEmpty not.
 
-	self assertDiff: diff withChildrenCount: 1 andFullCount: 5.
-	
+	self
+		assertDiff: diff
+		withChildrenCount: 1
+		andFullCount: 5.
+
 	folderOneNode := diff tree children first.
-	self 
+	self
 		assertFolderNode: folderOneNode
 		forName: 'lepiter'
 		withChildrenCount: 1.
-	
+
 	folderTwoNode := folderOneNode children first.
-	self 
+	self
 		assertFolderNode: folderTwoNode
 		forName: 'foo'
 		withChildrenCount: 1.
-		
+
 	databaseNode := folderTwoNode children first.
 	self
 		assertDatabaseNode: databaseNode
@@ -1041,8 +1069,10 @@ GtIceLepiterExamples >> gitRepositoryAWithNewEmptyNotCommitedLepiterDatabaseInNe
 		assertDatabasePropertiesNode: databaseNode children first
 		forDatabase: targetDatabase
 		withOperation: #add.
-	self assert: databaseNode value definition localRootRelativePath equals: (Path * 'lepiter' / 'foo' / 'bar').
-	
+	self
+		assert: databaseNode value definition localRootRelativePath
+		equals: Path * 'lepiter' / 'foo' / 'bar'.
+
 	^ gtIceRepository
 ]
 
@@ -1050,15 +1080,19 @@ GtIceLepiterExamples >> gitRepositoryAWithNewEmptyNotCommitedLepiterDatabaseInNe
 GtIceLepiterExamples >> gitRepositoryAWithNewPageWithAttachment [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
+	<return: #GtGitRepository>
 	| gtIceRepository targetDatabase newPage diff databaseNode pagesNode attachmentsNode |
 	gtIceRepository := self gitRepositoryAWithEmptyCommitedLepiterDatabase.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
-	
+
 	newPage := self createNewPageWithAttachmentIn: targetDatabase.
-	
+
 	diff := gtIceRepository workingCopyDiff.
-	self assertDiff: diff withChildrenCount: 1 andFullCount: 8.
-	
+	self
+		assertDiff: diff
+		withChildrenCount: 1
+		andFullCount: 8.
+
 	databaseNode := diff tree children first.
 	self
 		assertDatabaseNode: databaseNode
@@ -1066,20 +1100,20 @@ GtIceLepiterExamples >> gitRepositoryAWithNewPageWithAttachment [
 		withChildrenCount: 2.
 	pagesNode := databaseNode children second.
 	self assertPagesNode: pagesNode withChildrenCount: 1.
-	self 
-		assertPageNode: pagesNode children first 
+	self
+		assertPageNode: pagesNode children first
 		fromDatabase: targetDatabase
-		forPage: newPage 
+		forPage: newPage
 		withOperation: #add.
-	
+
 	attachmentsNode := databaseNode children first.
 	self assertAttachmentsNode: attachmentsNode withChildrenCount: 1.
-	self 
-		assertAttachmentNode: attachmentsNode children first 
+	self
+		assertAttachmentNode: attachmentsNode children first
 		fromDatabase: targetDatabase
-		forDirectory: targetDatabase attachmentDirectories first 
+		forDirectory: targetDatabase attachmentDirectories first
 		withOperation: #add.
-	
+
 	^ gtIceRepository
 ]
 
@@ -1087,19 +1121,20 @@ GtIceLepiterExamples >> gitRepositoryAWithNewPageWithAttachment [
 GtIceLepiterExamples >> gitRepositoryAWithNewUnnamedAddedPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
+	<return: #GtGitRepository>
 	| gtIceRepository targetDatabase newPage deltas |
 	gtIceRepository := self gitRepositoryAWithEmptyCommitedLepiterDatabase.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
-	
+
 	newPage := LePage unnamedPage.
 	newPage addSnippet: (LeTextSnippet string: 'Block1 in Unnamed Page').
 	targetDatabase addPage: newPage.
-	
+
 	deltas := gtIceRepository repository getDeltasForFullDiff.
 	self assert: deltas size equals: 1.
-	
+
 	self assertOneAddedPage: newPage inRepository: gtIceRepository.
-	
+
 	^ gtIceRepository
 ]
 
@@ -1107,80 +1142,75 @@ GtIceLepiterExamples >> gitRepositoryAWithNewUnnamedAddedPage [
 GtIceLepiterExamples >> gitRepositoryAWithNoLepiterDatabase [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
-	
+	<return: #GtGitRepository>
 	| iceRepository gtIceRepository lepiterWorkingCopy |
 	iceRepository := self createBasicIcebergRepositoryWithName: self repositoryName.
 	gtIceRepository := GtGitRepository fromIcebergRepository: iceRepository.
-	
+
 	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
 	self assert: lepiterWorkingCopy databases size equals: 0.
 	self assertNoChangesInRepository: gtIceRepository.
-	
+
 	^ gtIceRepository
 ]
 
 { #category : #'examples - checkout' }
 GtIceLepiterExamples >> gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch [
 	<gtExample>
-	
+	<return: #GtGitRepository>
 	| gtIceRepository lepiterWorkingCopy |
 	gtIceRepository := self gitRepositoryAWithNoLepiterDatabase.
-	
+
 	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
 	self assert: lepiterWorkingCopy databases size equals: 0.
-	
-	gtIceRepository 
-		gtLepiterAwareCheckoutBranch: self secondaryBranchName.
-	
+
+	gtIceRepository gtLepiterAwareCheckoutBranch: self secondaryBranchName.
+
 	self assert: lepiterWorkingCopy databases size equals: 0.
 	self assertNoChangesInRepository: gtIceRepository.
-	
+
 	^ gtIceRepository
 ]
 
 { #category : #'examples - checkout' }
 GtIceLepiterExamples >> gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch_commitDatabase [
 	<gtExample>
-	
+	<return: #GtGitRepository>
 	| gtIceRepository targetDatabase lepiterWorkingCopy newPage |
-	gtIceRepository := self gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch.
-	
-	targetDatabase := self 
-		createDatabaseNamed: 'database-a' 
-		inIcebergRepository: gtIceRepository icebergRepository.
-		
-	"There should be deltas because the database files were written to disk"
-	self assert: gtIceRepository getDeltasForFullDiff isNotEmpty.
-	"The diff with the working copy is also not empty, buy contains just file definitions as the database is not yet added to the repository"
+	gtIceRepository := self
+			gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch.
+
+	targetDatabase := self
+			createDatabaseNamed: 'database-a'
+			inIcebergRepository: gtIceRepository icebergRepository.	"There should be deltas because the database files were written to disk"
+	self assert: gtIceRepository getDeltasForFullDiff isNotEmpty.	"The diff with the working copy is also not empty, buy contains just file definitions as the database is not yet added to the repository"
 	self assert: gtIceRepository workingCopyDiff isEmpty not.
-	self assert: (gtIceRepository workingCopyDiff treeToShow allChildren
-			collect: [ :each | each definition class])  asArray
-		equals: {
-			IceDirectoryDefinition. 
-			IceFileDefinition}.
-	self assert: (gtIceRepository workingCopyDiff treeToShow allChildren
-			collect: [ :each | each definition path])  asArray
-		equals: {
-			Path * 'lepiter' . 
-			Path * 'lepiter' / 'lepiter.properties'}.
-		
+	self
+		assert: (gtIceRepository workingCopyDiff treeToShow allChildren
+				collect: [ :each | each definition class ]) asArray
+		equals: {IceDirectoryDefinition.
+				IceFileDefinition}.
+	self
+		assert: (gtIceRepository workingCopyDiff treeToShow allChildren
+				collect: [ :each | each definition path ]) asArray
+		equals: {Path * 'lepiter'.
+				Path * 'lepiter' / 'lepiter.properties'}.
+
 	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
 	lepiterWorkingCopy addDatabase: targetDatabase.
-		
+
 	gtIceRepository executeCommit: 'Add Database'.
-	
+
 	newPage := LePage named: 'Page1'.
 	newPage addSnippet: (LeTextSnippet string: 'Snippet1').
 	targetDatabase addPage: newPage.
-	self 
-		assertOneAddedPage: newPage 
-		inRepository: gtIceRepository.
-	
+	self assertOneAddedPage: newPage inRepository: gtIceRepository.
+
 	gtIceRepository executeCommit: 'Add Page1'.
-	self assertNoChangesInRepository:  gtIceRepository.
+	self assertNoChangesInRepository: gtIceRepository.
 	self assert: targetDatabase pageCount equals: 1.
 	self assert: newPage children size equals: 1.
-	
+
 	^ gtIceRepository
 ]
 
@@ -1188,45 +1218,50 @@ GtIceLepiterExamples >> gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch
 GtIceLepiterExamples >> gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch_commitDatabase_checkoutMainBranch [
 	"Example for checking out a branch that removes a database. The current branch has a Lepiter databases.
 	The main branch does not have the database. Switching to the main branch should remove the database."
+
 	<gtExample>
-	
+	<return: #GtGitRepository>
 	| gtIceRepository lepiterWorkingCopy |
-	gtIceRepository := self gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch_commitDatabase.
-	
-	gtIceRepository 
+	gtIceRepository := self
+			gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch_commitDatabase.
+
+	gtIceRepository
 		gtLepiterAwareCheckoutBranch: gtIceRepository repository initialDefaultBranchName.
-		
+
 	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
-	self assertNoChangesInRepository:  gtIceRepository.
-	self assert: (self databaseLocationForRepository: gtIceRepository icebergRepository) files size equals: 0.
-	
+	self assertNoChangesInRepository: gtIceRepository.
+	self
+		assert: (self databaseLocationForRepository: gtIceRepository icebergRepository) files
+				size
+		equals: 0.
+
 	self assert: lepiterWorkingCopy databases size equals: 0.
-	
+
 	^ gtIceRepository
 ]
 
 { #category : #'examples - merge' }
 GtIceLepiterExamples >> gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch_commitDatabase_checkoutMainBranch_mergeSecondBranch [
 	"Example for merging a branch that has a lepiter database"
+
 	<gtExample>
-	
+	<return: #GtGitRepository>
 	| gtIceRepository lepiterWorkingCopy targetDatabase |
-	gtIceRepository := self gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch_commitDatabase_checkoutMainBranch.
+	gtIceRepository := self
+			gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch_commitDatabase_checkoutMainBranch.
 	lepiterWorkingCopy := gtIceRepository lepiterWorkingCopy.
-	
-	lepiterWorkingCopy 
-		mergeCommit: (gtIceRepository icebergRepository 
-			branchNamed: self secondaryBranchName) commit.
-	self assertNoChangesInRepository:  gtIceRepository.
-	
-	"Databases are not added automatically."
+
+	lepiterWorkingCopy
+		mergeCommit: (gtIceRepository icebergRepository branchNamed: self secondaryBranchName) commit.
+	self assertNoChangesInRepository: gtIceRepository.	"Databases are not added automatically."
 	self assert: lepiterWorkingCopy databases size equals: 0.
-	
-	targetDatabase := self loadDatabaseInIcebergRepository: gtIceRepository icebergRepository.
+
+	targetDatabase := self
+			loadDatabaseInIcebergRepository: gtIceRepository icebergRepository.
 	lepiterWorkingCopy addDatabase: targetDatabase.
-	
+
 	self assert: (targetDatabase hasPageNamed: 'Page1').
-	
+
 	^ gtIceRepository
 ]
 
@@ -1234,36 +1269,41 @@ GtIceLepiterExamples >> gitRepositoryAWithNoLepiterDatabase_checkoutSecondBranch
 GtIceLepiterExamples >> gitRepositoryAWithTwoNewUnnamedAddedPage [
 	<gtExample>
 	<after: #cleanUpRepositoriesAndDatabases>
+	<return: #GtGitRepository>
 	| gtIceRepository targetDatabase newPage1 newPage2 diff databaseNode pagesNode deltas |
 	gtIceRepository := self gitRepositoryAWithEmptyCommitedLepiterDatabase.
 	targetDatabase := gtIceRepository lepiterWorkingCopy databases anyOne.
-	
+
 	newPage1 := LePage unnamedPage.
 	newPage1 addSnippet: (LeTextSnippet string: 'Block1 in Unnamed Page2').
 	targetDatabase addPage: newPage1.
-	
+
 	newPage2 := LePage unnamedPage.
 	newPage2 addSnippet: (LeTextSnippet string: 'Block1 in Unnamed Page2').
 	targetDatabase addPage: newPage2.
-	
+
 	deltas := gtIceRepository repository getDeltasForFullDiff.
 	self assert: deltas size equals: 2.
-	
+
 	diff := gtIceRepository workingCopyDiff.
-	self assertDiff: diff withChildrenCount: 1 andFullCount: 5.
-	
+	self
+		assertDiff: diff
+		withChildrenCount: 1
+		andFullCount: 5.
+
 	databaseNode := diff tree children first.
 	self
 		assertDatabaseNode: databaseNode
 		forDatabase: targetDatabase
 		withChildrenCount: 1.
-		
+
 	pagesNode := databaseNode children first.
 	self assertPagesNode: pagesNode withChildrenCount: 2.
-	self 
-		assertAddedPageNodes: pagesNode children 
-		forPages: {newPage1 . newPage2}.
-	
+	self
+		assertAddedPageNodes: pagesNode children
+		forPages: {newPage1.
+				newPage2}.
+
 	^ gtIceRepository
 ]
 
