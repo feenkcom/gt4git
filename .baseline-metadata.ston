@@ -1,6 +1,6 @@
 {
 	"repositories" : {
-		"github://feenkcom/Brick/src" : "v0.8.1526",
+		"github://feenkcom/Brick/src" : "v0.8.1527",
 		"github://feenkcom/iceberg-git-cli/src" : "v0.6.133"
 	}
 }
