@@ -863,10 +863,9 @@ GtGitRepository >> gtAllLoadedExamples [
 GtGitRepository >> gtChangesFor: aView context: aContext [
 	<gtView>
 	<gtRepositoryView>
-	
-	| aViewModel changes chosen viewMap|
+	| aViewModel changes chosen viewMap |
 	chosen := Set new.
-	viewMap := Dictionary new. "item -> checkbox"
+	viewMap := Dictionary new.	"item -> checkbox"
 
 	self isMissing ifTrue: [ ^ aView empty ].
 
@@ -874,114 +873,116 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 
 	self lepiterWorkingCopy ifNil: [ ^ aView empty ].
 	changes := self workingCopyDiff treeToShow.
-	(changes isNil or: [ changes isEmpty ]) ifTrue: [ 
-		self repository isModified ifTrue: [ self refreshDirtyPackages ].
-		^ aView empty ].
+	(changes isNil or: [ changes isEmpty ])
+		ifTrue: [ self repository isModified ifTrue: [ self refreshDirtyPackages ].
+			^ aView empty ].
 
-	changes do: [ :change | 
-		change value hasChanges ifTrue: [ chosen add: change ] ].
+	changes
+		do: [ :change | change value hasChanges ifTrue: [ chosen add: change ] ].
 
 	^ aView tree
-		  title: 'Changes';
-		  items: [ changes children ];
-		  children: #children;
-		  expandUpTo: 3;
-		  priority: 3;
-		  stencil: [ :anIceNode | 
-			  | element contextMenuOptions |
-			  contextMenuOptions := self contextMenuOptionsFor: anIceNode.
-			  element := BlElement new
-				             layout: BlLinearLayout horizontal alignCenterLeft;
-				             constraintsDo: [ :c | 
-					             c horizontal matchParent.
-					             c vertical fitContent ];
-				             margin: (BlInsets all: 3);
-				             constraintsDo: [ :c | c vertical fitContent ];
-				             aptitude:
-					             (BrGlamorousWithExplicitContextMenuAptitude itemsWithAnchorActions: contextMenuOptions).
-			  anIceNode value hasChanges ifTrue: [ |cb|
-				  element addChild: (cb := BrCheckbox new
-						   aptitude: BrGlamorousCheckboxAptitude
-							   +
-								   (BrGlamorousWithExplicitTooltipAptitude text:
-										    'Select for Commit');
-						   checked: (chosen includes: anIceNode value );
-						   whenCheckedDo: [ chosen add: anIceNode value ];
-						   margin: (BlInsets right: 8);
-						   whenUncheckedDo: [ 
-							   chosen remove: anIceNode value ifAbsent: [  ] ]).
-				   viewMap at: anIceNode value put: cb].
-			  element
-				  addChild:
-					  (anIceNode value icon asElement constraintsDo: [ :c | 
-							   c linear horizontal alignCenter ]);
-				  addChild: (BrLabel new
-						   aptitude: BrGlamorousLabelAptitude;
-						   text: anIceNode value name asString asRopedText;
-						   padding: (BlInsets
-								    top: 0
-								    left: 6
-								    bottom: 0
-								    right: 3);
-						   constraintsDo: [ :c | c linear horizontal alignCenter ]) ];
+		title: 'Changes';
+		items: [ changes children ];
+		children: #children;
+		expandUpTo: 3;
+		priority: 3;
+		stencil: [ :anIceNode | 
+			| element contextMenuOptions |
+			contextMenuOptions := self contextMenuOptionsFor: anIceNode.
+			element := BlElement new
+					layout: BlLinearLayout horizontal alignCenterLeft;
+					constraintsDo: [ :c | 
+						c horizontal matchParent.
+						c vertical fitContent ];
+					margin: (BlInsets all: 3);
+					constraintsDo: [ :c | c vertical fitContent ];
+					aptitude: (BrGlamorousWithExplicitContextMenuAptitude
+							itemsWithAnchorActions: contextMenuOptions).
+			anIceNode value hasChanges
+				ifTrue: [ | cb |
+					element
+						addChild: (cb := BrCheckbox new
+									aptitude: BrGlamorousCheckboxAptitude
+											+ (BrGlamorousWithExplicitTooltipAptitude text: 'Select for Commit');
+									checked: (chosen includes: anIceNode value);
+									whenCheckedDo: [ chosen add: anIceNode value ];
+									margin: (BlInsets right: 8);
+									whenUncheckedDo: [ chosen remove: anIceNode value ifAbsent: [  ] ]).
+					viewMap at: anIceNode value put: cb ].
+			element
+				addChild: (anIceNode value icon asElement
+						constraintsDo: [ :c | c linear horizontal alignCenter ]);
+				addChild: (BrLabel new
+						aptitude: BrGlamorousLabelAptitude;
+						text: anIceNode value name asString asRopedText;
+						padding: (BlInsets
+								top: 0
+								left: 6
+								bottom: 0
+								right: 3);
+						constraintsDo: [ :c | c linear horizontal alignCenter ]) ];
+		actionButtonLabel: 'Toggle All'
+			action: [ changes
+					do: [ :change | 
+						change value hasChanges
+							ifTrue: [ viewMap at: change value ifPresent: [ :cb | cb checked: cb isChecked not ] ] ] ];
+		actionDropdownButtonLabel: 'Commit'
+			tooltip: 'Commit changes'
+			content: [ :aDropdown :aTarget | 
+				| editor button saveAction |
+				editor := BrEditor new
+						aptitude: BrGlamorousRegularEditorAptitude;
+						text: aViewModel commitMessage;
+						hMatchParent;
+						vFitContentLimited;
+						requestFocus.
+				editor selecter
+					all;
+					select.
 
-		  actionButtonLabel: 'Toggle All' action: [
-		  	changes do: [:change | change value hasChanges ifTrue: [ 
-		  		viewMap at: change value ifPresent: [:cb |
-		  			cb checked: cb isChecked not ]]]];
+				saveAction := [ | commitMessage |
+					commitMessage := editor editor text asString.
+					self
+						executeAsAsyncJob: [ :job | 
+							job label: 'Committing...'.
+							aViewModel executeCommit: commitMessage withChanges: chosen.
+							button disable.
+							aDropdown
+								enqueueTask: (BlTaskAction new
+										action: [ aDropdown dispatchEvent: (BrDropdownHideWish new anchor: aDropdown) ]).
+							aDropdown phlow fireToolUpdateWish ] ].
 
-		  actionDropdownButtonLabel: 'Commit'
-		  tooltip: 'Commit changes'
-		  content: [ :aDropdown :aTarget | 
-			  | editor button saveAction |
-			  editor := BrEditor new
-				            aptitude: BrGlamorousRegularEditorAptitude;
-				            text: aViewModel commitMessage;
-				            hMatchParent;
-				            vFitContentLimited;
-				            requestFocus.
-			  editor selecter
-				  all;
-				  select.
+				editor
+					addEditorShortcut: (BlShortcutWithAction new
+							combination: BlKeyCombination primaryS;
+							action: saveAction).
+				editor
+					addEditorShortcut: (BlShortcutWithAction new
+							combination: BlKeyCombination primaryReturn;
+							action: saveAction).
 
-			  saveAction := [ | commitMessage |
-			  	commitMessage := editor editor text asString.
-			  	self executeAsAsyncJob: [ :job |
-			  		job label: 'Committing...'.
-			  		aViewModel
-			  			executeCommit: commitMessage
-			  			withChanges: chosen.
-			  		button disable.
-			  		aDropdown enqueueTask:
-			  			(BlTaskAction new action: [ 
-			  				aDropdown dispatchEvent: (BrDropdownHideWish new anchor: aDropdown) ]).
-			  		aDropdown phlow fireToolUpdateWish ] ].
+				button := BrButton new.
+				button
+					aptitude: BrGlamorousButtonWithIconAptitude;
+					icon: BrGlamorousVectorIcons accept;
+					label: 'Commit';
+					disabled: editor text isEmpty;
+					action: saveAction.
 
-			  editor addEditorShortcut: (BlShortcutWithAction new
-					   combination: BlKeyCombination primaryS;
-					   action: saveAction).
+				editor editor inputFilter: GtGitGitHubUrlFilter new.
 
-			  button := BrButton new.
-			  button
-				  aptitude: BrGlamorousButtonWithIconAptitude;
-				  icon: BrGlamorousVectorIcons accept;
-				  label: 'Commit';
-				  disabled: editor text isEmpty;
-				  action: saveAction.
+				editor editor
+					when: BrTextEditorModifiedEvent
+					do: [ :anEvent | 
+						GtGitCommitMessage default lastMessage: anEvent text.
+						button disabled: anEvent text isEmpty ].
 
-			  editor editor inputFilter: GtGitGitHubUrlFilter new.
-				  
-			  editor editor
-				  when: BrTextEditorModifiedEvent
-				  do: [ :anEvent | button disabled: anEvent text isEmpty ].
-
-			  BrVerticalPane new
-				  hExact: 400;
-				  vFitContentLimited;
-				  padding: (BlInsets all: 10);
-				  addChildren: { 
-						  editor.
-						  button } ]
+				BrVerticalPane new
+					hExact: 400;
+					vFitContentLimited;
+					padding: (BlInsets all: 10);
+					addChildren: {editor.
+							button} ]
 ]
 
 { #category : #'gt - extensions' }

@@ -41,7 +41,6 @@ GtGitRepositoryViewModel >> executeCommit: aCommitMessage [
 
 { #category : #accessing }
 GtGitRepositoryViewModel >> executeCommit: aCommitMessage withChanges: changes [
-	GtGitCommitMessage default lastMessage: aCommitMessage.
 	self commitMessage: aCommitMessage.
 	self repositoryModel executeCommit: aCommitMessage withChanges: changes.
 ]
