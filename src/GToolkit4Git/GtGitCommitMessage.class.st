@@ -9,6 +9,15 @@ Class {
 	#category : #'GToolkit4Git-UI - View Model'
 }
 
+{ #category : #'as yet unclassified' }
+GtGitCommitMessage >> gtCommitMessageViewFor: aView [
+	<gtView>
+	^ aView text
+		title: 'Commit Message';
+		priority: 10;
+		text: [ self lastMessage ]
+]
+
 { #category : #initialization }
 GtGitCommitMessage >> initialize [
 	super initialize.
