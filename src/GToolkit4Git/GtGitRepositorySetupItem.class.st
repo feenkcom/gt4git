@@ -58,7 +58,7 @@ GtGitRepositorySetupItem >> disabledCheckBoxChecked: aBoolean [
 				+ (BrCheckboxAptitude new
 						hovered: [ :aStyle | 
 							aStyle
-								border: (BlBorder paint: BrTheme default button defaultBorderColor width: 1) ]);
+								border: (BlBorder paint: BlTheme default button defaultBorderColor width: 1) ]);
 		margin: (BlInsets left: 14);
 		disable;
 		checked: aBoolean
