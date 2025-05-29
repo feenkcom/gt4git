@@ -33,7 +33,7 @@ GtGitNavigationStencil >> create [
 				   		when: GtPhlowObjectToSpawn
 				   		do: [ :anEvent | anEvent consumed: true ].
 					   aTabGroup
-						   background: BrGlamorousColors neutralBackgroundColor;
+						   background: BlTheme default default navigationBackground;
 						   matchParent ])
 ]
 
