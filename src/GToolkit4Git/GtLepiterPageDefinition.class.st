@@ -11,7 +11,7 @@ Class {
 	#category : #'GToolkit4Git-Lepiter'
 }
 
-{ #category : #'*GToolkit4Git' }
+{ #category : #accessing }
 GtLepiterPageDefinition class >> gtDiffChangeFrom: aContent to: anotherContent [
 	^ GtDiffBuilder
 		computeDifferencesFrom: aContent
@@ -19,7 +19,7 @@ GtLepiterPageDefinition class >> gtDiffChangeFrom: aContent to: anotherContent [
 		using: GtSmaCCDiffSplitter forJSON
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : #accessing }
 GtLepiterPageDefinition class >> gtStyler [
 	^ JSONParser gtStyler
 ]

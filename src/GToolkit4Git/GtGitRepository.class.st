@@ -1101,7 +1101,7 @@ GtGitRepository >> gtCommitsFor: aView [
 				element phlow fireToolUpdateWish ]
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : #'gt - inspector' }
 GtGitRepository >> gtDefaultInspectorTool [
 	^ GtPhlowCompositeTool new
 		addTool: super gtDefaultInspectorTool;

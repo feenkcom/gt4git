@@ -40,7 +40,7 @@ GtGitCommit >> gtActionCheckoutFor: anAction [
 								aDropdown fireEvent: BrDropdownHideWish new ] ] ]
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : #'gt - extensions' }
 GtGitCommit >> gtVerificationFor: aView [
 	<gtView>
 	(PureGitUrl with: self repository origin url) gitHubWebUrl
