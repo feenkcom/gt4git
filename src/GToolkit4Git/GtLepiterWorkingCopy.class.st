@@ -124,7 +124,7 @@ GtLepiterWorkingCopy >> gtAllLoadedExamples [
 	^ self icebergWorkingCopy gtAllLoadedExamples
 ]
 
-{ #category : #'*GToolkit4Git' }
+{ #category : #'gt - extensions' }
 GtLepiterWorkingCopy >> gtViewDetailsIn: composite [
 	<gtView>
 	^ composite columnedList
