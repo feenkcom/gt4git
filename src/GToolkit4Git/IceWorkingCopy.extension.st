@@ -15,7 +15,7 @@ IceWorkingCopy >> gtActionRepairFor: composite [
 IceWorkingCopy >> gtAllLoadedExamples [
 	^ self loadedPackages flatCollect: [ :anIcePackage |
 		| rPackage |
-		rPackage := RPackage organizer
+		rPackage := self packageOrganizer
 			packageNamed: anIcePackage name
 			ifAbsent: [ nil ].
 		rPackage 
@@ -54,7 +54,7 @@ IceWorkingCopy >> gtPackagesFor: aView [
 				ifFalse: [ GtInspectorTool forObject: aPackage ] ];
 		actionStencil: [ :anElement | 
 				GtSpotterDropdownButtonStencil new
-					valuable: [ RPackage organizer packages
+					valuable: [ self packageOrganizer packages
 							reject: [ :aPackage | self packages anySatisfy: [ :anIcePackage | anIcePackage name = aPackage name ] ] ];
 					tooltip: 'Add Package';
 					icon: BrGlamorousVectorIcons add;
@@ -115,7 +115,7 @@ IceWorkingCopy >> notifyPackageModified: aString [
 
 { #category : #'*GToolkit4Git' }
 IceWorkingCopy >> removePackageNamed: aPackageName [
-	^ (RPackage organizer
+	^ (self packageOrganizer
 			packageNamed: aPackageName
 			ifAbsent: [ ^ self ]) removeFromSystem
 ]
