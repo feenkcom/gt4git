@@ -68,7 +68,7 @@ GtGitRepository >> addBaseline: aBaselineName [
 GtGitRepository >> addBaseline: aBaselineName withPackages: aListOfPackages [
 	(RBAddPackageChange addPackageNamed: aBaselineName) execute.
 	(RBAddClassChange
-		definition: 'BaselineOf subclass: #' , aBaselineName
+		definitionString: 'BaselineOf subclass: #' , aBaselineName
 				, '
 	instanceVariableNames: ''''
 	classVariableNames: ''''
