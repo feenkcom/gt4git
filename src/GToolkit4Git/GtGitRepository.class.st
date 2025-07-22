@@ -109,7 +109,7 @@ GtGitRepository >> addPackage: aPackageName [
 	"Add a package with a given name to the git repository.
 	Creates a package if it doesn't exist in the image"
 
-	(RPackageOrganizer default includesPackageNamed: aPackageName)
+	(self packageOrganizer includesPackageNamed: aPackageName)
 		ifFalse: [ (RBAddPackageChange addPackageNamed: aPackageName) execute ].
 
 	self icebergWorkingCopy addPackageNamed: aPackageName.
