@@ -27,8 +27,13 @@ GtGitRepository class >> forPackage: aPackage [
 	| repository |
 	repository := IceRepository registry
 			detect: [ :aRepo | 
-				aRepo workingCopy loadedPackages
-					anySatisfy: [ :icePackage | icePackage package sameContentAs: aPackage name ] ]
+				aRepo workingCopy packages
+					anySatisfy: [ :icePackage | 
+						(icePackage package sameContentAs: aPackage name) and: [
+							"Avoid calling #isLoaded often as it can be slow for packages 
+							that are not loaded.
+							https://github.com/feenkcom/gtoolkit/issues/4626"
+							icePackage isLoaded ] ] ]
 			ifNone: [ nil ].
 	^ repository ifNotNil: [ self fromIcebergRepository: repository ]
 ]
