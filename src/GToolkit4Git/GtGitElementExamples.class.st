@@ -27,7 +27,7 @@ GtGitElementExamples >> expandedElement [
 
 { #category : #accessing }
 GtGitElementExamples >> repositoryName [
-	^ 'AAA'
+	^ '000AAA'
 ]
 
 { #category : #examples }

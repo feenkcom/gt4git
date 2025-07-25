@@ -196,13 +196,13 @@ PureGitTrackedFile >> gtViewAuthorsFor: composite [
 		column: 'Number of commits'
 			text: #numberOfCommits;
 		column: 'Lines changed'
-			text: [ :each | (self commitsByAuthor: each name) sum: #numberOfLinesChanged ];
+			text: [ :each | (self commitsByAuthor: each name) sumNumbers: #numberOfLinesChanged ];
 		column: 'Lines added'
-			text: [ :each | (self commitsByAuthor: each name) sum: #numberOfLinesAdded ];
+			text: [ :each | (self commitsByAuthor: each name) sumNumbers: #numberOfLinesAdded ];
 		column: 'Lines removed'
-			text: [ :each | (self commitsByAuthor: each name) sum: #numberOfLinesRemoved ];
+			text: [ :each | (self commitsByAuthor: each name) sumNumbers: #numberOfLinesRemoved ];
 		column: 'Lines modified'
-			text: [ :each | (self commitsByAuthor: each name) sum: #numberOfLinesModified ]
+			text: [ :each | (self commitsByAuthor: each name) sumNumbers: #numberOfLinesModified ]
 ]
 
 { #category : #'*GToolkit4Git' }
