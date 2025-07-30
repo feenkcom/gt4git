@@ -43,6 +43,12 @@ GtLepiterDatabaseDefinition >> icon [
 ]
 
 { #category : #accessing }
+GtLepiterDatabaseDefinition >> iconName [
+	"Used in Pharo 12 instead of #icon"
+	^ #lepiterDatabase 
+]
+
+{ #category : #accessing }
 GtLepiterDatabaseDefinition >> key [
 	"The key is used by {{gtClass:IceNode}} to compute the path, so we use the
 	folder name. Because of that it should be a single folder."

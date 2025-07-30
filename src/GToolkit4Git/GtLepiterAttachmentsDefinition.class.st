@@ -10,6 +10,12 @@ GtLepiterAttachmentsDefinition >> icon [
 ]
 
 { #category : #accessing }
+GtLepiterAttachmentsDefinition >> iconName [
+	"Used in Pharo 12 instead of #icon"
+	^ #emptyPackage
+]
+
+{ #category : #accessing }
 GtLepiterAttachmentsDefinition >> initialize [
 	super initialize.
 	self name: 'attachments'

@@ -8,3 +8,9 @@ Class {
 GtLepiterAttachmentDefinition >> icon [
 	^ self iconNamed: #package
 ]
+
+{ #category : #accessing }
+GtLepiterAttachmentDefinition >> iconName [
+	"Used in Pharo 12 instead of #icon"
+	^ #package
+]
