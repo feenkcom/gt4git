@@ -9,7 +9,7 @@ Class >> gtCoderSidebarIndexGitFrom: aGtCoderClassesTreeElement [
 		id: GtCoderGitButtonId;
 		icon: BrGlamorousVectorIcons branching
 			label: 'Browse git repository'
-			preview: self;
+			preview: self name;
 		action: [ :aButton | 
 			| coder repository |
 			repository := self repository.
