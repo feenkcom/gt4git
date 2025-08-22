@@ -666,7 +666,9 @@ GtGitRepository >> gtActionFetchFor: anAction [
 					log: #fetch
 					do: [ (IceTipRepositoryModel on: self icebergRepository) fetch ].
 				self announceRepositoryModified.
-				aButton phlow fireToolUpdateWish ] ]
+				BlTaskAction 
+					enqueueElement: aButton 
+					action: [ aButton phlow fireToolUpdateWish ] ] ]
 ]
 
 { #category : #'gt - extensions' }
@@ -695,7 +697,9 @@ GtGitRepository >> gtActionPullFor: anAction [
 				[ self gtLepiterAwarePull ]
 					on: IceMergeResolutionRequest
 					do: [ :r | aButton phlow spawnObject: r merge ].
-				aButton phlow fireToolUpdateWish ] ]
+				BlTaskAction 
+					enqueueElement: aButton 
+					action: [ aButton phlow fireToolUpdateWish ] ] ]
 ]
 
 { #category : #'gt - extensions' }
@@ -713,7 +717,9 @@ GtGitRepository >> gtActionPushFor: anAction [
 				job label: 'Pushing...'.
 				self executor log: #push do: [ self icebergRepository push ].
 				self announceRepositoryModified.
-				aButton phlow fireToolUpdateWish ] ]
+				BlTaskAction 
+					enqueueElement: aButton 
+					action: [ aButton phlow fireToolUpdateWish ] ] ]
 ]
 
 { #category : #'gt - extensions' }
@@ -1012,7 +1018,9 @@ GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts incoming: i
 							self executeAsAsyncJob: [ :job |
 								job label: 'Pushing...'.
 								self push.
-								aButton phlow fireToolUpdateWish ] ]) ].
+								BlTaskAction 
+									enqueueElement: aButton 
+									action: [ aButton phlow fireToolUpdateWish ] ] ]) ].
 	(incoming size > 0 and: [ incoming first = item and: [ remotes isNotEmpty ] ])
 		ifTrue: [ container
 				addChild: (BrButton new
@@ -1023,7 +1031,9 @@ GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts incoming: i
 							self executeAsAsyncJob: [ :job |
 								job label: 'Pulling...'.
 								self gtLepiterAwarePull.
-								aButton phlow fireToolUpdateWish ] ]) ]
+								BlTaskAction 
+									enqueueElement: aButton 
+									action: [ aButton phlow fireToolUpdateWish ] ] ]) ]
 ]
 
 { #category : #'gt - extensions' }
