@@ -14,12 +14,24 @@ GtGitPhlowTool >> asElementDo: aBlock [
 
 	self repository ifNotNil: [ :aRepository | anElement repository: aRepository ].
 
+	anElement when: GtPhlowToolObjectChangeWish do: [ :aWish |
+		self object: aWish object ].
+	
 	^ aBlock value: anElement
 ]
 
 { #category : #accessing }
 GtGitPhlowTool >> icon [
 	^ BrGlamorousVectorIcons branching
+]
+
+{ #category : #'api - accessing' }
+GtGitPhlowTool >> object: anObject [
+	(anObject isKindOf: IceGitCliRepository) ifTrue: [ 
+		self repository: (GtGitRepository fromIcebergRepository: anObject) ].
+
+	(anObject isKindOf: GtGitRepository) ifTrue: [ 
+		self repository: anObject ]
 ]
 
 { #category : #accessing }

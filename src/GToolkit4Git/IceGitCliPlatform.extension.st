@@ -58,17 +58,6 @@ IceGitCliPlatform >> gtDetailsFor: aView [
 ]
 
 { #category : #'*GToolkit4Git' }
-IceGitCliPlatform >> gtInstallActionFor: aComposite [
-	<gtAction>
-	
-	^ aComposite button
-		label: 'Install';
-		tooltip: 'Make Libgit-CLI the default Iceberg implementation';
-		priority: 20;
-		action: [ :element | self install ]
-]
-
-{ #category : #'*GToolkit4Git' }
 IceGitCliPlatform class >> gtInstallActionFor: aComposite [
 	<gtClassAction>
 	
@@ -77,6 +66,17 @@ IceGitCliPlatform class >> gtInstallActionFor: aComposite [
 		tooltip: 'Make Libgit-CLI the default Iceberg implementation';
 		priority: 20;
 		action: [ :element | self current install ]
+]
+
+{ #category : #'*GToolkit4Git' }
+IceGitCliPlatform >> gtInstallActionFor: aComposite [
+	<gtAction>
+	
+	^ aComposite button
+		label: 'Install';
+		tooltip: 'Make Libgit-CLI the default Iceberg implementation';
+		priority: 20;
+		action: [ :element | self install ]
 ]
 
 { #category : #'*GToolkit4Git' }
@@ -102,17 +102,6 @@ IceGitCliPlatform >> gtUninstallActionFor: aComposite [
 ]
 
 { #category : #'*GToolkit4Git' }
-IceGitCliPlatform >> gtValidateActionFor: aComposite [
-	<gtAction>
-	
-	^ aComposite button
-		label: 'Validate';
-		tooltip: 'Validate and throw errors';
-		priority: 10;
-		action: [ :element | element phlow spawnObject: self validate ]
-]
-
-{ #category : #'*GToolkit4Git' }
 IceGitCliPlatform class >> gtValidateActionFor: aComposite [
 	<gtClassAction>
 	
@@ -121,4 +110,15 @@ IceGitCliPlatform class >> gtValidateActionFor: aComposite [
 		tooltip: 'Validate and throw errors';
 		priority: 10;
 		action: [ :element | element phlow spawnObject: self current validate ]
+]
+
+{ #category : #'*GToolkit4Git' }
+IceGitCliPlatform >> gtValidateActionFor: aComposite [
+	<gtAction>
+	
+	^ aComposite button
+		label: 'Validate';
+		tooltip: 'Validate and throw errors';
+		priority: 10;
+		action: [ :element | element phlow spawnObject: self validate ]
 ]
