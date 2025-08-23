@@ -666,7 +666,9 @@ GtGitRepository >> gtActionFetchFor: anAction [
 					log: #fetch
 					do: [ (IceTipRepositoryModel on: self icebergRepository) fetch ].
 				self announceRepositoryModified.
-				aButton phlow fireToolUpdateWish ] ]
+				BlTaskAction 
+					enqueueElement: aButton 
+					action: [ aButton phlow fireToolUpdateWish ] ] ]
 ]
 
 { #category : #'gt - extensions' }
@@ -695,7 +697,9 @@ GtGitRepository >> gtActionPullFor: anAction [
 				[ self gtLepiterAwarePull ]
 					on: IceMergeResolutionRequest
 					do: [ :r | aButton phlow spawnObject: r merge ].
-				aButton phlow fireToolUpdateWish ] ]
+				BlTaskAction 
+					enqueueElement: aButton 
+					action: [ aButton phlow fireToolUpdateWish ] ] ]
 ]
 
 { #category : #'gt - extensions' }
@@ -713,7 +717,9 @@ GtGitRepository >> gtActionPushFor: anAction [
 				job label: 'Pushing...'.
 				self executor log: #push do: [ self icebergRepository push ].
 				self announceRepositoryModified.
-				aButton phlow fireToolUpdateWish ] ]
+				BlTaskAction 
+					enqueueElement: aButton 
+					action: [ aButton phlow fireToolUpdateWish ] ] ]
 ]
 
 { #category : #'gt - extensions' }
@@ -947,15 +953,17 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 
 				saveAction := [ | commitMessage |
 					commitMessage := editor editor text asString.
-					self
-						executeAsAsyncJob: [ :job | 
-							job label: 'Committing...'.
-							aViewModel executeCommit: commitMessage withChanges: chosen.
-							button disable.
-							aDropdown
-								enqueueTask: (BlTaskAction new
-										action: [ aDropdown dispatchEvent: (BrDropdownHideWish new anchor: aDropdown) ]).
-							aDropdown phlow fireToolUpdateWish ] ].
+					commitMessage isEmpty ifFalse: [
+						self
+							executeAsAsyncJob: [ :job | 
+								job label: 'Committing...'.
+								aViewModel executeCommit: commitMessage withChanges: chosen.
+								BlTaskAction enqueueElement: button action: [
+									button disable.
+									aDropdown
+										enqueueTask: (BlTaskAction new
+												action: [ aDropdown dispatchEvent: (BrDropdownHideWish new anchor: aDropdown) ]).
+									aDropdown phlow fireToolUpdateWish ] ] ] ].
 
 				editor
 					addEditorShortcut: (BlShortcutWithAction new
@@ -1010,7 +1018,9 @@ GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts incoming: i
 							self executeAsAsyncJob: [ :job |
 								job label: 'Pushing...'.
 								self push.
-								aButton phlow fireToolUpdateWish ] ]) ].
+								BlTaskAction 
+									enqueueElement: aButton 
+									action: [ aButton phlow fireToolUpdateWish ] ] ]) ].
 	(incoming size > 0 and: [ incoming first = item and: [ remotes isNotEmpty ] ])
 		ifTrue: [ container
 				addChild: (BrButton new
@@ -1021,7 +1031,9 @@ GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts incoming: i
 							self executeAsAsyncJob: [ :job |
 								job label: 'Pulling...'.
 								self gtLepiterAwarePull.
-								aButton phlow fireToolUpdateWish ] ]) ]
+								BlTaskAction 
+									enqueueElement: aButton 
+									action: [ aButton phlow fireToolUpdateWish ] ] ]) ]
 ]
 
 { #category : #'gt - extensions' }

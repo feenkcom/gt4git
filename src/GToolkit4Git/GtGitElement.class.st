@@ -39,6 +39,7 @@ GtGitElement >> initialize [
 	self initializeTitleNotifier.
 	self initializeListeners.
 
+	self beFocusable.
 	self layout: BlLinearLayout horizontal.
 	self matchParent.
 	self initializeView.

@@ -212,7 +212,9 @@ GtGitRepositoryElement >> definitionsElement [
 { #category : #initialization }
 GtGitRepositoryElement >> fetchAllRepositoriesFrom: aButton [ 
 	self repositoryViewModel fetch.
-	aButton phlow fireToolUpdateWish
+	BlTaskAction 
+		enqueueElement: aButton 
+		action: [ aButton phlow fireToolUpdateWish ]
 ]
 
 { #category : #accessing }
@@ -331,14 +333,20 @@ GtGitRepositoryElement >> pullFrom: aButton [
 	[ self repositoryViewModel pull ]
 		on: IceMergeResolutionRequest
 		do: [ :mergeException | 
-			self phlow spawnObject: mergeException merge ].
-	aButton phlow fireToolUpdateWish
+			BlTaskAction 
+				enqueueElement: aButton 
+				action: [ self phlow spawnObject: mergeException merge ] ].
+	BlTaskAction 
+		enqueueElement: aButton 
+		action: [ aButton phlow fireToolUpdateWish ]
 ]
 
 { #category : #'private - updating' }
 GtGitRepositoryElement >> pushFrom: aButton [
 	self repositoryViewModel push.
-	aButton phlow fireToolUpdateWish
+	BlTaskAction 
+		enqueueElement: aButton 
+		action: [ aButton phlow fireToolUpdateWish ]
 ]
 
 { #category : #'private - updating' }
