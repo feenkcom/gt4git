@@ -10,26 +10,13 @@ LGitCommit >> message [
 		            ifNotNil: [ :anEncodingName | 
 		            ZnCharacterEncoder newForEncoding: anEncodingName ].
 	message := self commit_message: self.
-	messageBytes := self
-		forPharo11OrNewer: [
-			"Since Pharo11, commit_message returns an ExternalAddress"
-			message bytesFromCString ]
-		forPharo10:  [
-			"In Pharo10, commit_message returns a string"
-			message isWideString ifTrue:
-				[ 1 to: message size do: [ :i |
-					(message at: i) codePoint > 128 ifTrue:
-						[ message at: i put: $? ] ] ].
-			
-			message asByteString asByteArray ].
+	"Since Pharo11, commit_message returns an ExternalAddress"
+	messageBytes := message bytesFromCString .
 	
 	"git cannot always be trusted to return the right encoding"
 	^ [ messageBytes decodeWith: encoding ]
 		  on: ZnCharacterEncodingError
-		  do: [ 
-		  	self 
-		  		forPharo11OrNewer: [ messageBytes asString ]
-		  		forPharo10: [ message asByteString ] ]
+		  do: [ messageBytes asString ]
 ]
 
 { #category : #'*GToolkit4Git' }
