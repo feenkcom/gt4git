@@ -13,13 +13,13 @@ Class >> gtCoderSidebarIndexGitFor: anAction [
 		menuItemPreview: self name;
 		menuItemGroup: BrMenuItemGroupConfiguration default;
 		action: [ :aButton | 
-			| coder repository |
+			| repository |
 			repository := self repository.
 			repository
 				ifNil: [ aButton phlow
 						spawnTool: (GtPhlowExplicitTool new
 								name: 'git';
-								stencil: [ GtGitAddToRepositoryElement new package: coder navigationModel selectedPackage ]) ]
+								stencil: [ GtGitAddToRepositoryElement new package: self package ]) ]
 				ifNotNil: [ aButton phlow
 						spawnTool: (GtGitPhlowTool new repository: repository) ] ]
 ]
