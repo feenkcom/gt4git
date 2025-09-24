@@ -952,14 +952,14 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 					select.
 
 				saveAction := [ | commitMessage |
-					commitMessage := editor editor text asString.
+					commitMessage := editor editor text asString trimBoth.
 					commitMessage isEmpty ifFalse: [
+						button disable.
 						self
 							executeAsAsyncJob: [ :job | 
 								job label: 'Committing...'.
 								aViewModel executeCommit: commitMessage withChanges: chosen.
 								BlTaskAction enqueueElement: button action: [
-									button disable.
 									aDropdown
 										enqueueTask: (BlTaskAction new
 												action: [ aDropdown dispatchEvent: (BrDropdownHideWish new anchor: aDropdown) ]).
