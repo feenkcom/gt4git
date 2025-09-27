@@ -4,7 +4,7 @@ Extension { #name : #PureGitFileStatus }
 PureGitFileStatus >> gtActionGitFileFor: composite [
 	<gtAction>
 	^ composite button
-		icon: BrGlamorousIcons file;
+		icon: BrGlamorousVectorIcons file;
 		tooltip: 'Open as git file';
 		priority: 30;
 		action: [ :element | element phlow spawnObject: self gitFile ]

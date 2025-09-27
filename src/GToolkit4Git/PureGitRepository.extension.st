@@ -25,8 +25,8 @@ PureGitRepository >> gtBranchesFor: composite [
 				(branch name = currentBranchName
 					or: [ currentBranchName isEmpty
 						and: [ branch name includesSubstring: 'HEAD detached' ] ])
-					ifTrue: [ BrGlamorousIcons greencircle ]
-					ifFalse: [ BrGlamorousIcons empty ] ]
+					ifTrue: [ BrGlamorousVectorIcons greencircle ]
+					ifFalse: [ BrGlamorousVectorIcons empty ] ]
 			width: 75;
 		updateWhen: PureGitRepositoryModified in: [ self announcer ];
 		actionUpdateButton;
