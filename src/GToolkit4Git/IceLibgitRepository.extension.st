@@ -156,8 +156,8 @@ IceLibgitRepository >> gtRepositoryDirectoryFor: aView [
 							  each isDirectory
 								  ifTrue: [ self index removeDirectoryFromIndex: relative pathString ]
 								  ifFalse: [ self index removeFileFromIndex: relative pathString ] ] ] ];
-		  actionButtonIcon: BrGlamorousIcons go
-		  tooltip: 'Open in OS'
+		  actionButtonIcon: BrGlamorousVectorIcons link
+		  tooltip: 'Open in operating system'
 		  action: [ WebBrowser openOn: self location fullName ]
 ]
 
