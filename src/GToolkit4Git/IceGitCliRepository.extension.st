@@ -37,12 +37,12 @@ IceGitCliRepository >> gtRepositoryDirectoryFor: aView [
 			  (status includesKey: relative)
 				  ifTrue: [ 
 					  (status at: relative) = LGitStatusEnum git_status_wt_new
-						  ifTrue: [ BrGlamorousIcons close ]
-						  ifFalse: [ BrGlamorousIcons accept ] ]
+						  ifTrue: [ BrGlamorousVectorIcons close ]
+						  ifFalse: [ BrGlamorousVectorIcons accept ] ]
 				  ifFalse: [ "exclude directories"
 					  each isDirectory
-						  ifTrue: [ BrGlamorousIcons empty ]
-						  ifFalse: [ BrGlamorousIcons accept ] ] ] width: 50;
+						  ifTrue: [ BrGlamorousVectorIcons empty ]
+						  ifFalse: [ BrGlamorousVectorIcons accept ] ] ] width: 50;
 		  column: 'Actions' translated stencil: [ :each | 
 			  | relative |
 			  relative := each relativeTo: self repositoryDirectory.
@@ -69,8 +69,8 @@ IceGitCliRepository >> gtRepositoryDirectoryFor: aView [
 							  each isDirectory
 								  ifTrue: [ self index removeDirectoryFromIndex: relative pathString ]
 								  ifFalse: [ self index removeFileFromIndex: relative pathString ] ] ] ];
-		  actionButtonIcon: BrGlamorousIcons go
-		  tooltip: 'Open in OS'
+		  actionButtonIcon: BrGlamorousVectorIcons link
+		  tooltip: 'Open in operating system'
 		  action: [ WebBrowser openOn: self location fullName ];
 		  actionButtonIcon: BrGlamorousVectorIcons inspect 
 			tooltip: 'Inspect pure git repository' 
