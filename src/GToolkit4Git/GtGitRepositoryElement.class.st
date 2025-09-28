@@ -42,7 +42,7 @@ GtGitRepositoryElement >> createActionsHeaderSeparator [
 { #category : #'building - actions' }
 GtGitRepositoryElement >> createFetchRepositoryButton [
 	^ BrButton new
-		aptitude: BrGlamorousButtonWithIconAptitude;
+		aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
 		icon: BrGlamorousVectorIcons gitfetch;
 		label: 'Fetch';
 		action: [ :aButton |
@@ -64,7 +64,7 @@ GtGitRepositoryElement >> createInspectRepositoryButton [
 GtGitRepositoryElement >> createPullRepositoryWithIncomingCommits: aListOfIncomingCommits [
 	| dropdownButton incomingLabel |
 	
-	incomingLabel := aListOfIncomingCommits size asRopedText.
+	incomingLabel := 'Pull ', aListOfIncomingCommits size asString.
 	
 	dropdownButton := BrButton new.
 	dropdownButton
@@ -94,10 +94,9 @@ GtGitRepositoryElement >> createPullRepositoryWithIncomingCommits: aListOfIncomi
 { #category : #'building - actions' }
 GtGitRepositoryElement >> createPullRepositoryWithNoIncommingCommitsButton [
 	^ BrButton new
-			aptitude: (BrGlamorousButtonWithIconAndLabelAptitude
-				+ (BrGlamorousWithExplicitTooltipAptitude text: 'Pull'));
+			aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
 			icon: BrGlamorousVectorIcons gitpull;
-			label: '';
+			label: 'Pull';
 			action: [ :aButton | 
 				self repositoryModel executeAsAsyncJob: [ :job |
 					job label: 'Pulling...'.
@@ -116,7 +115,7 @@ GtGitRepositoryElement >> createPushButtonForCommits: aListOfOutgoingCommits [
 						aptitude: BrGlamorousButtonWithIconAndLabelAptitude
 							- BrGlamorousButtonExteriorAptitude;
 						icon: BrGlamorousVectorIcons gitpush;
-						label: aListOfOutgoingCommits size asRopedText ]
+						label: 'Push ', aListOfOutgoingCommits size asString ]
 				content: [ 
 					self
 						showCommits: aListOfOutgoingCommits
@@ -128,7 +127,7 @@ GtGitRepositoryElement >> createPushButtonForCommits: aListOfOutgoingCommits [
 						named: 'Push' ])
 			+ (BrGlamorousWithExplicitTooltipAptitude text: 'Push');
 		icon: BrGlamorousVectorIcons gitpush;
-		label: aListOfOutgoingCommits size asRopedText.
+		label: 'Push ', aListOfOutgoingCommits size asString.
 		
 	^ dropdownButton
 ]

@@ -1014,7 +1014,7 @@ GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts incoming: i
 		ifTrue: [ container
 				addChild: (BrButton new
 						aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
-						label: outgoing size asString;
+						label: 'Push ', outgoing size asString;
 						icon: BrGlamorousVectorIcons gitpush;
 						action: [ :aButton |
 							self executeAsAsyncJob: [ :job |
@@ -1027,7 +1027,7 @@ GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts incoming: i
 		ifTrue: [ container
 				addChild: (BrButton new
 						aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
-						label: incoming size asString;
+						label: 'Pull ', incoming size asString;
 						icon: BrGlamorousVectorIcons gitpull;
 						action: [ :aButton | 
 							self executeAsAsyncJob: [ :job |
