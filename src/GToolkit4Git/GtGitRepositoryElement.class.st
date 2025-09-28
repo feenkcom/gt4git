@@ -43,7 +43,7 @@ GtGitRepositoryElement >> createActionsHeaderSeparator [
 GtGitRepositoryElement >> createFetchRepositoryButton [
 	^ BrButton new
 		aptitude: BrGlamorousButtonWithIconAptitude;
-		icon: BrGlamorousVectorIcons refresh;
+		icon: BrGlamorousVectorIcons gitfetch;
 		label: 'Fetch';
 		action: [ :aButton |
 			self repositoryModel executeAsAsyncJob: [ :job |
@@ -74,7 +74,7 @@ GtGitRepositoryElement >> createPullRepositoryWithIncomingCommits: aListOfIncomi
 					BrButton new
 						aptitude: BrGlamorousButtonWithIconAndLabelAptitude
 							- BrGlamorousButtonExteriorAptitude;
-						icon: BrGlamorousVectorIcons down;
+						icon: BrGlamorousVectorIcons gitpull;
 						label: incomingLabel ]
 				content: [ 
 					self
@@ -86,7 +86,7 @@ GtGitRepositoryElement >> createPullRepositoryWithIncomingCommits: aListOfIncomi
 								self pullFrom: aButton ] ]
 						named: 'Pull' ])
 				+ (BrGlamorousWithExplicitTooltipAptitude text: 'Pull');
-		icon: BrGlamorousVectorIcons down;
+		icon: BrGlamorousVectorIcons gitpull;
 		label: incomingLabel.
 	^ dropdownButton
 ]
@@ -96,7 +96,7 @@ GtGitRepositoryElement >> createPullRepositoryWithNoIncommingCommitsButton [
 	^ BrButton new
 			aptitude: (BrGlamorousButtonWithIconAndLabelAptitude
 				+ (BrGlamorousWithExplicitTooltipAptitude text: 'Pull'));
-			icon: BrGlamorousVectorIcons down;
+			icon: BrGlamorousVectorIcons gitpull;
 			label: '';
 			action: [ :aButton | 
 				self repositoryModel executeAsAsyncJob: [ :job |
@@ -115,7 +115,7 @@ GtGitRepositoryElement >> createPushButtonForCommits: aListOfOutgoingCommits [
 					BrButton new
 						aptitude: BrGlamorousButtonWithIconAndLabelAptitude
 							- BrGlamorousButtonExteriorAptitude;
-						icon: BrGlamorousVectorIcons up;
+						icon: BrGlamorousVectorIcons gitpush;
 						label: aListOfOutgoingCommits size asRopedText ]
 				content: [ 
 					self
@@ -127,7 +127,7 @@ GtGitRepositoryElement >> createPushButtonForCommits: aListOfOutgoingCommits [
 								self pushFrom: aButton ] ]
 						named: 'Push' ])
 			+ (BrGlamorousWithExplicitTooltipAptitude text: 'Push');
-		icon: BrGlamorousVectorIcons up;
+		icon: BrGlamorousVectorIcons gitpush;
 		label: aListOfOutgoingCommits size asRopedText.
 		
 	^ dropdownButton
@@ -493,7 +493,6 @@ GtGitRepositoryElement >> updateToolbarElement [
 		addItem: (labelElement := self createRepositoryLabelElement);
 		addItem: self createRemoveRepositoryButton;
 		addItem: self createActionsHeaderSeparator;
-		addItem: self createInspectRepositoryButton;
 		addItem: self createFetchRepositoryButton.
 
 	incomingCommits := self repositoryViewModel incomingCommits.

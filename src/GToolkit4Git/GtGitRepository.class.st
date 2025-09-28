@@ -932,12 +932,13 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 								bottom: 0
 								right: 3);
 						constraintsDo: [ :c | c linear horizontal alignCenter ]) ];
-		actionButtonLabel: 'Toggle All'
+		actionButtonLabel: 'Toggle all'
 			action: [ changes
 					do: [ :change | 
 						change value hasChanges
 							ifTrue: [ viewMap at: change value ifPresent: [ :cb | cb checked: cb isChecked not ] ] ] ];
-		actionDropdownButtonLabel: 'Commit'
+		actionDropdownButtonIcon: BrGlamorousVectorIcons gitcommit
+			label: 'Commit'
 			tooltip: 'Commit changes'
 			content: [ :aDropdown :aTarget | 
 				| editor button saveAction |
@@ -953,17 +954,18 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 
 				saveAction := [ | commitMessage |
 					commitMessage := editor editor text asString trimBoth.
-					commitMessage isEmpty ifFalse: [
-						button disable.
-						self
-							executeAsAsyncJob: [ :job | 
-								job label: 'Committing...'.
-								aViewModel executeCommit: commitMessage withChanges: chosen.
-								BlTaskAction enqueueElement: button action: [
-									aDropdown
-										enqueueTask: (BlTaskAction new
-												action: [ aDropdown dispatchEvent: (BrDropdownHideWish new anchor: aDropdown) ]).
-									aDropdown phlow fireToolUpdateWish ] ] ] ].
+					commitMessage isEmpty
+						ifFalse: [ button disable.
+							self
+								executeAsAsyncJob: [ :job | 
+									job label: 'Committing...'.
+									aViewModel executeCommit: commitMessage withChanges: chosen.
+									BlTaskAction
+										enqueueElement: button
+										action: [ aDropdown
+												enqueueTask: (BlTaskAction new
+														action: [ aDropdown dispatchEvent: (BrDropdownHideWish new anchor: aDropdown) ]).
+											aDropdown phlow fireToolUpdateWish ] ] ] ].
 
 				editor
 					addEditorShortcut: (BlShortcutWithAction new
@@ -977,7 +979,7 @@ GtGitRepository >> gtChangesFor: aView context: aContext [
 				button := BrButton new.
 				button
 					aptitude: BrGlamorousButtonWithIconAptitude;
-					icon: BrGlamorousVectorIcons accept;
+					icon: BrGlamorousVectorIcons gitcommit;
 					label: 'Commit';
 					disabled: editor text isEmpty;
 					action: saveAction.
@@ -1013,7 +1015,7 @@ GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts incoming: i
 				addChild: (BrButton new
 						aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
 						label: outgoing size asString;
-						icon: BrGlamorousVectorIcons up;
+						icon: BrGlamorousVectorIcons gitpush;
 						action: [ :aButton |
 							self executeAsAsyncJob: [ :job |
 								job label: 'Pushing...'.
@@ -1026,7 +1028,7 @@ GtGitRepository >> gtCommitButtonsFor: item withConflicts: conflicts incoming: i
 				addChild: (BrButton new
 						aptitude: BrGlamorousButtonWithIconAndLabelAptitude;
 						label: incoming size asString;
-						icon: BrGlamorousVectorIcons down;
+						icon: BrGlamorousVectorIcons gitpull;
 						action: [ :aButton | 
 							self executeAsAsyncJob: [ :job |
 								job label: 'Pulling...'.
