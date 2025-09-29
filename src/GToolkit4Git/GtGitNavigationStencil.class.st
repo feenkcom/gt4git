@@ -45,7 +45,7 @@ GtGitNavigationStencil >> createListFor: aView [
 		updateWhen: GtRepositoryListChanged
 			in: GtRepositoryRegistryAnnouncer default announcer;
 		actionDropdownButtonIcon: BrGlamorousVectorIcons add
-			tooltip: 'Add Repository'
+			tooltip: 'Add repository'
 			content: [ :aDropdown :aTarget | 
 				| s |
 				s := GtGitAddRepositoryStencil new.
@@ -56,22 +56,22 @@ GtGitNavigationStencil >> createListFor: aView [
 							announce: (GtGitRepositoryAddedAndSelected new
 									repository: (GtGitRepository fromIcebergRepository: repo)) ].
 				s ];
-		actionButtonIcon: BrGlamorousVectorIcons down
-			tooltip: 'Fetch All'
+		actionButtonIcon: BrGlamorousVectorIcons gitfetch
+			tooltip: 'Fetch all repositories'
 			action: [ self fetchAll ];
 		items: [ self repositories ];
 		send: [ :repo | self announce: (GtGitRepositorySelected new repository: repo) ];
 		actionStencil: [ :anElement | 
 				GtSpotterDropdownButtonStencil new
 					valuable: [ self repositories ];
-					tooltip: 'Search Repositories';
+					tooltip: 'Search repositories';
 					icon: BrGlamorousVectorIcons search;
 					objectActOn: [ :anActOnEvent :anItem | 
 						anActOnEvent beActed.
 						self announce: (GtGitRepositorySelected new repository: anItem).
 						"anElement phlow fireToolUpdateWish" ] ]
-			tooltip: 'Search Repositories';
-		actionUpdateButtonTooltip: 'Refresh List of Repositories';
+			tooltip: 'Search repositories';
+		actionUpdateButtonTooltip: 'Refresh repositories';
 		rowDataBinder: [ :aRowElement :aRepository | 
 			aRepository = navigationModel repository
 				ifTrue: [ aRowElement states addState: BlElementSelectedState uniqueInstance ]
