@@ -1128,15 +1128,32 @@ GtGitRepository >> gtDefaultInspectorTool [
 ]
 
 { #category : #'gt - extensions' }
-GtGitRepository >> gtExamplesFor: aView [
+GtGitRepository >> gtExamplesFor: aView context: aPhlowContext [
 	<gtView>
 	<gtRepositoryView>
-	^ aView forward
+	| anExampleViewModel |
+	
+	anExampleViewModel := GtPharoCoderUIUtility
+			exampleViewModelCachedAs: #exampleViewModelHandler_gtExamplesForContext
+			inPhlowContext: aPhlowContext.
+
+	^ aView explicit
 		title: 'Examples';
 		priority: 20;
-		object: [ GtExampleGroup
-				withAll: (self gtAllLoadedExamples collect: #asCachedExampleWithResult) ];
-		view: #gtExamplesFor:
+		stencil: [ 
+			| aCollection aGroup aGroupView anElement |
+			
+			"If it is an abstract class, collect examples of its subclasses."
+			aCollection := self gtAllLoadedExamples collect: #asCachedExampleWithResult.
+			
+			aGroup := GtExampleGroup withAll: aCollection.
+			aGroupView := GtPhlowView empty on: aGroup perform: #gtExamplesFor:.
+			anElement := aGroupView asElement.
+			anElement userData at: #gtExamplesFor: put: aGroup.
+			anExampleViewModel pharoExampleSuite stream: aCollection asAsyncStream.
+			anElement ];
+		actionStencil: [ :aBrTab | 
+			GtPharoCoderUIUtility newExamplesDropdownButtonForViewModel: anExampleViewModel ]
 ]
 
 { #category : #'api - actions' }
