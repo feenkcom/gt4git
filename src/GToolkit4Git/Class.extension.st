@@ -7,6 +7,7 @@ Class >> gtCoderSidebarIndexGitFor: anAction [
 	
 	^ anAction button
 		priority: 7;
+		id: GtCoderGitButtonId;
 		target: GtCoderClassTarget;
 		icon: BrGlamorousVectorIcons branching;
 		label: 'Browse git repository';
