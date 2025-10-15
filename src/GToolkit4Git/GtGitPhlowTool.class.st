@@ -7,6 +7,17 @@ Class {
 	#category : #'GToolkit4Git-Tools'
 }
 
+{ #category : #'instance creation' }
+GtGitPhlowTool class >> forClass: aClass [
+	| repository |
+	repository := aClass repository.
+	^ repository
+		ifNil: [ GtPhlowExplicitTool new
+				name: 'git';
+				stencil: [ GtGitAddToRepositoryElement new package: self package ] ]
+		ifNotNil: [ self new repository: repository ]
+]
+
 { #category : #accessing }
 GtGitPhlowTool >> asElementDo: aBlock [
 	| anElement |
