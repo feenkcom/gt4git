@@ -91,7 +91,9 @@ GtGitElementExamples >> scripterOnExpandedElementWithDeletedRepository [
 		checkStep: [ :s | 
 			s
 				label: 'Check repository';
-				satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository isNil ] ].
+				satisfies: [ :aPaneElement | aPaneElement realToolElement repository isNil ];
+				// #'maximizer--overlay';
+				// GtTreePagerPaneContentElement ].
 
 	^ aScripter
 ]
@@ -220,7 +222,9 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDone [
 		checkStep: [ :s | 
 			s
 				label: 'Check repository';
-				satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository isNotNil ] ].
+				satisfies: [ :aPaneElement | aPaneElement realToolElement repository isNotNil ];
+				// #'maximizer--overlay';
+				// GtTreePagerPaneContentElement ].
 
 	^ aScripter
 ]
