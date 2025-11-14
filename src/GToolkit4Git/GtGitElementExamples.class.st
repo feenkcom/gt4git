@@ -18,7 +18,7 @@ GtGitElementExamples >> cleanUpRepository [
 { #category : #examples }
 GtGitElementExamples >> expandedElement [
 	<gtExample>
-	<return: #GtPager>
+	<return: #GtTreePager>
 	| element |
 	element := self simpleElement createInPager maximized.
 
@@ -62,7 +62,6 @@ GtGitElementExamples >> scripterOnExpandedElementWithAddDialogOpen [
 { #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithDeletedRepository [
 	<gtExample>
-	<return: #IceError>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDone.
 	aScripter
@@ -101,7 +100,6 @@ GtGitElementExamples >> scripterOnExpandedElementWithDeletedRepository [
 { #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithEditedBranch [
 	<gtExample>
-	<return: #IceError>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithExpandedProperties.
 
@@ -135,7 +133,6 @@ GtGitElementExamples >> scripterOnExpandedElementWithEditedBranch [
 { #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithExpandedProperties [
 	<gtExample>
-	<return: #IceError>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDone.
 
@@ -207,7 +204,6 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogOpen [
 GtGitElementExamples >> scripterOnExpandedElementWithInitializationDone [
 	<gtExample>
 	<after: #cleanUpRepository>
-	<return: #IceError>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDialogNavigated.
 	aScripter
