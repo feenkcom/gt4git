@@ -18,7 +18,7 @@ GtGitElementExamples >> cleanUpRepository [
 { #category : #examples }
 GtGitElementExamples >> expandedElement [
 	<gtExample>
-	<return: #GtPager>
+	<return: #GtTreePager>
 	| element |
 	element := self simpleElement createInPager maximized.
 
@@ -62,7 +62,6 @@ GtGitElementExamples >> scripterOnExpandedElementWithAddDialogOpen [
 { #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithDeletedRepository [
 	<gtExample>
-	<return: #IceError>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDone.
 	aScripter
@@ -91,7 +90,9 @@ GtGitElementExamples >> scripterOnExpandedElementWithDeletedRepository [
 		checkStep: [ :s | 
 			s
 				label: 'Check repository';
-				satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository isNil ] ].
+				satisfies: [ :aPaneElement | aPaneElement realToolElement repository isNil ];
+				// #'maximizer--overlay';
+				// GtTreePagerPaneContentElement ].
 
 	^ aScripter
 ]
@@ -99,7 +100,6 @@ GtGitElementExamples >> scripterOnExpandedElementWithDeletedRepository [
 { #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithEditedBranch [
 	<gtExample>
-	<return: #IceError>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithExpandedProperties.
 
@@ -133,7 +133,6 @@ GtGitElementExamples >> scripterOnExpandedElementWithEditedBranch [
 { #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithExpandedProperties [
 	<gtExample>
-	<return: #IceError>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDone.
 
@@ -205,7 +204,6 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogOpen [
 GtGitElementExamples >> scripterOnExpandedElementWithInitializationDone [
 	<gtExample>
 	<after: #cleanUpRepository>
-	<return: #IceError>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDialogNavigated.
 	aScripter
@@ -220,7 +218,9 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDone [
 		checkStep: [ :s | 
 			s
 				label: 'Check repository';
-				satisfies: [ :aChangeView | aChangeView pages last contentElement tool repository isNotNil ] ].
+				satisfies: [ :aPaneElement | aPaneElement realToolElement repository isNotNil ];
+				// #'maximizer--overlay';
+				// GtTreePagerPaneContentElement ].
 
 	^ aScripter
 ]
