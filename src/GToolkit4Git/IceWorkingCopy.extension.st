@@ -50,7 +50,7 @@ IceWorkingCopy >> gtPackagesFor: aView [
 			width: 100;
 		sendTool: [ :aPackage | 
 			aPackage isLoaded
-				ifTrue: [ GtPackageCoderTool package: aPackage name asPackage ]
+				ifTrue: [ GtPackageCoderTool forPackage: aPackage name asPackage ]
 				ifFalse: [ GtInspectorTool forObject: aPackage ] ];
 		actionStencil: [ :anElement | 
 				GtSpotterDropdownButtonStencil new
