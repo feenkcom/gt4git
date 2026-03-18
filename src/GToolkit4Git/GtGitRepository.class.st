@@ -1147,9 +1147,9 @@ GtGitRepository >> gtExamplesFor: aView context: aPhlowContext [
 			aCollection := self gtAllLoadedExamples collect: #asCachedExampleWithResult.
 			
 			aGroup := GtExampleGroup withAll: aCollection.
-			aGroupView := GtPhlowView empty on: aGroup perform: #gtExamplesFor:.
+			aGroupView := GtPhlowView empty on: aGroup perform: #gtExamplesFor:context:.
 			anElement := aGroupView asElement.
-			anElement userData at: #gtExamplesFor: put: aGroup.
+			anElement userData at: #gtExamplesFor:context: put: aGroup.
 			anExampleViewModel pharoExampleSuite stream: aCollection asAsyncStream.
 			anElement ];
 		actionStencil: [ :aBrTab | 
