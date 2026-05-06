@@ -1,6 +1,12 @@
 Extension { #name : #IceNode }
 
 { #category : #'*GToolkit4Git' }
+IceNode >> copyNameToClipboard [
+
+	self definition copyNameToClipboard
+]
+
+{ #category : #'*GToolkit4Git' }
 IceNode >> gtBrowseActionFor: anAction [
 	<gtAction>
 	self value definition needsRepositoryForTool ifTrue: [ ^ anAction noAction ].
@@ -133,5 +139,8 @@ IceNode >> gtViewTwoPanesDiffFor: aView [
 		in: [ :currentView | 
 			self value isConflict
 				ifTrue: [ self gtResolveConflictActionForView: currentView ] ];
+		actionButtonIcon: BrGlamorousVectorIcons clipboard
+			tooltip: 'Copy name to clipboard'
+			action: [ self copyNameToClipboard ];
 		yourself
 ]
