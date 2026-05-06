@@ -1,6 +1,12 @@
 Extension { #name : #IceDefinition }
 
 { #category : #'*GToolkit4Git' }
+IceDefinition >> copyNameToClipboard [
+
+	Clipboard clipboardText: self name asString
+]
+
+{ #category : #'*GToolkit4Git' }
 IceDefinition class >> gtDiffChangeFrom: aContent to: anotherContent [
 	^ GtDiffBuilder
 		computeDifferencesFrom: aContent
