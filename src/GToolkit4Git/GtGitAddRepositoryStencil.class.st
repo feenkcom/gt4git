@@ -61,7 +61,7 @@ GtGitAddRepositoryStencil >> initializePage [
 	fileBrowser := BrFileSelector new margin: (BlInsets all: 5).
 
 	fileBrowser vExact: 400.
-	fileBrowser hExact: 464.
+	fileBrowser hFitContent.
 
 	fileBrowser
 		buttonLabel: 'Initialize';
