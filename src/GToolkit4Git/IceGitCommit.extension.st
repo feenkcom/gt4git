@@ -40,6 +40,16 @@ IceGitCommit >> gtChangesFor: aView [
 ]
 
 { #category : #'*GToolkit4Git' }
+IceGitCommit >> gtCommentFor: aView [
+	<gtView>
+	
+	^ aView text
+		title: 'Comment';
+		priority: 20;
+		text: [ self comment ]
+]
+
+{ #category : #'*GToolkit4Git' }
 IceGitCommit >> gtFileSystemItemsFor: aView [
 	<gtView>
 	^ aView forward
