@@ -8,7 +8,8 @@ Class {
 		'contentElement',
 		'sidebarElement',
 		'navigationModel',
-		'repository'
+		'repository',
+		'updater'
 	],
 	#category : #'GToolkit4Git-UI - Element'
 }
@@ -36,6 +37,11 @@ GtGitElement >> defaultNavigationModel [
 { #category : #accessing }
 GtGitElement >> initialize [
 	super initialize.
+
+	updater := BrElementUpdater new
+			postponedDuration: 300 milliSeconds;
+			element: self selector: #privateUpdateElement:repository:.
+
 	self initializeTitleNotifier.
 	self initializeListeners.
 
@@ -44,9 +50,9 @@ GtGitElement >> initialize [
 	self matchParent.
 	self initializeView.
 	self navigationModel: self defaultNavigationModel.
-	self phlow 
-		accessTool: (GtPhlowToolClassType forClass: self class) 
-		viewModel: #navigationModel 
+	self phlow
+		accessTool: (GtPhlowToolClassType forClass: self class)
+		viewModel: #navigationModel
 		object: #repository
 ]
 
@@ -116,18 +122,27 @@ GtGitElement >> navigationModel: aNavigationModel [
 GtGitElement >> onNavigationModelChange: anAnnouncement [
 	"Announcements may come from a non-UI process. Let's enqueue the update."
 
-	BlTaskAction
-		enqueueElement: self
-		action: [ 
-			repository := anAnnouncement repository.
-			self refreshView.
-			self updateTabLabel.
-			self fireEvent: (GtPhlowToolObjectChangeWish new object: repository) ]
+	updater requestUpdate: anAnnouncement repository
 ]
 
 { #category : #accessing }
 GtGitElement >> onNavigationModelChanged [
 	self updateSidebarContent
+]
+
+{ #category : #'private - updating' }
+GtGitElement >> privateUpdateElement: anElement repository: aRepository [
+	"We can receive another repository or the same repository.
+	Another repository is received when users selects another one in the sidebar."
+
+	aRepository = repository
+		ifFalse: [ repository
+				ifNotNil: [ :anOldRepository | anOldRepository viewModel announcer unsubscribe: self ].
+			repository := aRepository ].
+
+	self refreshView.
+	self updateTabLabel.
+	self fireEvent: (GtPhlowToolObjectChangeWish new object: repository)
 ]
 
 { #category : #accessing }
@@ -149,10 +164,18 @@ GtGitElement >> repository [
 
 { #category : #accessing }
 GtGitElement >> repository: aRepository [
+	aRepository = repository ifTrue: [ ^ self ].
+
+	repository
+		ifNotNil: [ :anOldRepository | anOldRepository viewModel announcer unsubscribe: self ].
+
 	repository := aRepository.
 	self initializeView.
 	self updateSidebarContent.
-	repository viewModel announcer weak when: GtRepositoryModified send: #onNavigationModelChange: to: self
+	repository viewModel announcer weak
+		when: GtRepositoryModified
+		send: #onNavigationModelChange:
+		to: self
 ]
 
 { #category : #accessing }
