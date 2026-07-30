@@ -239,7 +239,11 @@ GtGitRepository >> branchDescription [
 		priority: 1;
 		accessor: (MAPluggableAccessor
 				read: [ :aModel | aModel repository branchName ]
-				write: [ :aModel :aValue | aModel repository checkoutBranch: aValue ]);
+				write: [ :aModel :aValue | |repo|
+					repo := aModel repository.
+					(repo branchNamed: aValue
+						ifPresent: [:branch| branch switch ]
+						ifAbsent: [repo createBranch: aValue inCommit: (repo workingCopy referenceCommit)])]);
 		blocCompletion: [ GtStringsCompletionStrategy new
 				completions: self branchNameCompletions ];
 		editorAptitude: [ BrGlamorousRegularEditorAptitude new glamorousFormEditorCodeFontAndSize ];
