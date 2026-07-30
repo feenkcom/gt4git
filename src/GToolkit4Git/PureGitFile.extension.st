@@ -133,6 +133,17 @@ PureGitFile >> gtKumpelFor: aView [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitFile >> gtLepiterPageFor: aView [
+	<gtView>
+	 self extension = #lepiter  ifFalse: [ ^ aView empty ].
+	^ aView forward 
+		title: 'Lepiter page';
+		priority: 5;
+		object: [ LeLocalStoreLoad current loadPageFrom: self fileReference];
+		view: #gtLiveFor:
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitFile >> gtLogFor: composite [
 	<gtView>
 	| timestampFormat |
