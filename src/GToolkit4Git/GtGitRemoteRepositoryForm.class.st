@@ -88,11 +88,11 @@ GtGitRemoteRepositoryForm >> onCreated: anObject [
 
 { #category : #accessing }
 GtGitRemoteRepositoryForm >> projectLocation [
-	| anUrl owner project |
-	anUrl := url copyReplaceAll: 'git@github.com:' with: ''.
-	anUrl := anUrl copyReplaceAll: '.git' with: ''.
-	owner := (anUrl findTokens: '/') first.
-	project := (anUrl findTokens: '/') last.
+
+	| remote owner project |
+	remote := IceGitRemote url: self url.
+	owner := remote owner.
+	project := remote projectName.
 	^ IceLibgitRepository repositoriesLocation / owner / project
 ]
 
