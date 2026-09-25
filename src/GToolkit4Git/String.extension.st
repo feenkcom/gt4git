@@ -3,15 +3,10 @@ Extension { #name : #String }
 { #category : #'*GToolkit4Git' }
 String >> gtCloneGithubRepository [
 
-	| url owner project |
-	url := self copyReplaceAll: 'git@github.com:' with: ''.
-	url := url copyReplaceAll: '.git' with: ''.
-	owner := (url findTokens: '/') first.
-	project := (url findTokens: '/') last.
-
+	| remote |
+	remote := IceGitRemote url: self.
 	^ GtGitRepository fromIcebergRepository: (IceRepository repositoryClass creatorClass new
-			   remote: (IceGitRemote url: self);
-			   location:
-				   IceLibgitRepository repositoriesLocation / owner / project;
-			   createRepository)
+		   remote: remote;
+		   location: IceLibgitRepository repositoriesLocation / remote owner / remote projectName;
+		   createRepository)
 ]
