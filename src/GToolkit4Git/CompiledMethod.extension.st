@@ -37,3 +37,24 @@ CompiledMethod >> gtGitCommitsFor: aView [
 			action: [ :button |
 				button phlow spawnObject: (PureGitMethodVersions with: self) ]
 ]
+
+{ #category : #'*GToolkit4Git' }
+CompiledMethod >> hasFeenkRepositoryAvailable [
+	^ self isInAvailableGitRepositoryOwnedBy: 'feenkcom'
+]
+
+{ #category : #'*GToolkit4Git' }
+CompiledMethod >> isInAvailableGitRepositoryOwnedBy: anOwnerName [
+	"Answer whether my package is loaded from an Iceberg repository with a remote owned by anOwnerName."
+	| package |
+	package := self isExtension
+		ifTrue: [ self package ]
+		ifFalse: [ self methodClass package ].
+	package ifNil: [ ^ false ].
+	^ IceRepository registry anySatisfy: [ :repository |
+		(repository includesPackageNamed: package name)
+			and: [ repository remotes anySatisfy: [ :remote |
+				(remote detailedInfo asDictionary
+					at: 'Repo Owner'
+					ifAbsent: [ nil ]) = anOwnerName ] ] ]
+]
