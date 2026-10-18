@@ -48,7 +48,7 @@ GtGitSetupExamples >> simpleSetupViewWithLepiter [
 	(repository gtSetupHelpFor: GtPhlowView empty)
 		asElementDo: [ :anElement | view := anElement ].
 
-	setupItems := view children second items.
+	setupItems := view children anyOne items.
 
 	self assert: (setupItems select: #isExecuted) size = 2.
 	self assert: (setupItems reject: #isExecuted) size = 1.
