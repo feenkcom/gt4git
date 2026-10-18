@@ -26,7 +26,7 @@ GtGitSetupExamples >> simpleSetupView [
 	(repository gtSetupHelpFor: GtPhlowView empty)
 		asElementDo: [ :anElement | view := anElement ].
 
-	setupItems := view children second items.
+	setupItems := view children anyOne items.
 	executedItems := setupItems select: #isExecuted.
 	self assert: executedItems size equals: 1.
 	self assert: executedItems first class name = #GtGitRepositorySourceSetupItem.
