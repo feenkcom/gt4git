@@ -3,8 +3,11 @@ Class {
 	#superclass : #BlElement,
 	#instVars : [
 		'session',
-		'currentPromise',
-		'futureConfiguration'
+		'futureConfiguration',
+		'repository',
+		'statusTask',
+		'statusPromise',
+		'statusUpdater'
 	],
 	#category : #'GToolkit4Git-UI'
 }
@@ -14,6 +17,18 @@ GtGitStatusElement >> defaultFutureConfiguration [
 	^ AsyncFutureExecutionConfiguration new 
 		customGroup: #Git;
 		lowPriority
+]
+
+{ #category : #private }
+GtGitStatusElement >> finishRefreshWith: aStatuses task: aTaskAction [
+	"I am evaluated in a UI process."
+
+	statusTask lock: [ :aCurrentTask |
+		aTaskAction == aCurrentTask ifFalse: [ ^ self ] ].
+	
+	aStatuses
+		ifNotNil: [ self removeChildren.
+			aStatuses do: [ :aStatus | self addChild: aStatus asElement ] ]
 ]
 
 { #category : #accessing }
@@ -37,37 +52,54 @@ GtGitStatusElement >> initialize [
 		constraintsDo: [ :c | 
 			c vertical fitContent.
 			c horizontal fitContent ].
-]
-
-{ #category : #accessing }
-GtGitStatusElement >> initializeOn: aRepository [
-	| future |
-	future := [ (session isNotNil and: [ Smalltalk session == session ])
-			ifTrue: [ self removeChildren.
-				aRepository statusModel do: [ :status | self addChild: status asElement ] ] ]
-			asAsyncFuture.
-
-	(currentPromise isNil or: [ currentPromise isFulfilled ])
-		ifTrue: [ currentPromise := future await: self futureConfiguration ]
-		ifFalse: [ currentPromise then: [ currentPromise := future await: self futureConfiguration ] ].
-		
-	self enqueueTask: (BlPromiseTask new promise: currentPromise)
+			
+	statusUpdater := BrElementUpdater new element: self selector: #refreshStatus.
+	statusPromise := nil.
+	statusTask := AsyncMutex for: nil.
 ]
 
 { #category : #accessing }
 GtGitStatusElement >> onRepositoryModified: anAnnouncement [
-	self initializeOn: anAnnouncement repository
+	statusUpdater requestUpdate
+]
+
+{ #category : #private }
+GtGitStatusElement >> refreshStatus [
+	"I am evaluated by the updater in a UI process. At most one status future is pending at a time.
+	If a refresh is requested meanwhile, I only remember it and repeat once the pending one finishes."
+
+	| aRepository aFuture |
+	aRepository := repository.
+	statusPromise
+		ifNotNil: [ :aPromise | 
+			statusPromise := nil.
+			aPromise cancelSoft ].
+	aFuture := [ aRepository statusModel ] asAsyncFuture.
+	aFuture := aFuture
+			on: Error
+			do: [ :anError | 
+				anError emit.
+				nil ].
+	aFuture := aFuture
+			map: [ :aStatus | 
+				| aTask |
+				aTask := BlTaskAction new.
+				aTask action: [ self finishRefreshWith: aStatus task: aTask ].
+				statusTask value: aTask.
+				self enqueueTask: aTask ].
+	statusPromise := aFuture await: self futureConfiguration
 ]
 
 { #category : #accessing }
 GtGitStatusElement >> repository: aRepository [
 	session ifNotNil: [ ^ self ].
 	session := Smalltalk session.
+	repository := aRepository.
 	self subscribeTo: aRepository viewModel.
-	self initializeOn: aRepository.
+	statusUpdater requestUpdate
 ]
 
-{ #category : #accessing }
+{ #category : #private }
 GtGitStatusElement >> subscribeTo: aViewModel [
 	aViewModel weak when: GtRepositoryModified send: #onRepositoryModified: to: self
 ]

@@ -36,6 +36,7 @@ GtGitElementExamples >> scripterOnExpandedElement [
 	<return: #BlScripter>
 	| aScripter |
 	aScripter := BlScripter new.
+	aScripter extent: 1200@600.
 	aScripter element: self expandedElement.
 
 	^ aScripter
