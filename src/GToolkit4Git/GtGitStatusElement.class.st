@@ -24,7 +24,9 @@ GtGitStatusElement >> finishRefreshWith: aStatuses task: aTaskAction [
 	"I am evaluated in a UI process."
 
 	statusTask lock: [ :aCurrentTask |
-		aTaskAction == aCurrentTask ifFalse: [ ^ self ] ].
+		aTaskAction == aCurrentTask ifFalse: [ ^ self ].
+		statusTask value: nil.
+		statusPromise := nil ].
 	
 	aStatuses
 		ifNotNil: [ self removeChildren.
@@ -65,8 +67,9 @@ GtGitStatusElement >> onRepositoryModified: anAnnouncement [
 
 { #category : #private }
 GtGitStatusElement >> refreshStatus [
-	"I am evaluated by the updater in a UI process. At most one status future is pending at a time.
-	If a refresh is requested meanwhile, I only remember it and repeat once the pending one finishes."
+	"I am evaluated by the updater in a UI process.
+	I cancel the previous status future, if it is still pending, and start a new one, so superseded futures do not pile up.
+	The last started future enqueues a task that shows its status. Tasks of superseded futures are ignored, see {{gtMethod:GtGitStatusElement>>#finishRefreshWith:task:}}."
 
 	| aRepository aFuture |
 	aRepository := repository.

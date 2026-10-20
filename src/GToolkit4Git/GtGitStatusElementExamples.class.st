@@ -173,6 +173,53 @@ GtGitStatusElementExamples >> elementDetachedDuringPendingStatusIsRefreshedWhenA
 	^ aScripter
 ]
 
+{ #category : #examples }
+GtGitStatusElementExamples >> finishedRefreshDoesNotRetainPromiseAndTask [
+	"The scripter space logs executed tasks, which keeps their status alive, so a weak reference 
+	cannot be used here. I check the element state instead."
+
+	<gtExample>
+	<return: #BlScripter>
+	| aRepository aScripter |
+	aRepository := GtGitStatusElementStubRepository new.
+	aScripter := BlScripter new.
+	aScripter
+		substep: 'Show status element'
+		do: [ :aStep | 
+			aStep set
+				label: 'Initialize UI';
+				element: [ self newStatusElementOn: aRepository ];
+				play ].
+	aScripter
+		substep: 'Finish a refresh'
+		do: [ :aStep | 
+			aStep
+				assertStep: [ :s | 
+					s
+						label: 'Assert the pending refresh is retained';
+						satisfies: [ :anElement | (anElement instVarNamed: 'statusPromise') isNotNil ];
+						onSelf ].
+			aStep
+				doStep: [ :s | 
+					s
+						label: 'Release the worker and wait for the status';
+						block: [ :anElement | 
+							aRepository releaseAllStatusModels.
+							self
+								assert: (self waitFor: [ anElement childrenCount = 1 ] pulsing: aScripter)
+								description: 'The status was not shown' ];
+						onSelf ].
+			aStep
+				assertStep: [ :s | 
+					s
+						label: 'Assert the finished promise and task are released';
+						satisfies: [ :anElement | 
+							(anElement instVarNamed: 'statusPromise') isNil
+								and: [ (anElement instVarNamed: 'statusTask') value isNil ] ];
+						onSelf ] ].
+	^ aScripter
+]
+
 { #category : #support }
 GtGitStatusElementExamples >> newStatusElementOn: aRepository [
 	"Use a dedicated worker group, so that examples do not queue behind other Git futures."
