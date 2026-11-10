@@ -12,7 +12,15 @@ GtGitElementExamples >> cleanUpRepository [
 		detect: [ :aRepository | aRepository name = self repositoryName ]
 		ifFound: [ :aRepository | 
 			aRepository forget.	"Delete all files from disk related to this repository"
-			aRepository workingCopy fileSystem ensureDeleteAll ]
+			aRepository workingCopy fileSystem ensureDeleteAll ].
+
+	self repositoryDirectory
+		ifNotNil: [ :aDirectory | aDirectory exists ifTrue: [ aDirectory ensureDeleteAll ] ]
+]
+
+{ #category : #accessing }
+GtGitElementExamples >> ensureRepositoryDirectory [
+	self repositoryDirectory ensureCreateDirectory
 ]
 
 { #category : #examples }
@@ -23,6 +31,11 @@ GtGitElementExamples >> expandedElement [
 	element := self simpleElement createInPager maximized.
 
 	^ element
+]
+
+{ #category : #accessing }
+GtGitElementExamples >> repositoryDirectory [
+	^ FileLocator imageDirectory / self repositoryName
 ]
 
 { #category : #accessing }
@@ -170,6 +183,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithExpandedSearch [
 GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogNavigated [
 	<gtExample>
 	<return: #BlScripter>
+	<after: #cleanUpRepository>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDialogOpen.
 	aScripter doubleClick
@@ -188,9 +202,10 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogNavigat
 GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogOpen [
 	<gtExample>
 	<return: #BlScripter>
+	<after: #cleanUpRepository>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithAddDialogOpen.
-	(FileLocator imageDirectory / self repositoryName) ensureCreateDirectory.
+	self ensureRepositoryDirectory.
 	aScripter
 		clickStep: [ :s | 
 			s
@@ -221,6 +236,12 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDone [
 				satisfies: [ :aPaneElement | aPaneElement realToolElement repository isNotNil ];
 				// #'maximizer--overlay';
 				// GtTreePagerPaneContentElement ].
+	aScripter
+		assertStep: [ :s | 
+			s
+				label: 'Assert the initialized repository is selected';
+				value: [ :aChangeView | aChangeView pages last contentElement tool repository name ]
+					equals: self repositoryName ].
 
 	^ aScripter
 ]
@@ -263,16 +284,15 @@ GtGitElementExamples >> scripterOnExpandedElementWithSearchResult [
 { #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithSelectedRepository [
 	<gtExample>
-	<noTest>
 	<after: #cleanUpRepository>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDone.
 
 	aScripter
-		checkStep: [ :s | 
+		doStep: [ :s | 
 			s
 				label: 'Unselect repository';
-				do: [ :aChangeView | 
+				block: [ :aChangeView | 
 					aChangeView pages last contentElement tool
 						onNavigationModelChange: (GtGitRepositorySelected new repository: nil) ] ].
 
