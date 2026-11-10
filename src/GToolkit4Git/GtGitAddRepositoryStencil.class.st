@@ -29,7 +29,7 @@ GtGitAddRepositoryStencil >> dropdown: aDropdown [
 
 { #category : #accessing }
 GtGitAddRepositoryStencil >> initialPage [
-	^ BrVerticalPane new fitContent
+	^ BrVerticalPane new fitContentLimited
 		addChild: (BrSimpleList new
 				itemStencil: [ BrLabel new
 						vFitContent;
@@ -58,10 +58,10 @@ GtGitAddRepositoryStencil >> initialPage [
 { #category : #accessing }
 GtGitAddRepositoryStencil >> initializePage [
 	| fileBrowser |
-	fileBrowser := BrFileSelector new margin: (BlInsets all: 5).
+	fileBrowser := BrFileSelector new margin: (BlInsets all: 10).
 
 	fileBrowser vExact: 400.
-	fileBrowser hFitContent.
+	fileBrowser hFitContentLimited.
 
 	fileBrowser
 		buttonLabel: 'Initialize';

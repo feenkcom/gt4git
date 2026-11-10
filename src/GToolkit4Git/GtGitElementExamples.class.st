@@ -213,8 +213,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDone [
 				label: 'Click on directory';
 				onSpaceRoot;
 				id: #'git-initialize-page';
-				onChildAt: 3;
-				onChildAt: 1 ].	"this will need to be changed once we select correctly"
+				// #'git-initialize-button' ].	"this will need to be changed once we select correctly"
 	aScripter
 		checkStep: [ :s | 
 			s
