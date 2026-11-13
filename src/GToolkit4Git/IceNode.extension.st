@@ -83,7 +83,7 @@ IceNode >> gtViewDiffFor: aView [
 		 self value isKindOf: IceOperationMerge ]) ifFalse: [ ^ aView empty ].
 
 	^ aView textEditor
-		title: 'Diff' translated;
+		title: 'Diff (in place)' translated;
 		priority: 20;
 		text: [ :anEditor | 
 			GtEpiceaDiffStencil new
@@ -127,7 +127,7 @@ IceNode >> gtViewNodesTreeFor: aView [
 IceNode >> gtViewTwoPanesDiffFor: aView [
 	<gtView>
 	^ aView explicit
-		title: 'Diff (two panes)';
+		title: 'Diff';
 		priority: 19;
 		stencil: [ GtDiffElementWithLabelStencil new
 				fromLabelText: 'Repository:';
