@@ -234,9 +234,10 @@ GtGitStatusElementExamples >> newStatusElementOn: aRepository [
 
 { #category : #support }
 GtGitStatusElementExamples >> pendingFuturesInExampleGroup [
-	"Number of futures queued on the worker of the dedicated example group."
+	"Number of futures queued on the worker of the dedicated example group.
+	Futures scheduled during an example run on the example's own thread pool"
 
-	^ AsyncFutureThreadPool current workerArray
+	^ AsyncFutureThreadPool forCurrentExecutionEnvironment workerArray
 		detect: [ :eachWorker | eachWorker name asString = 'GitStatusElementExamples' ]
 		ifFound: [ :aWorker | aWorker localItemArray size ]
 		ifNone: [ 0 ]
