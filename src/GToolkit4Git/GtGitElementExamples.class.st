@@ -76,6 +76,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithAddDialogOpen [
 { #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithDeletedRepository [
 	<gtExample>
+	<timeLimit: 120000>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDone.
 	aScripter
@@ -284,6 +285,7 @@ GtGitElementExamples >> scripterOnExpandedElementWithSearchResult [
 { #category : #examples }
 GtGitElementExamples >> scripterOnExpandedElementWithSelectedRepository [
 	<gtExample>
+	<timeLimit: 120000>
 	<after: #cleanUpRepository>
 	| aScripter |
 	aScripter := self scripterOnExpandedElementWithInitializationDone.
