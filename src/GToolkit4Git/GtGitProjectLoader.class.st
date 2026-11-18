@@ -70,7 +70,7 @@ GtGitProjectLoader >> gtExistingRepositoryLocation: aGtAdvice [
 GtGitProjectLoader >> gtInfo [
 	^ OrderedDictionary new
 		at: 'Baseline' put: self baseline;
-		at: 'Repository' put: (self repository ifNotNil: #uri);
+		at: 'Repository' put: (self repository ifNotNil: [ :v | v uri ]);
 		yourself
 ]
 
