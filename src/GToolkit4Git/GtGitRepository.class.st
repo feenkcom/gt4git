@@ -1375,7 +1375,9 @@ GtGitRepository >> hasWorkingCopy [
 
 { #category : #'api - repository' }
 GtGitRepository >> headDescription [
-	^ self icebergRepository ifNotNil: #headDescription ifNil: [ '<missing>' ]
+	^ self icebergRepository
+		ifNotNil: [ :v | v headDescription ]
+		ifNil: [ '<missing>' ]
 ]
 
 { #category : #'api - accessing' }
@@ -1464,7 +1466,7 @@ GtGitRepository >> lepiterWorkingCopy: aLepiterWorkingCopy [
 
 { #category : #'api - repository' }
 GtGitRepository >> name [
-	^ self icebergRepository ifNotNil: #name ifNil: [ '<missing>' ]
+	^ self icebergRepository ifNotNil: [ :v | v name ] ifNil: [ '<missing>' ]
 ]
 
 { #category : #'private - announcement handling' }
