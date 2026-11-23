@@ -3,6 +3,9 @@ Class {
 	#superclass : #Object,
 	#traits : 'TGtExampleAssertable',
 	#classTraits : 'TGtExampleAssertable classTrait',
+	#instVars : [
+		'repositoryName'
+	],
 	#category : #'GToolkit4Git-Examples'
 }
 
@@ -33,6 +36,16 @@ GtGitElementExamples >> expandedElement [
 	^ element
 ]
 
+{ #category : #examples }
+GtGitElementExamples >> repositoryDirectoriesAreUniquePerExample [
+	<gtExample>
+	| another |
+	another := self class new.
+	self assert: self repositoryDirectory equals: self repositoryDirectory.
+	self assert: self repositoryDirectory ~= another repositoryDirectory.
+	^ self repositoryDirectory
+]
+
 { #category : #accessing }
 GtGitElementExamples >> repositoryDirectory [
 	^ FileLocator imageDirectory / self repositoryName
@@ -40,7 +53,7 @@ GtGitElementExamples >> repositoryDirectory [
 
 { #category : #accessing }
 GtGitElementExamples >> repositoryName [
-	^ '000AAA'
+	^ repositoryName ifNil: [ repositoryName := '000AAA-' , UUID new asString ]
 ]
 
 { #category : #examples }
@@ -191,9 +204,9 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogNavigat
 		label: 'Click on directory';
 		onSpaceRoot;
 		id: #'git-initialize-page';
-		onChildAt: 2;
-		id: #scrollable;
-		onChildAt: 2;
+		// [ :anElement | 
+			(anElement isKindOf: BrLabel)
+				and: [ anElement text asString = self repositoryName ] ];
 		play.
 
 	^ aScripter
