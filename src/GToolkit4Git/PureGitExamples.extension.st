@@ -349,6 +349,22 @@ PureGitExamples >> exampleGToolkit [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleGitHubVerificationItems [
+	"The rows of the Verification view of a commit, for the commit as the GitHub API answers it,
+	read the way PureGitCommit>>#gitHubData reads it"
+	<gtExample>
+	<return: #Array>
+	| data items |
+	data := ZnUtils defaultJSONReader fromString:
+		'{"commit":{"verification":{"verified":true,"reason":"valid","signature":"-----BEGIN PGP SIGNATURE-----","payload":"tree 0123","verified_at":"2024-01-02T03:04:05Z"}}}'.
+	items := PureGitCommit new gitHubVerificationItemsFrom: data.
+	self assert: (items detect: [ :each | each first = 'reason' ]) second equals: 'valid'.
+	self assert: (items detect: [ :each | each first = 'verified' ]) last.
+	self assert: (items detect: [ :each | each first = 'verified at' ]) second equals: '2024-01-02T03:04:05Z'.
+	^ items
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitExamples >> exampleGt4Git [
 	<gtExample>
 	<noTest>
@@ -460,6 +476,27 @@ PureGitExamples >> exampleInitializedRepository [
 	self assert: repository hasHead not.
 
 	^ repository
+]
+
+{ #category : #'*GToolkit4Git' }
+PureGitExamples >> exampleLepiterPageFileInRepository [
+	"A Lepiter page in a repository is shown as a page"
+	<gtExample>
+	<noTest>
+	| repository page file view |
+	repository := self exampleInitializedRepository.
+	page := LePage named: 'Example page'.
+	page addSnippet: (LeTextSnippet string: 'Sic mundus creatus est.').
+	(repository location / 'example.lepiter') writeStreamDo: [ :out |
+		LeJsonV4 uniqueInstance serialize: page on: out prettyPrint: true ].
+	file := repository resolveFilePath: 'example.lepiter'.
+	self assert: file extension equals: 'lepiter'.
+	view := file gtLepiterPageFor: GtPhlowView empty.
+	self assert: (view isKindOf: GtPhlowEmptyView) not.
+	self
+		assert: (LeLocalStoreLoad current loadPageFrom: file fileReference) title
+		equals: 'Example page'.
+	^ file
 ]
 
 { #category : #'*GToolkit4Git' }

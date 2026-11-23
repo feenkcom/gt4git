@@ -48,6 +48,31 @@ GtGitRepositoryHistoryRecord class >> exampleGt4Git [
 	^ record
 ]
 
+{ #category : #examples }
+GtGitRepositoryHistoryRecord class >> exampleWithPackageNamesOfBothKinds [
+	"A record keeps the names of the packages Iceberg loaded, Symbols or Strings.
+	PureGit asks for a package with its directory name, a String"
+	<gtExample>
+	<return: #GtGitRepositoryHistoryRecord>
+	| record history |
+	record := self new
+		name: 'example';
+		headCommitId: '0123456789abcdef0123456789abcdef01234567';
+		yourself.
+	record packages
+		add: #'Example-Core';
+		add: 'Example-Tests'.
+	self assert: (record includesPackageNamed: 'Example-Core').
+	self assert: (record includesPackageNamed: #'Example-Tests').
+	self assert: (record includesPackageNamed: 'Example-Missing') not.
+	history := GtGitRepositoryRegistryHistory new.
+	history records add: record.
+	self assert: (history repositoryIncludingPackage: 'Example-Core') equals: record.
+	self assert: (history repositoryIncludingPackage: 'Example-Core') headCommitId
+		equals: '0123456789abcdef0123456789abcdef01234567'.
+	^ record
+]
+
 { #category : #actions }
 GtGitRepositoryHistoryRecord >> fork [
 	"Restore the repository that I describe by first forking it from its upstream URL
@@ -137,7 +162,8 @@ GtGitRepositoryHistoryRecord >> headCommitId: aHash [
 
 { #category : #testing }
 GtGitRepositoryHistoryRecord >> includesPackageNamed: packageName [
-	^ self packages includes: packageName
+	"The recorded Iceberg names are Strings or Symbols; PureGit names are directory names (Strings)"
+	^ self packages includesSameContentAs: packageName
 ]
 
 { #category : #initialization }

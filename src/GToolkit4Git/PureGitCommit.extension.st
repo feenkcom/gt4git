@@ -8,6 +8,28 @@ PureGitCommit >> changesToParentAsRopedText [
 ]
 
 { #category : #'*GToolkit4Git' }
+PureGitCommit >> gitHubVerificationItemsFrom: data [
+	"Answer the rows of the Verification view for data, the commit as the GitHub API answers it
+	(read by #gitHubData: a NeoJSONObject with Symbol keys)"
+
+	^ {
+		{ 'verified'
+			. ((data atPath: #(commit verification verified)) ifNil: [ false ]) gtColoredText
+			. data atPath: #(commit verification verified) }.
+		{ 'reason' . data atPath: #(commit verification reason) }.
+		{ 'author' . self author }.
+		{ 'email' . self email }.
+		{ 'timestamp' . self timestamp }.
+		{ 'committer' . self committer }.
+		{ 'committer email' . self committerEmail }.
+		{ 'committer timestamp' . self committerTimestamp }.
+		{ 'signature' . (data atPath: #(commit verification signature)) ifNil: [ '' ] }.
+		{ 'payload' . (data atPath: #(commit verification payload)) ifNil: [ '' ] }.
+		{ 'verified at' . (data atPath: #(commit verification #verified_at)) ifNil: [ '' ] }.
+		}
+]
+
+{ #category : #'*GToolkit4Git' }
 PureGitCommit >> gtActionOperationsFor: composite [
 	<gtAction>
 	^ composite dropdown
@@ -134,23 +156,7 @@ PureGitCommit >> gtVerificationFor: composite [
 	^ composite columnedList
 		title: 'Verification';
 		priority: 60;
-		items: [ | data |
-			data := self gitHubData.
-			{
-				{ 'verified'
-					. ((data atPath: #(commit verification verified)) ifNil: [ false ]) gtColoredText
-					. data atPath: #(commit verification verified) }.
-				{ 'reason' . data atPath: #(commit verification reason) }.
-				{ 'author' . self author }.
-				{ 'email' . self email }.
-				{ 'timestamp' . self timestamp }.
-				{ 'committer' . self committer }.
-				{ 'committer email' . self committerEmail }.
-				{ 'committer timestamp' . self committerTimestamp }.
-				{ 'signature' . (data atPath: #(commit verification signature)) ifNil: [ '' ] }.
-				{ 'payload' . (data atPath: #(commit verification payload)) ifNil: [ '' ] }.
-				{ 'verified at' . (data atPath: #(commit verification 'verified_at')) ifNil: [ '' ] }.
-		} ];
+		items: [ self gitHubVerificationItemsFrom: self gitHubData ];
 		column: 'key' text: #first;
 		column: 'value' text: #second weight: 3;
 		send: #last
