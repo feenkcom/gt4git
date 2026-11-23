@@ -204,9 +204,9 @@ GtGitElementExamples >> scripterOnExpandedElementWithInitializationDialogNavigat
 		label: 'Click on directory';
 		onSpaceRoot;
 		id: #'git-initialize-page';
-		onChildAt: 2;
-		id: #scrollable;
-		onChildAt: 2;
+		// [ :anElement | 
+			(anElement isKindOf: BrLabel)
+				and: [ anElement text asString = self repositoryName ] ];
 		play.
 
 	^ aScripter
