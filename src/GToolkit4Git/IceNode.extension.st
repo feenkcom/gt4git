@@ -129,13 +129,33 @@ IceNode >> gtViewTwoPanesDiffFor: aView [
 	^ aView explicit
 		title: 'Diff';
 		priority: 19;
-		stencil: [ GtDiffElementWithLabelStencil new
-				fromLabelText: 'Repository:';
-				toLabelText: 'Working Copy (local):';
-				change: (self definition class
-						gtDiffChangeFrom: self value rightContents
-						to: self value leftContents);
-				styler: self definition class gtStyler ];
+		stencil: [ | aDefinition aChange aStencil |
+			aDefinition := self definition.
+			aChange := aDefinition class
+					gtDiffChangeFrom: self value rightContents
+					to: self value leftContents.
+			aStencil := GtDiffElementWithLabelStencil new
+					fromLabelText: 'Repository:';
+					toLabelText: 'Working Copy (local):';
+					change: aChange.
+			(aDefinition isKindOf: IceCodeDefinition)
+				ifTrue: [ | aStyler |
+					aStyler := [ :aSource | 
+						| aCoder |
+						aCoder := aDefinition isMethodDefinition
+								ifTrue: [ GtPharoMethodCoder new
+										behavior: (aDefinition contextClass ifNil: [ UndefinedObject ]);
+										sourceCodeSynchronously: (GtCoderExplicitStringSource new source: aSource);
+										yourself ]
+								ifFalse: [ GtPharoSnippetCoder forSource: aSource ].
+						GtPharoStyler new
+							coderViewModel: aCoder asCoderViewModel;
+							yourself ].
+					aStencil
+						leftStyler: (aStyler value: aChange from);
+						rightStyler: (aStyler value: aChange to) ]
+				ifFalse: [ aStencil styler: aDefinition class gtStyler ].
+			aStencil ];
 		in: [ :currentView | 
 			self value isConflict
 				ifTrue: [ self gtResolveConflictActionForView: currentView ] ];
